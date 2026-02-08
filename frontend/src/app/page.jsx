@@ -3,8 +3,16 @@ import ProductViewer3DEnhanced from "../components/ProductViewer3DEnhanced.jsx";
 import ProductShowcase3D from "../components/ProductShowcase3D.jsx";
 import { getProducts } from "../services/api.js";
 
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
-  const products = await getProducts();
+  let products = [];
+  try {
+    products = await getProducts();
+  } catch (error) {
+    console.error("Failed to load products:", error);
+    products = [];
+  }
   const heroProduct = products?.[0];
   
   // Construct full image URL for hero product

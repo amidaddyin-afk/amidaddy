@@ -1,8 +1,26 @@
 import ProductViewer3DEnhanced from "../../../components/ProductViewer3DEnhanced.jsx";
 import { getProduct } from "../../../services/api.js";
 
+export const dynamic = "force-dynamic";
+
 export default async function ProductPage({ params }) {
-  const product = await getProduct(params.id);
+  let product = null;
+  try {
+    product = await getProduct(params.id);
+  } catch (error) {
+    console.error("Failed to load product:", error);
+  }
+
+  if (!product) {
+    return (
+      <div className="container py-16">
+        <h1 className="font-display text-2xl">Product unavailable</h1>
+        <p className="mt-2 text-black/60">
+          We could not load this product right now. Please try again later.
+        </p>
+      </div>
+    );
+  }
   
   // Construct full image URL
   const baseURL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
