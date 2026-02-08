@@ -5,9 +5,9 @@ import { useEffect, useMemo, useState } from "react";
 const FALLBACK_SLIDES = [
   {
     id: "placeholder",
-    name: "Add product images",
-    category: "Carousel",
-    price: "0",
+    name: "Citrus Veil",
+    category: "Trial set",
+    price: "399",
     src: "https://images.unsplash.com/photo-1500917293891-ef795e70e1f6?q=80&w=1600&auto=format&fit=crop"
   }
 ];
@@ -57,30 +57,29 @@ export default function ProductShowcase3D({ products = [], baseURL = "" }) {
       <div className="relative grid gap-8 p-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
         <div className="space-y-6">
           <p className="text-xs uppercase tracking-[0.5em] text-black/50">
-            Future-ready catalog
+            Valentine Sale Live
           </p>
           <h2 className="font-display text-3xl leading-tight md:text-4xl">
-            A carousel of your real product images, floating in a holographic
-            gallery.
+            Buy 1 get 1 on signature perfumes.
           </h2>
           <p className="max-w-md text-sm text-black/60">
-            Showcase your fragrance line with cinematic depth, smooth motion,
-            and instant focus on every bottle.
+            Stock up on bestsellers, trial sets, and long-lasting blends with
+            free shipping above ₹399.
           </p>
           <div className="flex flex-wrap gap-3">
             <button className="rounded-full bg-ink px-6 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-white shadow-[0_15px_30px_rgba(15,23,42,0.35)]">
-              Shop Drops
+              Shop now
             </button>
             <button className="rounded-full border border-black/20 bg-white/70 px-6 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-black/70">
-              View Catalog
+              View trial set
             </button>
           </div>
           <div className="flex items-center gap-4 text-xs text-black/50">
             <span className="rounded-full border border-black/10 bg-white/70 px-3 py-1">
-              Auto-cycling
+              10-12 hr wear
             </span>
             <span className="rounded-full border border-black/10 bg-white/70 px-3 py-1">
-              Swipe-ready
+              Easy returns
             </span>
           </div>
         </div>
@@ -107,7 +106,7 @@ export default function ProductShowcase3D({ products = [], baseURL = "" }) {
                     </p>
                     <div className="mt-2 flex items-center justify-between">
                       <h3 className="font-display text-lg">{slide.name}</h3>
-                      <span className="text-sm font-semibold">â‚¹{slide.price}</span>
+                      <span className="text-sm font-semibold">₹{slide.price}</span>
                     </div>
                   </div>
                 </div>

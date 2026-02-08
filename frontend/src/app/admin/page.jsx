@@ -32,7 +32,6 @@ export default function AdminPage() {
                 rows="3"
               />
               <input className="md:col-span-2 rounded-xl border border-black/10 px-4 py-3" placeholder="Image URL" />
-              <input className="md:col-span-2 rounded-xl border border-black/10 px-4 py-3" placeholder="3D model URL (.glb)" />
               <button className="rounded-full bg-clay px-6 py-3 text-sm font-semibold text-white md:col-span-2">
                 Save product
               </button>

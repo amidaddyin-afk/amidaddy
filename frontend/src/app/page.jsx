@@ -1,83 +1,113 @@
 import ProductCard from "../components/ProductCard.jsx";
-import ProductViewer3DEnhanced from "../components/ProductViewer3DEnhanced.jsx";
 import ProductShowcase3D from "../components/ProductShowcase3D.jsx";
 import { getProducts } from "../services/api.js";
 
 export const dynamic = "force-dynamic";
 
-const collectionHighlights = [
+const trialSets = [
   {
-    title: "Bare Skin",
-    description: "Clean musks, soft florals, and light woods.",
-    accent: "Everyday"
+    title: "For Her",
+    description: "Soft florals, warm vanilla, and airy musk.",
+    image:
+      "https://images.unsplash.com/photo-1501004318641-b39e6451bec6?q=80&w=1200&auto=format&fit=crop"
   },
   {
-    title: "Velvet Night",
-    description: "Amber, cherry, and slow-burning spice.",
-    accent: "After dark"
+    title: "For Him",
+    description: "Spice, cedarwood, and smoky amber.",
+    image:
+      "https://images.unsplash.com/photo-1500917293891-ef795e70e1f6?q=80&w=1200&auto=format&fit=crop"
   },
   {
-    title: "Salted Bloom",
-    description: "Mineral citrus with airy coastal notes.",
-    accent: "Seasonal"
+    title: "Unisex",
+    description: "Citrus, tea, and clean musk blends.",
+    image:
+      "https://images.unsplash.com/photo-1519682337058-a94d519337bc?q=80&w=1200&auto=format&fit=crop"
   }
 ];
 
-const discoveryPerks = [
-  "6 x 2ml trial sprays",
-  "Bonus travel atomizer",
-  "Personalized scent map",
-  "Free shipping voucher"
-];
-
-const valueProps = [
+const collectionCards = [
   {
-    title: "Build a custom box",
-    description: "Pick four fragrances and get a curated layering guide."
+    title: "Trial Set",
+    description: "6 x 2ml sprays + travel atomizer.",
+    tag: "Starter kit"
   },
   {
-    title: "Dermatologist tested",
-    description: "Clean blends with transparent sourcing."
+    title: "Build a Box",
+    description: "Choose four scents and get a sleeve.",
+    tag: "Custom"
   },
   {
-    title: "Long-wear oils",
-    description: "8-12 hour projection without reapplication."
+    title: "Gift Sets",
+    description: "Ready-to-gift bundles for every mood.",
+    tag: "Gifting"
+  },
+  {
+    title: "Long Wear",
+    description: "10-12 hour projection, no reapply.",
+    tag: "Performance"
   }
 ];
 
 const reviews = [
   {
-    name: "Kriti",
-    quote: "The trial set made it so easy to find my signature scent.",
-    scent: "Salted Bloom"
+    name: "Ria",
+    quote: "The trial pack made it easy to choose my signature scent."
   },
   {
-    name: "Ayaan",
-    quote: "Impressive longevity and the packaging is premium.",
-    scent: "Velvet Night"
+    name: "Kabir",
+    quote: "Strong projection and the packaging feels premium."
   },
   {
-    name: "Nisha",
-    quote: "I loved layering two oils. The guide is a great touch.",
-    scent: "Bare Skin"
+    name: "Zoya",
+    quote: "Loved the buy 1 get 1 offer and the fragrances last long."
   }
 ];
 
 const faqs = [
   {
-    question: "How does the discovery set work?",
+    question: "What comes in the trial set?",
     answer:
-      "Choose the trial set and receive six 2ml sprays plus a travel atomizer. Use the scent map to find your perfect match."
+      "Six 2ml sprays plus a travel atomizer and a layering guide."
   },
   {
-    question: "Can I return full-size bottles?",
+    question: "How long does delivery take?",
     answer:
-      "Unopened full-size bottles can be returned within 14 days. Discovery kits are final sale."
+      "Metro cities receive orders in 2-4 days. Other locations in 4-6 days."
   },
   {
-    question: "Do you ship across India?",
+    question: "Is there a return policy?",
     answer:
-      "Yes, we ship nationwide with express delivery in metro cities."
+      "Unopened full-size bottles can be returned within 14 days of delivery."
+  }
+];
+
+const fallbackProducts = [
+  {
+    _id: "fallback-1",
+    name: "Velvet Nectar",
+    category: "Amber • Vanilla",
+    price: 1299,
+    images: [
+      "https://images.unsplash.com/photo-1500917293891-ef795e70e1f6?q=80&w=1200&auto=format&fit=crop"
+    ]
+  },
+  {
+    _id: "fallback-2",
+    name: "Citrus Veil",
+    category: "Neroli • Bergamot",
+    price: 1099,
+    images: [
+      "https://images.unsplash.com/photo-1506917728037-b6af01a7d403?q=80&w=1200&auto=format&fit=crop"
+    ]
+  },
+  {
+    _id: "fallback-3",
+    name: "Midnight Oud",
+    category: "Oud • Saffron",
+    price: 1499,
+    images: [
+      "https://images.unsplash.com/photo-1523293182086-7651a899d37f?q=80&w=1200&auto=format&fit=crop"
+    ]
   }
 ];
 
@@ -90,132 +120,98 @@ export default async function HomePage() {
     products = [];
   }
 
-  const heroProduct = products?.[0];
   const baseURL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-  const heroImageUrl = heroProduct?.images?.[0]
-    ? `${baseURL}${heroProduct.images[0]}`
-    : null;
+  const displayProducts = products?.length ? products : fallbackProducts;
 
   return (
     <div>
       <section className="container grid gap-10 pb-10 pt-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
         <div className="space-y-6">
           <p className="text-xs uppercase tracking-[0.5em] text-black/50">
-            Signature perfume sets
+            Buy 1 get 1 live
           </p>
           <h1 className="font-display text-4xl leading-tight md:text-5xl">
-            Build your personal fragrance wardrobe in one clean box.
+            A clean perfume wardrobe built for gifting and daily wear.
           </h1>
           <p className="max-w-xl text-black/60">
-            Try on every mood. Start with a discovery set, then scale into full
-            size bottles when the match is perfect.
+            Discover trial packs, long-lasting blends, and easy returns. Free
+            shipping above ₹399 on all orders.
           </p>
           <div className="flex flex-wrap gap-3">
             <button className="rounded-full bg-ink px-6 py-3 text-sm font-semibold text-white shadow-[0_15px_30px_rgba(15,23,42,0.25)]">
-              Shop discovery set
+              Shop now
             </button>
             <button className="rounded-full border border-black/20 bg-white/70 px-6 py-3 text-sm font-semibold">
-              Build your box
+              View trial set
             </button>
           </div>
           <div className="grid gap-4 text-sm text-black/60 md:grid-cols-3">
             <div>
-              <p className="text-lg font-semibold text-ink">48 hr</p>
-              <p>Dispatch window</p>
+              <p className="text-lg font-semibold text-ink">10-12 hr</p>
+              <p>Long lasting wear</p>
             </div>
             <div>
-              <p className="text-lg font-semibold text-ink">₹999+</p>
+              <p className="text-lg font-semibold text-ink">₹399+</p>
               <p>Free shipping</p>
             </div>
             <div>
-              <p className="text-lg font-semibold text-ink">4.9</p>
-              <p>Store rating</p>
+              <p className="text-lg font-semibold text-ink">B1G1</p>
+              <p>Limited offers</p>
             </div>
           </div>
         </div>
         <ProductShowcase3D products={products} baseURL={baseURL} />
       </section>
 
-      <section
-        id="discovery"
-        className="container grid gap-8 pb-16 pt-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-center"
-      >
-        <div className="rounded-3xl border border-white/40 bg-white/70 p-8 shadow-soft">
-          <p className="text-xs uppercase tracking-[0.4em] text-black/40">
-            Discovery set
-          </p>
-          <h2 className="mt-4 font-display text-3xl">
-            6 scent trials + travel atomizer
-          </h2>
-          <p className="mt-4 text-sm text-black/60">
-            Experience the entire library in one box. We include a scent map
-            and layering recipes to find your signature.
-          </p>
-          <div className="mt-6 grid gap-3 text-xs text-black/60">
-            {discoveryPerks.map((perk) => (
-              <div
-                key={perk}
-                className="rounded-2xl border border-black/10 bg-white/80 px-4 py-3"
-              >
-                {perk}
-              </div>
-            ))}
-          </div>
-          <button className="mt-6 rounded-full bg-ink px-6 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-white">
-            Start trial
-          </button>
-        </div>
-        <div className="rounded-3xl border border-white/20 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-900 p-8 text-white shadow-[0_25px_70px_rgba(15,23,42,0.35)]">
-          <p className="text-xs uppercase tracking-[0.4em] text-white/60">
-            Build a box
-          </p>
-          <h3 className="mt-4 font-display text-2xl">
-            Choose four full-size perfumes and get a free sleeve.
-          </h3>
-          <p className="mt-4 text-sm text-white/70">
-            Mix oils, sprays, and roll-ons. Create your own layering routine
-            with guided pairing notes.
-          </p>
-          <div className="mt-6 grid gap-3 text-xs text-white/70">
-            {valueProps.map((item) => (
-              <div
-                key={item.title}
-                className="rounded-2xl border border-white/20 bg-white/5 px-4 py-3"
-              >
-                <p className="font-semibold text-white">{item.title}</p>
-                <p className="mt-1 text-white/60">{item.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="collections" className="container pb-16">
+      <section id="trial" className="container pb-16">
         <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h2 className="font-display text-2xl">Signature collections</h2>
+            <h2 className="font-display text-2xl">Trial packs for every mood</h2>
             <p className="text-sm text-black/50">
-              A drop-by-drop map of every mood.
+              Choose a set for her, him, or unisex.
             </p>
           </div>
           <button className="rounded-full border border-black/20 bg-white/70 px-4 py-2 text-xs uppercase tracking-[0.2em]">
-            See all
+            Explore packs
           </button>
         </div>
         <div className="grid gap-6 md:grid-cols-3">
-          {collectionHighlights.map((item) => (
+          {trialSets.map((set) => (
             <div
-              key={item.title}
+              key={set.title}
+              className="overflow-hidden rounded-3xl border border-white/40 bg-white/70 shadow-soft"
+            >
+              <img src={set.image} alt={set.title} className="h-52 w-full object-cover" />
+              <div className="p-6">
+                <h3 className="font-display text-xl">{set.title}</h3>
+                <p className="mt-2 text-sm text-black/60">{set.description}</p>
+                <button className="mt-4 rounded-full border border-black/20 bg-white/80 px-4 py-2 text-xs uppercase tracking-[0.2em]">
+                  Shop trial
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section id="collection" className="container pb-16">
+        <div className="mb-6">
+          <h2 className="font-display text-2xl">Our collection</h2>
+          <p className="text-sm text-black/50">
+            Curated sets, bundles, and long-wear favorites.
+          </p>
+        </div>
+        <div className="grid gap-6 md:grid-cols-4">
+          {collectionCards.map((card) => (
+            <div
+              key={card.title}
               className="rounded-3xl border border-white/40 bg-white/70 p-6 shadow-soft"
             >
               <p className="text-xs uppercase tracking-[0.3em] text-black/40">
-                {item.accent}
+                {card.tag}
               </p>
-              <h3 className="mt-3 font-display text-xl">{item.title}</h3>
-              <p className="mt-2 text-sm text-black/60">{item.description}</p>
-              <button className="mt-6 rounded-full border border-black/20 bg-white/80 px-4 py-2 text-xs uppercase tracking-[0.2em]">
-                Explore
-              </button>
+              <h3 className="mt-3 font-display text-lg">{card.title}</h3>
+              <p className="mt-2 text-sm text-black/60">{card.description}</p>
             </div>
           ))}
         </div>
@@ -224,9 +220,9 @@ export default async function HomePage() {
       <section id="featured" className="container pb-16">
         <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h2 className="font-display text-2xl">Featured products</h2>
+            <h2 className="font-display text-2xl">Best sellers</h2>
             <p className="text-sm text-black/50">
-              Sorted by newest arrivals and best sellers.
+              Most loved by shoppers this week.
             </p>
           </div>
           <div className="flex gap-3 text-xs">
@@ -236,43 +232,42 @@ export default async function HomePage() {
           </div>
         </div>
         <div className="grid gap-6 md:grid-cols-3">
-          {products?.map((product) => (
+          {displayProducts.map((product) => (
             <ProductCard key={product._id} product={product} />
           ))}
         </div>
       </section>
 
-      <section className="container grid gap-8 pb-16 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-        <div className="space-y-4">
-          <p className="text-xs uppercase tracking-[0.5em] text-black/50">
-            3D rendering
-          </p>
-          <h2 className="font-display text-3xl">See every angle in 3D.</h2>
-          <p className="text-sm text-black/60">
-            Drag to rotate, zoom, and explore the silhouette before you buy.
-            Perfect for premium packaging and collector drops.
-          </p>
-          <div className="flex flex-wrap gap-3 text-xs">
-            <span className="rounded-full border border-black/10 bg-white/70 px-3 py-1">
-              WebGL ready
-            </span>
-            <span className="rounded-full border border-black/10 bg-white/70 px-3 py-1">
-              Touch controls
-            </span>
+      <section id="bogo" className="container pb-16">
+        <div className="grid gap-8 rounded-3xl border border-white/30 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 p-8 text-white shadow-[0_25px_70px_rgba(15,23,42,0.35)] lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+          <div>
+            <p className="text-xs uppercase tracking-[0.4em] text-white/60">
+              Limited offer
+            </p>
+            <h2 className="mt-4 font-display text-3xl">
+              Buy 1 get 1 on full-size perfumes.
+            </h2>
+            <p className="mt-3 text-sm text-white/70">
+              Mix two scents or gift one. Applies to select bundles and
+              bestsellers.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <button className="rounded-full bg-white px-6 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-ink">
+              Claim offer
+            </button>
+            <button className="rounded-full border border-white/30 bg-white/10 px-6 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-white">
+              View bundles
+            </button>
           </div>
         </div>
-        <ProductViewer3DEnhanced
-          modelUrl={heroProduct?.model3D}
-          imageUrl={heroImageUrl}
-          productName={heroProduct?.name}
-        />
       </section>
 
       <section id="reviews" className="container pb-16">
         <div className="mb-6">
-          <h2 className="font-display text-2xl">Loved by scent collectors</h2>
+          <h2 className="font-display text-2xl">Loved by a growing tribe</h2>
           <p className="text-sm text-black/50">
-            Real feedback from the discovery set.
+            Real feedback from new customers.
           </p>
         </div>
         <div className="grid gap-6 md:grid-cols-3">
@@ -285,23 +280,22 @@ export default async function HomePage() {
               <div className="mt-4 text-xs uppercase tracking-[0.3em] text-black/40">
                 {review.name}
               </div>
-              <div className="mt-2 text-xs text-black/50">{review.scent}</div>
             </div>
           ))}
         </div>
       </section>
 
-      <section className="container pb-16">
+      <section id="faqs" className="container pb-16">
         <div className="grid gap-8 rounded-3xl border border-white/30 bg-white/70 p-8 shadow-soft lg:grid-cols-[0.9fr_1.1fr]">
           <div>
             <p className="text-xs uppercase tracking-[0.4em] text-black/40">
               FAQ
             </p>
             <h2 className="mt-4 font-display text-3xl">
-              Everything you need to know
+              Questions about scent & shipping
             </h2>
             <p className="mt-3 text-sm text-black/60">
-              Shipping, returns, and how to choose your next scent.
+              Everything you need to know before you order.
             </p>
           </div>
           <div className="grid gap-4">
@@ -338,7 +332,7 @@ export default async function HomePage() {
                 Start discovery
               </button>
               <button className="rounded-full border border-white/30 bg-white/10 px-6 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-white">
-                View bundles
+                Shop bundles
               </button>
             </div>
           </div>

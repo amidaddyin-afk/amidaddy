@@ -1,4 +1,3 @@
-import ProductViewer3DEnhanced from "../../../components/ProductViewer3DEnhanced.jsx";
 import { getProduct } from "../../../services/api.js";
 
 export const dynamic = "force-dynamic";
@@ -21,20 +20,35 @@ export default async function ProductPage({ params }) {
       </div>
     );
   }
-  
-  // Construct full image URL
+
   const baseURL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-  const imageUrl = product.images?.[0] 
-    ? `${baseURL}${product.images[0]}` 
-    : null;
+  const productImages =
+    product.images?.length > 0
+      ? product.images.map((img) => (img.startsWith("http") ? img : `${baseURL}${img}`))
+      : [
+          "https://images.unsplash.com/photo-1523293182086-7651a899d37f?q=80&w=1200&auto=format&fit=crop",
+          "https://images.unsplash.com/photo-1519682337058-a94d519337bc?q=80&w=1200&auto=format&fit=crop",
+          "https://images.unsplash.com/photo-1506917728037-b6af01a7d403?q=80&w=1200&auto=format&fit=crop"
+        ];
+  const heroImage = productImages[0];
 
   return (
-    <div className="container grid gap-10 py-14 lg:grid-cols-[1fr_1.1fr]">
-      <ProductViewer3DEnhanced 
-        modelUrl={product.model3D} 
-        imageUrl={imageUrl} 
-        productName={product.name}
-      />
+    <div className="container grid gap-10 py-14 lg:grid-cols-[1.1fr_0.9fr]">
+      <div className="space-y-4">
+        <div className="overflow-hidden rounded-3xl border border-white/40 bg-white/70 shadow-soft">
+          <img src={heroImage} alt={product.name} className="h-[420px] w-full object-cover" />
+        </div>
+        <div className="grid grid-cols-3 gap-4">
+          {productImages.slice(0, 3).map((img, index) => (
+            <div
+              key={`${img}-${index}`}
+              className="overflow-hidden rounded-2xl border border-white/40 bg-white/70"
+            >
+              <img src={img} alt={`${product.name} ${index + 1}`} className="h-28 w-full object-cover" />
+            </div>
+          ))}
+        </div>
+      </div>
       <div className="space-y-5">
         <div>
           <p className="text-xs uppercase tracking-[0.4em] text-black/40">
