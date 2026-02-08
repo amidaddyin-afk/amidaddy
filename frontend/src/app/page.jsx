@@ -14,39 +14,39 @@ export default async function HomePage() {
     products = [];
   }
   const heroProduct = products?.[0];
-  
+
   // Construct full image URL for hero product
   const baseURL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-  const heroImageUrl = heroProduct?.images?.[0] 
-    ? `${baseURL}${heroProduct.images[0]}` 
+  const heroImageUrl = heroProduct?.images?.[0]
+    ? `${baseURL}${heroProduct.images[0]}`
     : null;
 
   return (
     <div>
-      {/* 3D Showcase Hero */}
-      <section className="container py-8">
-        <ProductShowcase3D />
+      {/* Hero: Product Image Carousel */}
+      <section className="container py-12">
+        <ProductShowcase3D products={products} baseURL={baseURL} />
       </section>
 
       {/* Main Hero Section */}
-      <section className="container grid gap-8 py-16 lg:grid-cols-[1.2fr_0.8fr]">
+      <section className="container grid gap-8 pb-10 pt-4 lg:grid-cols-[1.1fr_0.9fr]">
         <div className="space-y-6">
-          <p className="text-xs uppercase tracking-[0.4em] text-black/40">
-            Shopify-like storefront
+          <p className="text-xs uppercase tracking-[0.5em] text-black/50">
+            Futuristic storefront
           </p>
           <h1 className="font-display text-4xl leading-tight md:text-5xl">
-            Build your presence with an immersive 3D perfume catalog.
+            A next-gen perfume studio built for immersive commerce.
           </h1>
           <p className="max-w-xl text-black/60">
-            Curated collections, instant checkout, and a premium 3D product
-            experience. Showcase every angle with hover, drag, and zoom.
+            Curated collections, instant checkout, and a premium product
+            experience. Blend story, motion, and detail without losing speed.
           </p>
           <div className="flex flex-wrap gap-3">
-            <button className="rounded-full bg-clay px-6 py-3 text-sm font-semibold text-white">
+            <button className="rounded-full bg-ink px-6 py-3 text-sm font-semibold text-white shadow-[0_15px_30px_rgba(15,23,42,0.25)]">
               Shop latest
             </button>
-            <button className="rounded-full border border-black/20 px-6 py-3 text-sm font-semibold">
-              View 3D catalog
+            <button className="rounded-full border border-black/20 bg-white/70 px-6 py-3 text-sm font-semibold">
+              View catalog
             </button>
           </div>
           <div className="grid gap-4 text-sm text-black/60 md:grid-cols-3">
@@ -55,7 +55,7 @@ export default async function HomePage() {
               <p>Dispatch window</p>
             </div>
             <div>
-              <p className="text-lg font-semibold text-ink">₹999+</p>
+              <p className="text-lg font-semibold text-ink">â‚¹999+</p>
               <p>Free shipping</p>
             </div>
             <div>
@@ -64,12 +64,26 @@ export default async function HomePage() {
             </div>
           </div>
         </div>
-        <div className="flex items-center justify-center">
-          <ProductViewer3DEnhanced
-            modelUrl={heroProduct?.model3D}
-            imageUrl={heroImageUrl}
-            productName={heroProduct?.name}
-          />
+        <div className="rounded-3xl border border-white/40 bg-white/60 p-6 shadow-[0_20px_60px_rgba(15,23,42,0.12)] backdrop-blur">
+          <h3 className="font-display text-xl">Signal the collection</h3>
+          <p className="mt-3 text-sm text-black/60">
+            Limited drops, long-lasting impressions. Keep your hero copy short
+            and powerful to move buyers deeper into the catalog.
+          </p>
+          <div className="mt-6 grid gap-3 text-xs text-black/60">
+            <div className="rounded-2xl border border-black/10 bg-white/70 p-4">
+              <p className="text-xs uppercase tracking-[0.3em] text-black/40">
+                Drop cycle
+              </p>
+              <p className="mt-2 text-lg font-semibold text-ink">Every 21 days</p>
+            </div>
+            <div className="rounded-2xl border border-black/10 bg-white/70 p-4">
+              <p className="text-xs uppercase tracking-[0.3em] text-black/40">
+                Limited stock
+              </p>
+              <p className="mt-2 text-lg font-semibold text-ink">320 bottles</p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -93,6 +107,34 @@ export default async function HomePage() {
             <ProductCard key={product._id} product={product} />
           ))}
         </div>
+      </section>
+
+      {/* 3D Rendering Lower Section */}
+      <section className="container grid gap-8 pb-16 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+        <div className="space-y-4">
+          <p className="text-xs uppercase tracking-[0.5em] text-black/50">
+            3D rendering
+          </p>
+          <h2 className="font-display text-3xl">Drop the product into 3D.</h2>
+          <p className="text-sm text-black/60">
+            Keep the 3D viewer lower on the page so shoppers discover it after
+            seeing the real imagery first. Drag to rotate, zoom, and explore
+            the full silhouette.
+          </p>
+          <div className="flex flex-wrap gap-3 text-xs">
+            <span className="rounded-full border border-black/10 bg-white/70 px-3 py-1">
+              WebGL ready
+            </span>
+            <span className="rounded-full border border-black/10 bg-white/70 px-3 py-1">
+              Touch controls
+            </span>
+          </div>
+        </div>
+        <ProductViewer3DEnhanced
+          modelUrl={heroProduct?.model3D}
+          imageUrl={heroImageUrl}
+          productName={heroProduct?.name}
+        />
       </section>
     </div>
   );

@@ -1,212 +1,153 @@
 "use client";
 
-import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, Environment, PerspectiveCamera, useGLTF } from "@react-three/drei";
-import { Suspense, useRef, useState } from "react";
-import * as THREE from "three";
+import { useEffect, useMemo, useState } from "react";
 
-// Animated Bottle
-function AnimatedBottle() {
-  const groupRef = useRef();
-  const meshRef = useRef();
-  const [bobbing, setBobbing] = useState(true);
+const FALLBACK_SLIDES = [
+  {
+    id: "placeholder",
+    name: "Add product images",
+    category: "Carousel",
+    price: "0",
+    src: "https://images.unsplash.com/photo-1500917293891-ef795e70e1f6?q=80&w=1600&auto=format&fit=crop"
+  }
+];
 
-  useFrame(({ clock }) => {
-    if (groupRef.current) {
-      groupRef.current.rotation.y = clock.getElapsedTime() * 0.3;
-    }
-    if (meshRef.current && bobbing) {
-      meshRef.current.position.y = Math.sin(clock.getElapsedTime()) * 0.2;
-    }
-  });
+function buildSlides(products = [], baseURL = "") {
+  const slides = products
+    .filter((product) => product?.images?.length)
+    .map((product) => {
+      const raw = product.images[0];
+      const src = raw?.startsWith("http") ? raw : `${baseURL}${raw}`;
+      return {
+        id: product._id,
+        name: product.name,
+        category: product.category,
+        price: product.price,
+        src
+      };
+    });
 
-  return (
-    <group ref={groupRef}>
-      {/* Bottle Body */}
-      <mesh ref={meshRef} position={[0, 0, 0]} castShadow receiveShadow>
-        <cylinderGeometry args={[0.6, 0.7, 2.2, 32]} />
-        <meshStandardMaterial
-          color="#cfa57f"
-          roughness={0.3}
-          metalness={0.2}
-          envMapIntensity={0.8}
-        />
-      </mesh>
-
-      {/* Bottle Cap */}
-      <mesh position={[0, 1.15, 0]} castShadow>
-        <cylinderGeometry args={[0.4, 0.4, 0.3, 16]} />
-        <meshStandardMaterial color="#333333" roughness={0.2} metalness={0.5} />
-      </mesh>
-
-      {/* Glass Highlights */}
-      <mesh position={[0.35, 0.5, 0.6]} castShadow>
-        <sphereGeometry args={[0.12, 32, 32]} />
-        <meshStandardMaterial
-          color="#ffffff"
-          roughness={0.05}
-          metalness={1}
-          emissive="#ffffff"
-          emissiveIntensity={0.4}
-        />
-      </mesh>
-
-      <mesh position={[-0.4, -0.3, 0.5]} castShadow>
-        <sphereGeometry args={[0.1, 32, 32]} />
-        <meshStandardMaterial
-          color="#ffffff"
-          roughness={0.1}
-          metalness={0.8}
-          emissive="#ffffff"
-          emissiveIntensity={0.2}
-        />
-      </mesh>
-    </group>
-  );
+  return slides.length ? slides : FALLBACK_SLIDES;
 }
 
-// 3D Text Label
-function TextMesh({ text, position, scale = 1 }) {
-  const groupRef = useRef();
+export default function ProductShowcase3D({ products = [], baseURL = "" }) {
+  const slides = useMemo(() => buildSlides(products, baseURL), [products, baseURL]);
+  const [index, setIndex] = useState(0);
 
-  useFrame(() => {
-    if (groupRef.current) {
-      groupRef.current.lookAt(0, 0, 5);
+  useEffect(() => {
+    if (slides.length <= 1) return undefined;
+    const interval = setInterval(() => {
+      setIndex((current) => (current + 1) % slides.length);
+    }, 4500);
+    return () => clearInterval(interval);
+  }, [slides.length]);
+
+  useEffect(() => {
+    if (index >= slides.length) {
+      setIndex(0);
     }
-  });
+  }, [index, slides.length]);
+
+  const goNext = () => setIndex((current) => (current + 1) % slides.length);
+  const goPrev = () => setIndex((current) => (current - 1 + slides.length) % slides.length);
 
   return (
-    <group ref={groupRef} position={position} scale={scale}>
-      <mesh>
-        <planeGeometry args={[3, 1]} />
-        <meshBasicMaterial color="transparent" />
-      </mesh>
-    </group>
-  );
-}
-
-// Rotating Platform
-function Platform() {
-  const platformRef = useRef();
-
-  useFrame(({ clock }) => {
-    if (platformRef.current) {
-      platformRef.current.rotation.z = clock.getElapsedTime() * 0.1;
-    }
-  });
-
-  return (
-    <group ref={platformRef}>
-      <mesh position={[0, -2.5, 0]} receiveShadow>
-        <cylinderGeometry args={[2, 2, 0.1, 64]} />
-        <meshStandardMaterial
-          color="#1f2937"
-          roughness={0.3}
-          metalness={0.4}
-        />
-      </mesh>
-      {/* Platform ring */}
-      <mesh position={[0, -2.45, 0]}>
-        <torusGeometry args={[2.1, 0.05, 8, 100]} />
-        <meshStandardMaterial
-          color="#fbbf24"
-          roughness={0.2}
-          metalness={0.8}
-          emissive="#fbbf24"
-          emissiveIntensity={0.5}
-        />
-      </mesh>
-    </group>
-  );
-}
-
-export default function ProductShowcase3D() {
-  const [autoRotate, setAutoRotate] = useState(true);
-
-  return (
-    <div className="relative h-[600px] w-full overflow-hidden rounded-3xl bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 shadow-2xl">
-      {/* Canvas */}
-      <Canvas
-        camera={{ position: [0, 0, 5], fov: 50 }}
-        shadows
-        dpr={[1, 2]}
-      >
-        {/* Lighting */}
-        <ambientLight intensity={0.4} />
-        <directionalLight
-          position={[8, 8, 5]}
-          intensity={1.2}
-          castShadow
-          shadow-mapSize-width={2048}
-          shadow-mapSize-height={2048}
-          shadow-camera-far={20}
-          shadow-camera-left={-10}
-          shadow-camera-right={10}
-          shadow-camera-top={10}
-          shadow-camera-bottom={-10}
-        />
-        <pointLight position={[-8, 5, 8]} intensity={0.8} color="#ff6b6b" />
-        <pointLight position={[0, -5, 8]} intensity={0.5} color="#4ecdc4" />
-
-        {/* Environment */}
-        <Environment preset="sunset" />
-
-        {/* Scene */}
-        <Suspense fallback={null}>
-          <AnimatedBottle />
-          <Platform />
-        </Suspense>
-
-        {/* Controls */}
-        <OrbitControls
-          enablePan={false}
-          autoRotate={autoRotate}
-          autoRotateSpeed={2}
-          rotateSpeed={0.5}
-          zoomSpeed={1}
-          minDistance={3}
-          maxDistance={8}
-        />
-      </Canvas>
-
-      {/* Overlay UI */}
-      <div className="absolute inset-0 flex flex-col justify-between p-8 pointer-events-none">
-        {/* Title */}
-        <div>
-          <h2 className="text-4xl font-bold text-white drop-shadow-lg">
-            3D Product Showcase
-          </h2>
-          <p className="mt-2 text-lg text-gray-300">
-            Experience products in stunning 3D
+    <div className="relative w-full overflow-hidden rounded-3xl border border-white/20 bg-gradient-to-br from-white/70 via-white/40 to-white/10 shadow-[0_30px_80px_rgba(15,23,42,0.18)] backdrop-blur">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(14,165,164,0.18),_transparent_55%)]" />
+      <div className="relative grid gap-8 p-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+        <div className="space-y-6">
+          <p className="text-xs uppercase tracking-[0.5em] text-black/50">
+            Future-ready catalog
           </p>
+          <h2 className="font-display text-3xl leading-tight md:text-4xl">
+            A carousel of your real product images, floating in a holographic
+            gallery.
+          </h2>
+          <p className="max-w-md text-sm text-black/60">
+            Showcase your fragrance line with cinematic depth, smooth motion,
+            and instant focus on every bottle.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <button className="rounded-full bg-ink px-6 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-white shadow-[0_15px_30px_rgba(15,23,42,0.35)]">
+              Shop Drops
+            </button>
+            <button className="rounded-full border border-black/20 bg-white/70 px-6 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-black/70">
+              View Catalog
+            </button>
+          </div>
+          <div className="flex items-center gap-4 text-xs text-black/50">
+            <span className="rounded-full border border-black/10 bg-white/70 px-3 py-1">
+              Auto-cycling
+            </span>
+            <span className="rounded-full border border-black/10 bg-white/70 px-3 py-1">
+              Swipe-ready
+            </span>
+          </div>
         </div>
 
-        {/* Controls */}
-        <div className="flex gap-4 pointer-events-auto">
-          <button
-            onClick={() => setAutoRotate(!autoRotate)}
-            className={`rounded-full px-6 py-3 font-medium transition-all shadow-lg ${
-              autoRotate
-                ? "bg-blue-500 text-white hover:bg-blue-600"
-                : "bg-white/10 text-white hover:bg-white/20"
-            }`}
-          >
-            {autoRotate ? "⏸ Pause" : "▶ Auto Rotate"}
-          </button>
+        <div className="relative">
+          <div className="relative overflow-hidden rounded-3xl border border-white/30 bg-white/20 shadow-[0_20px_60px_rgba(14,165,164,0.18)] backdrop-blur">
+            <div
+              className="flex transition-transform duration-700 ease-out"
+              style={{ transform: `translateX(-${index * 100}%)` }}
+            >
+              {slides.map((slide) => (
+                <div key={slide.id} className="relative min-w-full">
+                  <div className="h-[320px] md:h-[380px]">
+                    <img
+                      src={slide.src}
+                      alt={slide.name}
+                      className="h-full w-full object-cover"
+                      loading="lazy"
+                    />
+                  </div>
+                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent p-6 text-white">
+                    <p className="text-xs uppercase tracking-[0.3em] text-white/70">
+                      {slide.category}
+                    </p>
+                    <div className="mt-2 flex items-center justify-between">
+                      <h3 className="font-display text-lg">{slide.name}</h3>
+                      <span className="text-sm font-semibold">â‚¹{slide.price}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="absolute inset-x-0 bottom-6 flex items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={goPrev}
+              className="rounded-full border border-white/40 bg-white/70 px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-black/70"
+            >
+              Prev
+            </button>
+            <button
+              type="button"
+              onClick={goNext}
+              className="rounded-full border border-white/40 bg-white/70 px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-black/70"
+            >
+              Next
+            </button>
+          </div>
+
+          <div className="mt-4 flex items-center justify-center gap-2">
+            {slides.map((slide, slideIndex) => (
+              <button
+                key={slide.id}
+                type="button"
+                onClick={() => setIndex(slideIndex)}
+                className={`h-2 w-8 rounded-full transition-all ${
+                  slideIndex === index
+                    ? "bg-ink shadow-[0_0_10px_rgba(15,23,42,0.6)]"
+                    : "bg-black/20"
+                }`}
+                aria-label={`Go to slide ${slideIndex + 1}`}
+              />
+            ))}
+          </div>
         </div>
-      </div>
-
-      {/* Info Box */}
-      <div className="absolute bottom-8 left-8 rounded-xl bg-white/10 backdrop-blur-md p-4 text-white max-w-xs">
-        <p className="text-sm font-semibold">💡 Tip:</p>
-        <p className="mt-1 text-xs opacity-90">
-          Drag to rotate • Scroll to zoom • Double-click to reset
-        </p>
-      </div>
-
-      {/* 3D Badge */}
-      <div className="absolute right-8 top-8 flex items-center gap-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 px-4 py-2 text-white font-semibold shadow-lg">
-        <span className="text-xl">🎯</span> 3D Enabled
       </div>
     </div>
   );

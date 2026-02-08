@@ -4,17 +4,17 @@ export default {
   theme: {
     extend: {
       colors: {
-        ink: "#15110d",
-        sand: "#f8f1e7",
-        clay: "#b85f2d",
-        cacao: "#3a2619"
+        ink: "#0c1220",
+        sand: "#f5f7ff",
+        clay: "#0ea5a4",
+        cacao: "#0f172a"
       },
       fontFamily: {
-        display: ["'Fraunces'", "serif"],
+        display: ["'Orbitron'", "sans-serif"],
         body: ["'Space Grotesk'", "sans-serif"]
       },
       boxShadow: {
-        soft: "0 16px 40px rgba(21, 17, 13, 0.12)"
+        soft: "0 18px 50px rgba(15, 23, 42, 0.12)"
       }
     }
   },

@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function Navbar() {
   return (
-    <header className="border-b border-black/10 bg-white/70 backdrop-blur">
+    <header className="border-b border-white/20 bg-white/70 backdrop-blur shadow-[0_10px_30px_rgba(15,23,42,0.08)]">
       <div className="container flex flex-wrap items-center justify-between gap-4 py-5">
         <Link href="/" className="font-display text-xl tracking-[0.2em] uppercase">
           amidaddy<span className="text-clay">.in</span>
@@ -13,7 +13,7 @@ export default function Navbar() {
           <Link href="/login">Login</Link>
           <Link
             href="/admin"
-            className="rounded-full border border-black/20 px-4 py-2 text-xs uppercase tracking-[0.2em]"
+            className="rounded-full border border-black/20 bg-white/70 px-4 py-2 text-xs uppercase tracking-[0.2em]"
           >
             Admin
           </Link>

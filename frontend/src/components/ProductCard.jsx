@@ -11,7 +11,7 @@ export default function ProductCard({ product }) {
   return (
     <Link
       href={`/product/${product._id}`}
-      className="group rounded-3xl bg-white p-5 shadow-soft transition hover:-translate-y-1"
+      className="group rounded-3xl border border-white/40 bg-white/70 p-5 shadow-soft transition hover:-translate-y-1 hover:shadow-[0_20px_60px_rgba(14,165,164,0.18)]"
     >
       <div className="mb-4 h-44 overflow-hidden rounded-2xl bg-sand/70">
         {product.model3D ? (
@@ -34,7 +34,7 @@ export default function ProductCard({ product }) {
           <p className="text-sm text-black/50">{product.category}</p>
         </div>
         {product.model3D && (
-          <span className="rounded-full bg-black px-2 py-1 text-[10px] uppercase tracking-[0.2em] text-white">
+          <span className="rounded-full bg-ink px-2 py-1 text-[10px] uppercase tracking-[0.2em] text-white">
             3D
           </span>
         )}
