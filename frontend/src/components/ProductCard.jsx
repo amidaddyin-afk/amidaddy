@@ -1,6 +1,6 @@
 import Link from "next/link";
+
 export default function ProductCard({ product }) {
-  // Construct full image URL
   const baseURL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
   const rawImage = product.images?.[0] ?? null;
   const imageUrl = rawImage
@@ -18,28 +18,23 @@ export default function ProductCard({ product }) {
   return (
     <Link
       href={`/product/${product._id}`}
-      className="group rounded-3xl border border-white/40 bg-white/70 p-5 shadow-soft transition hover:-translate-y-1 hover:shadow-[0_20px_60px_rgba(14,165,164,0.18)]"
+      className="rounded-2xl border border-black/10 bg-white p-4 transition hover:border-black/30"
     >
-      <div className="mb-4 h-44 overflow-hidden rounded-2xl bg-sand/70">
+      <div className="mb-4 h-44 overflow-hidden rounded-xl bg-sand">
         <img
           src={imageUrl || fallbackImage}
           alt={product.name}
-          className="h-full w-full rounded-2xl object-cover"
+          className="h-full w-full object-cover"
           loading="lazy"
         />
       </div>
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <h3 className="font-display text-lg">{product.name}</h3>
-          <p className="text-sm text-black/50">{product.category}</p>
-        </div>
-        <span className="rounded-full bg-ink px-2 py-1 text-[10px] uppercase tracking-[0.2em] text-white">
-          Best seller
-        </span>
+      <div className="space-y-1">
+        <h3 className="text-base font-semibold">{product.name}</h3>
+        <p className="text-sm text-black/55">{product.category}</p>
       </div>
       <div className="mt-4 flex items-center justify-between text-sm">
-        <span className="font-semibold text-clay">₹{product.price}</span>
-        <span className="text-xs text-black/40">View</span>
+        <span className="font-semibold text-ink">INR {product.price}</span>
+        <span className="text-black/45">View</span>
       </div>
     </Link>
   );

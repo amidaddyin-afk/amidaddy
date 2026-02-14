@@ -2,33 +2,22 @@ import Link from "next/link";
 
 export default function Navbar() {
   return (
-    <header className="border-b border-white/20 bg-white/70 backdrop-blur shadow-[0_10px_30px_rgba(15,23,42,0.08)]">
-      <div className="bg-ink text-white">
-        <div className="container flex flex-wrap items-center justify-between gap-2 py-2 text-[11px] uppercase tracking-[0.3em]">
-          <span>Buy 1 get 1 live</span>
-          <span>Free shipping above ₹399</span>
-        </div>
-      </div>
-      <div className="container flex flex-wrap items-center justify-between gap-4 py-5">
-        <Link href="/" className="font-display text-xl tracking-[0.2em] uppercase">
-          amidaddy<span className="text-clay">.in</span>
+    <header className="sticky top-0 z-20 border-b border-black/10 bg-white/95 backdrop-blur">
+      <div className="container flex items-center justify-between py-5">
+        <Link href="/" className="text-lg font-semibold tracking-[0.08em] uppercase">
+          amidaddy.in
         </Link>
-        <nav className="flex flex-wrap items-center gap-6 text-sm text-black/70">
-          <Link href="#trial">Trial set</Link>
+        <nav className="hidden items-center gap-8 text-sm text-black/70 md:flex">
+          <Link href="/">Home</Link>
           <Link href="#collection">Collection</Link>
-          <Link href="#featured">Best sellers</Link>
-          <Link href="#reviews">Reviews</Link>
-          <Link href="#faqs">FAQs</Link>
+          <Link href="#featured">Best Sellers</Link>
           <Link href="/cart">Cart</Link>
         </nav>
-        <div className="flex items-center gap-3 text-xs">
-          <Link href="/login" className="uppercase tracking-[0.2em] text-black/60">
+        <div className="flex items-center gap-2 text-sm">
+          <Link href="/login" className="rounded-full border border-black/15 px-4 py-2">
             Login
           </Link>
-          <Link
-            href="/admin"
-            className="rounded-full border border-black/20 bg-white/70 px-4 py-2 uppercase tracking-[0.2em]"
-          >
+          <Link href="/admin" className="rounded-full bg-ink px-4 py-2 text-white">
             Admin
           </Link>
         </div>
