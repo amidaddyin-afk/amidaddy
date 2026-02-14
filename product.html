@@ -1,156 +1,117 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Velvet Dusk | Amidaddy.in</title>
-    <meta
-      name="description"
-      content="Velvet Dusk by Amidaddy.in. Amber, fig, and palo santo. Long-lasting fragrance."
-    />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="styles.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Perfume Product</title>
+    <style>
+      :root {
+        --bg: #f6f2eb;
+        --text: #181818;
+        --line: #ddd5ca;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Arial, sans-serif;
+        color: var(--text);
+        background: var(--bg);
+      }
+      .wrap {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 14px;
+      }
+      .top a {
+        text-decoration: none;
+        color: var(--text);
+        border: 1px solid var(--line);
+        background: #fff;
+        padding: 8px 12px;
+      }
+      .product {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+        border: 1px solid var(--line);
+        background: #fff;
+      }
+      .media {
+        min-height: 480px;
+        display: grid;
+        place-items: center;
+        border-right: 1px solid var(--line);
+        background: #faf8f4;
+        padding: 16px;
+      }
+      .media img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+      .details { padding: 22px; }
+      h1 { margin-top: 0; }
+      .sizes {
+        display: grid;
+        gap: 10px;
+        margin: 16px 0;
+      }
+      label {
+        border: 1px solid var(--line);
+        padding: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      button {
+        border: 0;
+        background: #181818;
+        color: #fff;
+        padding: 11px 16px;
+        cursor: pointer;
+      }
+      @media (max-width: 900px) {
+        .product { grid-template-columns: 1fr; }
+        .media { border-right: 0; border-bottom: 1px solid var(--line); min-height: 340px; }
+      }
+    </style>
   </head>
-  <body>
-    <header class="site-header">
-      <nav class="nav">
-        <div class="logo">amidaddy<span>.in</span></div>
-        <div class="nav-links">
-          <a href="index.html#collections">Collections</a>
-          <a href="index.html#categories">Categories</a>
-          <a href="index.html#story">Story</a>
-          <a href="index.html#contact" class="ghost">Contact</a>
-        </div>
-      </nav>
-    </header>
-
-    <main class="product-page">
-      <section class="product-hero">
-        <div class="product-image">
-          <div class="bottle">
-            <div class="bottle-label">
-              <span>AMIDADDY</span>
-              <small>VELVET DUSK</small>
-            </div>
-            <div class="bottle-glow"></div>
-          </div>
-        </div>
-        <div class="product-info">
-          <p class="eyebrow">Eau de parfum</p>
-          <h1>Velvet Dusk</h1>
-          <p class="lead">
-            Amber warmth with fig sweetness and a smoky, resin base. Designed for
-            evening wear and long-stay projection.
-          </p>
-          <div class="rating">
-            <span>4.9</span>
-            <p>1,248 reviews</p>
-          </div>
-          <div class="price-block">
-            <span class="price">₹1,899</span>
-            <p>50 ml · Free shipping over ₹999</p>
-          </div>
-          <div class="size-row">
-            <button class="secondary small active">50 ml</button>
-            <button class="secondary small">100 ml</button>
-            <button class="secondary small">Discovery 6 x 2 ml</button>
-          </div>
-          <div class="hero-actions">
-            <button class="primary">Add to cart</button>
-            <button class="secondary">Buy now</button>
-          </div>
-          <div class="product-meta">
-            <div>
-              <span>Longevity</span>
-              <p>8-10 hours</p>
-            </div>
-            <div>
-              <span>Projection</span>
-              <p>Moderate</p>
-            </div>
-            <div>
-              <span>Season</span>
-              <p>Fall / Winter</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="product-details">
-        <div>
-          <h2>Notes & Blend</h2>
-          <ul class="story-list">
-            <li>Top: Grapefruit, Pink Pepper</li>
-            <li>Heart: Black Fig, Jasmine Tea</li>
-            <li>Base: Palo Santo, Tonka, Amber</li>
-          </ul>
-        </div>
-        <div>
-          <h2>How to Wear</h2>
-          <p>
-            Apply to pulse points, wait 10 minutes for the heart notes to
-            bloom, then layer with our Soft Ritual oil for added depth.
-          </p>
-          <p class="lead">
-            Ships in a gift-ready box with a scent story card.
-          </p>
-        </div>
-      </section>
-
-      <section class="recommendations">
-        <div class="section-title">
-          <h2>You may also like</h2>
-          <p>Similar profiles with different accents.</p>
-        </div>
-        <div class="product-grid">
-          <article class="product-card">
-            <div class="product-badge">Warm</div>
-            <h3>Soft Ritual</h3>
-            <p>Milk, iris, cashmere woods. 50 ml.</p>
-            <div class="price-row">
-              <span>₹1,599</span>
-              <button class="secondary small">Add</button>
-            </div>
-          </article>
-          <article class="product-card">
-            <div class="product-badge">Bold</div>
-            <h3>Midnight Nectar</h3>
-            <p>Cherry, oud, saffron. 50 ml.</p>
-            <div class="price-row">
-              <span>₹2,099</span>
-              <button class="secondary small">Add</button>
-            </div>
-          </article>
-          <article class="product-card">
-            <div class="product-badge">Fresh</div>
-            <h3>Solar Rise</h3>
-            <p>Neroli, bergamot, white musk. 50 ml.</p>
-            <div class="price-row">
-              <span>₹1,699</span>
-              <button class="secondary small">Add</button>
-            </div>
-          </article>
-        </div>
-      </section>
-    </main>
-
-    <footer class="footer">
-      <div>
-        <h2>Need help choosing?</h2>
-        <p>Chat with a scent guide and get recommendations in minutes.</p>
+  <body data-page="product">
+    <div class="wrap">
+      <div class="top">
+        <a href="index.html">Back to Store</a>
+        <a href="cart.html">Go to Cart</a>
       </div>
-      <div class="footer-meta">
-        <p>© 2026 Amidaddy.in. All rights reserved.</p>
-        <div class="footer-links">
-          <a href="index.html">Back to home</a>
-          <a href="#">Support</a>
+
+      <section class="product">
+        <div class="media">
+          <img id="product-image" alt="Perfume" />
         </div>
-      </div>
-    </footer>
+        <div class="details">
+          <h1 id="product-name"></h1>
+          <p>Choose size:</p>
+          <div class="sizes">
+            <label>
+              <input type="radio" name="size" value="50ml" checked />
+              50 ml - INR 799
+            </label>
+            <label>
+              <input type="radio" name="size" value="100ml" />
+              100 ml - INR 1299
+            </label>
+          </div>
+          <button id="add-to-cart">Add to Cart</button>
+          <p id="status"></p>
+        </div>
+      </section>
+    </div>
+
+    <script src="script.js"></script>
   </body>
 </html>
