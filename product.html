@@ -4,81 +4,182 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Perfume Product</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Cinzel:wght@600;700&display=swap" rel="stylesheet" />
     <style>
       :root {
-        --bg: #f6f2eb;
-        --text: #181818;
-        --line: #ddd5ca;
+        --bg: #f5efe5;
+        --text: #1f1b16;
+        --line: #d8cfc2;
+        --muted: #635848;
       }
       * { box-sizing: border-box; }
       body {
         margin: 0;
-        font-family: "Segoe UI", Arial, sans-serif;
+        font-family: "Manrope", sans-serif;
         color: var(--text);
-        background: var(--bg);
+        background: radial-gradient(circle at 10% 20%, #fff9f2 0%, var(--bg) 45%, #efe3d3 100%);
       }
       .wrap {
-        max-width: 1080px;
+        max-width: 1180px;
         margin: 0 auto;
-        padding: 20px;
+        padding: 24px 18px 48px;
       }
       .top {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 14px;
+        margin-bottom: 16px;
       }
       .top a {
         text-decoration: none;
         color: var(--text);
         border: 1px solid var(--line);
-        background: #fff;
-        padding: 8px 12px;
+        background: rgba(255, 255, 255, 0.84);
+        padding: 9px 14px;
+        border-radius: 999px;
+        font-weight: 600;
       }
       .product {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 18px;
+        gap: 0;
         border: 1px solid var(--line);
-        background: #fff;
+        background: #fffdf9;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 18px 45px rgba(45, 28, 10, 0.1);
       }
       .media {
         min-height: 480px;
         display: grid;
         place-items: center;
         border-right: 1px solid var(--line);
-        background: #faf8f4;
-        padding: 16px;
+        background: linear-gradient(180deg, #fffaf2 0%, #f4eadf 100%);
+        padding: 20px;
       }
       .media img {
         width: 100%;
         height: 100%;
         object-fit: contain;
+        filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.2));
       }
-      .details { padding: 22px; }
-      h1 { margin-top: 0; }
+      .details { padding: 28px; }
+      h1 {
+        margin: 0;
+        font-family: "Cinzel", serif;
+        font-size: clamp(34px, 4vw, 48px);
+      }
+      .subtitle {
+        margin: 10px 0 0;
+        display: inline-block;
+        color: #4f3f2e;
+        font-weight: 700;
+        background: #f5ebdd;
+        border: 1px solid #dbcab3;
+        border-radius: 999px;
+        padding: 6px 12px;
+      }
+      .desc {
+        margin: 14px 0 0;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+      .meta {
+        margin-top: 14px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .meta div {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: #fff9f1;
+        padding: 10px;
+      }
+      .meta span {
+        display: block;
+        font-size: 12px;
+        color: #7d6d5a;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .meta strong {
+        display: block;
+        margin-top: 4px;
+        font-size: 14px;
+      }
+      .notes {
+        margin-top: 10px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: #fff9f1;
+        padding: 11px 12px;
+      }
+      .notes span {
+        font-size: 12px;
+        color: #7d6d5a;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .notes p {
+        margin: 5px 0 0;
+      }
+      .buy-box {
+        margin-top: 16px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 14px;
+        background: #fff;
+      }
+      .buy-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .buy-head p {
+        margin: 0;
+        font-weight: 700;
+      }
+      #selected-price {
+        color: #4f3f2e;
+        font-weight: 800;
+      }
       .sizes {
         display: grid;
         gap: 10px;
-        margin: 16px 0;
+        margin: 12px 0;
       }
       label {
         border: 1px solid var(--line);
-        padding: 10px;
+        border-radius: 12px;
+        padding: 11px 12px;
         display: flex;
         align-items: center;
         gap: 8px;
+        font-weight: 600;
+        background: #fffdfa;
       }
-      button {
+      #add-to-cart {
         border: 0;
-        background: #181818;
+        background: linear-gradient(180deg, #2a2219, #19130e);
         color: #fff;
         padding: 11px 16px;
+        border-radius: 999px;
         cursor: pointer;
+        font-weight: 700;
+      }
+      #status {
+        margin: 10px 0 0;
+        font-weight: 600;
+        color: #4a6b35;
       }
       @media (max-width: 900px) {
         .product { grid-template-columns: 1fr; }
         .media { border-right: 0; border-bottom: 1px solid var(--line); min-height: 340px; }
+        .details { padding: 20px; }
+        .meta { grid-template-columns: 1fr; }
       }
     </style>
   </head>
@@ -95,19 +196,43 @@
         </div>
         <div class="details">
           <h1 id="product-name"></h1>
-          <p>Choose size:</p>
-          <div class="sizes">
-            <label>
-              <input type="radio" name="size" value="50ml" checked />
-              50 ml - INR 799
-            </label>
-            <label>
-              <input type="radio" name="size" value="100ml" />
-              100 ml - INR 1299
-            </label>
+          <p id="product-profile" class="subtitle"></p>
+          <p id="product-description" class="desc"></p>
+
+          <div class="meta">
+            <div>
+              <span>Best For</span>
+              <strong id="product-mood"></strong>
+            </div>
+            <div>
+              <span>Longevity</span>
+              <strong id="product-longevity"></strong>
+            </div>
           </div>
-          <button id="add-to-cart">Add to Cart</button>
-          <p id="status"></p>
+
+          <div class="notes">
+            <span>Scent Notes</span>
+            <p id="product-notes"></p>
+          </div>
+
+          <div class="buy-box">
+            <div class="buy-head">
+              <p>Choose Size</p>
+              <div id="selected-price">50 ml - INR 799</div>
+            </div>
+            <div class="sizes">
+              <label>
+                <input type="radio" name="size" value="50ml" checked />
+                50 ml
+              </label>
+              <label>
+                <input type="radio" name="size" value="100ml" />
+                100 ml
+              </label>
+            </div>
+            <button id="add-to-cart">Add to Cart</button>
+            <p id="status"></p>
+          </div>
         </div>
       </section>
     </div>
