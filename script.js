@@ -1,7 +1,7 @@
 const PERFUMES = [
   {
     id: "billionaire",
-    file: "billionaire.jpeg",
+    file: "billionaire.png",
     profile: "Woody Amber",
     mood: "Bold evenings and sharp impressions",
     longevity: "8-10 hours",
@@ -10,7 +10,7 @@ const PERFUMES = [
   },
   {
     id: "coldwar",
-    file: "coldwar.jpeg",
+    file: "coldwar.png",
     profile: "Fresh Spicy",
     mood: "Cool daytime confidence",
     longevity: "6-8 hours",
@@ -19,7 +19,7 @@ const PERFUMES = [
   },
   {
     id: "heavenly",
-    file: "heavenly.jpeg",
+    file: "heavenly.png",
     profile: "Floral Musk",
     mood: "Soft elegance for daily wear",
     longevity: "7-9 hours",
@@ -28,7 +28,7 @@ const PERFUMES = [
   },
   {
     id: "old-love",
-    file: "old love.jpeg",
+    file: "old-love.png",
     profile: "Sweet Oriental",
     mood: "Warm nostalgic date nights",
     longevity: "8-9 hours",
@@ -82,11 +82,6 @@ function setCart(items) {
   updateCartCount();
 }
 
-/**
- * BOGO Logic: Buy 1 Get 1 Free on all items.
- * We flatten the cart into individual items, sort by price descending,
- * and every 2nd item in the sorted list is free.
- */
 function calculateCartTotals(cart) {
   let flattened = [];
   cart.forEach((item, index) => {
@@ -95,7 +90,6 @@ function calculateCartTotals(cart) {
     }
   });
 
-  // Sort descending by price
   flattened.sort((a, b) => b.unitPrice - a.unitPrice);
 
   let subtotal = 0;
@@ -119,7 +113,7 @@ function showToast(msg) {
   if (!container) return;
   const toast = document.createElement("div");
   toast.className = "toast";
-  toast.innerHTML = `<ion-icon name="checkmark-circle" style="color: #b38550; font-size: 20px;"></ion-icon> ${msg}`;
+  toast.innerHTML = `<ion-icon name="checkmark-circle" style="color: var(--accent-gold); font-size: 20px;"></ion-icon> ${msg}`;
   container.appendChild(toast);
   setTimeout(() => {
     toast.style.animation = "slideDown 0.4s ease-in forwards";
@@ -147,19 +141,25 @@ function renderHomePage() {
     combosContainer.innerHTML = COMBOS.map((p) => {
       const src = getImageSrc(p.file);
       return `
-        <article class="product-card">
-          <div class="badge-combo">Best Value</div>
-          <div class="product-media">
+        <article class="product-row">
+          <div class="product-image-container">
             <img src="${src}" alt="${p.name}" loading="lazy" />
           </div>
-          <div class="product-body">
-            <h4 class="product-title">${p.name}</h4>
-            <div class="product-profile">${p.profile}</div>
-            <div class="price-box">
-              <span class="current-price">INR ${PRICE_BY_SIZE["Combo Pack"]}</span>
-              <span class="original-price">INR 2598</span>
+          <div class="product-details-container">
+            <div>
+              <span class="badge-combo">Best Value Combos</span>
+              <h4 class="product-title">${p.name}</h4>
+              <div class="product-profile">${p.profile}</div>
+              <p style="color: var(--text-muted); font-size: 16px; margin-bottom: 20px; font-weight: 300;">${p.description}</p>
+              
+              <div class="controls-wrapper">
+                <div class="price-box">
+                  <span class="current-price">INR ${PRICE_BY_SIZE["Combo Pack"]}</span>
+                  <span class="original-price">INR 2598</span>
+                </div>
+                <a class="btn-primary" href="product.html?id=${p.id}&type=combo">View Combo Detail</a>
+              </div>
             </div>
-            <a class="btn-primary" style="display:block; text-align:center;" href="product.html?id=${p.id}&type=combo">View Combo</a>
           </div>
         </article>
       `;
@@ -170,25 +170,30 @@ function renderHomePage() {
     productsContainer.innerHTML = PERFUMES.map((p) => {
       const name = toTitleFromFile(p.file);
       return `
-        <article class="product-card">
-          <div class="badge-bogo">BOGO Eligible</div>
-          <div class="product-media">
+        <article class="product-row">
+          <div class="product-image-container">
             <img src="${getImageSrc(p.file)}" alt="${name}" loading="lazy" />
           </div>
-          <div class="product-body">
-            <h4 class="product-title">${name}</h4>
-            <div class="product-profile">${p.profile}</div>
-            
-            <div class="size-selector" data-product="${p.id}">
-              <button class="size-btn active" data-size="50ml">50 ML</button>
-              <button class="size-btn" data-size="100ml">100 ML</button>
+          <div class="product-details-container">
+            <div>
+              <span class="badge-bogo">BOGO Eligible</span>
+              <h4 class="product-title">${name}</h4>
+              <div class="product-profile">${p.profile}</div>
+              <p style="color: var(--text-muted); font-size: 16px; margin-bottom: 20px; font-weight: 300;">${p.description}</p>
+              
+              <div class="controls-wrapper">
+                <div class="size-selector" data-product="${p.id}">
+                  <button class="size-btn active" data-size="50ml">50 ML</button>
+                  <button class="size-btn" data-size="100ml">100 ML</button>
+                </div>
+                
+                <div class="price-box">
+                  <span class="current-price" data-price-for="${p.id}">INR ${PRICE_BY_SIZE["50ml"]}</span>
+                </div>
+                
+                <a class="btn-primary" href="product.html?id=${p.id}">Shop ${name}</a>
+              </div>
             </div>
-            
-            <div class="price-box">
-              <span class="current-price" data-price-for="${p.id}">INR ${PRICE_BY_SIZE["50ml"]}</span>
-            </div>
-            
-            <a class="btn-primary" style="display:block; text-align:center;" href="product.html?id=${p.id}">View Details</a>
           </div>
         </article>
       `;
