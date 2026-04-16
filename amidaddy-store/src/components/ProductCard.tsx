@@ -51,6 +51,9 @@ export default function ProductCard({ product, index }: Props) {
             fill
             className="object-cover object-center transition-transform duration-700 group-hover:scale-110"
           />
+          {/* Brand Overlay */}
+          <div className="bottle-branding">AMIDADDY</div>
+          
           {/* Dark overlay on hover */}
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-500" />
 
@@ -91,12 +94,12 @@ export default function ProductCard({ product, index }: Props) {
               <h3 className="font-cinzel text-white text-lg tracking-wide leading-tight">{product.name}</h3>
             </div>
             {/* Size selector */}
-            <div className="flex gap-1">
+            <div className="flex gap-3">
               {(['50ml', '100ml'] as const).map(s => (
                 <button
                   key={s}
                   onClick={() => setSelectedSize(s)}
-                  className={`px-2 py-1 text-[10px] tracking-wider border transition-colors duration-200 ${
+                  className={`px-3.5 py-1.5 text-[10px] tracking-wider border transition-colors duration-200 ${
                     selectedSize === s
                       ? 'border-[#D4AF37] text-[#D4AF37] bg-[#D4AF37]/10'
                       : 'border-white/10 text-white/40 hover:border-white/30'

@@ -48,6 +48,8 @@ export default function ProductModal({ product, open, onClose }: Props) {
             {/* Image */}
             <div className="relative h-64 md:h-auto bg-[#0d0d0d]">
               <Image src={product.image} alt={product.name} fill className="object-cover" />
+              {/* Brand Overlay */}
+              <div className="bottle-branding">AMIDADDY</div>
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
             </div>
 
