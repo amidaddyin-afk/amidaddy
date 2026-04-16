@@ -33,7 +33,7 @@ export default function Navbar() {
       >
         <div className="max-w-[1600px] mx-auto px-6 flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="font-cinzel text-xl tracking-[0.25em] text-white hover:text-[#D4AF37] transition-colors duration-300">
+          <Link href="/" className="font-cinzel text-lg sm:text-xl tracking-[0.15em] sm:tracking-[0.25em] text-white hover:text-[#D4AF37] transition-colors duration-300">
             AMIDADDY
           </Link>
 

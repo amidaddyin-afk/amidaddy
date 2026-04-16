@@ -28,7 +28,7 @@ export default function FeaturedCollections() {
         </motion.div>
 
         {/* Asymmetric editorial grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-stretch">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-4 items-stretch">
           {COLLECTIONS.map((col, i) => (
             <motion.div
               key={col.id}
@@ -46,6 +46,9 @@ export default function FeaturedCollections() {
                 className="object-cover transition-transform duration-1000 group-hover:scale-110"
                 style={{ filter: 'brightness(0.5)' }}
               />
+              {/* Brand Overlay */}
+              <div className="bottle-branding">AMIDADDY</div>
+              
               {/* Overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
               <div className="absolute inset-0 bg-[#D4AF37]/0 group-hover:bg-[#D4AF37]/5 transition-colors duration-500" />

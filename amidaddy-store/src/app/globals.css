@@ -162,3 +162,31 @@ body {
   background: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(4px);
 }
+
+/* Bottle Branding UI Overlay */
+.bottle-branding {
+  position: absolute;
+  top: 55%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: rgba(212, 175, 55, 0.35); /* Subtle Gold */
+  letter-spacing: 0.4em;
+  font-size: 10px;
+  pointer-events: none;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  user-select: none;
+  z-index: 5;
+  mix-blend-mode: color-dodge;
+  text-align: center;
+  width: 100%;
+}
+
+@media (max-width: 640px) {
+  .bottle-branding {
+    font-size: 8px;
+    letter-spacing: 0.3em;
+  }
+}

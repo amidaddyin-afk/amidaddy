@@ -78,19 +78,19 @@ export default function ScentFinder() {
           initial={{ opacity: 0, y: 30 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8 }}
-          className="text-center mb-14"
+          className="text-center mb-16 md:mb-24"
         >
-          <div className="flex items-center justify-center gap-3 mb-4">
+          <div className="flex items-center justify-center gap-4 mb-6">
             <Sparkles size={18} className="text-[#D4AF37]" />
-            <p className="text-[#D4AF37] text-xs tracking-[0.3em] uppercase">AI-Powered</p>
+            <p className="text-[#D4AF37] text-xs tracking-[0.4em] uppercase">Private Selection</p>
             <Sparkles size={18} className="text-[#D4AF37]" />
           </div>
-          <h2 className="font-cinzel text-[clamp(28px,4vw,46px)] text-white tracking-wide mb-5">
-            Find Your Scent
+          <h2 className="font-cinzel text-[clamp(32px,5vw,52px)] text-white tracking-widest mb-8">
+            The Scent Finder
           </h2>
-          <div className="divider-gold mb-6" />
-          <p className="text-white/40 text-sm">
-            Answer 3 quick questions and we&apos;ll match you with your perfect fragrance.
+          <div className="divider-gold mb-10" />
+          <p className="text-white/40 text-sm tracking-wide max-w-md mx-auto leading-relaxed">
+            Embark on a sensory journey. Answer 3 questions and our algorithm will tailor a fragrance recommendation for your unique aura.
           </p>
         </motion.div>
 
@@ -98,17 +98,17 @@ export default function ScentFinder() {
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="glass border border-[#D4AF37]/10 p-8 md:p-12"
+          className="glass border border-[#D4AF37]/10 p-10 md:p-20"
         >
           {!result ? (
-            <>
+            <div className="space-y-12">
               {/* Progress */}
-              <div className="flex gap-2 mb-8">
+              <div className="flex gap-4">
                 {QUESTIONS.map((_, i) => (
                   <div
                     key={i}
-                    className={`h-[2px] flex-1 transition-all duration-500 ${
-                      i <= step ? 'bg-[#D4AF37]' : 'bg-white/10'
+                    className={`h-[1px] flex-1 transition-all duration-700 ${
+                      i <= step ? 'bg-[#D4AF37]' : 'bg-white/5'
                     }`}
                   />
                 ))}
@@ -118,35 +118,36 @@ export default function ScentFinder() {
                 key={step}
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.4 }}
+                transition={{ duration: 0.5, ease: 'easeOut' }}
               >
-                <p className="text-white/40 text-xs tracking-widest uppercase mb-3">Question {step + 1} of {QUESTIONS.length}</p>
-                <h3 className="font-cinzel text-white text-xl mb-8 tracking-wide">{QUESTIONS[step].question}</h3>
+                <p className="text-[#D4AF37] text-[10px] tracking-[0.3em] uppercase mb-6 opacity-60">Step {step + 1} / {QUESTIONS.length}</p>
+                <h3 className="font-cinzel text-white text-2xl md:text-3xl mb-12 tracking-wide leading-tight">{QUESTIONS[step].question}</h3>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 gap-5">
                   {QUESTIONS[step].options.map(opt => (
                     <button
                       key={opt}
                       onClick={() => answer(opt)}
-                      className="text-left px-5 py-4 border border-white/10 text-white/60 hover:text-white hover:border-[#D4AF37]/40 hover:bg-[#D4AF37]/5 transition-all duration-300 text-sm tracking-wide group"
+                      className="text-left px-8 py-7 border border-white/5 text-white/50 hover:text-white hover:border-[#D4AF37]/30 hover:bg-[#D4AF37]/5 transition-all duration-500 text-sm tracking-[0.1em] group relative overflow-hidden"
                     >
-                      <span className="text-[#D4AF37] mr-2 opacity-0 group-hover:opacity-100 transition-opacity">›</span>
+                      <div className="absolute left-0 top-0 w-[2px] h-0 bg-[#D4AF37] group-hover:h-full transition-all duration-500" />
+                      <span className="text-[#D4AF37] mr-4 opacity-0 group-hover:opacity-100 transition-opacity">✦</span>
                       {opt}
                     </button>
                   ))}
                 </div>
               </motion.div>
-            </>
+            </div>
           ) : (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center">
-              <p className="text-[#D4AF37] text-xs tracking-[0.3em] uppercase mb-4">Your Perfect Match</p>
-              <h3 className="font-cinzel text-white text-3xl mb-2">{result.name}</h3>
-              <p className="text-white/40 text-sm mb-2 tracking-wider">{result.profile} · {result.notes}</p>
-              <p className="text-white/50 text-sm mb-8 max-w-sm mx-auto leading-relaxed">{result.description}</p>
-              <p className="text-white text-xl font-semibold mb-6">₹{result.price.toLocaleString()}</p>
-              <div className="flex gap-3 justify-center flex-wrap">
-                <button onClick={() => setModalOpen(true)} className="btn-gold">View & Add to Cart</button>
-                <button onClick={reset} className="btn-ghost">Try Again</button>
+            <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-4">
+              <p className="text-[#D4AF37] text-xs tracking-[0.4em] uppercase mb-6">Your Signature Awaits</p>
+              <h3 className="font-cinzel text-white text-4xl md:text-5xl mb-4 tracking-wider">{result.name}</h3>
+              <p className="text-[#D4AF37]/60 text-xs mb-8 tracking-[0.2em] font-medium uppercase">{result.profile} · {result.notes}</p>
+              <p className="text-white/40 text-base mb-12 max-w-sm mx-auto leading-relaxed italic">{result.description}</p>
+              <p className="text-white text-2xl font-light tracking-[0.1em] mb-12 italic">₹{result.price.toLocaleString()}</p>
+              <div className="flex flex-col sm:flex-row gap-5 justify-center">
+                <button onClick={() => setModalOpen(true)} className="btn-gold px-12">Experience Now</button>
+                <button onClick={reset} className="btn-ghost px-12">Search Again</button>
               </div>
             </motion.div>
           )}

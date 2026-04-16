@@ -62,6 +62,9 @@ export default function HeroCarousel() {
             className="object-cover object-center"
             style={{ filter: 'brightness(0.55)' }}
           />
+          {/* Brand Overlay */}
+          <div className="bottle-branding opacity-50 scale-150">AMIDADDY</div>
+          
           {/* Gradient overlays */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20" />
           <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-transparent" />
@@ -91,7 +94,7 @@ export default function HeroCarousel() {
 
         <AnimatePresence mode="wait">
           <motion.div key={slide.id + '-text'} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.8 }}>
-            <h1 className="font-cinzel text-[clamp(56px,12vw,130px)] font-bold text-white leading-none tracking-[0.1em] mb-4 text-gold-gradient">
+            <h1 className="font-cinzel text-[clamp(32px,10vw,120px)] font-bold text-white leading-none tracking-[0.1em] mb-4 text-gold-gradient">
               {slide.heading}
             </h1>
             <p className="font-playfair italic text-white/70 text-[clamp(16px,2.5vw,26px)] mb-10 tracking-wide">
