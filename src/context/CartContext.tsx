@@ -35,7 +35,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const saved = window.localStorage.getItem('amidaddy-cart');
-    if (saved) setItems(JSON.parse(saved));
+    if (!saved) return;
+    try {
+      const parsed = JSON.parse(saved) as CartItem[];
+      queueMicrotask(() => setItems(parsed));
+    } catch {
+      window.localStorage.removeItem('amidaddy-cart');
+    }
   }, []);
 
   useEffect(() => {

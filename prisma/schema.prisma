@@ -1,0 +1,11 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Domain models are introduced with their owning milestones. Keeping the initial
+// schema empty prevents an unreviewed database contract from reaching production.

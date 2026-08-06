@@ -22,7 +22,10 @@ export default function AdminDashboard() {
     setOrders(await orderResponse.json());
     setLoggedIn(true);
   }
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    const timeout = window.setTimeout(() => void load(), 0);
+    return () => window.clearTimeout(timeout);
+  }, []);
 
   async function login(event: FormEvent) {
     event.preventDefault(); setMessage('');
