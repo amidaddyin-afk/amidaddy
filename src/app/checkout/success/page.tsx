@@ -1,20 +1,42 @@
-'use client';
+import Link from "next/link";
+import { CheckCircle2, Clock3 } from "lucide-react";
+import ClearCartOnSuccess from "@/components/ClearCartOnSuccess";
+import { getOrder } from "@/lib/orders";
 
-import Link from 'next/link';
-import { CheckCircle2 } from 'lucide-react';
-import { useEffect } from 'react';
-import { useCart } from '@/context/CartContext';
-
-export default function CheckoutSuccessPage() {
-  const { clearCart } = useCart();
-  useEffect(() => { clearCart(); }, [clearCart]);
+export const dynamic = "force-dynamic";
+export default async function CheckoutSuccessPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ order?: string }>;
+}) {
+  const { order: id } = await searchParams;
+  const order = id ? await getOrder(id).catch(() => undefined) : undefined;
+  const paid = Boolean(order && order.paymentStatus === "PAID");
   return (
-    <main className="min-h-screen bg-black px-6 pt-40 text-center">
-      <CheckCircle2 className="mx-auto mb-6 text-[#D4AF37]" size={54} />
-      <p className="text-[#D4AF37] text-xs tracking-[0.25em] uppercase mb-4">Payment received</p>
-      <h1 className="font-cinzel text-3xl text-white mb-5">Your order is confirmed</h1>
-      <p className="max-w-md mx-auto text-white/50 text-sm leading-relaxed mb-9">Thank you for choosing Amidaddy. We will prepare your fragrances and send delivery updates to your email.</p>
-      <Link href="/" className="btn-gold inline-block">Return to Store</Link>
+    <main className="empty-state">
+      <ClearCartOnSuccess paid={paid} />
+      {paid ? <CheckCircle2 size={52} /> : <Clock3 size={52} />}
+      <p className="eyebrow mt-6">
+        {paid ? "Payment confirmed" : "Confirming payment"}
+      </p>
+      <h1>
+        {paid
+          ? "Your signature is on its way."
+          : "We are checking your payment."}
+      </h1>
+      <p className="max-w-lg text-sm leading-7 text-white/48">
+        {paid
+          ? `Order ${order!.id} is confirmed. Sign in with the same verified email to track every step.`
+          : "Razorpay confirmation can take a few moments. Your order will update automatically from the secure payment notification."}
+      </p>
+      <div className="mt-8 flex flex-wrap justify-center gap-3">
+        <Link href="/account/orders" className="lux-button">
+          Track my order
+        </Link>
+        <Link href="/shop" className="btn-ghost">
+          Continue exploring
+        </Link>
+      </div>
     </main>
   );
 }

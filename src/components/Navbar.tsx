@@ -1,118 +1,117 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingBag, Menu, X, Search, UserRound } from 'lucide-react';
-import { useCart } from '@/context/CartContext';
-import Link from 'next/link';
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Menu, Search, ShoppingBag, UserRound, X } from "lucide-react";
+import Link from "next/link";
+import { useCart } from "@/context/CartContext";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const { openCart, totalQty } = useCart();
-
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 60);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    const handler = () => setScrolled(window.scrollY > 36);
+    window.addEventListener("scroll", handler, { passive: true });
+    return () => window.removeEventListener("scroll", handler);
   }, []);
-
-  const navLinks = ['Shop', 'Offers'];
-
   return (
     <>
-      <motion.header
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className={`fixed top-8 left-0 right-0 z-50 transition-all duration-500 ${
-          scrolled
-            ? 'glass border-b border-white/5 py-3'
-            : 'bg-transparent py-5'
-        }`}
-      >
-        <div className="max-w-[1600px] mx-auto px-6 flex items-center justify-between">
-          {/* Logo */}
-          <Link href="/" className="brand-wordmark text-white transition-colors duration-300 hover:text-[#D4AF37]">
-            AMIDADDY
-          </Link>
-
-          {/* Desktop Nav */}
-          <nav className="hidden lg:flex items-center gap-8">
-            {navLinks.map(link => (
-              <a
-                key={link}
-                href={link === 'Shop' ? '#collection-grid' : '#offers'}
-                className="text-xs text-white/70 hover:text-[#D4AF37] tracking-[0.12em] uppercase transition-colors duration-300 relative group"
-              >
-                {link}
-                <span className="absolute -bottom-1 left-0 w-0 h-px bg-[#D4AF37] group-hover:w-full transition-all duration-300" />
-              </a>
-            ))}
+      <header className={`site-header ${scrolled ? "scrolled" : ""}`}>
+        <div className="nav-inner">
+          <button
+            className="mobile-only"
+            onClick={() => setOpen(true)}
+            aria-label="Open navigation"
+          >
+            <Menu />
+          </button>
+          <nav className="desktop-nav">
+            <Link href="/shop">Shop</Link>
+            <Link href="/#scent-finder">Scent finder</Link>
+            <Link href="/#story">Our story</Link>
           </nav>
-
-          {/* Right Icons */}
-          <div className="flex items-center gap-4">
-            <button className="hidden lg:flex text-white/60 hover:text-white transition-colors">
-              <Search size={18} />
+          <Link href="/" className="wordmark" aria-label="Amidaddy home">
+            AMIDADDY<span>PARFUMS</span>
+          </Link>
+          <div className="nav-actions">
+            <button onClick={() => setSearchOpen(true)} aria-label="Search">
+              <Search />
             </button>
-
+            <Link href="/account" aria-label="Account">
+              <UserRound />
+            </Link>
             <button
               onClick={openCart}
-              className="relative flex items-center gap-2 text-white/80 hover:text-[#D4AF37] transition-colors duration-300"
+              aria-label={`Bag with ${totalQty} items`}
+              className="bag-button"
             >
-              <ShoppingBag size={20} />
-              {totalQty > 0 && (
-                <motion.span
-                  key={totalQty}
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-[#D4AF37] text-black text-[10px] font-bold flex items-center justify-center"
-                >
-                  {totalQty}
-                </motion.span>
-              )}
-            </button>
-
-            <Link href="/account" className="hidden text-white/60 transition-colors hover:text-white lg:flex" aria-label="Account">
-              <UserRound size={18} />
-            </Link>
-
-            {/* Mobile menu toggle */}
-            <button
-              className="lg:hidden text-white/80 hover:text-white"
-              onClick={() => setMobileOpen(!mobileOpen)}
-            >
-              {mobileOpen ? <X size={22} /> : <Menu size={22} />}
+              <ShoppingBag />
+              {totalQty > 0 && <span>{totalQty}</span>}
             </button>
           </div>
         </div>
-
-        {/* Mobile Menu */}
-        <AnimatePresence>
-          {mobileOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="lg:hidden glass border-t border-white/5"
+      </header>
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            className="mobile-menu"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <button
+              onClick={() => setOpen(false)}
+              aria-label="Close navigation"
             >
-              <div className="flex flex-col px-6 py-4 gap-4">
-                {navLinks.map(link => (
-                  <a
-                    key={link}
-                    href={`#${link.toLowerCase().replace(/ /g, '-')}`}
-                    onClick={() => setMobileOpen(false)}
-                    className="text-sm text-white/70 hover:text-[#D4AF37] tracking-[0.12em] uppercase py-2 border-b border-white/5 transition-colors"
-                  >
-                    {link}
-                  </a>
-                ))}
+              <X />
+            </button>
+            <nav>
+              {[
+                ["Shop", "/shop"],
+                ["Scent finder", "/#scent-finder"],
+                ["Our story", "/#story"],
+                ["My account", "/account"],
+              ].map(([label, href]) => (
+                <Link key={href} href={href} onClick={() => setOpen(false)}>
+                  {label}
+                </Link>
+              ))}
+            </nav>
+            <p>Presence, before words.</p>
+          </motion.div>
+        )}
+        {searchOpen && (
+          <motion.div
+            className="search-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <button
+              onClick={() => setSearchOpen(false)}
+              aria-label="Close search"
+            >
+              <X />
+            </button>
+            <form action="/shop">
+              <label htmlFor="site-search">Search the collection</label>
+              <div>
+                <input
+                  autoFocus
+                  id="site-search"
+                  name="search"
+                  placeholder="Try amber, fresh, date night…"
+                />
+                <button aria-label="Submit search">
+                  <Search />
+                </button>
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.header>
+            </form>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

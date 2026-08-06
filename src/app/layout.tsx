@@ -1,21 +1,42 @@
 import type { Metadata } from "next";
+import { Cormorant_Garamond, Manrope } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
 import Navbar from "@/components/Navbar";
 import CartSidebar from "@/components/CartSidebar";
 import { QueryProvider } from "@/providers/query-provider";
 import AnnouncementBar from "@/components/AnnouncementBar";
-import SprayEffect from "@/components/SprayEffect";
+
+const display = Cormorant_Garamond({
+  subsets: ["latin"],
+  variable: "--font-display",
+  weight: ["400", "500", "600"],
+});
+const sans = Manrope({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
-  title: "Amidaddy — Luxury Fragrances",
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
+  ),
+  title: {
+    default: "Amidaddy Parfums · Presence, before words",
+    template: "%s · Amidaddy",
+  },
   description:
-    "Experience the world of unisex fragrances from Amidaddy.",
+    "Four unisex Eau de Parfum signatures composed around mood, memory and presence.",
   openGraph: {
-    title: "Amidaddy — Luxury Fragrances",
-    description:
-      "Handle every room with presence. Explore our curated collection of premium perfumes.",
+    title: "Amidaddy Parfums · Presence, before words",
+    description: "Four unisex signatures. Find the scent that feels like you.",
     siteName: "Amidaddy",
+    images: [
+      { url: "/og.png", width: 1536, height: 1024, alt: "Amidaddy Parfums" },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Amidaddy Parfums · Presence, before words",
+    description: "Four unisex signatures. Find the scent that feels like you.",
+    images: ["/og.png"],
   },
 };
 
@@ -26,26 +47,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
-          rel="stylesheet"
-        />
-      </head>
-      <body className="bg-black text-white antialiased">
+      <body className={`${display.variable} ${sans.variable}`}>
         <QueryProvider>
           <CartProvider>
             <AnnouncementBar />
             <Navbar />
             <CartSidebar />
             {children}
-            <SprayEffect />
           </CartProvider>
         </QueryProvider>
       </body>

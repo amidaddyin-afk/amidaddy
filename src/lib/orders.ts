@@ -1,57 +1,760 @@
 import "server-only";
 
-import { Pool } from "pg";
-import type { Order, OrderLine } from "@/lib/store";
+import { createHash } from "node:crypto";
+import type { PoolClient } from "pg";
+import {
+  couponDiscountPaise,
+  isCustomerCancellationAllowed,
+  isFulfillmentTransitionAllowed,
+  refundablePaise,
+  shippingPaise,
+} from "@/lib/commerce";
+import { db, transaction } from "@/lib/db";
+import { includedGstPaise } from "@/lib/money";
 
-const globalForPool = globalThis as unknown as { orderPool?: Pool };
+export type OrderStatus =
+  | "PAYMENT_PENDING"
+  | "CONFIRMED"
+  | "PROCESSING"
+  | "SHIPPED"
+  | "DELIVERED"
+  | "CANCELLED"
+  | "EXPIRED";
+export type PaymentStatus =
+  | "UNPAID"
+  | "PAID"
+  | "REFUND_PENDING"
+  | "PARTIALLY_REFUNDED"
+  | "REFUNDED"
+  | "FAILED";
+export type RefundStatus = "PENDING" | "PROCESSED" | "FAILED";
 
-function getPool() {
-  const connectionString = process.env.DATABASE_URL;
-  if (!connectionString) throw new Error("DATABASE_URL is not configured.");
-  globalForPool.orderPool ??= new Pool({ connectionString });
-  return globalForPool.orderPool;
+export interface OrderLine {
+  id?: string;
+  productId: string;
+  variantId: string | null;
+  name: string;
+  size: string;
+  qty: number;
+  unitPricePaise: number;
+  lineTotalPaise: number;
+  gstRate: number;
+  taxPaise: number;
 }
 
-function toOrder(row: Record<string, unknown>, lines: OrderLine[]): Order {
-  return { id: String(row.id), email: String(row.email), customerName: String(row.customer_name), phone: String(row.phone), address: String(row.address), total: Number(row.total), status: row.status as Order["status"], paymentStatus: row.payment_status as Order["paymentStatus"], stripeSessionId: row.payment_order_id ? String(row.payment_order_id) : undefined, createdAt: new Date(String(row.created_at)).toISOString(), lines };
+export interface OrderRecord {
+  id: string;
+  customerId: string | null;
+  email: string;
+  customerName: string;
+  phone: string;
+  address: string;
+  city: string | null;
+  state: string | null;
+  postalCode: string | null;
+  country: string;
+  subtotalPaise: number;
+  discountPaise: number;
+  shippingPaise: number;
+  taxPaise: number;
+  totalPaise: number;
+  status: OrderStatus;
+  paymentStatus: PaymentStatus;
+  couponCode: string | null;
+  paymentOrderId: string | null;
+  paymentId: string | null;
+  courierName: string | null;
+  trackingNumber: string | null;
+  trackingUrl: string | null;
+  expiresAt: string | null;
+  shippedAt: string | null;
+  deliveredAt: string | null;
+  cancelledAt: string | null;
+  cancellationReason: string | null;
+  createdAt: string;
+  updatedAt: string;
+  lines: OrderLine[];
+  refundedPaise: number;
 }
 
-async function linesForOrder(orderId: string) {
-  const { rows } = await getPool().query("select product_id, name, size, quantity, unit_price from public.order_items where order_id = $1 order by id", [orderId]);
-  return rows.map((row) => ({ productId: row.product_id, name: row.name, size: row.size, qty: row.quantity, unitPrice: row.unit_price })) as OrderLine[];
+type CheckoutInput = {
+  id: string;
+  customerId?: string | null;
+  customer: {
+    name: string;
+    email: string;
+    phone: string;
+    address: string;
+    city: string;
+    state: string;
+    postalCode: string;
+  };
+  items: Array<{ variantId: string; qty: number }>;
+  couponCode?: string;
+};
+
+const normalizeEmail = (email: string) => email.trim().toLowerCase();
+
+async function orderLines(
+  client: PoolClient | ReturnType<typeof db>,
+  orderId: string,
+): Promise<OrderLine[]> {
+  const { rows } = await client.query(
+    "select id, product_ref, variant_id, name, size, quantity, unit_price_paise, line_total_paise, gst_rate, tax_paise from public.order_items where order_id=$1 order by id",
+    [orderId],
+  );
+  return rows.map((row) => ({
+    id: String(row.id),
+    productId: String(row.product_ref),
+    variantId: row.variant_id ? String(row.variant_id) : null,
+    name: String(row.name),
+    size: String(row.size),
+    qty: Number(row.quantity),
+    unitPricePaise: Number(row.unit_price_paise),
+    lineTotalPaise: Number(row.line_total_paise),
+    gstRate: Number(row.gst_rate),
+    taxPaise: Number(row.tax_paise),
+  }));
 }
 
-export async function createOrder(order: Order) {
-  const client = await getPool().connect();
-  try {
-    await client.query("begin");
-    await client.query("insert into public.orders (id, email, customer_name, phone, address, total, status, payment_status, created_at) values ($1, $2, $3, $4, $5, $6, $7, $8, $9)", [order.id, order.email, order.customerName, order.phone, order.address, order.total, order.status, order.paymentStatus, order.createdAt]);
-    for (const line of order.lines) await client.query("insert into public.order_items (order_id, product_id, name, size, quantity, unit_price) values ($1, $2, $3, $4, $5, $6)", [order.id, line.productId, line.name, line.size, line.qty, line.unitPrice]);
-    await client.query("commit");
-    return order;
-  } catch (error) {
-    await client.query("rollback");
-    throw error;
-  } finally {
-    client.release();
+async function mapOrder(
+  row: Record<string, unknown>,
+  client: PoolClient | ReturnType<typeof db> = db(),
+): Promise<OrderRecord> {
+  const lines = await orderLines(client, String(row.id));
+  const refundResult = await client.query(
+    "select coalesce(sum(amount_paise) filter (where status='PROCESSED'),0) amount from public.refunds where order_id=$1",
+    [row.id],
+  );
+  const date = (value: unknown) =>
+    value ? new Date(String(value)).toISOString() : null;
+  return {
+    id: String(row.id),
+    customerId: row.customer_id ? String(row.customer_id) : null,
+    email: String(row.email),
+    customerName: String(row.customer_name),
+    phone: String(row.phone),
+    address: String(row.address),
+    city: row.city ? String(row.city) : null,
+    state: row.state ? String(row.state) : null,
+    postalCode: row.postal_code ? String(row.postal_code) : null,
+    country: String(row.country ?? "IN"),
+    subtotalPaise: Number(row.subtotal_paise),
+    discountPaise: Number(row.discount_paise),
+    shippingPaise: Number(row.shipping_paise),
+    taxPaise: Number(row.tax_paise),
+    totalPaise: Number(row.total_paise),
+    status: row.status as OrderStatus,
+    paymentStatus: row.payment_status as PaymentStatus,
+    couponCode: row.coupon_code ? String(row.coupon_code) : null,
+    paymentOrderId: row.payment_order_id ? String(row.payment_order_id) : null,
+    paymentId: row.payment_id ? String(row.payment_id) : null,
+    courierName: row.courier_name ? String(row.courier_name) : null,
+    trackingNumber: row.tracking_number ? String(row.tracking_number) : null,
+    trackingUrl: row.tracking_url ? String(row.tracking_url) : null,
+    expiresAt: date(row.expires_at),
+    shippedAt: date(row.shipped_at),
+    deliveredAt: date(row.delivered_at),
+    cancelledAt: date(row.cancelled_at),
+    cancellationReason: row.cancellation_reason
+      ? String(row.cancellation_reason)
+      : null,
+    createdAt: date(row.created_at)!,
+    updatedAt: date(row.updated_at)!,
+    lines,
+    refundedPaise: Number(refundResult.rows[0]?.amount ?? 0),
+  };
+}
+
+async function releaseReservations(
+  client: PoolClient,
+  orderId: string,
+  movement: "RELEASE" | "SALE",
+) {
+  const { rows } = await client.query(
+    "select oi.variant_id, oi.quantity, pv.product_id from public.order_items oi join public.product_variants pv on pv.id=oi.variant_id where oi.order_id=$1",
+    [orderId],
+  );
+  for (const row of rows) {
+    if (movement === "SALE") {
+      const result = await client.query(
+        "update public.product_variants set stock=stock-$2,reserved=reserved-$2,updated_at=now() where id=$1 and stock >= $2 and reserved >= $2",
+        [row.variant_id, row.quantity],
+      );
+      if (!result.rowCount)
+        throw new Error("Reserved stock is no longer available.");
+    } else {
+      await client.query(
+        "update public.product_variants set reserved=greatest(0,reserved-$2),updated_at=now() where id=$1",
+        [row.variant_id, row.quantity],
+      );
+    }
+    await client.query(
+      "insert into public.inventory_movements(product_id,type,quantity,reason) values($1,$2,$3,$4)",
+      [
+        row.product_id,
+        movement,
+        movement === "SALE" ? -Number(row.quantity) : -Number(row.quantity),
+        `${movement.toLowerCase()} for ${orderId}`,
+      ],
+    );
   }
 }
 
-export async function recordPaymentOrder(orderId: string, paymentOrderId: string) {
-  await getPool().query("update public.orders set payment_order_id = $2 where id = $1", [orderId, paymentOrderId]);
+async function restoreCommittedInventory(client: PoolClient, orderId: string) {
+  const { rows } = await client.query(
+    "select oi.variant_id, oi.quantity, pv.product_id from public.order_items oi join public.product_variants pv on pv.id=oi.variant_id where oi.order_id=$1",
+    [orderId],
+  );
+  for (const row of rows) {
+    await client.query(
+      "update public.product_variants set stock=stock+$2,updated_at=now() where id=$1",
+      [row.variant_id, row.quantity],
+    );
+    await client.query(
+      "insert into public.inventory_movements(product_id,type,quantity,reason) values($1,'RETURN',$2,$3)",
+      [row.product_id, Number(row.quantity), `cancelled order ${orderId}`],
+    );
+  }
 }
 
+export async function createPendingOrder(input: CheckoutInput) {
+  return transaction(async (client) => {
+    const variantIds = input.items.map((item) => item.variantId);
+    if (!variantIds.every((id) => /^[0-9a-f-]{36}$/i.test(id)))
+      throw new Error("The catalog is not synchronized with inventory yet.");
+    const { rows: variants } = await client.query(
+      "select pv.*,p.id product_id,p.slug,p.name product_name,p.gst_rate,p.active product_active,p.deleted_at from public.product_variants pv join public.products p on p.id=pv.product_id where pv.id=any($1::uuid[]) for update",
+      [variantIds],
+    );
+    if (variants.length !== new Set(variantIds).size)
+      throw new Error("One or more cart items are unavailable.");
+    const byId = new Map(
+      variants.map((variant) => [String(variant.id), variant]),
+    );
+    const lines = input.items.map((item) => {
+      const variant = byId.get(item.variantId);
+      if (
+        !variant ||
+        !variant.active ||
+        !variant.product_active ||
+        variant.deleted_at ||
+        Number(variant.stock) - Number(variant.reserved) < item.qty
+      )
+        throw new Error(
+          `${variant?.product_name ?? "A fragrance"} is no longer available in that quantity.`,
+        );
+      const lineTotalPaise = Number(variant.price_paise) * item.qty;
+      return {
+        productId: String(variant.slug),
+        productDbId: String(variant.product_id),
+        variantId: String(variant.id),
+        name: String(variant.product_name),
+        size: String(variant.name),
+        qty: item.qty,
+        unitPricePaise: Number(variant.price_paise),
+        lineTotalPaise,
+        gstRate: Number(variant.gst_rate),
+        taxPaise: includedGstPaise(lineTotalPaise, Number(variant.gst_rate)),
+      };
+    });
+    const subtotalPaise = lines.reduce(
+      (sum, line) => sum + line.lineTotalPaise,
+      0,
+    );
+    let discountPaise = 0;
+    let couponId: string | null = null;
+    let couponCode: string | null = null;
+    if (input.couponCode?.trim()) {
+      const code = input.couponCode.trim().toUpperCase();
+      const { rows } = await client.query(
+        "select * from public.coupons where upper(code)=$1 and active and (starts_at is null or starts_at<=now()) and (ends_at is null or ends_at>=now()) for update",
+        [code],
+      );
+      const coupon = rows[0];
+      if (!coupon || subtotalPaise < Number(coupon.min_subtotal_paise))
+        throw new Error("This coupon is not valid for the order.");
+      const totalUses = Number(
+        (
+          await client.query(
+            "select count(*) count from public.coupon_redemptions where coupon_id=$1",
+            [coupon.id],
+          )
+        ).rows[0].count,
+      );
+      const customerUses = Number(
+        (
+          await client.query(
+            "select count(*) count from public.coupon_redemptions where coupon_id=$1 and lower(email)=$2",
+            [coupon.id, normalizeEmail(input.customer.email)],
+          )
+        ).rows[0].count,
+      );
+      if (
+        (coupon.usage_limit && totalUses >= Number(coupon.usage_limit)) ||
+        customerUses >= Number(coupon.per_customer_limit)
+      )
+        throw new Error("This coupon has reached its usage limit.");
+      discountPaise = couponDiscountPaise(
+        subtotalPaise,
+        coupon.type,
+        Number(coupon.value),
+        coupon.max_discount_paise ? Number(coupon.max_discount_paise) : null,
+      );
+      couponId = String(coupon.id);
+      couponCode = String(coupon.code);
+    }
+    const settings = (
+      await client.query("select * from public.store_settings where id=1")
+    ).rows[0] ?? {
+      shipping_fee_paise: 9900,
+      free_shipping_above_paise: 199900,
+    };
+    const discountedMerchandise = subtotalPaise - discountPaise;
+    const orderShippingPaise = shippingPaise(
+      discountedMerchandise,
+      Number(settings.shipping_fee_paise),
+      Number(settings.free_shipping_above_paise),
+    );
+    const taxPaise = includedGstPaise(discountedMerchandise, 18);
+    const totalPaise = discountedMerchandise + orderShippingPaise;
+    const expiresAt = new Date(Date.now() + 20 * 60 * 1000);
+    await client.query(
+      "insert into public.orders(id,customer_id,email,customer_name,phone,address,city,state,postal_code,country,subtotal_paise,discount_paise,shipping_paise,tax_paise,total_paise,status,payment_status,coupon_code,expires_at) values($1,$2,$3,$4,$5,$6,$7,$8,$9,'IN',$10,$11,$12,$13,$14,'PAYMENT_PENDING','UNPAID',$15,$16)",
+      [
+        input.id,
+        input.customerId ?? null,
+        normalizeEmail(input.customer.email),
+        input.customer.name.trim(),
+        input.customer.phone.trim(),
+        input.customer.address.trim(),
+        input.customer.city.trim(),
+        input.customer.state.trim(),
+        input.customer.postalCode.trim(),
+        subtotalPaise,
+        discountPaise,
+        orderShippingPaise,
+        taxPaise,
+        totalPaise,
+        couponCode,
+        expiresAt,
+      ],
+    );
+    for (const line of lines) {
+      await client.query(
+        "update public.product_variants set reserved=reserved+$2,updated_at=now() where id=$1",
+        [line.variantId, line.qty],
+      );
+      await client.query(
+        "insert into public.order_items(order_id,product_ref,variant_id,name,size,quantity,unit_price_paise,gst_rate,tax_paise,line_total_paise) values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)",
+        [
+          input.id,
+          line.productId,
+          line.variantId,
+          line.name,
+          line.size,
+          line.qty,
+          line.unitPricePaise,
+          line.gstRate,
+          line.taxPaise,
+          line.lineTotalPaise,
+        ],
+      );
+      await client.query(
+        "insert into public.inventory_movements(product_id,type,quantity,reason) values($1,'RESERVATION',$2,$3)",
+        [line.productDbId, line.qty, `reservation for ${input.id}`],
+      );
+    }
+    if (couponId)
+      await client.query(
+        "insert into public.coupon_redemptions(coupon_id,order_id,customer_id,email,amount_paise) values($1,$2,$3,$4,$5)",
+        [
+          couponId,
+          input.id,
+          input.customerId ?? null,
+          normalizeEmail(input.customer.email),
+          discountPaise,
+        ],
+      );
+    return {
+      id: input.id,
+      amountPaise: totalPaise,
+      subtotalPaise,
+      discountPaise,
+      shippingPaise: orderShippingPaise,
+      taxPaise,
+      expiresAt: expiresAt.toISOString(),
+    };
+  });
+}
+
+export async function recordPaymentOrder(
+  orderId: string,
+  paymentOrderId: string,
+) {
+  await db().query(
+    "update public.orders set payment_order_id=$2,updated_at=now() where id=$1",
+    [orderId, paymentOrderId],
+  );
+}
 export async function getOrderByPaymentSession(paymentOrderId: string) {
-  const { rows } = await getPool().query("select * from public.orders where payment_order_id = $1 limit 1", [paymentOrderId]);
-  if (!rows[0]) return undefined;
-  return toOrder(rows[0], await linesForOrder(String(rows[0].id)));
+  const { rows } = await db().query(
+    "select * from public.orders where payment_order_id=$1 limit 1",
+    [paymentOrderId],
+  );
+  return rows[0] ? mapOrder(rows[0]) : undefined;
+}
+export async function getOrder(orderId: string) {
+  const { rows } = await db().query(
+    "select * from public.orders where id=$1 limit 1",
+    [orderId],
+  );
+  return rows[0] ? mapOrder(rows[0]) : undefined;
 }
 
-export async function markOrderPaid(orderId: string, paymentOrderId?: string) {
-  await getPool().query("update public.orders set status = 'paid', payment_status = 'paid', payment_order_id = coalesce($2, payment_order_id) where id = $1", [orderId, paymentOrderId]);
+export async function markOrderPaid(
+  orderId: string,
+  paymentOrderId?: string,
+  paymentId?: string,
+) {
+  const changed = await transaction(async (client) => {
+    const { rows } = await client.query(
+      "select * from public.orders where id=$1 for update",
+      [orderId],
+    );
+    const order = rows[0];
+    if (!order || order.payment_status === "PAID") return false;
+    if (order.status !== "PAYMENT_PENDING") return false;
+    await releaseReservations(client, orderId, "SALE");
+    await client.query(
+      "update public.orders set status='CONFIRMED',payment_status='PAID',payment_order_id=coalesce($2,payment_order_id),payment_id=coalesce($3,payment_id),expires_at=null,updated_at=now() where id=$1",
+      [orderId, paymentOrderId ?? null, paymentId ?? null],
+    );
+    return true;
+  });
+  if (changed) await sendOrderEmail(orderId, "order-confirmed");
 }
 
-export async function listOrders() {
-  const { rows } = await getPool().query("select * from public.orders order by created_at desc");
-  return Promise.all(rows.map(async (row) => toOrder(row, await linesForOrder(String(row.id)))));
+export async function listOrders(filters?: {
+  search?: string;
+  status?: string;
+}) {
+  const values: unknown[] = [];
+  const where: string[] = [];
+  if (filters?.search) {
+    values.push(`%${filters.search}%`);
+    where.push(
+      `(id ilike $${values.length} or email ilike $${values.length} or customer_name ilike $${values.length})`,
+    );
+  }
+  if (filters?.status) {
+    values.push(filters.status);
+    where.push(`status=$${values.length}::public."OrderStatus"`);
+  }
+  const { rows } = await db().query(
+    `select * from public.orders ${where.length ? `where ${where.join(" and ")}` : ""} order by created_at desc limit 250`,
+    values,
+  );
+  return Promise.all(rows.map((row) => mapOrder(row)));
+}
+
+export async function claimAndListCustomerOrders(
+  customerId: string,
+  verifiedEmail: string,
+) {
+  const email = normalizeEmail(verifiedEmail);
+  await db().query(
+    "update public.orders set customer_id=$1,updated_at=now() where customer_id is null and lower(email)=$2",
+    [customerId, email],
+  );
+  const { rows } = await db().query(
+    "select * from public.orders where customer_id=$1 order by created_at desc",
+    [customerId],
+  );
+  return Promise.all(rows.map((row) => mapOrder(row)));
+}
+
+export async function getCustomerOrder(orderId: string, customerId: string) {
+  const { rows } = await db().query(
+    "select * from public.orders where id=$1 and customer_id=$2",
+    [orderId, customerId],
+  );
+  return rows[0] ? mapOrder(rows[0]) : undefined;
+}
+
+async function razorpayRefund(paymentId: string, amountPaise: number) {
+  const keyId = process.env.RAZORPAY_KEY_ID;
+  const secret = process.env.RAZORPAY_KEY_SECRET;
+  if (!keyId || !secret)
+    throw new Error("Razorpay refunds are not configured.");
+  const response = await fetch(
+    `https://api.razorpay.com/v1/payments/${encodeURIComponent(paymentId)}/refund`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${Buffer.from(`${keyId}:${secret}`).toString("base64")}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ amount: amountPaise, speed: "normal" }),
+    },
+  );
+  const body = (await response.json()) as {
+    id?: string;
+    error?: { description?: string };
+  };
+  if (!response.ok || !body.id)
+    throw new Error(
+      body.error?.description ?? "Razorpay could not create the refund.",
+    );
+  return body.id;
+}
+
+export async function cancelOrder(
+  orderId: string,
+  reason: string,
+  actorId?: string,
+) {
+  const order = await getOrder(orderId);
+  if (!order) throw new Error("Order not found.");
+  if (!isCustomerCancellationAllowed(order.status))
+    throw new Error("This order can no longer be cancelled online.");
+  let refundId: string | null = null;
+  if (order.paymentStatus === "PAID") {
+    if (!order.paymentId)
+      throw new Error(
+        "Payment details are still synchronizing. Please try again shortly.",
+      );
+    refundId = await razorpayRefund(
+      order.paymentId,
+      refundablePaise(order.totalPaise, order.refundedPaise),
+    );
+  }
+  await transaction(async (client) => {
+    const locked = (
+      await client.query("select * from public.orders where id=$1 for update", [
+        orderId,
+      ])
+    ).rows[0];
+    if (!locked || !["PAYMENT_PENDING", "CONFIRMED"].includes(locked.status))
+      throw new Error("Order status changed before cancellation completed.");
+    if (locked.status === "PAYMENT_PENDING")
+      await releaseReservations(client, orderId, "RELEASE");
+    if (locked.status === "CONFIRMED")
+      await restoreCommittedInventory(client, orderId);
+    if (refundId)
+      await client.query(
+        "insert into public.refunds(order_id,payment_refund_id,amount_paise,reason,status,requested_by,processed_at) values($1,$2,$3,$4,'PROCESSED',$5,now())",
+        [
+          orderId,
+          refundId,
+          refundablePaise(order.totalPaise, order.refundedPaise),
+          reason,
+          actorId ?? null,
+        ],
+      );
+    await client.query(
+      "update public.orders set status='CANCELLED',payment_status=$2,cancelled_at=now(),cancellation_reason=$3,updated_at=now() where id=$1",
+      [orderId, refundId ? "REFUNDED" : locked.payment_status, reason],
+    );
+    await client.query(
+      "insert into public.audit_logs(actor_id,event,metadata) values($1,'order.cancelled',jsonb_build_object('orderId',$2,'refunded', $3))",
+      [actorId ?? null, orderId, Boolean(refundId)],
+    );
+  });
+  await sendOrderEmail(
+    orderId,
+    refundId ? "order-refunded" : "order-cancelled",
+  );
+}
+
+export async function issueRefund(
+  orderId: string,
+  amountPaise: number,
+  reason: string,
+  actorId: string,
+) {
+  const order = await getOrder(orderId);
+  if (!order?.paymentId || order.paymentStatus === "UNPAID")
+    throw new Error("This order has no refundable payment.");
+  const refundable = refundablePaise(order.totalPaise, order.refundedPaise);
+  if (amountPaise < 100 || amountPaise > refundable)
+    throw new Error("Refund amount exceeds the refundable balance.");
+  const refundId = await razorpayRefund(order.paymentId, amountPaise);
+  await transaction(async (client) => {
+    await client.query(
+      "insert into public.refunds(order_id,payment_refund_id,amount_paise,reason,status,requested_by,processed_at) values($1,$2,$3,$4,'PROCESSED',$5,now())",
+      [orderId, refundId, amountPaise, reason, actorId],
+    );
+    await client.query(
+      "update public.orders set payment_status=$2,updated_at=now() where id=$1",
+      [orderId, amountPaise === refundable ? "REFUNDED" : "PARTIALLY_REFUNDED"],
+    );
+    await client.query(
+      "insert into public.audit_logs(actor_id,event,metadata) values($1,'order.refunded',jsonb_build_object('orderId',$2,'amountPaise',$3))",
+      [actorId, orderId, amountPaise],
+    );
+  });
+  await sendOrderEmail(orderId, "order-refunded");
+}
+
+export async function updateOrderFulfillment(
+  orderId: string,
+  status: Extract<OrderStatus, "PROCESSING" | "SHIPPED" | "DELIVERED">,
+  tracking: {
+    courierName?: string;
+    trackingNumber?: string;
+    trackingUrl?: string;
+  },
+  actorId: string,
+) {
+  await transaction(async (client) => {
+    const order = (
+      await client.query("select * from public.orders where id=$1 for update", [
+        orderId,
+      ])
+    ).rows[0];
+    if (!order || !isFulfillmentTransitionAllowed(order.status, status))
+      throw new Error("That fulfillment transition is not allowed.");
+    if (
+      status === "SHIPPED" &&
+      (!tracking.courierName || !tracking.trackingNumber)
+    )
+      throw new Error(
+        "Courier and tracking number are required to ship an order.",
+      );
+    await client.query(
+      "update public.orders set status=$2,courier_name=coalesce($3,courier_name),tracking_number=coalesce($4,tracking_number),tracking_url=coalesce($5,tracking_url),shipped_at=case when $2='SHIPPED' then now() else shipped_at end,delivered_at=case when $2='DELIVERED' then now() else delivered_at end,updated_at=now() where id=$1",
+      [
+        orderId,
+        status,
+        tracking.courierName ?? null,
+        tracking.trackingNumber ?? null,
+        tracking.trackingUrl ?? null,
+      ],
+    );
+    await client.query(
+      "insert into public.audit_logs(actor_id,event,metadata) values($1,'order.status_changed',jsonb_build_object('orderId',$2,'status',$3))",
+      [actorId, orderId, status],
+    );
+  });
+  await sendOrderEmail(
+    orderId,
+    status === "SHIPPED"
+      ? "order-shipped"
+      : status === "DELIVERED"
+        ? "order-delivered"
+        : "order-processing",
+  );
+}
+
+export async function expirePendingOrders() {
+  return transaction(async (client) => {
+    const { rows } = await client.query(
+      "select id from public.orders where status='PAYMENT_PENDING' and expires_at<now() for update skip locked",
+    );
+    for (const row of rows) {
+      await releaseReservations(client, String(row.id), "RELEASE");
+      await client.query(
+        "update public.orders set status='EXPIRED',payment_status='FAILED',updated_at=now() where id=$1",
+        [row.id],
+      );
+    }
+    return rows.length;
+  });
+}
+
+export async function registerWebhookEvent(event: string, payload: string) {
+  const id = createHash("sha256").update(`${event}:${payload}`).digest("hex");
+  const result = await db().query(
+    "insert into public.webhook_events(id,provider,event,payload_hash) values($1,'razorpay',$2,$3) on conflict do nothing",
+    [id, event, createHash("sha256").update(payload).digest("hex")],
+  );
+  return Boolean(result.rowCount);
+}
+
+export async function markRefundProcessed(paymentRefundId: string) {
+  await transaction(async (client) => {
+    const { rows } = await client.query(
+      "update public.refunds set status='PROCESSED',processed_at=now() where payment_refund_id=$1 returning order_id",
+      [paymentRefundId],
+    );
+    if (!rows[0]) return;
+    const orderId = String(rows[0].order_id);
+    const totals = (
+      await client.query(
+        "select o.total_paise,coalesce(sum(r.amount_paise) filter(where r.status='PROCESSED'),0) refunded from public.orders o left join public.refunds r on r.order_id=o.id where o.id=$1 group by o.id",
+        [orderId],
+      )
+    ).rows[0];
+    await client.query(
+      "update public.orders set payment_status=$2,updated_at=now() where id=$1",
+      [
+        orderId,
+        Number(totals.refunded) >= Number(totals.total_paise)
+          ? "REFUNDED"
+          : "PARTIALLY_REFUNDED",
+      ],
+    );
+  });
+}
+
+export async function sendOrderEmail(orderId: string, template: string) {
+  const order = await getOrder(orderId);
+  if (!order) return;
+  const log = await db().query(
+    "insert into public.notification_logs(order_id,recipient,template,status,attempts) values($1,$2,$3,'PENDING',1) returning id",
+    [orderId, order.email, template],
+  );
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.RESEND_FROM_EMAIL;
+  if (!apiKey || !from) {
+    await db().query(
+      "update public.notification_logs set status='SKIPPED',error='Resend is not configured' where id=$1",
+      [log.rows[0].id],
+    );
+    return;
+  }
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "";
+  try {
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from,
+        to: order.email,
+        subject: emailSubject(template, order.id),
+        html: `<div style="background:#090909;color:#f7f1e7;padding:36px;font-family:Arial,sans-serif"><p style="color:#d8b77a;letter-spacing:.2em">AMIDADDY</p><h1>${emailSubject(template, order.id)}</h1><p>Your order status is now <strong>${order.status.replaceAll("_", " ")}</strong>.</p><p>Order total: ₹${(order.totalPaise / 100).toLocaleString("en-IN")}</p>${order.trackingUrl ? `<p><a style="color:#d8b77a" href="${order.trackingUrl}">Track your shipment</a></p>` : ""}<p><a style="color:#d8b77a" href="${appUrl}/account/orders/${order.id}">View order details</a></p></div>`,
+      }),
+    });
+    const body = (await response.json()) as { id?: string; message?: string };
+    if (!response.ok)
+      throw new Error(body.message ?? "Email provider rejected the message.");
+    await db().query(
+      "update public.notification_logs set status='SENT',provider_id=$2,sent_at=now() where id=$1",
+      [log.rows[0].id, body.id ?? null],
+    );
+  } catch (error) {
+    await db().query(
+      "update public.notification_logs set status='FAILED',error=$2 where id=$1",
+      [
+        log.rows[0].id,
+        error instanceof Error ? error.message : "Unknown email error",
+      ],
+    );
+  }
+}
+
+function emailSubject(template: string, orderId: string) {
+  const labels: Record<string, string> = {
+    "order-confirmed": "Your Amidaddy order is confirmed",
+    "order-processing": "Your order is being prepared",
+    "order-shipped": "Your Amidaddy order is on the way",
+    "order-delivered": "Your order has been delivered",
+    "order-cancelled": "Your order has been cancelled",
+    "order-refunded": "Your Amidaddy refund is complete",
+  };
+  return `${labels[template] ?? "Amidaddy order update"} · ${orderId}`;
 }

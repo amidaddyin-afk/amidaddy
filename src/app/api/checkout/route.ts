@@ -1,45 +1,126 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getCuratedProduct } from '@/lib/curated-products';
-import { createOrder, recordPaymentOrder } from '@/lib/orders';
-import type { OrderLine } from '@/lib/store';
+import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import { getCurrentUser } from "@/lib/auth";
+import {
+  cancelOrder,
+  createPendingOrder,
+  recordPaymentOrder,
+} from "@/lib/orders";
 
-const prices = { '20ml': 199, '100ml': 1199 } as const;
-
-interface CheckoutItem { productId: string; size: keyof typeof prices; qty: number }
+const checkoutSchema = z.object({
+  customer: z.object({
+    name: z.string().trim().min(2).max(120),
+    email: z.string().trim().email().max(254),
+    phone: z
+      .string()
+      .trim()
+      .regex(/^[+0-9 ()-]{8,20}$/),
+    address: z.string().trim().min(8).max(300),
+    city: z.string().trim().min(2).max(80),
+    state: z.string().trim().min(2).max(80),
+    postalCode: z
+      .string()
+      .trim()
+      .regex(/^\d{6}$/),
+  }),
+  items: z
+    .array(
+      z.object({
+        variantId: z.string().min(1).max(80),
+        qty: z.number().int().min(1).max(10),
+      }),
+    )
+    .min(1)
+    .max(30),
+  couponCode: z.string().trim().max(40).optional(),
+});
 
 export async function POST(request: NextRequest) {
-  const body = await request.json();
-  const items = body.items as CheckoutItem[];
-  const customer = body.customer as { name: string; email: string; phone: string; address: string };
-  if (!Array.isArray(items) || !items.length || !customer?.name || !customer?.email || !customer?.phone || !customer?.address) {
-    return NextResponse.json({ error: 'Please provide your contact, delivery details, and cart items.' }, { status: 400 });
-  }
-
-  const lines: OrderLine[] = [];
-  for (const item of items) {
-    if (!item || !(item.size in prices) || !Number.isInteger(item.qty) || item.qty < 1) {
-      return NextResponse.json({ error: 'Your cart contains an invalid item.' }, { status: 400 });
+  try {
+    const parsed = checkoutSchema.safeParse(await request.json());
+    if (!parsed.success)
+      return NextResponse.json(
+        {
+          error:
+            parsed.error.issues[0]?.message ??
+            "Please check your delivery details.",
+        },
+        { status: 400 },
+      );
+    const current = await getCurrentUser();
+    const verified = Boolean(
+      current?.user.email_confirmed_at && current.user.email,
+    );
+    const customer = verified
+      ? { ...parsed.data.customer, email: current!.user.email! }
+      : parsed.data.customer;
+    const applicationOrderId = `AM-${Date.now().toString(36).toUpperCase()}-${crypto.randomUUID().slice(0, 4).toUpperCase()}`;
+    const pending = await createPendingOrder({
+      id: applicationOrderId,
+      customerId: verified ? current!.user.id : null,
+      customer,
+      items: parsed.data.items,
+      couponCode: parsed.data.couponCode,
+    });
+    const keyId = process.env.RAZORPAY_KEY_ID;
+    const keySecret = process.env.RAZORPAY_KEY_SECRET;
+    if (!keyId || !keySecret) {
+      await cancelOrder(
+        applicationOrderId,
+        "Payment provider is not configured.",
+      );
+      return NextResponse.json(
+        { error: "Payments are temporarily unavailable." },
+        { status: 503 },
+      );
     }
-    const product = getCuratedProduct(item.productId);
-    if (!product || !product.active || product.stock < item.qty) {
-      return NextResponse.json({ error: `${product?.name ?? 'A product'} is no longer available in that quantity.` }, { status: 409 });
+    const razorpayResponse = await fetch("https://api.razorpay.com/v1/orders", {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${Buffer.from(`${keyId}:${keySecret}`).toString("base64")}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        amount: pending.amountPaise,
+        currency: "INR",
+        receipt: applicationOrderId,
+        notes: { amidaddy_order_id: applicationOrderId },
+      }),
+    });
+    const razorpayOrder = (await razorpayResponse.json()) as {
+      id?: string;
+      amount?: number;
+      currency?: string;
+      error?: { description?: string };
+    };
+    if (!razorpayResponse.ok || !razorpayOrder.id) {
+      await cancelOrder(applicationOrderId, "Payment order creation failed.");
+      return NextResponse.json(
+        {
+          error:
+            razorpayOrder.error?.description ??
+            "Unable to create payment order.",
+        },
+        { status: 502 },
+      );
     }
-    lines.push({ productId: product.id, name: product.name, size: item.size, qty: item.qty, unitPrice: prices[item.size] });
+    await recordPaymentOrder(applicationOrderId, razorpayOrder.id);
+    return NextResponse.json({
+      applicationOrderId,
+      razorpayOrderId: razorpayOrder.id,
+      keyId,
+      amount: pending.amountPaise,
+      currency: "INR",
+      customer,
+      totals: pending,
+    });
+  } catch (error) {
+    return NextResponse.json(
+      {
+        error:
+          error instanceof Error ? error.message : "Unable to begin checkout.",
+      },
+      { status: 400 },
+    );
   }
-
-  const subtotal = lines.reduce((sum, line) => sum + line.unitPrice * line.qty, 0);
-  const total = subtotal;
-  const orderId = `AM-${Date.now().toString(36).toUpperCase()}`;
-  const keyId = process.env.RAZORPAY_KEY_ID;
-  const keySecret = process.env.RAZORPAY_KEY_SECRET;
-  if (!keyId || !keySecret) return NextResponse.json({ error: 'Payments are not configured yet. Add Razorpay test keys to enable checkout.' }, { status: 503 });
-  await createOrder({ id: orderId, email: customer.email, customerName: customer.name, phone: customer.phone, address: customer.address, total, status: 'pending', paymentStatus: 'unpaid', createdAt: new Date().toISOString(), lines });
-  const razorpayResponse = await fetch('https://api.razorpay.com/v1/orders', {
-    method: 'POST', headers: { Authorization: `Basic ${Buffer.from(`${keyId}:${keySecret}`).toString('base64')}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ amount: total * 100, currency: 'INR', receipt: orderId, notes: { amidaddy_order_id: orderId } }),
-  });
-  const razorpayOrder = await razorpayResponse.json() as { id?: string; amount?: number; currency?: string; error?: { description?: string } };
-  if (!razorpayResponse.ok || !razorpayOrder.id || !razorpayOrder.amount) return NextResponse.json({ error: razorpayOrder.error?.description ?? 'Unable to create Razorpay order.' }, { status: 502 });
-  await recordPaymentOrder(orderId, razorpayOrder.id);
-  return NextResponse.json({ orderId: razorpayOrder.id, keyId, amount: razorpayOrder.amount, currency: razorpayOrder.currency ?? 'INR', receipt: orderId, customer });
 }

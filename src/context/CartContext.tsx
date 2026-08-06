@@ -1,13 +1,21 @@
-'use client';
+"use client";
 
-import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
-import type { Product } from '@/lib/data';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import type { Product } from "@/lib/data";
 
 export interface CartItem {
   product: Product;
-  size: '20ml' | '100ml';
+  variantId: string;
+  size: "20ml" | "100ml";
   qty: number;
-  unitPrice: number;
+  unitPricePaise: number;
 }
 
 interface CartContextType {
@@ -15,82 +23,146 @@ interface CartContextType {
   isOpen: boolean;
   openCart: () => void;
   closeCart: () => void;
-  addItem: (product: Product, size: '20ml' | '100ml') => void;
+  addItem: (product: Product, size: "20ml" | "100ml") => void;
   removeItem: (productId: string, size: string) => void;
   updateQty: (productId: string, size: string, qty: number) => void;
-  subtotal: number;
-  discount: number;
-  total: number;
+  subtotalPaise: number;
+  estimatedShippingPaise: number;
+  estimatedTotalPaise: number;
   totalQty: number;
   clearCart: () => void;
 }
 
 const CartContext = createContext<CartContextType | null>(null);
 
-const SIZE_PRICE = { '20ml': 199, '100ml': 1199 };
-
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    const saved = window.localStorage.getItem('amidaddy-cart');
-    if (!saved) return;
-    try {
-      const parsed = JSON.parse(saved) as CartItem[];
-      queueMicrotask(() => setItems(parsed));
-    } catch {
-      window.localStorage.removeItem('amidaddy-cart');
+    const saved = window.localStorage.getItem("amidaddy-cart-v2");
+    let restored: CartItem[] = [];
+    if (saved) {
+      try {
+        restored = JSON.parse(saved) as CartItem[];
+      } catch {
+        window.localStorage.removeItem("amidaddy-cart-v2");
+      }
     }
+    queueMicrotask(() => {
+      setItems(restored);
+      setHydrated(true);
+    });
   }, []);
-
   useEffect(() => {
-    window.localStorage.setItem('amidaddy-cart', JSON.stringify(items));
-  }, [items]);
+    if (hydrated)
+      window.localStorage.setItem("amidaddy-cart-v2", JSON.stringify(items));
+  }, [hydrated, items]);
 
   const openCart = useCallback(() => setIsOpen(true), []);
   const closeCart = useCallback(() => setIsOpen(false), []);
-
-  const addItem = useCallback((product: Product, size: '20ml' | '100ml') => {
-    const unitPrice = SIZE_PRICE[size];
-    setItems(prev => {
-      const idx = prev.findIndex(i => i.product.id === product.id && i.size === size);
-      if (idx >= 0) {
-        const next = [...prev];
-        next[idx] = { ...next[idx], qty: Math.min(next[idx].qty + 1, 10) };
+  const addItem = useCallback((product: Product, size: "20ml" | "100ml") => {
+    const variant = product.variants.find(
+      (item) => item.name === size && item.active,
+    );
+    if (!variant || variant.stock - variant.reserved <= 0) return;
+    setItems((previous) => {
+      const index = previous.findIndex((item) => item.variantId === variant.id);
+      if (index >= 0) {
+        const next = [...previous];
+        next[index] = {
+          ...next[index],
+          qty: Math.min(
+            next[index].qty + 1,
+            Math.min(10, variant.stock - variant.reserved),
+          ),
+        };
         return next;
       }
-      return [...prev, { product, size, qty: 1, unitPrice }];
+      return [
+        ...previous,
+        {
+          product,
+          variantId: variant.id,
+          size,
+          qty: 1,
+          unitPricePaise: variant.pricePaise,
+        },
+      ];
     });
     setIsOpen(true);
   }, []);
-
-  const removeItem = useCallback((productId: string, size: string) => {
-    setItems(prev => prev.filter(i => !(i.product.id === productId && i.size === size)));
-  }, []);
-
-  const updateQty = useCallback((productId: string, size: string, qty: number) => {
-    if (qty <= 0) { removeItem(productId, size); return; }
-    setItems(prev => prev.map(i =>
-      i.product.id === productId && i.size === size ? { ...i, qty: Math.min(qty, 10) } : i
-    ));
-  }, [removeItem]);
+  const removeItem = useCallback(
+    (productId: string, size: string) =>
+      setItems((previous) =>
+        previous.filter(
+          (item) => !(item.product.id === productId && item.size === size),
+        ),
+      ),
+    [],
+  );
+  const updateQty = useCallback(
+    (productId: string, size: string, qty: number) => {
+      if (qty <= 0) return removeItem(productId, size);
+      setItems((previous) =>
+        previous.map((item) =>
+          item.product.id === productId && item.size === size
+            ? {
+                ...item,
+                qty: Math.min(
+                  qty,
+                  Math.min(
+                    10,
+                    item.product.variants.find(
+                      (variant) => variant.id === item.variantId,
+                    )?.stock ?? 10,
+                  ),
+                ),
+              }
+            : item,
+        ),
+      );
+    },
+    [removeItem],
+  );
   const clearCart = useCallback(() => setItems([]), []);
-
-  const subtotal = items.reduce((sum, item) => sum + item.unitPrice * item.qty, 0);
-  const discount = 0;
-  const total = subtotal;
-  const totalQty = items.reduce((s, i) => s + i.qty, 0);
+  const totals = useMemo(() => {
+    const subtotalPaise = items.reduce(
+      (sum, item) => sum + item.unitPricePaise * item.qty,
+      0,
+    );
+    const estimatedShippingPaise =
+      subtotalPaise > 0 && subtotalPaise < 199_900 ? 9_900 : 0;
+    return {
+      subtotalPaise,
+      estimatedShippingPaise,
+      estimatedTotalPaise: subtotalPaise + estimatedShippingPaise,
+      totalQty: items.reduce((sum, item) => sum + item.qty, 0),
+    };
+  }, [items]);
 
   return (
-    <CartContext.Provider value={{ items, isOpen, openCart, closeCart, addItem, removeItem, updateQty, clearCart, subtotal, discount, total, totalQty }}>
+    <CartContext.Provider
+      value={{
+        items,
+        isOpen,
+        openCart,
+        closeCart,
+        addItem,
+        removeItem,
+        updateQty,
+        clearCart,
+        ...totals,
+      }}
+    >
       {children}
     </CartContext.Provider>
   );
 }
 
 export function useCart() {
-  const ctx = useContext(CartContext);
-  if (!ctx) throw new Error('useCart must be used within CartProvider');
-  return ctx;
+  const context = useContext(CartContext);
+  if (!context) throw new Error("useCart must be used within CartProvider");
+  return context;
 }

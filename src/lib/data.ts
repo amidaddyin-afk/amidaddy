@@ -1,157 +1,190 @@
-export interface Product {
+export type FragranceFamily = "Woody" | "Floral" | "Fresh" | "Amber";
+
+export interface ProductVariant {
   id: string;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  image: string;
-  profile: 'Woody' | 'Floral' | 'Fresh' | 'Oriental';
-  collection: 'for-him' | 'for-her' | 'luxury';
-  notes: string;
-  longevity: string;
-  mood: string;
-  description: string;
-  badge?: string;
-  isNew?: boolean;
+  name: "20ml" | "100ml";
+  sku: string;
+  pricePaise: number;
+  mrpPaise: number;
   stock: number;
+  reserved: number;
+  lowStockAt: number;
   active: boolean;
 }
 
+export interface Product {
+  id: string;
+  slug: string;
+  name: string;
+  image: string;
+  images: string[];
+  profile: FragranceFamily;
+  concentration: string;
+  genderPositioning: string;
+  topNotes: string[];
+  heartNotes: string[];
+  baseNotes: string[];
+  notes: string;
+  longevity: string;
+  mood: string;
+  occasion: string;
+  description: string;
+  story: string;
+  badge?: string;
+  isNew?: boolean;
+  featured?: boolean;
+  active: boolean;
+  variants: ProductVariant[];
+  /** Compatibility fields used by a few presentational components. */
+  price: number;
+  originalPrice?: number;
+  stock: number;
+  collection: "unisex";
+}
+
+const makeVariants = (
+  slug: string,
+  stock20: number,
+  stock100: number,
+): ProductVariant[] => [
+  {
+    id: `${slug}-20ml`,
+    name: "20ml",
+    sku: `AMI-${slug.toUpperCase()}-20`,
+    pricePaise: 19_900,
+    mrpPaise: 24_900,
+    stock: stock20,
+    reserved: 0,
+    lowStockAt: 5,
+    active: true,
+  },
+  {
+    id: `${slug}-100ml`,
+    name: "100ml",
+    sku: `AMI-${slug.toUpperCase()}-100`,
+    pricePaise: 119_900,
+    mrpPaise: 149_900,
+    stock: stock100,
+    reserved: 0,
+    lowStockAt: 5,
+    active: true,
+  },
+];
+
 export const PRODUCTS: Product[] = [
   {
-    id: 'billionaire',
-    name: 'Billionaire Noir',
-    price: 1299,
-    originalPrice: 1699,
-    image: '/billionaire.png',
-    profile: 'Woody',
-    collection: 'for-him',
-    notes: 'Bergamot, Cedarwood, Warm Amber',
-    longevity: '8–10 hours',
-    mood: 'Bold evenings & sharp impressions',
-    description: 'A power scent with deep woody character and a smooth amber finish for statement wear.',
-    badge: 'Bestseller',
-    stock: 24,
+    id: "billionaire",
+    slug: "billionaire",
+    name: "Billionaire Noir",
+    image: "/curated/billionaire.JPG",
+    images: [
+      "/curated/billionaire.JPG",
+      "/curated/products/billionaire/detail.JPG",
+    ],
+    profile: "Woody",
+    concentration: "Eau de Parfum",
+    genderPositioning: "Unisex",
+    topNotes: ["Bergamot", "Black pepper"],
+    heartNotes: ["Cedarwood", "Patchouli"],
+    baseNotes: ["Amber", "Musk"],
+    notes: "Bergamot · Cedarwood · Amber",
+    longevity: "8–10 hours",
+    mood: "Bold and magnetic",
+    occasion: "Evening and occasions",
+    description: "A commanding woody amber built for memorable entrances.",
+    story: "A study in ambition, polished woods and warm amber.",
+    badge: "Bestseller",
+    featured: true,
     active: true,
-  },
-  {
-    id: 'coldwar',
-    name: 'Cold War',
-    price: 999,
-    image: '/coldwar.png',
-    profile: 'Fresh',
-    collection: 'for-him',
-    notes: 'Mint, Pepper, Clean Musk',
-    longevity: '6–8 hours',
-    mood: 'Cool daytime confidence',
-    description: 'Crisp and energetic with icy freshness — designed for active mornings and sharp office hours.',
-    isNew: true,
-    stock: 18,
-    active: true,
-  },
-  {
-    id: 'heavenly',
-    name: 'Heavenly',
-    price: 1099,
-    originalPrice: 1399,
-    image: '/heavenly.png',
-    profile: 'Floral',
-    collection: 'for-her',
-    notes: 'White Florals, Powdery Iris, Soft Musk',
-    longevity: '7–9 hours',
-    mood: 'Soft elegance for daily wear',
-    description: 'Balanced floral warmth with a gentle musk base that stays refined from day to evening.',
-    stock: 16,
-    active: true,
-  },
-  {
-    id: 'old-love',
-    name: 'Old Love',
+    variants: makeVariants("billionaire", 40, 20),
     price: 1199,
-    image: '/old-love.png',
-    profile: 'Oriental',
-    collection: 'for-her',
-    notes: 'Vanilla, Saffron, Sweet Resin',
-    longevity: '8–9 hours',
-    mood: 'Warm nostalgic date nights',
-    description: 'A comforting sweet oriental blend — ideal for romantic evenings and cooler weather.',
-    badge: 'Limited',
-    stock: 9,
-    active: true,
+    originalPrice: 1499,
+    stock: 60,
+    collection: "unisex",
   },
   {
-    id: 'hero1',
-    name: 'Obsidian Fire',
-    price: 1599,
-    image: '/hero1.png',
-    profile: 'Woody',
-    collection: 'luxury',
-    notes: 'Oud, Black Pepper, Dark Amber',
-    longevity: '10–12 hours',
-    mood: 'Powerful statement, luxury events',
-    description: 'An opulent oud-forward fragrance that commands presence. A luxury signature scent for the bold.',
-    badge: 'Exclusive',
-    stock: 7,
+    id: "coldwar",
+    slug: "coldwar",
+    name: "Cold War",
+    image: "/curated/cold-war.JPG",
+    images: ["/curated/cold-war.JPG", "/curated/products/coldwar/detail.JPG"],
+    profile: "Fresh",
+    concentration: "Eau de Parfum",
+    genderPositioning: "Unisex",
+    topNotes: ["Mint", "Bergamot"],
+    heartNotes: ["Pepper", "Lavender"],
+    baseNotes: ["Clean musk", "Cedar"],
+    notes: "Mint · Pepper · Clean musk",
+    longevity: "6–8 hours",
+    mood: "Cool and focused",
+    occasion: "Day and office",
+    description:
+      "Icy freshness and clean musk with a precise, energetic finish.",
+    story: "A bright collision of cool air, mineral spice and clean woods.",
+    isNew: true,
+    featured: true,
     active: true,
+    variants: makeVariants("coldwar", 40, 20),
+    price: 1199,
+    originalPrice: 1499,
+    stock: 60,
+    collection: "unisex",
   },
   {
-    id: 'combo',
-    name: 'The Royal Duo',
-    price: 1999,
-    originalPrice: 2598,
-    image: '/combo-pack.png',
-    profile: 'Woody',
-    collection: 'luxury',
-    notes: 'Curated Mix — Billionaire + Cold War',
-    longevity: 'Variable',
-    mood: 'Perfect for gifting',
-    description: 'Two signature scents curated into one premium gift set. An unbeatable value for the fragrance connoisseur.',
-    badge: 'Bundle',
-    stock: 12,
+    id: "heavenly",
+    slug: "heavenly",
+    name: "Heavenly",
+    image: "/curated/heavenly.JPG",
+    images: ["/curated/heavenly.JPG", "/curated/products/heavenly/detail.JPG"],
+    profile: "Floral",
+    concentration: "Eau de Parfum",
+    genderPositioning: "Unisex",
+    topNotes: ["Pear", "Neroli"],
+    heartNotes: ["White florals", "Iris"],
+    baseNotes: ["Soft musk", "Sandalwood"],
+    notes: "Pear · White florals · Soft musk",
+    longevity: "7–9 hours",
+    mood: "Soft and elegant",
+    occasion: "Everyday and celebrations",
+    description:
+      "A luminous floral musk that moves softly from day into evening.",
+    story: "Weightless florals settle into a graceful skin-like musk.",
+    featured: true,
     active: true,
+    variants: makeVariants("heavenly", 40, 20),
+    price: 1199,
+    originalPrice: 1499,
+    stock: 60,
+    collection: "unisex",
+  },
+  {
+    id: "old-love",
+    slug: "old-love",
+    name: "Old Love",
+    image: "/curated/old-love.JPG",
+    images: ["/curated/old-love.JPG", "/curated/products/old-love/detail.JPG"],
+    profile: "Amber",
+    concentration: "Eau de Parfum",
+    genderPositioning: "Unisex",
+    topNotes: ["Saffron", "Pink pepper"],
+    heartNotes: ["Rose", "Warm resin"],
+    baseNotes: ["Vanilla", "Amber woods"],
+    notes: "Saffron · Warm resin · Vanilla",
+    longevity: "8–9 hours",
+    mood: "Warm and intimate",
+    occasion: "Date night and cool weather",
+    description:
+      "Warm vanilla, saffron and resin composed with nostalgic depth.",
+    story: "A familiar warmth reimagined as amber light on skin.",
+    badge: "Limited",
+    featured: true,
+    active: true,
+    variants: makeVariants("old-love", 40, 20),
+    price: 1199,
+    originalPrice: 1499,
+    stock: 60,
+    collection: "unisex",
   },
 ];
 
-export const HERO_SLIDES = [
-  {
-    id: 1,
-    image: '/hero1.png',
-    heading: 'OBSIDIAN',
-    subheading: 'Where darkness becomes desire.',
-    cta: 'Explore Collection',
-  },
-  {
-    id: 2,
-    image: '/billionaire.png',
-    heading: 'BILLIONAIRE',
-    subheading: 'Power. Ambition. Flawless character.',
-    cta: 'Shop Now',
-  },
-  {
-    id: 3,
-    image: '/heavenly.png',
-    heading: 'HEAVENLY',
-    subheading: 'The scent of pure elegance.',
-    cta: 'Discover More',
-  },
-  {
-    id: 4,
-    image: '/old-love.png',
-    heading: 'OLD LOVE',
-    subheading: 'A timeless, intimate emotion.',
-    cta: 'Find Your Scent',
-  },
-];
-
-export const COLLECTIONS = [
-  { id: 'for-him', label: 'For Him', description: 'Bold, confident, commanding.', image: '/billionaire.png' },
-  { id: 'for-her', label: 'For Her', description: 'Graceful, romantic, timeless.', image: '/heavenly.png' },
-  { id: 'luxury', label: 'Luxury Picks', description: 'The rarest of the rare.', image: '/hero1.png' },
-];
-
-export const TESTIMONIALS = [
-  { name: 'Arjun M.', rating: 5, text: 'Billionaire Noir is everything — I get compliments every single time I wear it. Worth every rupee.' },
-  { name: 'Priya K.', rating: 5, text: 'Heavenly is my go-to signature scent now. Floral but not overwhelming. Lasts all day.' },
-  { name: 'Rahul S.', rating: 5, text: 'The Royal Duo was a perfect gift. Premium packaging, incredible scents.' },
-  { name: 'Ananya R.', rating: 5, text: 'Old Love is exactly that — warm, nostalgic, beautifully complex. My partner loves it.' },
-  { name: 'Vikram P.', rating: 5, text: 'Cold War is my morning power walk scent. Crisp and clean. Absolutely love it.' },
-];
+export const TESTIMONIALS: never[] = [];

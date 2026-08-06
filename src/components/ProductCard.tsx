@@ -1,135 +1,117 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import Image from 'next/image';
-import { ShoppingBag, Eye } from 'lucide-react';
-import { Product } from '@/lib/data';
-import { useCart } from '@/context/CartContext';
-import ProductModal from './ProductModal';
-import Link from 'next/link';
+import { useState } from "react";
+import { motion } from "framer-motion";
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowUpRight, ShoppingBag } from "lucide-react";
+import type { Product } from "@/lib/data";
+import { useCart } from "@/context/CartContext";
+import { formatInr } from "@/lib/money";
 
-interface Props {
+export default function ProductCard({
+  product,
+  index = 0,
+}: {
   product: Product;
-  index: number;
-}
-
-export default function ProductCard({ product, index }: Props) {
-  const [selectedSize, setSelectedSize] = useState<'20ml' | '100ml'>('100ml');
-  const [modalOpen, setModalOpen] = useState(false);
+  index?: number;
+}) {
+  const available = product.variants.filter(
+    (variant) => variant.active && variant.stock > variant.reserved,
+  );
+  const [size, setSize] = useState<"20ml" | "100ml">(
+    available.find((item) => item.name === "100ml")?.name ??
+      available[0]?.name ??
+      "100ml",
+  );
   const [added, setAdded] = useState(false);
   const { addItem } = useCart();
-
-  const price = selectedSize === '100ml' ? 1199 : 199;
-
-  const handleAdd = () => {
-    addItem(product, selectedSize);
+  const variant =
+    product.variants.find((item) => item.name === size) ?? product.variants[0];
+  const add = () => {
+    addItem(product, size);
     setAdded(true);
-    setTimeout(() => setAdded(false), 2000);
+    window.setTimeout(() => setAdded(false), 1600);
   };
-
-  const BADGE_COLORS: Record<string, string> = {
-    Bestseller: 'bg-[#D4AF37] text-black',
-    Limited: 'bg-[#8e1f2f] text-white',
-    Exclusive: 'bg-white/10 text-white border border-white/20',
-    Bundle: 'bg-[#D4AF37]/20 text-[#D4AF37] border border-[#D4AF37]/30',
-  };
-
   return (
-    <>
-      <motion.article
-        initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: '-60px' }}
-        transition={{ duration: 0.6, delay: index * 0.08 }}
-        className="group relative bg-[#111] border border-white/5 overflow-hidden card-shine"
-      >
-        {/* Image */}
-        <div className="relative h-72 overflow-hidden bg-[#0d0d0d]">
-          <Link href={`/products/${product.id}`} aria-label={`View ${product.name}`} className="absolute inset-0 z-10" />
-          <Image
-            src={product.image}
-            alt={product.name}
-            fill
-            className="object-cover object-center transition-transform duration-700 group-hover:scale-110"
-          />
-          {/* Brand Overlay */}
-          <div className="pointer-events-none bottle-branding">AMIDADDY</div>
-          
-          {/* Dark overlay on hover */}
-          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-500" />
-
-          {/* Badge */}
-          {(product.badge || product.isNew) && (
-            <span className={`pointer-events-none absolute top-4 left-4 z-20 text-[10px] font-bold tracking-[0.12em] uppercase px-3 py-1.5 ${
-              product.isNew ? 'bg-emerald-500/80 text-white' : BADGE_COLORS[product.badge!] ?? 'bg-white/10 text-white'
-            }`}>
-              {product.isNew ? 'New' : product.badge}
-            </span>
-          )}
-
-          {/* Quick actions (slide up on hover) */}
-          <div className="absolute bottom-0 left-0 right-0 z-20 translate-y-full transition-transform duration-400 ease-out group-hover:translate-y-0 flex gap-0">
-            <button
-              onClick={handleAdd}
-              className={`flex-1 py-3 text-xs font-bold tracking-[0.12em] uppercase transition-colors duration-200 flex items-center justify-center gap-2 ${
-                added ? 'bg-emerald-600 text-white' : 'bg-[#D4AF37] text-black hover:bg-[#c9a02e]'
-              }`}
-            >
-              <ShoppingBag size={14} />
-              {added ? 'Added!' : 'Quick Add'}
-            </button>
-            <button
-              onClick={() => setModalOpen(true)}
-              className="px-4 py-3 bg-white/10 text-white/80 hover:text-white hover:bg-white/20 transition-colors border-l border-white/10"
-            >
-              <Eye size={16} />
-            </button>
+    <motion.article
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-40px" }}
+      transition={{ duration: 0.55, delay: Math.min(index, 3) * 0.06 }}
+      className="product-card"
+    >
+      <div className="product-visual">
+        <Link
+          href={`/products/${product.slug}`}
+          aria-label={`View ${product.name}`}
+          className="absolute inset-0 z-10"
+        />
+        <Image
+          src={product.image}
+          alt={`${product.name} perfume`}
+          fill
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+          className="object-cover transition-transform duration-700 group-hover:scale-[1.035]"
+        />
+        <div className="product-glow" />
+        {(product.badge || product.isNew) && (
+          <span className="product-badge">
+            {product.isNew ? "New composition" : product.badge}
+          </span>
+        )}
+        <Link href={`/products/${product.slug}`} className="product-view">
+          Discover <ArrowUpRight size={14} />
+        </Link>
+      </div>
+      <div className="p-5 sm:p-6">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="eyebrow">
+              {product.profile} · {product.concentration}
+            </p>
+            <h3 className="display-title mt-2 text-2xl">{product.name}</h3>
           </div>
+          <span className="text-sm text-white/45">{product.longevity}</span>
         </div>
-
-        {/* Info */}
-        <div className="p-5">
-          <div className="flex items-start justify-between mb-3">
-            <div>
-              <p className="text-[#D4AF37] text-[10px] tracking-[0.2em] uppercase mb-1">{product.profile}</p>
-              <h3 className="font-cinzel text-white text-lg tracking-wide leading-tight">{product.name}</h3>
-            </div>
-            {/* Size selector */}
-            <div className="flex gap-3">
-              {(['20ml', '100ml'] as const).map(s => (
-                <button
-                  key={s}
-                  onClick={() => setSelectedSize(s)}
-                  className={`px-3.5 py-1.5 text-[10px] tracking-wider border transition-colors duration-200 ${
-                    selectedSize === s
-                      ? 'border-[#D4AF37] text-[#D4AF37] bg-[#D4AF37]/10'
-                      : 'border-white/10 text-white/40 hover:border-white/30'
-                  }`}
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="flex items-baseline gap-2">
-              <span className="text-white font-semibold text-lg">₹{price.toLocaleString()}</span>
-            </div>
-            <span className="text-white/30 text-xs">{product.longevity}</span>
-          </div>
-          <Link href={`/products/${product.id}`} className="mt-5 flex min-h-11 items-center justify-center border border-[#D4AF37]/70 px-4 text-xs font-semibold uppercase tracking-[0.14em] text-[#D4AF37] transition-colors hover:bg-[#D4AF37] hover:text-black">
-            View scent
-          </Link>
+        <p className="mt-4 text-sm leading-6 text-white/52">
+          {product.topNotes[0]} · {product.heartNotes[0]} ·{" "}
+          {product.baseNotes[0]}
+        </p>
+        <div className="mt-5 flex gap-2" aria-label="Choose bottle size">
+          {product.variants.map((item) => (
+            <button
+              key={item.id}
+              disabled={!item.active || item.stock <= item.reserved}
+              onClick={() => setSize(item.name)}
+              className={`size-chip ${size === item.name ? "active" : ""}`}
+            >
+              {item.name}
+            </button>
+          ))}
         </div>
-      </motion.article>
-
-      <ProductModal
-        product={product}
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-      />
-    </>
+        <div className="mt-5 flex items-center justify-between gap-3">
+          <div>
+            <p className="text-lg">
+              {variant ? formatInr(variant.pricePaise) : "Unavailable"}
+            </p>
+            {variant && variant.mrpPaise > variant.pricePaise && (
+              <p className="text-xs text-white/35 line-through">
+                {formatInr(variant.mrpPaise)}
+              </p>
+            )}
+          </div>
+          <button
+            onClick={add}
+            disabled={!variant || variant.stock <= variant.reserved}
+            className="icon-add"
+            aria-label={`Add ${product.name} ${size} to bag`}
+          >
+            <ShoppingBag size={17} />
+            <span>{added ? "Added" : "Add"}</span>
+          </button>
+        </div>
+      </div>
+    </motion.article>
   );
 }

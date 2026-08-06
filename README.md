@@ -2,9 +2,7 @@
 
 Production-oriented perfume commerce platform built with Next.js App Router, TypeScript, Supabase Auth, PostgreSQL, Prisma, Zod, React Query, and Razorpay.
 
-## Milestone 1: foundation
-
-The existing storefront remains available while the production architecture is introduced incrementally. Authentication, the product data migration, checkout, and Razorpay are separate milestones; do not use the current local file store or Stripe routes for a production deployment.
+The store includes a database-backed fragrance catalog, variant inventory, guest and account checkout, Razorpay payments and refunds, order tracking, customer cancellation, coupons, email notifications, and protected admin operations.
 
 ### Architecture
 
@@ -19,9 +17,10 @@ The existing storefront remains available while the production architecture is i
 
 1. Copy `.env.example` to `.env.local` and populate values from your Supabase project.
 2. Run `npm run db:generate` after changing the Prisma schema.
-3. Apply `prisma/migrations/20260806180000_auth_foundation/migration.sql` in the Supabase SQL editor before enabling authentication.
+3. Back up the database, then apply the migrations in `prisma/migrations` in timestamp order. The commerce upgrade creates the `product-media` Storage bucket and customer/admin RLS policies.
 4. In Supabase Auth, enable email confirmation and Google, then add `http://localhost:3000/auth/callback` and the production callback URL to the redirect allow list.
-5. Run `npm run dev`, then open `http://localhost:3000`.
+5. Configure Razorpay's signed webhook at `/api/razorpay/webhook`, verify a Resend sender, and set `CRON_SECRET` for `/api/maintenance`.
+6. Run `npm run dev`, then open `http://localhost:3000`.
 
 ## Authentication
 
@@ -35,7 +34,7 @@ Do not expose the database URL, Supabase service-role key, Razorpay secret, or C
 
 ## Quality gates
 
-`npm run lint`, `npm run typecheck`, and `npm run format:check` run the baseline checks. Husky invokes lint-staged for staged TypeScript and configuration files.
+`npm run lint`, `npm run typecheck`, `npm run format:check`, and `npm run build` are the release gates. Test Razorpay and Resend in a preview environment before production promotion.
 
 ## Security baseline
 

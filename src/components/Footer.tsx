@@ -1,57 +1,38 @@
+import Link from "next/link";
+
 export default function Footer() {
   return (
-    <footer className="bg-[#050505] border-t border-white/5 py-16 px-6">
-      <div className="max-w-[1400px] mx-auto">
-        <div className="footer-columns">
-          {/* Brand */}
-          <div className="md:col-span-2">
-            <h3 className="font-cinzel text-2xl text-white tracking-[0.2em] mb-4">AMIDADDY</h3>
-            <p className="text-[#D4AF37] text-xs tracking-[0.3em] uppercase mb-4">Luxury Fragrances</p>
-            <p className="text-white/30 text-sm leading-relaxed max-w-sm">
-              Crafting bold, refined, and long-lasting scents for those who understand the art of personal expression.
-            </p>
-          </div>
-
-          {/* Links */}
+    <footer className="site-footer">
+      <div className="mx-auto max-w-[1500px]">
+        <div className="footer-top">
           <div>
-            <h4 className="font-cinzel text-white text-xs tracking-[0.2em] uppercase mb-6">Explore</h4>
-            <ul className="space-y-3">
-              {['Collection', 'Offers', 'Our story'].map(l => (
-                <li key={l}>
-                  <a href="#" className="text-white/30 text-sm hover:text-[#D4AF37] transition-colors tracking-wide">
-                    {l}
-                  </a>
-                </li>
-              ))}
-            </ul>
-            <a href="/admin" className="inline-block mt-5 text-white/25 hover:text-[#D4AF37] text-xs tracking-wider transition-colors">Store admin</a>
+            <Link href="/" className="footer-mark">
+              AMIDADDY
+            </Link>
+            <p>Presence, before words.</p>
           </div>
-
-          {/* Support */}
           <div>
-            <h4 className="font-cinzel text-white text-xs tracking-[0.2em] uppercase mb-6">Support</h4>
-            <ul className="space-y-3">
-              {['About Us', 'Contact', 'Shipping Policy', 'Returns', 'FAQ'].map(l => (
-                <li key={l}>
-                  <a href="#" className="text-white/30 text-sm hover:text-[#D4AF37] transition-colors tracking-wide">
-                    {l}
-                  </a>
-                </li>
-              ))}
-            </ul>
+            <h3>Explore</h3>
+            <Link href="/shop">All fragrances</Link>
+            <Link href="/#scent-finder">Scent finder</Link>
+            <Link href="/#story">Our story</Link>
+          </div>
+          <div>
+            <h3>Client care</h3>
+            <a href="mailto:support@amidaddy.com">Contact</a>
+            <Link href="/#faq">Shipping & cancellation</Link>
+            <Link href="/account/orders">Track an order</Link>
+          </div>
+          <div>
+            <h3>Your account</h3>
+            <Link href="/login">Sign in</Link>
+            <Link href="/signup">Create account</Link>
+            <Link href="/admin">Store admin</Link>
           </div>
         </div>
-
-        {/* Divider */}
-        <div className="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent mb-8" />
-
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-white/20 text-xs tracking-wider">
-            © 2025 Amidaddy Perfumes. All rights reserved.
-          </p>
-          <p className="text-[#D4AF37]/40 text-xs tracking-wider font-cinzel">
-            ✦ Luxury. Crafted. Scented. ✦
-          </p>
+        <div className="footer-bottom">
+          <span>© {new Date().getFullYear()} Amidaddy Parfums</span>
+          <span>India · INR · GST-inclusive pricing</span>
         </div>
       </div>
     </footer>

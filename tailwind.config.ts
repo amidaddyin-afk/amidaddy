@@ -10,24 +10,24 @@ const config: Config = {
     extend: {
       colors: {
         gold: {
-          DEFAULT: '#D4AF37',
-          dark: '#B8860B',
-          pale: '#F5E6C8',
+          DEFAULT: "#D4AF37",
+          dark: "#B8860B",
+          pale: "#F5E6C8",
         },
         charcoal: {
-          DEFAULT: '#0A0A0A',
-          soft: '#111111',
-          mid: '#1A1A1A',
+          DEFAULT: "#0A0A0A",
+          soft: "#111111",
+          mid: "#1A1A1A",
         },
-        ivory: '#FAF7F2',
+        ivory: "#FAF7F2",
       },
       fontFamily: {
-        cinzel: ['Cinzel', 'serif'],
-        playfair: ['Playfair Display', 'serif'],
-        inter: ['Inter', 'sans-serif'],
+        cinzel: ["Cinzel", "serif"],
+        playfair: ["Playfair Display", "serif"],
+        inter: ["Inter", "sans-serif"],
       },
       backgroundImage: {
-        'gold-gradient': 'linear-gradient(135deg, #B8860B, #D4AF37, #F5E6C8)',
+        "gold-gradient": "linear-gradient(135deg, #B8860B, #D4AF37, #F5E6C8)",
       },
     },
   },
