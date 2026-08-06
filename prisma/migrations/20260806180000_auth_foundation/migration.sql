@@ -27,15 +27,6 @@ create table public.login_attempts (
   last_ip inet
 );
 
-create or replace function public.is_admin()
-returns boolean
-language sql
-stable
-security definer set search_path = public
-as $$
-  select exists (select 1 from public.profiles where id = auth.uid() and role = 'ADMIN');
-$$;
-
 alter table public.profiles enable row level security;
 alter table public.audit_logs enable row level security;
 alter table public.login_attempts enable row level security;
@@ -43,8 +34,6 @@ alter table public.login_attempts enable row level security;
 create policy "profiles are readable by their owner" on public.profiles for select using (auth.uid() = id);
 create policy "profiles are editable by their owner" on public.profiles for update using (auth.uid() = id) with check (auth.uid() = id and role = (select role from public.profiles where id = auth.uid()));
 create policy "users can view their own audit events" on public.audit_logs for select using (auth.uid() = actor_id);
-create policy "admins can view profiles" on public.profiles for select using (public.is_admin());
-create policy "admins can view audit events" on public.audit_logs for select using (public.is_admin());
 
 create or replace function public.handle_new_user()
 returns trigger
@@ -97,4 +86,3 @@ $$;
 
 grant execute on function public.login_allowed(text) to anon, authenticated;
 grant execute on function public.record_login_attempt(text, boolean, inet) to anon, authenticated;
-grant execute on function public.is_admin() to authenticated;
