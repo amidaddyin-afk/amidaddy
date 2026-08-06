@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import CartSidebar from "@/components/CartSidebar";
 import { QueryProvider } from "@/providers/query-provider";
 import AnnouncementBar from "@/components/AnnouncementBar";
+import SprayEffect from "@/components/SprayEffect";
 
 export const metadata: Metadata = {
   title: "Amidaddy — Luxury Fragrances",
@@ -44,6 +45,7 @@ export default function RootLayout({
             <Navbar />
             <CartSidebar />
             {children}
+            <SprayEffect />
           </CartProvider>
         </QueryProvider>
       </body>
