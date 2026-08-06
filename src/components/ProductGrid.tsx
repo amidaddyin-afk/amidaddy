@@ -2,15 +2,8 @@
 
 import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { PRODUCTS, type Product } from '@/lib/data';
+import { CURATED_PRODUCTS } from '@/lib/curated-products';
 import ProductCard from './ProductCard';
-
-const CURATED_PRODUCTS: Product[] = PRODUCTS.slice(0, 4).map((product) => ({
-  ...product,
-  price: 1199,
-  originalPrice: undefined,
-  image: `/curated/${product.id === 'coldwar' ? 'cold-war' : product.id}.JPG`,
-}));
 
 export default function ProductGrid() {
   const ref = useRef(null);

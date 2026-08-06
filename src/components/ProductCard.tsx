@@ -7,6 +7,7 @@ import { ShoppingBag, Eye } from 'lucide-react';
 import { Product } from '@/lib/data';
 import { useCart } from '@/context/CartContext';
 import ProductModal from './ProductModal';
+import Link from 'next/link';
 
 interface Props {
   product: Product;
@@ -45,6 +46,7 @@ export default function ProductCard({ product, index }: Props) {
       >
         {/* Image */}
         <div className="relative h-72 overflow-hidden bg-[#0d0d0d]">
+          <Link href={`/products/${product.id}`} aria-label={`View ${product.name}`} className="absolute inset-0 z-10" />
           <Image
             src={product.image}
             alt={product.name}
@@ -52,14 +54,14 @@ export default function ProductCard({ product, index }: Props) {
             className="object-cover object-center transition-transform duration-700 group-hover:scale-110"
           />
           {/* Brand Overlay */}
-          <div className="bottle-branding">AMIDADDY</div>
+          <div className="pointer-events-none bottle-branding">AMIDADDY</div>
           
           {/* Dark overlay on hover */}
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-500" />
 
           {/* Badge */}
           {(product.badge || product.isNew) && (
-            <span className={`absolute top-4 left-4 text-[10px] font-bold tracking-[0.12em] uppercase px-3 py-1.5 ${
+            <span className={`pointer-events-none absolute top-4 left-4 z-20 text-[10px] font-bold tracking-[0.12em] uppercase px-3 py-1.5 ${
               product.isNew ? 'bg-emerald-500/80 text-white' : BADGE_COLORS[product.badge!] ?? 'bg-white/10 text-white'
             }`}>
               {product.isNew ? 'New' : product.badge}
@@ -67,7 +69,7 @@ export default function ProductCard({ product, index }: Props) {
           )}
 
           {/* Quick actions (slide up on hover) */}
-          <div className="absolute bottom-0 left-0 right-0 translate-y-full group-hover:translate-y-0 transition-transform duration-400 ease-out flex gap-0">
+          <div className="absolute bottom-0 left-0 right-0 z-20 translate-y-full transition-transform duration-400 ease-out group-hover:translate-y-0 flex gap-0">
             <button
               onClick={handleAdd}
               className={`flex-1 py-3 text-xs font-bold tracking-[0.12em] uppercase transition-colors duration-200 flex items-center justify-center gap-2 ${
@@ -117,6 +119,9 @@ export default function ProductCard({ product, index }: Props) {
             </div>
             <span className="text-white/30 text-xs">{product.longevity}</span>
           </div>
+          <Link href={`/products/${product.id}`} className="mt-5 flex min-h-11 items-center justify-center border border-[#D4AF37]/70 px-4 text-xs font-semibold uppercase tracking-[0.14em] text-[#D4AF37] transition-colors hover:bg-[#D4AF37] hover:text-black">
+            View scent
+          </Link>
         </div>
       </motion.article>
 
