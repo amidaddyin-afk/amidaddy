@@ -41,6 +41,14 @@ export async function listCatalogProducts(query: ListQuery) {
   return { products: (data ?? []).map((product) => mapProduct(product as Record<string, unknown>)), total: count ?? 0, page: query.page, pageSize: query.pageSize };
 }
 
+export async function getCatalogProductBySlug(slug: string) {
+  if (!configured()) return PRODUCTS.find((product) => product.id === slug) ?? null;
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("products").select("*, product_images(url, position)").eq("slug", slug).eq("active", true).is("deleted_at", null).maybeSingle();
+  if (error) throw new Error("Unable to load the product.");
+  return data ? mapProduct(data as Record<string, unknown>) : null;
+}
+
 export async function createCatalogProduct(input: ProductInput) {
   const supabase = await createClient();
   const { images, ...product } = input;

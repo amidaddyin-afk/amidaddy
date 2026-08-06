@@ -22,7 +22,7 @@ export default function ProductGrid() {
 
   useEffect(() => {
     fetch('/api/products').then((response) => response.ok ? response.json() : null).then((data) => {
-      if (data) setProducts(data);
+      if (data?.products) setProducts(data.products);
     }).catch(() => undefined);
   }, []);
 
