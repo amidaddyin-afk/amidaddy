@@ -1,6 +1,7 @@
 import "server-only";
 
-import { listOrders, listProducts } from "@/lib/store";
+import { listProducts } from "@/lib/store";
+import { listOrders } from "@/lib/orders";
 import { createClient } from "@/lib/supabase/server";
 
 export type AdminOverview = {

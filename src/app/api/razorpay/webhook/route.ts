@@ -1,6 +1,6 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
-import { getOrderByPaymentSession, markOrderPaid } from "@/lib/store";
+import { getOrderByPaymentSession, markOrderPaid } from "@/lib/orders";
 
 function validSignature(payload: string, signature: string, secret: string) {
   const expected = createHmac("sha256", secret).update(payload).digest("hex");
