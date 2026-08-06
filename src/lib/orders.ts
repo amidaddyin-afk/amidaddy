@@ -2,6 +2,7 @@ import "server-only";
 
 import { createHash } from "node:crypto";
 import type { PoolClient } from "pg";
+import { appendAuditEvent } from "@/lib/audit";
 import {
   couponDiscountPaise,
   isCustomerCancellationAllowed,
@@ -553,13 +554,13 @@ export async function cancelOrder(
         ],
       );
     await client.query(
-      "update public.orders set status='CANCELLED',payment_status=$2,cancelled_at=now(),cancellation_reason=$3,updated_at=now() where id=$1",
+      "update public.orders set status='CANCELLED',payment_status=$2::public.\"PaymentStatus\",cancelled_at=now(),cancellation_reason=$3,updated_at=now() where id=$1",
       [orderId, refundId ? "REFUNDED" : locked.payment_status, reason],
     );
-    await client.query(
-      "insert into public.audit_logs(actor_id,event,metadata) values($1,'order.cancelled',jsonb_build_object('orderId',$2,'refunded', $3))",
-      [actorId ?? null, orderId, Boolean(refundId)],
-    );
+    await appendAuditEvent(client, actorId ?? null, "order.cancelled", {
+      orderId,
+      refunded: Boolean(refundId),
+    });
   });
   await sendOrderEmail(
     orderId,
@@ -586,13 +587,13 @@ export async function issueRefund(
       [orderId, refundId, amountPaise, reason, actorId],
     );
     await client.query(
-      "update public.orders set payment_status=$2,updated_at=now() where id=$1",
+      'update public.orders set payment_status=$2::public."PaymentStatus",updated_at=now() where id=$1',
       [orderId, amountPaise === refundable ? "REFUNDED" : "PARTIALLY_REFUNDED"],
     );
-    await client.query(
-      "insert into public.audit_logs(actor_id,event,metadata) values($1,'order.refunded',jsonb_build_object('orderId',$2,'amountPaise',$3))",
-      [actorId, orderId, amountPaise],
-    );
+    await appendAuditEvent(client, actorId, "order.refunded", {
+      orderId,
+      amountPaise,
+    });
   });
   await sendOrderEmail(orderId, "order-refunded");
 }
@@ -623,7 +624,7 @@ export async function updateOrderFulfillment(
         "Courier and tracking number are required to ship an order.",
       );
     await client.query(
-      "update public.orders set status=$2,courier_name=coalesce($3,courier_name),tracking_number=coalesce($4,tracking_number),tracking_url=coalesce($5,tracking_url),shipped_at=case when $2='SHIPPED' then now() else shipped_at end,delivered_at=case when $2='DELIVERED' then now() else delivered_at end,updated_at=now() where id=$1",
+      "update public.orders set status=$2::public.\"OrderStatus\",courier_name=coalesce($3::text,courier_name),tracking_number=coalesce($4::text,tracking_number),tracking_url=coalesce($5::text,tracking_url),shipped_at=case when $2::text='SHIPPED' then now() else shipped_at end,delivered_at=case when $2::text='DELIVERED' then now() else delivered_at end,updated_at=now() where id=$1",
       [
         orderId,
         status,
@@ -632,10 +633,10 @@ export async function updateOrderFulfillment(
         tracking.trackingUrl ?? null,
       ],
     );
-    await client.query(
-      "insert into public.audit_logs(actor_id,event,metadata) values($1,'order.status_changed',jsonb_build_object('orderId',$2,'status',$3))",
-      [actorId, orderId, status],
-    );
+    await appendAuditEvent(client, actorId, "order.status_changed", {
+      orderId,
+      status,
+    });
   });
   await sendOrderEmail(
     orderId,

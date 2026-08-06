@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { requireUser } from "@/lib/auth";
+import { appendAuditEvent } from "@/lib/audit";
 import { db, transaction } from "@/lib/db";
 
 export type AdminActionState = { error?: string; message?: string };
@@ -44,7 +45,7 @@ export async function createCouponAction(
       return { error: "Percentage discounts cannot exceed 100%." };
     await transaction(async (client) => {
       await client.query(
-        "insert into public.coupons(code,type,value,min_subtotal_paise,max_discount_paise,usage_limit,per_customer_limit,starts_at,ends_at) values($1,$2,$3,$4,$5,$6,$7,$8,$9)",
+        'insert into public.coupons(code,type,value,min_subtotal_paise,max_discount_paise,usage_limit,per_customer_limit,starts_at,ends_at) values($1,$2::public."CouponType",$3,$4,$5,$6,$7,$8,$9)',
         [
           item.code,
           item.type,
@@ -61,10 +62,9 @@ export async function createCouponAction(
           item.endsAt || null,
         ],
       );
-      await client.query(
-        "insert into public.audit_logs(actor_id,event,metadata) values($1,'coupon.created',jsonb_build_object('code',$2))",
-        [user.id, item.code],
-      );
+      await appendAuditEvent(client, user.id, "coupon.created", {
+        code: item.code,
+      });
     });
     revalidatePath("/admin");
     return { message: "Coupon created." };
@@ -84,10 +84,9 @@ export async function toggleCouponAction(formData: FormData) {
       "update public.coupons set active=not active,updated_at=now() where id=$1",
       [id],
     );
-    await client.query(
-      "insert into public.audit_logs(actor_id,event,metadata) values($1,'coupon.toggled',jsonb_build_object('couponId',$2))",
-      [user.id, id],
-    );
+    await appendAuditEvent(client, user.id, "coupon.toggled", {
+      couponId: id,
+    });
   });
   revalidatePath("/admin");
 }
@@ -132,10 +131,10 @@ export async function adjustVariantStockAction(
           user.id,
         ],
       );
-      await client.query(
-        "insert into public.audit_logs(actor_id,event,metadata) values($1,'inventory.adjusted',jsonb_build_object('variantId',$2,'quantity',$3))",
-        [user.id, parsed.data.variantId, parsed.data.quantity],
-      );
+      await appendAuditEvent(client, user.id, "inventory.adjusted", {
+        variantId: parsed.data.variantId,
+        quantity: parsed.data.quantity,
+      });
     });
     revalidatePath("/admin");
     return { message: "Stock updated." };
@@ -211,13 +210,13 @@ export async function updateUserRoleAction(formData: FormData) {
   }
   await transaction(async (client) => {
     await client.query(
-      "update public.profiles set role=$2,updated_at=now() where id=$1",
+      'update public.profiles set role=$2::public."UserRole",updated_at=now() where id=$1',
       [parsed.profileId, parsed.role],
     );
-    await client.query(
-      "insert into public.audit_logs(actor_id,event,metadata) values($1,'profile.role_changed',jsonb_build_object('profileId',$2,'role',$3))",
-      [user.id, parsed.profileId, parsed.role],
-    );
+    await appendAuditEvent(client, user.id, "profile.role_changed", {
+      profileId: parsed.profileId,
+      role: parsed.role,
+    });
   });
   revalidatePath("/admin");
 }
