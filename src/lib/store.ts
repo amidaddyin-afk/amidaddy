@@ -7,7 +7,7 @@ import { PRODUCTS, type Product } from './data';
 export interface OrderLine {
   productId: string;
   name: string;
-  size: '50ml' | '100ml';
+  size: '20ml' | '100ml';
   qty: number;
   unitPrice: number;
 }
@@ -85,6 +85,10 @@ export async function recordStripeSession(orderId: string, stripeSessionId: stri
   if (!order) return;
   order.stripeSessionId = stripeSessionId;
   await saveStore(store);
+}
+
+export async function getOrderByPaymentSession(paymentSessionId: string) {
+  return (await loadStore()).orders.find((order) => order.stripeSessionId === paymentSessionId);
 }
 
 export async function markOrderPaid(orderId: string, stripeSessionId?: string) {

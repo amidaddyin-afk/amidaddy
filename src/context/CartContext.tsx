@@ -5,7 +5,7 @@ import type { Product } from '@/lib/data';
 
 export interface CartItem {
   product: Product;
-  size: '50ml' | '100ml';
+  size: '20ml' | '100ml';
   qty: number;
   unitPrice: number;
 }
@@ -15,7 +15,7 @@ interface CartContextType {
   isOpen: boolean;
   openCart: () => void;
   closeCart: () => void;
-  addItem: (product: Product, size: '50ml' | '100ml') => void;
+  addItem: (product: Product, size: '20ml' | '100ml') => void;
   removeItem: (productId: string, size: string) => void;
   updateQty: (productId: string, size: string, qty: number) => void;
   subtotal: number;
@@ -27,7 +27,7 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | null>(null);
 
-const SIZE_MULTIPLIER = { '50ml': 1, '100ml': 1.6 };
+const SIZE_PRICE = { '20ml': 199, '100ml': 1199 };
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
@@ -51,13 +51,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const openCart = useCallback(() => setIsOpen(true), []);
   const closeCart = useCallback(() => setIsOpen(false), []);
 
-  const addItem = useCallback((product: Product, size: '50ml' | '100ml') => {
-    const unitPrice = Math.round(product.price * SIZE_MULTIPLIER[size]);
+  const addItem = useCallback((product: Product, size: '20ml' | '100ml') => {
+    const unitPrice = SIZE_PRICE[size];
     setItems(prev => {
       const idx = prev.findIndex(i => i.product.id === product.id && i.size === size);
       if (idx >= 0) {
         const next = [...prev];
-        next[idx] = { ...next[idx], qty: next[idx].qty + 1 };
+        next[idx] = { ...next[idx], qty: Math.min(next[idx].qty + 1, 10) };
         return next;
       }
       return [...prev, { product, size, qty: 1, unitPrice }];
@@ -72,19 +72,14 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const updateQty = useCallback((productId: string, size: string, qty: number) => {
     if (qty <= 0) { removeItem(productId, size); return; }
     setItems(prev => prev.map(i =>
-      i.product.id === productId && i.size === size ? { ...i, qty } : i
+      i.product.id === productId && i.size === size ? { ...i, qty: Math.min(qty, 10) } : i
     ));
   }, [removeItem]);
   const clearCart = useCallback(() => setItems([]), []);
 
-  // BOGO: flatten all items, sort desc by price, every 2nd is free
-  const flattened = items.flatMap(item =>
-    Array.from({ length: item.qty }, () => item.unitPrice)
-  ).sort((a, b) => b - a);
-
-  const subtotal = flattened.reduce((s, p) => s + p, 0);
-  const discount = flattened.filter((_, i) => i % 2 !== 0).reduce((s, p) => s + p, 0);
-  const total = subtotal - discount;
+  const subtotal = items.reduce((sum, item) => sum + item.unitPrice * item.qty, 0);
+  const discount = 0;
+  const total = subtotal;
   const totalQty = items.reduce((s, i) => s + i.qty, 0);
 
   return (

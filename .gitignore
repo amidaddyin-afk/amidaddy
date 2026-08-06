@@ -41,6 +41,12 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 dev-server.log
+dev-server.err.log
+data/
+productPics/
+Edited Photos-*.zip
 
 # Prisma generated client
 /src/generated/
+
+.env*

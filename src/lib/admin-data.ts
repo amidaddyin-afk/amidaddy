@@ -8,6 +8,7 @@ export type AdminOverview = {
   activeProductCount: number;
   orderCount: number;
   paidRevenue: number;
+  orders: Array<{ id: string; customerName: string; email: string; total: number; status: string; paymentStatus: string; createdAt: string; itemCount: number }>;
   customerCount: number;
   admins: Array<{ id: string; email: string; full_name: string | null; created_at: string }>;
   customers: Array<{ id: string; email: string; full_name: string | null; role: "CUSTOMER" | "ADMIN"; created_at: string }>;
@@ -27,6 +28,7 @@ export async function getAdminOverview(): Promise<AdminOverview> {
     activeProductCount: products.filter((product) => product.active).length,
     orderCount: orders.length,
     paidRevenue: orders.filter((order) => order.paymentStatus === "paid").reduce((total, order) => total + order.total, 0),
+    orders: orders.map((order) => ({ id: order.id, customerName: order.customerName, email: order.email, total: order.total, status: order.status, paymentStatus: order.paymentStatus, createdAt: order.createdAt, itemCount: order.lines.reduce((total, line) => total + line.qty, 0) })),
     customerCount: customers.filter((profile) => profile.role === "CUSTOMER").length,
     admins: customers.filter((profile) => profile.role === "ADMIN"),
     customers,

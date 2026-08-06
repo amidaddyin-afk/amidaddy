@@ -14,12 +14,12 @@ interface Props {
 }
 
 export default function ProductCard({ product, index }: Props) {
-  const [selectedSize, setSelectedSize] = useState<'50ml' | '100ml'>('50ml');
+  const [selectedSize, setSelectedSize] = useState<'20ml' | '100ml'>('100ml');
   const [modalOpen, setModalOpen] = useState(false);
   const [added, setAdded] = useState(false);
   const { addItem } = useCart();
 
-  const price = selectedSize === '100ml' ? Math.round(product.price * 1.6) : product.price;
+  const price = selectedSize === '100ml' ? 1199 : 199;
 
   const handleAdd = () => {
     addItem(product, selectedSize);
@@ -95,7 +95,7 @@ export default function ProductCard({ product, index }: Props) {
             </div>
             {/* Size selector */}
             <div className="flex gap-3">
-              {(['50ml', '100ml'] as const).map(s => (
+              {(['20ml', '100ml'] as const).map(s => (
                 <button
                   key={s}
                   onClick={() => setSelectedSize(s)}
@@ -114,11 +114,6 @@ export default function ProductCard({ product, index }: Props) {
           <div className="flex items-center justify-between">
             <div className="flex items-baseline gap-2">
               <span className="text-white font-semibold text-lg">₹{price.toLocaleString()}</span>
-              {product.originalPrice && (
-                <span className="text-white/30 text-sm line-through">
-                  ₹{(selectedSize === '100ml' ? Math.round(product.originalPrice * 1.6) : product.originalPrice).toLocaleString()}
-                </span>
-              )}
             </div>
             <span className="text-white/30 text-xs">{product.longevity}</span>
           </div>

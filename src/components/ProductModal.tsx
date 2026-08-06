@@ -14,11 +14,11 @@ interface Props {
 }
 
 export default function ProductModal({ product, open, onClose }: Props) {
-  const [size, setSize] = useState<'50ml' | '100ml'>('50ml');
+  const [size, setSize] = useState<'20ml' | '100ml'>('100ml');
   const [added, setAdded] = useState(false);
   const { addItem } = useCart();
 
-  const price = size === '100ml' ? Math.round(product.price * 1.6) : product.price;
+  const price = size === '100ml' ? 1199 : 199;
 
   const handleAdd = () => {
     addItem(product, size);
@@ -43,7 +43,7 @@ export default function ProductModal({ product, open, onClose }: Props) {
             exit={{ opacity: 0, y: 30, scale: 0.95 }}
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
             onClick={e => e.stopPropagation()}
-            className="relative bg-[#111] border border-white/10 max-w-3xl w-full grid grid-cols-1 md:grid-cols-2 overflow-hidden"
+            className="relative grid max-h-[calc(100dvh-2rem)] w-full max-w-3xl grid-cols-1 overflow-y-auto border border-white/10 bg-[#111] md:grid-cols-2 md:overflow-hidden"
           >
             {/* Image */}
             <div className="relative h-64 md:h-auto bg-[#0d0d0d]">
@@ -54,7 +54,7 @@ export default function ProductModal({ product, open, onClose }: Props) {
             </div>
 
             {/* Details */}
-            <div className="p-8 flex flex-col justify-center">
+            <div className="flex flex-col justify-center p-5 sm:p-8">
               <button onClick={onClose} className="absolute top-4 right-4 text-white/40 hover:text-white transition-colors">
                 <X size={20} />
               </button>
@@ -79,7 +79,7 @@ export default function ProductModal({ product, open, onClose }: Props) {
               </div>
 
               <div className="flex gap-2 mb-4">
-                {(['50ml', '100ml'] as const).map(s => (
+                {(['20ml', '100ml'] as const).map(s => (
                   <button
                     key={s}
                     onClick={() => setSize(s)}
@@ -96,11 +96,6 @@ export default function ProductModal({ product, open, onClose }: Props) {
 
               <div className="flex items-center justify-between mb-6">
                 <span className="text-white text-2xl font-semibold">₹{price.toLocaleString()}</span>
-                {product.originalPrice && (
-                  <span className="text-white/30 line-through text-sm">
-                    ₹{(size === '100ml' ? Math.round(product.originalPrice * 1.6) : product.originalPrice).toLocaleString()}
-                  </span>
-                )}
               </div>
 
               <button

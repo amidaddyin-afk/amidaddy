@@ -54,7 +54,8 @@ export async function signInAction(_: AuthActionState, formData: FormData): Prom
   const { error } = await supabase.auth.signInWithPassword(parsed.data);
   await recordLoginAttempt(parsed.data.email, !error);
   if (error) return { error: "Invalid email or password." };
-  redirect("/account");
+  const requestedNext = formData.get("next");
+  redirect(typeof requestedNext === "string" && requestedNext.startsWith("/") && !requestedNext.startsWith("//") ? requestedNext : "/account");
 }
 
 export async function requestPasswordResetAction(_: AuthActionState, formData: FormData): Promise<AuthActionState> {

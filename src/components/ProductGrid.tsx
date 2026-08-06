@@ -18,11 +18,11 @@ export default function ProductGrid() {
   const inView = useInView(ref, { once: true, margin: '-80px' });
   const [activeProfile, setActiveProfile] = useState<string>('All');
   const [activePriceIdx, setActivePriceIdx] = useState(0);
-  const [products, setProducts] = useState<Product[]>(PRODUCTS);
+  const [products, setProducts] = useState<Product[]>(PRODUCTS.slice(0, 4).map((product) => ({ ...product, price: 1199, originalPrice: undefined, image: `/curated/${product.id === 'coldwar' ? 'cold-war' : product.id}.JPG` })));
 
   useEffect(() => {
     fetch('/api/products').then((response) => response.ok ? response.json() : null).then((data) => {
-      if (data?.products) setProducts(data.products);
+      if (data?.products?.length) setProducts(data.products);
     }).catch(() => undefined);
   }, []);
 
@@ -44,9 +44,9 @@ export default function ProductGrid() {
           transition={{ duration: 0.8 }}
           className="text-center mb-14"
         >
-          <p className="text-[#D4AF37] text-xs tracking-[0.3em] uppercase mb-4">Exclusive Fragrances</p>
-          <h2 className="font-cinzel text-[clamp(30px,5vw,52px)] text-white tracking-wide mb-5">
-            The Full Collection
+          <p className="text-[#D4AF37] text-sm tracking-[0.18em] uppercase mb-4">The Amidaddy collection</p>
+          <h2 className="font-cinzel text-[clamp(38px,6vw,68px)] text-white tracking-wide mb-5">
+            Four scents. Yours to choose.
           </h2>
           <div className="divider-gold mb-4" />
           <p className="text-white/40 text-sm max-w-lg mx-auto mt-6">
@@ -59,7 +59,7 @@ export default function ProductGrid() {
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="flex flex-wrap justify-center gap-8 mb-12"
+          className="hidden"
         >
           {/* Scent type filter */}
           <div className="flex items-center gap-2 flex-wrap justify-center">

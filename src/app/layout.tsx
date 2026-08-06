@@ -4,11 +4,12 @@ import { CartProvider } from "@/context/CartContext";
 import Navbar from "@/components/Navbar";
 import CartSidebar from "@/components/CartSidebar";
 import { QueryProvider } from "@/providers/query-provider";
+import AnnouncementBar from "@/components/AnnouncementBar";
 
 export const metadata: Metadata = {
   title: "Amidaddy — Luxury Fragrances",
   description:
-    "Experience the world of elite perfumery. Shop handcrafted luxury fragrances from Amidaddy. Buy One Get One Free on all scents.",
+    "Experience the world of unisex fragrances from Amidaddy.",
   openGraph: {
     title: "Amidaddy — Luxury Fragrances",
     description:
@@ -39,6 +40,7 @@ export default function RootLayout({
       <body className="bg-black text-white antialiased">
         <QueryProvider>
           <CartProvider>
+            <AnnouncementBar />
             <Navbar />
             <CartSidebar />
             {children}

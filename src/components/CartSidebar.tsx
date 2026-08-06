@@ -7,7 +7,7 @@ import { useCart } from '@/context/CartContext';
 import { useRouter } from 'next/navigation';
 
 export default function CartSidebar() {
-  const { isOpen, closeCart, items, removeItem, updateQty, subtotal, discount, total, totalQty } = useCart();
+  const { isOpen, closeCart, items, removeItem, updateQty, subtotal, total, totalQty } = useCart();
   const router = useRouter();
 
   return (
@@ -44,14 +44,6 @@ export default function CartSidebar() {
               </button>
             </div>
 
-            {/* BOGO Banner */}
-            {items.length > 0 && (
-              <div className="mx-4 mt-4 px-4 py-3 glass-gold text-center">
-                <p className="text-[#D4AF37] text-xs tracking-[0.15em] uppercase font-medium">
-                  ✦ Buy One Get One Free Applied ✦
-                </p>
-              </div>
-            )}
 
             {/* Items */}
             <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
@@ -98,8 +90,8 @@ export default function CartSidebar() {
                             </button>
                             <span className="text-white text-sm w-5 text-center">{item.qty}</span>
                             <button
-                              onClick={() => updateQty(item.product.id, item.size, item.qty + 1)}
-                              className="px-2 py-1 text-white/40 hover:text-white transition-colors"
+                              onClick={() => updateQty(item.product.id, item.size, item.qty + 1)} disabled={item.qty >= 10}
+                              className="px-2 py-1 text-white/40 hover:text-white transition-colors disabled:cursor-not-allowed disabled:opacity-30"
                             >
                               <Plus size={12} />
                             </button>
@@ -128,12 +120,6 @@ export default function CartSidebar() {
                   <span className="text-white/40 tracking-wider">Subtotal</span>
                   <span className="text-white">₹{subtotal.toLocaleString()}</span>
                 </div>
-                {discount > 0 && (
-                  <div className="flex justify-between text-sm">
-                    <span className="text-[#D4AF37] tracking-wider">BOGO Discount</span>
-                    <span className="text-[#D4AF37]">−₹{discount.toLocaleString()}</span>
-                  </div>
-                )}
                 <div className="flex justify-between text-lg font-semibold pt-3 border-t border-white/5">
                   <span className="text-white">Total</span>
                   <span className="text-white">₹{total.toLocaleString()}</span>

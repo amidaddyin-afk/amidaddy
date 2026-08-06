@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useActionState, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import {
   requestPasswordResetAction,
@@ -21,6 +22,9 @@ export function AuthForm({ mode }: { mode: Mode }) {
   const isLogin = mode === "login";
   const isResetRequest = mode === "forgot-password";
   const [oauthError, setOauthError] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const next = searchParams.get("next");
+  const safeNext = next?.startsWith("/") && !next.startsWith("//") ? next : "/account";
 
   async function signInWithGoogle() {
     setOauthError(null);
@@ -34,6 +38,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
   return (
     <main className="min-h-screen bg-black px-6 pt-36">
       <form action={formAction} className="mx-auto max-w-md border border-white/10 bg-[#0e0e0e] p-7">
+        {isLogin && <input type="hidden" name="next" value={safeNext} />}
         <p className="mb-3 text-xs tracking-[0.2em] text-[#D4AF37] uppercase">Amidaddy account</p>
         <h1 className="font-cinzel mb-6 text-2xl text-white">
           {isLogin ? "Sign in" : isSignup ? "Create account" : isResetRequest ? "Reset password" : "Choose a new password"}

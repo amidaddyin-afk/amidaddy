@@ -17,7 +17,7 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const navLinks = ['Collection', 'For Him', 'For Her', 'Luxury', 'Find Your Scent'];
+  const navLinks = ['Shop', 'Offers'];
 
   return (
     <>
@@ -25,7 +25,7 @@ export default function Navbar() {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        className={`fixed top-8 left-0 right-0 z-50 transition-all duration-500 ${
           scrolled
             ? 'glass border-b border-white/5 py-3'
             : 'bg-transparent py-5'
@@ -33,7 +33,7 @@ export default function Navbar() {
       >
         <div className="max-w-[1600px] mx-auto px-6 flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="font-cinzel text-lg sm:text-xl tracking-[0.15em] sm:tracking-[0.25em] text-white hover:text-[#D4AF37] transition-colors duration-300">
+          <Link href="/" className="brand-wordmark text-white transition-colors duration-300 hover:text-[#D4AF37]">
             AMIDADDY
           </Link>
 
@@ -42,7 +42,7 @@ export default function Navbar() {
             {navLinks.map(link => (
               <a
                 key={link}
-                href={`#${link.toLowerCase().replace(/ /g, '-')}`}
+                href={link === 'Shop' ? '#collection-grid' : '#offers'}
                 className="text-xs text-white/70 hover:text-[#D4AF37] tracking-[0.12em] uppercase transition-colors duration-300 relative group"
               >
                 {link}

@@ -2,7 +2,7 @@ export default function Footer() {
   return (
     <footer className="bg-[#050505] border-t border-white/5 py-16 px-6">
       <div className="max-w-[1400px] mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+        <div className="footer-columns">
           {/* Brand */}
           <div className="md:col-span-2">
             <h3 className="font-cinzel text-2xl text-white tracking-[0.2em] mb-4">AMIDADDY</h3>
@@ -16,7 +16,7 @@ export default function Footer() {
           <div>
             <h4 className="font-cinzel text-white text-xs tracking-[0.2em] uppercase mb-6">Explore</h4>
             <ul className="space-y-3">
-              {['Collection', 'For Him', 'For Her', 'Luxury Picks', 'Find Your Scent'].map(l => (
+              {['Collection', 'Offers', 'Our story'].map(l => (
                 <li key={l}>
                   <a href="#" className="text-white/30 text-sm hover:text-[#D4AF37] transition-colors tracking-wide">
                     {l}
