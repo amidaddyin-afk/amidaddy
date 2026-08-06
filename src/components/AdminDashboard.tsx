@@ -9,7 +9,7 @@ const blankProduct: Product = { id: '', name: '', price: 0, image: '/hero1.png',
 
 export default function AdminDashboard() {
   const [password, setPassword] = useState('');
-  const [loggedIn, setLoggedIn] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(true);
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [draft, setDraft] = useState<Product | null>(null);

@@ -19,7 +19,19 @@ The existing storefront remains available while the production architecture is i
 
 1. Copy `.env.example` to `.env.local` and populate values from your Supabase project.
 2. Run `npm run db:generate` after changing the Prisma schema.
-3. Run `npm run dev`, then open `http://localhost:3000`.
+3. Apply `prisma/migrations/20260806180000_auth_foundation/migration.sql` in the Supabase SQL editor before enabling authentication.
+4. In Supabase Auth, enable email confirmation and Google, then add `http://localhost:3000/auth/callback` and the production callback URL to the redirect allow list.
+5. Run `npm run dev`, then open `http://localhost:3000`.
+
+## Authentication
+
+Email sign-up, email/password login, Google OAuth, password reset, session refresh, account lockouts, and Supabase-backed admin roles are implemented. The first administrator must be promoted manually after signup:
+
+```sql
+update public.profiles set role = 'ADMIN' where email = 'admin@example.com';
+```
+
+Do not expose the database URL, Supabase service-role key, Razorpay secret, or CAPTCHA secret to the browser. Turnstile validation is enabled only when `TURNSTILE_SECRET_KEY` is configured.
 
 ## Quality gates
 

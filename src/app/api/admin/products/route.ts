@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { isAdmin } from '@/lib/admin-auth';
+import { isAdmin } from '@/lib/auth';
 import { listProducts, saveProduct } from '@/lib/store';
 import type { Product } from '@/lib/data';
 

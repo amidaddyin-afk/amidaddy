@@ -7,5 +7,29 @@ datasource db {
   provider = "postgresql"
 }
 
-// Domain models are introduced with their owning milestones. Keeping the initial
-// schema empty prevents an unreviewed database contract from reaching production.
+enum UserRole {
+  CUSTOMER
+  ADMIN
+}
+
+model Profile {
+  id        String   @id @db.Uuid
+  email     String   @unique
+  fullName  String?  @map("full_name")
+  role      UserRole @default(CUSTOMER)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@map("profiles")
+}
+
+model AuditLog {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  actorId   String?  @map("actor_id") @db.Uuid
+  event     String
+  metadata  Json     @default("{}")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([actorId, createdAt])
+  @@map("audit_logs")
+}

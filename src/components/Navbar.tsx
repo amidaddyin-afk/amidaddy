@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingBag, Menu, X, Search } from 'lucide-react';
+import { ShoppingBag, Menu, X, Search, UserRound } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import Link from 'next/link';
 
@@ -73,6 +73,10 @@ export default function Navbar() {
                 </motion.span>
               )}
             </button>
+
+            <Link href="/account" className="hidden text-white/60 transition-colors hover:text-white lg:flex" aria-label="Account">
+              <UserRound size={18} />
+            </Link>
 
             {/* Mobile menu toggle */}
             <button

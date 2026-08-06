@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { isAdmin } from '@/lib/admin-auth';
+import { isAdmin } from '@/lib/auth';
 import { listOrders } from '@/lib/store';
 
 export const dynamic = 'force-dynamic';

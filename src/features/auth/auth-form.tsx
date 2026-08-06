@@ -1,0 +1,56 @@
+"use client";
+
+import Link from "next/link";
+import { useActionState, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+import {
+  requestPasswordResetAction,
+  signInAction,
+  signUpAction,
+  updatePasswordAction,
+  type AuthActionState,
+} from "./actions";
+
+type Mode = "login" | "signup" | "forgot-password" | "reset-password";
+const initialState: AuthActionState = {};
+
+export function AuthForm({ mode }: { mode: Mode }) {
+  const action = mode === "login" ? signInAction : mode === "signup" ? signUpAction : mode === "forgot-password" ? requestPasswordResetAction : updatePasswordAction;
+  const [state, formAction, pending] = useActionState(action, initialState);
+  const isSignup = mode === "signup";
+  const isLogin = mode === "login";
+  const isResetRequest = mode === "forgot-password";
+  const [oauthError, setOauthError] = useState<string | null>(null);
+
+  async function signInWithGoogle() {
+    setOauthError(null);
+    const { error } = await createClient().auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${window.location.origin}/auth/callback?next=/account` },
+    });
+    if (error) setOauthError("Google sign-in is unavailable. Please try again.");
+  }
+
+  return (
+    <main className="min-h-screen bg-black px-6 pt-36">
+      <form action={formAction} className="mx-auto max-w-md border border-white/10 bg-[#0e0e0e] p-7">
+        <p className="mb-3 text-xs tracking-[0.2em] text-[#D4AF37] uppercase">Amidaddy account</p>
+        <h1 className="font-cinzel mb-6 text-2xl text-white">
+          {isLogin ? "Sign in" : isSignup ? "Create account" : isResetRequest ? "Reset password" : "Choose a new password"}
+        </h1>
+        {isSignup && <input name="fullName" required autoComplete="name" placeholder="Full name" className="checkout-input mb-3 w-full" />}
+        {!(!isSignup && mode === "reset-password") && <input name="email" type="email" required autoComplete="email" placeholder="Email address" className="checkout-input mb-3 w-full" />}
+        {!isResetRequest && <input name="password" type="password" required autoComplete={isLogin ? "current-password" : "new-password"} placeholder="Password" className="checkout-input mb-3 w-full" />}
+        {isLogin && <label className="mb-4 flex items-center gap-2 text-sm text-white/60"><input type="checkbox" name="rememberMe" defaultChecked /> Keep me signed in</label>}
+        {state.error && <p className="mb-4 text-sm text-red-300" role="alert">{state.error}</p>}
+        {state.message && <p className="mb-4 text-sm text-[#D4AF37]" role="status">{state.message}</p>}
+        <button disabled={pending} className="btn-gold w-full disabled:cursor-not-allowed disabled:opacity-60">
+          {pending ? "Please wait" : isLogin ? "Sign in" : isSignup ? "Create account" : isResetRequest ? "Send reset link" : "Update password"}
+        </button>
+        {(isLogin || isSignup) && <><div className="my-5 border-t border-white/10" /><button type="button" onClick={signInWithGoogle} className="btn-ghost w-full">Continue with Google</button>{oauthError && <p className="mt-4 text-sm text-red-300" role="alert">{oauthError}</p>}</>}
+        {isLogin && <div className="mt-5 flex justify-between text-sm text-white/60"><Link href="/signup" className="hover:text-[#D4AF37]">Create account</Link><Link href="/forgot-password" className="hover:text-[#D4AF37]">Forgot password?</Link></div>}
+        {isSignup && <p className="mt-5 text-sm text-white/60">Already have an account? <Link href="/login" className="text-[#D4AF37]">Sign in</Link></p>}
+      </form>
+    </main>
+  );
+}
