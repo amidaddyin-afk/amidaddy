@@ -1,117 +1,45 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { PRODUCTS, type Product } from '@/lib/data';
 import ProductCard from './ProductCard';
 
-const PROFILES = ['All', 'Woody', 'Floral', 'Fresh', 'Oriental'] as const;
-const PRICE_RANGES = [
-  { label: 'All', min: 0, max: Infinity },
-  { label: 'Under ₹1000', min: 0, max: 999 },
-  { label: '₹1000–₹1500', min: 1000, max: 1500 },
-  { label: 'Above ₹1500', min: 1501, max: Infinity },
-];
+const CURATED_PRODUCTS: Product[] = PRODUCTS.slice(0, 4).map((product) => ({
+  ...product,
+  price: 1199,
+  originalPrice: undefined,
+  image: `/curated/${product.id === 'coldwar' ? 'cold-war' : product.id}.JPG`,
+}));
 
 export default function ProductGrid() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: '-80px' });
-  const [activeProfile, setActiveProfile] = useState<string>('All');
-  const [activePriceIdx, setActivePriceIdx] = useState(0);
-  const [products, setProducts] = useState<Product[]>(PRODUCTS.slice(0, 4).map((product) => ({ ...product, price: 1199, originalPrice: undefined, image: `/curated/${product.id === 'coldwar' ? 'cold-war' : product.id}.JPG` })));
-
-  useEffect(() => {
-    fetch('/api/products').then((response) => response.ok ? response.json() : null).then((data) => {
-      if (data?.products?.length) setProducts(data.products);
-    }).catch(() => undefined);
-  }, []);
-
-  const priceRange = PRICE_RANGES[activePriceIdx];
-
-  const filtered = products.filter(p => {
-    const profileMatch = activeProfile === 'All' || p.profile === activeProfile;
-    const priceMatch = p.price >= priceRange.min && p.price <= priceRange.max;
-    return profileMatch && priceMatch;
-  });
 
   return (
-    <section ref={ref} className="py-28 px-6 bg-black" id="collection-grid">
-      <div className="max-w-[1400px] mx-auto">
-        {/* Header */}
+    <section ref={ref} className="bg-black px-6 py-28" id="collection-grid">
+      <div className="mx-auto max-w-[1400px]">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8 }}
-          className="text-center mb-14"
+          className="mb-14 text-center"
         >
-          <p className="text-[#D4AF37] text-sm tracking-[0.18em] uppercase mb-4">The Amidaddy collection</p>
-          <h2 className="font-cinzel text-[clamp(38px,6vw,68px)] text-white tracking-wide mb-5">
+          <p className="mb-4 text-sm uppercase tracking-[0.18em] text-[#D4AF37]">The Amidaddy collection</p>
+          <h2 className="mb-5 font-cinzel text-[clamp(38px,6vw,68px)] tracking-wide text-white">
             Four scents. Yours to choose.
           </h2>
           <div className="divider-gold mb-4" />
-          <p className="text-white/40 text-sm max-w-lg mx-auto mt-6">
-            Buy One Get One Free on all perfumes. Add 2 or more — the savings apply automatically at checkout.
+          <p className="mx-auto mt-6 max-w-lg text-sm text-white/40">
+            Choose 20 ml for a discovery bottle or 100 ml for the full experience.
           </p>
         </motion.div>
 
-        {/* Filters */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="hidden"
-        >
-          {/* Scent type filter */}
-          <div className="flex items-center gap-2 flex-wrap justify-center">
-            {PROFILES.map(p => (
-              <button
-                key={p}
-                onClick={() => setActiveProfile(p)}
-                className={`px-4 py-2 text-xs tracking-[0.12em] uppercase border transition-all duration-300 ${
-                  activeProfile === p
-                    ? 'border-[#D4AF37] text-[#D4AF37] bg-[#D4AF37]/10'
-                    : 'border-white/10 text-white/40 hover:border-white/30 hover:text-white/60'
-                }`}
-              >
-                {p}
-              </button>
-            ))}
-          </div>
-
-          {/* Price filter */}
-          <div className="flex items-center gap-2 flex-wrap justify-center">
-            {PRICE_RANGES.map((r, i) => (
-              <button
-                key={r.label}
-                onClick={() => setActivePriceIdx(i)}
-                className={`px-4 py-2 text-xs tracking-[0.12em] uppercase border transition-all duration-300 ${
-                  activePriceIdx === i
-                    ? 'border-white/60 text-white bg-white/5'
-                    : 'border-white/10 text-white/30 hover:border-white/25 hover:text-white/50'
-                }`}
-              >
-                {r.label}
-              </button>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Grid */}
-        {filtered.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {filtered.map((product, i) => (
-              <ProductCard key={product.id} product={product} index={i} />
-            ))}
-          </div>
-        ) : (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center py-20 text-white/30 text-sm tracking-wider"
-          >
-            No perfumes match these filters. Try a different combination.
-          </motion.div>
-        )}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {CURATED_PRODUCTS.map((product, index) => (
+            <ProductCard key={product.id} product={product} index={index} />
+          ))}
+        </div>
       </div>
     </section>
   );
