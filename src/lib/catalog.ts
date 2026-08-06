@@ -56,8 +56,30 @@ export async function createCatalogProduct(input: ProductInput) {
   return data.id;
 }
 
+export async function updateCatalogProduct(id: string, input: ProductInput) {
+  const supabase = await createClient();
+  const { images, ...product } = input;
+  const { error } = await supabase.from("products").update({
+    name: product.name, slug: product.slug, sku: product.sku, barcode: product.barcode || null, description: product.description, mrp: product.mrp,
+    selling_price: product.sellingPrice, offer_price: product.offerPrice || null, gst_rate: product.gstRate, stock: product.stock, low_stock_at: product.lowStockAt,
+    active: product.active, featured: product.featured, is_new: product.isNew, best_seller: product.bestSeller, seo_title: product.seoTitle || null,
+    seo_description: product.seoDescription || null, brand_id: product.brandId || null, category_id: product.categoryId || null,
+  }).eq("id", id);
+  if (error) throw new Error("Unable to update the product.");
+  const { error: deleteError } = await supabase.from("product_images").delete().eq("product_id", id);
+  if (deleteError) throw new Error("Unable to update product images.");
+  const { error: imageError } = await supabase.from("product_images").insert(images.map((image, position) => ({ product_id: id, url: image.url, alt: image.alt, position })));
+  if (imageError) throw new Error("Unable to update product images.");
+}
+
 export async function softDeleteCatalogProduct(id: string) {
   const supabase = await createClient();
   const { error } = await supabase.from("products").update({ deleted_at: new Date().toISOString(), active: false }).eq("id", id);
   if (error) throw new Error("Unable to delete the product.");
+}
+
+export async function restoreCatalogProduct(id: string) {
+  const supabase = await createClient();
+  const { error } = await supabase.from("products").update({ deleted_at: null }).eq("id", id);
+  if (error) throw new Error("Unable to restore the product.");
 }
