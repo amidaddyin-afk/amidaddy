@@ -1,7 +1,7 @@
 import "server-only";
 
-import { listProducts } from "@/lib/store";
 import { listOrders } from "@/lib/orders";
+import { CURATED_PRODUCTS } from "@/lib/curated-products";
 import { createClient } from "@/lib/supabase/server";
 
 export type AdminOverview = {
@@ -17,7 +17,11 @@ export type AdminOverview = {
 };
 
 export async function getAdminOverview(): Promise<AdminOverview> {
-  const [products, orders, supabase] = await Promise.all([listProducts(true), listOrders(), createClient()]);
+  const [orders, supabase] = await Promise.all([
+    listOrders().catch(() => []),
+    createClient(),
+  ]);
+  const products = CURATED_PRODUCTS;
   const [{ data: profiles, error: profilesError }, { data: activity, error: activityError }] = await Promise.all([
     supabase.from("profiles").select("id, email, full_name, role, created_at").order("created_at", { ascending: false }).limit(100),
     supabase.from("audit_logs").select("id, event, created_at, metadata").order("created_at", { ascending: false }).limit(50),
