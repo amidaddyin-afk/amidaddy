@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ArrowDownRight, Pause, Play } from "lucide-react";
+import { useReducedMotion } from "framer-motion";
 
 const slides = [
   {
@@ -39,14 +40,15 @@ const slides = [
 export default function CuratedHero() {
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
+  const reduceMotion = useReducedMotion();
   useEffect(() => {
-    if (paused) return;
+    if (paused || reduceMotion) return;
     const id = window.setInterval(
       () => setActive((value) => (value + 1) % slides.length),
       6500,
     );
     return () => window.clearInterval(id);
-  }, [paused]);
+  }, [paused, reduceMotion]);
   const slide = slides[active];
   return (
     <section
@@ -79,7 +81,14 @@ export default function CuratedHero() {
       <div className="hero-controls">
         <button
           onClick={() => setPaused((value) => !value)}
-          aria-label={paused ? "Play slideshow" : "Pause slideshow"}
+          disabled={Boolean(reduceMotion)}
+          aria-label={
+            reduceMotion
+              ? "Automatic slideshow disabled by motion preference"
+              : paused
+                ? "Play slideshow"
+                : "Pause slideshow"
+          }
         >
           {paused ? <Play size={14} /> : <Pause size={14} />}
         </button>

@@ -30,7 +30,7 @@ export default async function ShopPage({
   const { products, total } = await listCatalogProducts(query);
   return (
     <main className="shop-page">
-      <section className="shop-hero">
+      <section className="shop-hero" data-reveal>
         <p className="eyebrow">The olfactory wardrobe</p>
         <h1 className="display-title">
           Find the scent
@@ -42,7 +42,10 @@ export default async function ShopPage({
           family, or mood.
         </p>
       </section>
-      <section className="mx-auto max-w-[1500px] px-5 pb-28 sm:px-8">
+      <section
+        className="mx-auto max-w-[1500px] px-5 pb-28 sm:px-8"
+        data-reveal
+      >
         <form className="shop-filters" action="/shop">
           <label>
             <span>Search</span>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, ShoppingBag } from "lucide-react";
@@ -25,6 +25,7 @@ export default function ProductCard({
       "100ml",
   );
   const [added, setAdded] = useState(false);
+  const reduceMotion = useReducedMotion();
   const { addItem } = useCart();
   const variant =
     product.variants.find((item) => item.name === size) ?? product.variants[0];
@@ -35,10 +36,18 @@ export default function ProductCard({
   };
   return (
     <motion.article
-      initial={{ opacity: 0, y: 24 }}
+      initial={reduceMotion ? false : { opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
-      transition={{ duration: 0.55, delay: Math.min(index, 3) * 0.06 }}
+      transition={
+        reduceMotion
+          ? { duration: 0 }
+          : {
+              duration: 0.55,
+              delay: Math.min(index, 3) * 0.06,
+              ease: [0.16, 1, 0.3, 1],
+            }
+      }
       className="product-card"
     >
       <div className="product-visual">

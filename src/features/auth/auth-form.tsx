@@ -47,10 +47,10 @@ export function AuthForm({ mode }: { mode: Mode }) {
   }
 
   return (
-    <main className="min-h-screen bg-black px-6 pt-36">
+    <main className="auth-shell min-h-screen px-6 pt-36">
       <form
         action={formAction}
-        className="mx-auto max-w-md border border-white/10 bg-[#0e0e0e] p-7"
+        className="auth-panel mx-auto max-w-md border border-white/10 bg-[#0e0e0e] p-7 sm:p-9"
       >
         {isLogin && <input type="hidden" name="next" value={safeNext} />}
         <p className="mb-3 text-xs tracking-[0.2em] text-[#D4AF37] uppercase">

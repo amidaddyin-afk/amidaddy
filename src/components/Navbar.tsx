@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Menu, Search, ShoppingBag, UserRound, X } from "lucide-react";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
@@ -10,12 +10,30 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const reduceMotion = useReducedMotion();
   const { openCart, totalQty } = useCart();
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 36);
+    handler();
     window.addEventListener("scroll", handler, { passive: true });
     return () => window.removeEventListener("scroll", handler);
   }, []);
+  useEffect(() => {
+    if (!open && !searchOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    const closeOverlay = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setOpen(false);
+        setSearchOpen(false);
+      }
+    };
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", closeOverlay);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", closeOverlay);
+    };
+  }, [open, searchOpen]);
   return (
     <>
       <header className={`site-header ${scrolled ? "scrolled" : ""}`}>
@@ -24,6 +42,7 @@ export default function Navbar() {
             className="mobile-only"
             onClick={() => setOpen(true)}
             aria-label="Open navigation"
+            aria-expanded={open}
           >
             <Menu />
           </button>
@@ -36,7 +55,11 @@ export default function Navbar() {
             AMIDADDY<span>PARFUMS</span>
           </Link>
           <div className="nav-actions">
-            <button onClick={() => setSearchOpen(true)} aria-label="Search">
+            <button
+              onClick={() => setSearchOpen(true)}
+              aria-label="Search"
+              aria-expanded={searchOpen}
+            >
               <Search />
             </button>
             <Link href="/account" aria-label="Account">
@@ -57,11 +80,16 @@ export default function Navbar() {
         {open && (
           <motion.div
             className="mobile-menu"
-            initial={{ opacity: 0 }}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Site navigation"
+            initial={reduceMotion ? false : { opacity: 0, y: -8 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: reduceMotion ? 0 : 0.35 }}
           >
             <button
+              autoFocus
               onClick={() => setOpen(false)}
               aria-label="Close navigation"
             >
@@ -85,9 +113,13 @@ export default function Navbar() {
         {searchOpen && (
           <motion.div
             className="search-overlay"
-            initial={{ opacity: 0 }}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Search fragrances"
+            initial={reduceMotion ? false : { opacity: 0, y: -8 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: reduceMotion ? 0 : 0.35 }}
           >
             <button
               onClick={() => setSearchOpen(false)}

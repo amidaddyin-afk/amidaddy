@@ -57,7 +57,7 @@ export default function ScentFinder({ products }: { products: Product[] }) {
     <section className="finder-section" id="scent-finder">
       <div className="finder-orbit" />
       <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[.75fr_1.25fr]">
-        <div>
+        <div data-reveal="left">
           <p className="eyebrow">Scent finder · 60 seconds</p>
           <h2 className="display-title mt-5 text-5xl">Follow your instinct.</h2>
           <p className="mt-6 max-w-sm leading-7 text-white/50">
@@ -65,7 +65,7 @@ export default function ScentFinder({ products }: { products: Product[] }) {
             will bring you closer to yours.
           </p>
         </div>
-        <div className="finder-card">
+        <div className="finder-card" data-reveal>
           {!result ? (
             <>
               <div className="finder-progress">

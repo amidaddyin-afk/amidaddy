@@ -35,7 +35,10 @@ export default function ProductDetail({ product }: { product: Product }) {
           <ArrowLeft size={14} /> All fragrances
         </Link>
         <div className="mt-8 grid gap-10 lg:grid-cols-[1.15fr_.85fr] lg:gap-16">
-          <section className="grid gap-3 sm:grid-cols-[88px_1fr]">
+          <section
+            className="grid gap-3 sm:grid-cols-[88px_1fr]"
+            data-reveal="left"
+          >
             <div className="order-2 flex gap-3 overflow-x-auto sm:order-1 sm:flex-col">
               {product.images.map((image, index) => (
                 <button
@@ -66,7 +69,10 @@ export default function ProductDetail({ product }: { product: Product }) {
               <div className="product-glow" />
             </div>
           </section>
-          <section className="flex flex-col justify-center lg:sticky lg:top-28 lg:h-fit lg:py-8">
+          <section
+            className="flex flex-col justify-center lg:sticky lg:top-28 lg:h-fit lg:py-8"
+            data-reveal
+          >
             <p className="eyebrow">
               {product.genderPositioning} · {product.profile}
             </p>

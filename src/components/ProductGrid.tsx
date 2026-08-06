@@ -5,7 +5,7 @@ export default function ProductGrid({ products }: { products: Product[] }) {
   return (
     <section className="collection-section" id="collection-grid">
       <div className="mx-auto max-w-[1500px]">
-        <div className="section-heading">
+        <div className="section-heading" data-reveal>
           <div>
             <p className="eyebrow">The signature collection</p>
             <h2 className="display-title">

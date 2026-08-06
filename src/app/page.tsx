@@ -32,7 +32,7 @@ export default async function Home() {
         dangerouslySetInnerHTML={{ __html: organizationJsonLd }}
       />
       <CuratedHero />
-      <section className="signal-strip" aria-label="Store services">
+      <section className="signal-strip" aria-label="Store services" data-reveal>
         <span>
           <Sparkles size={15} />
           20 ml discovery bottles from ₹199
@@ -48,7 +48,7 @@ export default async function Home() {
       </section>
       <ProductGrid products={products} />
       <section className="editorial-story" id="story">
-        <div className="story-image">
+        <div className="story-image" data-reveal="left">
           <Image
             src="/curated/product-detail-1.jpg"
             alt="Amidaddy fragrance bottles arranged in warm cinematic light"
@@ -57,7 +57,7 @@ export default async function Home() {
             className="object-cover"
           />
         </div>
-        <div className="story-copy">
+        <div className="story-copy" data-reveal>
           <p className="eyebrow">Made for a feeling</p>
           <h2 className="display-title">
             Perfume should not introduce you. It should reveal you.
@@ -74,7 +74,7 @@ export default async function Home() {
       </section>
       <ScentFinder products={products} />
       <section className="discovery-banner">
-        <div>
+        <div data-reveal="left">
           <p className="eyebrow">The discovery ritual</p>
           <h2 className="display-title">
             Begin small.
@@ -89,7 +89,7 @@ export default async function Home() {
             Shop 20 ml
           </Link>
         </div>
-        <div className="relative min-h-[480px]">
+        <div className="relative min-h-[480px]" data-reveal>
           <Image
             src="/curated/product-detail-2.JPG"
             alt="Amidaddy discovery fragrances"
@@ -100,7 +100,7 @@ export default async function Home() {
         </div>
       </section>
       <section className="service-grid">
-        <article>
+        <article data-reveal>
           <Gift />
           <h3>Made to gift</h3>
           <p>
@@ -108,14 +108,14 @@ export default async function Home() {
             remembering.
           </p>
         </article>
-        <article>
+        <article data-reveal>
           <Truck />
           <h3>India-wide delivery</h3>
           <p>
             ₹99 flat delivery, complimentary when your order reaches ₹1,999.
           </p>
         </article>
-        <article>
+        <article data-reveal>
           <ShieldCheck />
           <h3>Purchase with clarity</h3>
           <p>
@@ -125,11 +125,11 @@ export default async function Home() {
         </article>
       </section>
       <section className="faq-section" id="faq">
-        <div>
+        <div data-reveal="left">
           <p className="eyebrow">A little clarity</p>
           <h2 className="display-title">Before it becomes yours.</h2>
         </div>
-        <div>
+        <div data-reveal>
           {[
             [
               "Are the fragrances unisex?",

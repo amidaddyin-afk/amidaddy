@@ -1,6 +1,7 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect } from "react";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { X, Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { useCart } from "@/context/CartContext";
@@ -20,6 +21,21 @@ export default function CartSidebar() {
     totalQty,
   } = useCart();
   const router = useRouter();
+  const reduceMotion = useReducedMotion();
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") closeCart();
+    };
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [closeCart, isOpen]);
 
   return (
     <AnimatePresence>
@@ -36,11 +52,17 @@ export default function CartSidebar() {
 
           {/* Sidebar Panel */}
           <motion.div
-            initial={{ x: "100%" }}
+            initial={reduceMotion ? false : { x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
-            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed top-0 right-0 bottom-0 z-[70] flex w-full max-w-[420px] flex-col border-l border-white/8 bg-[#0e0e0e]"
+            transition={{
+              duration: reduceMotion ? 0 : 0.5,
+              ease: [0.16, 1, 0.3, 1],
+            }}
+            className="cart-panel fixed top-0 right-0 bottom-0 z-[70] flex w-full max-w-[420px] flex-col border-l border-white/8 bg-[#0e0e0e]"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Shopping bag"
           >
             {/* Header */}
             <div className="flex items-center justify-between border-b border-white/5 p-6">
@@ -51,7 +73,9 @@ export default function CartSidebar() {
                 </span>
               </div>
               <button
+                autoFocus
                 onClick={closeCart}
+                aria-label="Close shopping bag"
                 className="text-white/40 transition-colors hover:text-white"
               >
                 <X size={20} />
@@ -80,7 +104,7 @@ export default function CartSidebar() {
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: 20 }}
                       layout
-                      className="flex gap-4 border border-white/5 bg-white/3 p-3"
+                      className="cart-item flex gap-4 border border-white/5 bg-white/3 p-3"
                     >
                       <div className="h-24 w-20 flex-shrink-0 overflow-hidden bg-[#0d0d0d]">
                         <Image
@@ -110,6 +134,7 @@ export default function CartSidebar() {
                                 )
                               }
                               className="px-2 py-1 text-white/40 transition-colors hover:text-white"
+                              aria-label={`Decrease ${item.product.name} quantity`}
                             >
                               <Minus size={12} />
                             </button>
@@ -126,6 +151,7 @@ export default function CartSidebar() {
                               }
                               disabled={item.qty >= 10}
                               className="px-2 py-1 text-white/40 transition-colors hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
+                              aria-label={`Increase ${item.product.name} quantity`}
                             >
                               <Plus size={12} />
                             </button>
@@ -139,6 +165,7 @@ export default function CartSidebar() {
                                 removeItem(item.product.id, item.size)
                               }
                               className="text-white/20 transition-colors hover:text-[#8e1f2f]"
+                              aria-label={`Remove ${item.product.name} from bag`}
                             >
                               <Trash2 size={14} />
                             </button>
