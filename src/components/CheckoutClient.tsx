@@ -2,23 +2,107 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FormEvent, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 import { ArrowLeft, LockKeyhole, ShoppingBag, Sparkles } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { formatInr } from "@/lib/money";
 
+type CheckoutQuote = {
+  subtotalPaise: number;
+  discountPaise: number;
+  shippingPaise: number;
+  taxPaise: number;
+  totalPaise: number;
+  couponCode: string | null;
+};
+
 export default function CheckoutClient() {
   const router = useRouter();
+  const formRef = useRef<HTMLFormElement>(null);
   const { items, subtotalPaise, estimatedShippingPaise, estimatedTotalPaise } =
     useCart();
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [coupon, setCoupon] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState("");
+  const [appliedEmail, setAppliedEmail] = useState("");
+  const [couponError, setCouponError] = useState("");
+  const [couponMessage, setCouponMessage] = useState("");
+  const [applyingCoupon, setApplyingCoupon] = useState(false);
+  const [quote, setQuote] = useState<CheckoutQuote | null>(null);
+
+  const displayedSubtotalPaise = quote?.subtotalPaise ?? subtotalPaise;
+  const displayedShippingPaise = quote?.shippingPaise ?? estimatedShippingPaise;
+  const displayedTotalPaise = quote?.totalPaise ?? estimatedTotalPaise;
+
+  function clearAppliedCoupon() {
+    setAppliedCoupon("");
+    setAppliedEmail("");
+    setQuote(null);
+    setCouponMessage("");
+  }
+
+  async function applyCoupon() {
+    const form = formRef.current;
+    if (!form || !coupon.trim()) return;
+    const email = String(new FormData(form).get("email") ?? "")
+      .trim()
+      .toLowerCase();
+    setCouponError("");
+    setCouponMessage("");
+    setApplyingCoupon(true);
+    try {
+      const response = await fetch("/api/checkout/quote", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          couponCode: coupon,
+          items: items.map((item) => ({
+            variantId: item.variantId,
+            qty: item.qty,
+          })),
+        }),
+      });
+      const data = (await response.json()) as CheckoutQuote & {
+        error?: string;
+      };
+      if (!response.ok || !data.couponCode)
+        throw new Error(data.error ?? "Unable to apply coupon.");
+      setCoupon(data.couponCode);
+      setAppliedCoupon(data.couponCode);
+      setAppliedEmail(email);
+      setQuote(data);
+      setCouponMessage(
+        `${data.couponCode} applied. You save ${formatInr(data.discountPaise)}.`,
+      );
+    } catch (caught) {
+      clearAppliedCoupon();
+      setCouponError(
+        caught instanceof Error ? caught.message : "Unable to apply coupon.",
+      );
+    } finally {
+      setApplyingCoupon(false);
+    }
+  }
+
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
-    setSubmitting(true);
     const values = new FormData(event.currentTarget);
+    const checkoutEmail = String(values.get("email") ?? "")
+      .trim()
+      .toLowerCase();
+    if (coupon.trim() && coupon.trim() !== appliedCoupon) {
+      setError("Apply the coupon before continuing to payment.");
+      return;
+    }
+    if (appliedCoupon && checkoutEmail !== appliedEmail) {
+      clearAppliedCoupon();
+      setError("Your email changed. Apply the coupon again before payment.");
+      return;
+    }
+    setSubmitting(true);
     try {
       const response = await fetch("/api/checkout", {
         method: "POST",
@@ -37,7 +121,7 @@ export default function CheckoutClient() {
             variantId: item.variantId,
             qty: item.qty,
           })),
-          couponCode: coupon || undefined,
+          couponCode: appliedCoupon || undefined,
         }),
       });
       const data = await response.json();
@@ -90,6 +174,7 @@ export default function CheckoutClient() {
       setSubmitting(false);
     }
   }
+
   if (!items.length)
     return (
       <main className="empty-state">
@@ -100,6 +185,7 @@ export default function CheckoutClient() {
         </Link>
       </main>
     );
+
   return (
     <main className="checkout-shell">
       <div className="mx-auto max-w-6xl">
@@ -107,7 +193,11 @@ export default function CheckoutClient() {
           <ArrowLeft size={14} /> Continue exploring
         </Link>
         <div className="mt-10 grid gap-8 lg:grid-cols-[1.2fr_.8fr]">
-          <form onSubmit={submit} className="lux-panel p-6 sm:p-10">
+          <form
+            ref={formRef}
+            onSubmit={submit}
+            className="lux-panel p-6 sm:p-10"
+          >
             <p className="eyebrow">Secure checkout</p>
             <h1 className="display-title mt-4 text-4xl">
               Where should we send your signature?
@@ -124,6 +214,13 @@ export default function CheckoutClient() {
                   type="email"
                   name="email"
                   autoComplete="email"
+                  onChange={(event) => {
+                    if (
+                      appliedCoupon &&
+                      event.target.value.trim().toLowerCase() !== appliedEmail
+                    )
+                      clearAppliedCoupon();
+                  }}
                 />
               </label>
               <label className="field">
@@ -162,16 +259,57 @@ export default function CheckoutClient() {
                   autoComplete="postal-code"
                 />
               </label>
-              <label className="field">
-                <span>Coupon</span>
-                <input
-                  value={coupon}
-                  onChange={(event) =>
-                    setCoupon(event.target.value.toUpperCase())
-                  }
-                  placeholder="Optional"
-                />
-              </label>
+              <div className="field">
+                <label htmlFor="coupon-code">
+                  <span>Coupon</span>
+                </label>
+                <div className="coupon-control">
+                  <input
+                    id="coupon-code"
+                    value={coupon}
+                    onChange={(event) => {
+                      const nextCoupon = event.target.value.toUpperCase();
+                      setCoupon(nextCoupon);
+                      setCouponError("");
+                      if (nextCoupon.trim() !== appliedCoupon)
+                        clearAppliedCoupon();
+                    }}
+                    placeholder="Enter code"
+                    autoComplete="off"
+                  />
+                  <button
+                    type="button"
+                    onClick={applyCoupon}
+                    disabled={
+                      applyingCoupon ||
+                      submitting ||
+                      !coupon.trim() ||
+                      Boolean(quote && coupon.trim() === appliedCoupon)
+                    }
+                    className="coupon-apply-button"
+                  >
+                    {applyingCoupon
+                      ? "Applying…"
+                      : quote && coupon.trim() === appliedCoupon
+                        ? "Applied"
+                        : "Apply"}
+                  </button>
+                </div>
+              </div>
+              {(couponError || couponMessage) && (
+                <div
+                  className="coupon-feedback sm:col-span-2"
+                  aria-live="polite"
+                >
+                  {couponError ? (
+                    <p role="alert" className="coupon-error">
+                      {couponError}
+                    </p>
+                  ) : (
+                    <p>{couponMessage}</p>
+                  )}
+                </div>
+              )}
             </div>
             {error && (
               <p role="alert" className="error-banner">
@@ -182,7 +320,7 @@ export default function CheckoutClient() {
               <LockKeyhole size={15} />
               {submitting
                 ? "Opening secure payment…"
-                : `Pay ${formatInr(estimatedTotalPaise)}`}
+                : `Pay ${formatInr(displayedTotalPaise)}`}
             </button>
             <p className="mt-4 text-center text-xs text-white/40">
               Final pricing and coupon eligibility are verified securely before
@@ -213,19 +351,25 @@ export default function CheckoutClient() {
             <dl className="mt-6 space-y-3 text-sm">
               <div>
                 <dt>Subtotal</dt>
-                <dd>{formatInr(subtotalPaise)}</dd>
+                <dd>{formatInr(displayedSubtotalPaise)}</dd>
               </div>
+              {quote && quote.discountPaise > 0 && (
+                <div className="discount-row">
+                  <dt>Coupon ({appliedCoupon})</dt>
+                  <dd>−{formatInr(quote.discountPaise)}</dd>
+                </div>
+              )}
               <div>
                 <dt>Shipping</dt>
                 <dd>
-                  {estimatedShippingPaise
-                    ? formatInr(estimatedShippingPaise)
+                  {displayedShippingPaise
+                    ? formatInr(displayedShippingPaise)
                     : "Complimentary"}
                 </dd>
               </div>
               <div className="total-row">
-                <dt>Estimated total</dt>
-                <dd>{formatInr(estimatedTotalPaise)}</dd>
+                <dt>{quote ? "Total" : "Estimated total"}</dt>
+                <dd>{formatInr(displayedTotalPaise)}</dd>
               </div>
             </dl>
             <p className="mt-4 text-xs leading-5 text-white/40">

@@ -94,6 +94,23 @@ type CheckoutInput = {
   couponCode?: string;
 };
 
+type CheckoutPricingInput = {
+  email: string;
+  items: Array<{ variantId: string; qty: number }>;
+  couponCode?: string;
+};
+
+type CheckoutLine = OrderLine & { productDbId: string };
+
+export type CheckoutQuote = {
+  subtotalPaise: number;
+  discountPaise: number;
+  shippingPaise: number;
+  taxPaise: number;
+  totalPaise: number;
+  couponCode: string | null;
+};
+
 const normalizeEmail = (email: string) => email.trim().toLowerCase();
 
 async function orderLines(
@@ -219,106 +236,160 @@ async function restoreCommittedInventory(client: PoolClient, orderId: string) {
   }
 }
 
+async function calculateCheckoutPricing(
+  client: PoolClient,
+  input: CheckoutPricingInput,
+  lockRows: boolean,
+) {
+  const variantIds = input.items.map((item) => item.variantId);
+  if (new Set(variantIds).size !== variantIds.length)
+    throw new Error("Each cart variant can only appear once.");
+  if (!variantIds.every((id) => /^[0-9a-f-]{36}$/i.test(id)))
+    throw new Error("The catalog is not synchronized with inventory yet.");
+  const { rows: variants } = await client.query(
+    `select pv.*,p.id product_id,p.slug,p.name product_name,p.gst_rate,p.active product_active,p.deleted_at from public.product_variants pv join public.products p on p.id=pv.product_id where pv.id=any($1::uuid[])${lockRows ? " for update" : ""}`,
+    [variantIds],
+  );
+  if (variants.length !== variantIds.length)
+    throw new Error("One or more cart items are unavailable.");
+  const byId = new Map(
+    variants.map((variant) => [String(variant.id), variant]),
+  );
+  const lines: CheckoutLine[] = input.items.map((item) => {
+    const variant = byId.get(item.variantId);
+    if (
+      !variant ||
+      !variant.active ||
+      !variant.product_active ||
+      variant.deleted_at ||
+      Number(variant.stock) - Number(variant.reserved) < item.qty
+    )
+      throw new Error(
+        `${variant?.product_name ?? "A fragrance"} is no longer available in that quantity.`,
+      );
+    const lineTotalPaise = Number(variant.price_paise) * item.qty;
+    return {
+      productId: String(variant.slug),
+      productDbId: String(variant.product_id),
+      variantId: String(variant.id),
+      name: String(variant.product_name),
+      size: String(variant.name),
+      qty: item.qty,
+      unitPricePaise: Number(variant.price_paise),
+      lineTotalPaise,
+      gstRate: Number(variant.gst_rate),
+      taxPaise: includedGstPaise(lineTotalPaise, Number(variant.gst_rate)),
+    };
+  });
+  const subtotalPaise = lines.reduce(
+    (sum, line) => sum + line.lineTotalPaise,
+    0,
+  );
+  let discountPaise = 0;
+  let couponId: string | null = null;
+  let couponCode: string | null = null;
+  if (input.couponCode?.trim()) {
+    const code = input.couponCode.trim().toUpperCase();
+    const { rows } = await client.query(
+      `select * from public.coupons where upper(code)=$1 and active and (starts_at is null or starts_at<=now()) and (ends_at is null or ends_at>=now())${lockRows ? " for update" : ""}`,
+      [code],
+    );
+    const coupon = rows[0];
+    if (!coupon || subtotalPaise < Number(coupon.min_subtotal_paise))
+      throw new Error("This coupon is not valid for the order.");
+    const totalUses = Number(
+      (
+        await client.query(
+          "select count(*) count from public.coupon_redemptions where coupon_id=$1",
+          [coupon.id],
+        )
+      ).rows[0].count,
+    );
+    const customerUses = Number(
+      (
+        await client.query(
+          "select count(*) count from public.coupon_redemptions where coupon_id=$1 and lower(email)=$2",
+          [coupon.id, normalizeEmail(input.email)],
+        )
+      ).rows[0].count,
+    );
+    if (
+      (coupon.usage_limit && totalUses >= Number(coupon.usage_limit)) ||
+      customerUses >= Number(coupon.per_customer_limit)
+    )
+      throw new Error("This coupon has reached its usage limit.");
+    discountPaise = couponDiscountPaise(
+      subtotalPaise,
+      coupon.type,
+      Number(coupon.value),
+      coupon.max_discount_paise ? Number(coupon.max_discount_paise) : null,
+    );
+    couponId = String(coupon.id);
+    couponCode = String(coupon.code);
+  }
+  const settings = (
+    await client.query("select * from public.store_settings where id=1")
+  ).rows[0] ?? {
+    shipping_fee_paise: 9900,
+    free_shipping_above_paise: 199900,
+  };
+  const discountedMerchandise = subtotalPaise - discountPaise;
+  const orderShippingPaise = shippingPaise(
+    discountedMerchandise,
+    Number(settings.shipping_fee_paise),
+    Number(settings.free_shipping_above_paise),
+  );
+  const taxPaise = includedGstPaise(discountedMerchandise, 18);
+  const totalPaise = discountedMerchandise + orderShippingPaise;
+  return {
+    lines,
+    couponId,
+    couponCode,
+    subtotalPaise,
+    discountPaise,
+    shippingPaise: orderShippingPaise,
+    taxPaise,
+    totalPaise,
+  };
+}
+
+export async function quoteCheckout(
+  input: CheckoutPricingInput,
+): Promise<CheckoutQuote> {
+  return transaction(async (client) => {
+    const pricing = await calculateCheckoutPricing(client, input, false);
+    return {
+      subtotalPaise: pricing.subtotalPaise,
+      discountPaise: pricing.discountPaise,
+      shippingPaise: pricing.shippingPaise,
+      taxPaise: pricing.taxPaise,
+      totalPaise: pricing.totalPaise,
+      couponCode: pricing.couponCode,
+    };
+  });
+}
+
 export async function createPendingOrder(input: CheckoutInput) {
   return transaction(async (client) => {
-    const variantIds = input.items.map((item) => item.variantId);
-    if (!variantIds.every((id) => /^[0-9a-f-]{36}$/i.test(id)))
-      throw new Error("The catalog is not synchronized with inventory yet.");
-    const { rows: variants } = await client.query(
-      "select pv.*,p.id product_id,p.slug,p.name product_name,p.gst_rate,p.active product_active,p.deleted_at from public.product_variants pv join public.products p on p.id=pv.product_id where pv.id=any($1::uuid[]) for update",
-      [variantIds],
+    const pricing = await calculateCheckoutPricing(
+      client,
+      {
+        email: input.customer.email,
+        items: input.items,
+        couponCode: input.couponCode,
+      },
+      true,
     );
-    if (variants.length !== new Set(variantIds).size)
-      throw new Error("One or more cart items are unavailable.");
-    const byId = new Map(
-      variants.map((variant) => [String(variant.id), variant]),
-    );
-    const lines = input.items.map((item) => {
-      const variant = byId.get(item.variantId);
-      if (
-        !variant ||
-        !variant.active ||
-        !variant.product_active ||
-        variant.deleted_at ||
-        Number(variant.stock) - Number(variant.reserved) < item.qty
-      )
-        throw new Error(
-          `${variant?.product_name ?? "A fragrance"} is no longer available in that quantity.`,
-        );
-      const lineTotalPaise = Number(variant.price_paise) * item.qty;
-      return {
-        productId: String(variant.slug),
-        productDbId: String(variant.product_id),
-        variantId: String(variant.id),
-        name: String(variant.product_name),
-        size: String(variant.name),
-        qty: item.qty,
-        unitPricePaise: Number(variant.price_paise),
-        lineTotalPaise,
-        gstRate: Number(variant.gst_rate),
-        taxPaise: includedGstPaise(lineTotalPaise, Number(variant.gst_rate)),
-      };
-    });
-    const subtotalPaise = lines.reduce(
-      (sum, line) => sum + line.lineTotalPaise,
-      0,
-    );
-    let discountPaise = 0;
-    let couponId: string | null = null;
-    let couponCode: string | null = null;
-    if (input.couponCode?.trim()) {
-      const code = input.couponCode.trim().toUpperCase();
-      const { rows } = await client.query(
-        "select * from public.coupons where upper(code)=$1 and active and (starts_at is null or starts_at<=now()) and (ends_at is null or ends_at>=now()) for update",
-        [code],
-      );
-      const coupon = rows[0];
-      if (!coupon || subtotalPaise < Number(coupon.min_subtotal_paise))
-        throw new Error("This coupon is not valid for the order.");
-      const totalUses = Number(
-        (
-          await client.query(
-            "select count(*) count from public.coupon_redemptions where coupon_id=$1",
-            [coupon.id],
-          )
-        ).rows[0].count,
-      );
-      const customerUses = Number(
-        (
-          await client.query(
-            "select count(*) count from public.coupon_redemptions where coupon_id=$1 and lower(email)=$2",
-            [coupon.id, normalizeEmail(input.customer.email)],
-          )
-        ).rows[0].count,
-      );
-      if (
-        (coupon.usage_limit && totalUses >= Number(coupon.usage_limit)) ||
-        customerUses >= Number(coupon.per_customer_limit)
-      )
-        throw new Error("This coupon has reached its usage limit.");
-      discountPaise = couponDiscountPaise(
-        subtotalPaise,
-        coupon.type,
-        Number(coupon.value),
-        coupon.max_discount_paise ? Number(coupon.max_discount_paise) : null,
-      );
-      couponId = String(coupon.id);
-      couponCode = String(coupon.code);
-    }
-    const settings = (
-      await client.query("select * from public.store_settings where id=1")
-    ).rows[0] ?? {
-      shipping_fee_paise: 9900,
-      free_shipping_above_paise: 199900,
-    };
-    const discountedMerchandise = subtotalPaise - discountPaise;
-    const orderShippingPaise = shippingPaise(
-      discountedMerchandise,
-      Number(settings.shipping_fee_paise),
-      Number(settings.free_shipping_above_paise),
-    );
-    const taxPaise = includedGstPaise(discountedMerchandise, 18);
-    const totalPaise = discountedMerchandise + orderShippingPaise;
+    const {
+      lines,
+      couponId,
+      couponCode,
+      subtotalPaise,
+      discountPaise,
+      shippingPaise: orderShippingPaise,
+      taxPaise,
+      totalPaise,
+    } = pricing;
     const expiresAt = new Date(Date.now() + 20 * 60 * 1000);
     await client.query(
       "insert into public.orders(id,customer_id,email,customer_name,phone,address,city,state,postal_code,country,subtotal_paise,discount_paise,shipping_paise,tax_paise,total_paise,status,payment_status,coupon_code,expires_at) values($1,$2,$3,$4,$5,$6,$7,$8,$9,'IN',$10,$11,$12,$13,$14,'PAYMENT_PENDING','UNPAID',$15,$16)",

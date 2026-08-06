@@ -926,6 +926,40 @@ a {
 .field textarea {
   resize: vertical;
 }
+.coupon-control {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+.coupon-apply-button {
+  min-width: 6.5rem;
+  border: 1px solid var(--champagne);
+  background: var(--champagne);
+  padding: 0.75rem 1rem;
+  color: #111;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition:
+    background 180ms ease,
+    color 180ms ease,
+    opacity 180ms ease;
+}
+.coupon-apply-button:hover:not(:disabled) {
+  background: transparent;
+  color: var(--champagne);
+}
+.coupon-apply-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+.coupon-feedback {
+  color: #bbf7d0;
+  font-size: 0.78rem;
+}
+.coupon-feedback .coupon-error {
+  color: #fecaca;
+}
 .error-banner {
   margin-top: 1.2rem;
   border: 1px solid rgba(239, 68, 68, 0.35);
@@ -941,6 +975,10 @@ a {
 }
 .checkout-shell dl dd {
   color: white;
+}
+.checkout-shell .discount-row,
+.checkout-shell .discount-row dd {
+  color: var(--champagne);
 }
 .checkout-shell .total-row {
   margin-top: 1rem;
