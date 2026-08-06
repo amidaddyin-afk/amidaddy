@@ -1,7 +1,8 @@
-import AdminDashboard from '@/components/AdminDashboard';
-import { requireAdminPage } from '@/lib/auth';
+import AdminPortal from "@/components/AdminPortal";
+import { requireAdminPage } from "@/lib/auth";
+import { getAdminOverview } from "@/lib/admin-data";
 
 export default async function AdminPage() {
   await requireAdminPage();
-  return <AdminDashboard />;
+  return <AdminPortal overview={await getAdminOverview()} />;
 }
