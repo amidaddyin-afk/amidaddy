@@ -45,7 +45,7 @@ export default function CheckoutClient() {
   );
 
   return (
-    <main className="min-h-screen bg-black px-6 py-28">
+    <main className="checkout-shell min-h-screen bg-black">
       <div className="max-w-5xl mx-auto">
         <Link href="/" className="inline-flex items-center gap-2 text-white/50 hover:text-[#D4AF37] text-xs tracking-wider uppercase mb-10"><ArrowLeft size={15} /> Continue shopping</Link>
         <div className="grid gap-10 lg:grid-cols-[1.25fr_.75fr]">

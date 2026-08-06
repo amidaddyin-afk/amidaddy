@@ -60,6 +60,8 @@ body {
 .curated-dots button.active { background: #d4af37; }
 .brand-wordmark { font-family: 'Playfair Display', serif; font-size: clamp(1.45rem, 2vw, 2rem); font-weight: 700; letter-spacing: .16em; line-height: 1; }
 .announcement-bar { position: fixed; inset: 0 0 auto; z-index: 60; height: 2rem; display: flex; align-items: center; justify-content: center; padding: 0 .75rem; background: #d4af37; color: #0a0a0a; text-align: center; text-transform: uppercase; font-size: .68rem; font-weight: 700; letter-spacing: .12em; }
+.checkout-shell { padding: 11rem 1.5rem 4rem; }
+@media (min-width: 640px) { .checkout-shell { padding: 12rem 2rem 5rem; } }
 .footer-columns { display: grid; grid-template-columns: minmax(0, 2fr) minmax(150px, 1fr) minmax(150px, 1fr); gap: 3rem; margin-bottom: 3rem; }
 @media (max-width: 700px) { .footer-columns { grid-template-columns: 1fr 1fr; gap: 2rem; } .footer-columns > :first-child { grid-column: 1 / -1; } }
 @media (max-width: 640px) { .curated-copy { padding: 6rem 1.5rem 4rem; } .curated-copy h1 { font-size: 3rem; } }
