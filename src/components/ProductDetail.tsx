@@ -3,7 +3,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { ArrowLeft, Check, ShoppingBag, Truck } from "lucide-react";
+import {
+  ArrowLeft,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  Images,
+  ShoppingBag,
+  Truck,
+} from "lucide-react";
 import type { Product } from "@/lib/data";
 import { useCart } from "@/context/CartContext";
 import { formatInr } from "@/lib/money";
@@ -23,6 +31,11 @@ export default function ProductDetail({ product }: { product: Product }) {
   const [added, setAdded] = useState(false);
   const { addItem } = useCart();
   const variant = product.variants.find((item) => item.name === size);
+  const selectedImageIndex = Math.max(0, product.images.indexOf(selectedImage));
+  const showImage = (index: number) => {
+    const nextIndex = (index + product.images.length) % product.images.length;
+    setSelectedImage(product.images[nextIndex]);
+  };
   const add = () => {
     addItem(product, size);
     setAdded(true);
@@ -35,29 +48,8 @@ export default function ProductDetail({ product }: { product: Product }) {
           <ArrowLeft size={14} /> All fragrances
         </Link>
         <div className="mt-8 grid gap-10 lg:grid-cols-[1.15fr_.85fr] lg:gap-16">
-          <section
-            className="grid gap-3 sm:grid-cols-[88px_1fr]"
-            data-reveal="left"
-          >
-            <div className="order-2 flex gap-3 overflow-x-auto sm:order-1 sm:flex-col">
-              {product.images.map((image, index) => (
-                <button
-                  key={image}
-                  onClick={() => setSelectedImage(image)}
-                  className={`thumbnail ${selectedImage === image ? "active" : ""}`}
-                  aria-label={`Show image ${index + 1}`}
-                >
-                  <Image
-                    src={image}
-                    alt=""
-                    fill
-                    className="object-cover"
-                    sizes="88px"
-                  />
-                </button>
-              ))}
-            </div>
-            <div className="product-hero-image order-1 sm:order-2">
+          <section className="product-gallery" data-reveal="left">
+            <div className="product-hero-image">
               <Image
                 src={selectedImage}
                 alt={`${product.name} bottle`}
@@ -67,6 +59,50 @@ export default function ProductDetail({ product }: { product: Product }) {
                 className="object-cover"
               />
               <div className="product-glow" />
+              {product.images.length > 1 && (
+                <div className="gallery-controls">
+                  <button
+                    type="button"
+                    onClick={() => showImage(selectedImageIndex - 1)}
+                    aria-label="Show previous product photo"
+                  >
+                    <ChevronLeft size={18} />
+                  </button>
+                  <span>
+                    <Images size={14} />
+                    {selectedImageIndex + 1} / {product.images.length}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => showImage(selectedImageIndex + 1)}
+                    aria-label="Show next product photo"
+                  >
+                    <ChevronRight size={18} />
+                  </button>
+                </div>
+              )}
+            </div>
+            <div
+              className="product-thumbnail-rail"
+              aria-label={`${product.name} photo gallery`}
+            >
+              {product.images.map((image, index) => (
+                <button
+                  key={image}
+                  onClick={() => setSelectedImage(image)}
+                  className={`thumbnail ${selectedImage === image ? "active" : ""}`}
+                  aria-label={`Show ${product.name} image ${index + 1} of ${product.images.length}`}
+                  aria-pressed={selectedImage === image}
+                >
+                  <Image
+                    src={image}
+                    alt=""
+                    fill
+                    className="object-cover"
+                    sizes="68px"
+                  />
+                </button>
+              ))}
             </div>
           </section>
           <section

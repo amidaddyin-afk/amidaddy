@@ -71,6 +71,12 @@ const makeVariants = (
   },
 ];
 
+const galleryImages = (slug: string, count: number) =>
+  Array.from(
+    { length: count },
+    (_, index) => `/gallery/${slug}/${String(index + 1).padStart(2, "0")}.webp`,
+  );
+
 export const PRODUCTS: Product[] = [
   {
     id: "billionaire",
@@ -80,6 +86,7 @@ export const PRODUCTS: Product[] = [
     images: [
       "/curated/billionaire.JPG",
       "/curated/products/billionaire/detail.JPG",
+      ...galleryImages("billionaire", 11),
     ],
     profile: "Woody",
     concentration: "Eau de Parfum",
@@ -107,7 +114,11 @@ export const PRODUCTS: Product[] = [
     slug: "coldwar",
     name: "Cold War",
     image: "/curated/cold-war.JPG",
-    images: ["/curated/cold-war.JPG", "/curated/products/coldwar/detail.JPG"],
+    images: [
+      "/curated/cold-war.JPG",
+      "/curated/products/coldwar/detail.JPG",
+      ...galleryImages("coldwar", 10),
+    ],
     profile: "Fresh",
     concentration: "Eau de Parfum",
     genderPositioning: "Unisex",
@@ -135,7 +146,11 @@ export const PRODUCTS: Product[] = [
     slug: "heavenly",
     name: "Heavenly",
     image: "/curated/heavenly.JPG",
-    images: ["/curated/heavenly.JPG", "/curated/products/heavenly/detail.JPG"],
+    images: [
+      "/curated/heavenly.JPG",
+      "/curated/products/heavenly/detail.JPG",
+      ...galleryImages("heavenly", 13),
+    ],
     profile: "Floral",
     concentration: "Eau de Parfum",
     genderPositioning: "Unisex",
@@ -162,7 +177,11 @@ export const PRODUCTS: Product[] = [
     slug: "old-love",
     name: "Old Love",
     image: "/curated/old-love.JPG",
-    images: ["/curated/old-love.JPG", "/curated/products/old-love/detail.JPG"],
+    images: [
+      "/curated/old-love.JPG",
+      "/curated/products/old-love/detail.JPG",
+      ...galleryImages("old-love", 14),
+    ],
     profile: "Amber",
     concentration: "Eau de Parfum",
     genderPositioning: "Unisex",

@@ -541,6 +541,212 @@ main {
 .signal-strip span:last-child {
   border: 0;
 }
+.preorder-section {
+  padding: 9rem 2rem;
+  border-bottom: 1px solid var(--line);
+  background:
+    radial-gradient(
+      circle at 78% 12%,
+      rgba(213, 184, 123, 0.12),
+      transparent 28rem
+    ),
+    #0c0d0d;
+}
+.preorder-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 3rem;
+  margin-bottom: 4rem;
+}
+.preorder-heading h2 {
+  margin-top: 1.1rem;
+  font-size: clamp(3.4rem, 7vw, 7rem);
+}
+.preorder-heading > p {
+  max-width: 440px;
+  color: rgba(255, 255, 255, 0.52);
+  line-height: 1.8;
+}
+.preorder-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+}
+.preorder-card {
+  overflow: hidden;
+  border: 1px solid rgba(213, 184, 123, 0.2);
+  background: #111313;
+  transition:
+    border-color 250ms ease,
+    transform 350ms var(--ease-premium);
+}
+.preorder-card:hover {
+  border-color: rgba(213, 184, 123, 0.56);
+  transform: translateY(-4px);
+}
+.preorder-visual {
+  position: relative;
+  height: 380px;
+  overflow: hidden;
+  background: #090a0a;
+}
+.preorder-visual::after {
+  position: absolute;
+  inset: 45% 0 0;
+  content: "";
+  background: linear-gradient(transparent, rgba(8, 9, 9, 0.72));
+  pointer-events: none;
+}
+.preorder-visual img {
+  transition: transform 700ms var(--ease-premium);
+}
+.preorder-card:hover .preorder-visual img {
+  transform: scale(1.035);
+}
+.preorder-pill,
+.preorder-discover {
+  position: absolute;
+  z-index: 12;
+  font-size: 0.58rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+.preorder-pill {
+  top: 1rem;
+  left: 1rem;
+  border: 1px solid rgba(213, 184, 123, 0.6);
+  background: rgba(8, 9, 9, 0.72);
+  padding: 0.5rem 0.7rem;
+  color: var(--champagne);
+  backdrop-filter: blur(10px);
+}
+.preorder-discover {
+  right: 1rem;
+  bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.preorder-copy {
+  padding: 1.4rem;
+}
+.preorder-copy h3 {
+  margin-top: 0.55rem;
+  font-size: 2rem;
+}
+.preorder-notes {
+  margin-top: 0.8rem;
+  color: rgba(255, 255, 255, 0.48);
+  font-size: 0.78rem;
+  line-height: 1.7;
+}
+.preorder-buy-row {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--line);
+}
+.preorder-buy-row > div {
+  display: flex;
+  flex-direction: column;
+}
+.preorder-buy-row strong {
+  color: var(--paper);
+  font-size: 1.15rem;
+  font-weight: 500;
+}
+.preorder-buy-row span {
+  margin-top: 0.2rem;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 0.68rem;
+  text-decoration: line-through;
+}
+.preorder-buy-row button {
+  display: inline-flex;
+  min-height: 2.8rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1px solid var(--champagne);
+  background: var(--champagne);
+  padding: 0.72rem 0.9rem;
+  color: #101111;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+.preorder-buy-row button:disabled {
+  border-color: var(--line);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.35);
+}
+.replacement-notice-wrap {
+  padding: 0 2rem 9rem;
+  background: #0c0d0d;
+}
+.replacement-notice {
+  display: grid;
+  max-width: 1500px;
+  grid-template-columns: auto 1fr;
+  gap: 1.5rem;
+  margin: 0 auto;
+  border: 1px solid rgba(213, 184, 123, 0.35);
+  background: rgba(213, 184, 123, 0.07);
+  padding: 2rem;
+}
+.replacement-notice-icon {
+  display: grid;
+  width: 3.5rem;
+  height: 3.5rem;
+  place-items: center;
+  border: 1px solid rgba(213, 184, 123, 0.4);
+  color: var(--champagne);
+}
+.replacement-notice .eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+.replacement-notice h2 {
+  margin-top: 0.7rem;
+  font-size: clamp(2rem, 3.5vw, 3.4rem);
+}
+.replacement-notice h2 + p {
+  max-width: 980px;
+  margin-top: 0.9rem;
+  color: rgba(255, 255, 255, 0.67);
+  line-height: 1.75;
+}
+.replacement-notice-hindi {
+  max-width: 980px;
+  margin-top: 0.75rem;
+  color: var(--champagne);
+  font-size: 0.78rem;
+  line-height: 1.7;
+}
+.replacement-notice--compact {
+  grid-template-columns: auto 1fr;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding: 1.15rem;
+}
+.replacement-notice--compact .replacement-notice-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+.replacement-notice--compact h2 {
+  font-size: 1.55rem;
+}
+.replacement-notice--compact h2 + p,
+.replacement-notice--compact .replacement-notice-hindi {
+  font-size: 0.7rem;
+  line-height: 1.6;
+}
 .collection-section {
   padding: 9rem 2rem;
   background: #080909;
@@ -908,17 +1114,69 @@ main {
   overflow: hidden;
   background: #101111;
 }
+.product-gallery {
+  min-width: 0;
+}
 .thumbnail {
   position: relative;
-  width: 88px;
-  min-width: 88px;
+  width: 68px;
+  min-width: 68px;
   aspect-ratio: 1;
   overflow: hidden;
-  border: 1px solid var(--line);
+  border: 1px solid transparent;
   background: #111;
+  opacity: 0.5;
 }
 .thumbnail.active {
   border-color: var(--champagne);
+  opacity: 1;
+}
+.product-thumbnail-rail {
+  display: flex;
+  gap: 0.55rem;
+  margin-top: 0.75rem;
+  overflow-x: auto;
+  padding: 0 0 0.45rem;
+  scroll-snap-type: x proximity;
+  scrollbar-color: var(--champagne-deep) transparent;
+  scrollbar-width: thin;
+}
+.product-thumbnail-rail .thumbnail {
+  scroll-snap-align: start;
+}
+.gallery-controls {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 12;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(8, 9, 9, 0.72);
+  backdrop-filter: blur(12px);
+}
+.gallery-controls button {
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  place-items: center;
+  color: var(--paper);
+  transition: background 180ms ease;
+}
+.gallery-controls button:hover {
+  background: rgba(213, 184, 123, 0.18);
+}
+.gallery-controls span {
+  display: flex;
+  min-width: 5rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  border-inline: 1px solid rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.67rem;
+  letter-spacing: 0.08em;
 }
 .note-pyramid {
   display: grid;
@@ -1883,6 +2141,9 @@ main {
   transition: color 0.2s ease;
 }
 @media (max-width: 1100px) {
+  .preorder-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
   .product-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -1977,6 +2238,29 @@ main {
   }
   .collection-section {
     padding: 6rem 1rem;
+  }
+  .preorder-section {
+    padding: 6rem 1rem;
+  }
+  .preorder-heading {
+    display: block;
+  }
+  .preorder-heading > p {
+    margin-top: 2rem;
+  }
+  .preorder-grid {
+    grid-template-columns: 1fr;
+  }
+  .preorder-visual {
+    height: clamp(360px, 112vw, 460px);
+  }
+  .replacement-notice-wrap {
+    padding: 0 1rem 6rem;
+  }
+  .replacement-notice,
+  .replacement-notice--compact {
+    grid-template-columns: 1fr;
+    padding: 1.35rem;
   }
   .section-heading {
     display: block;

@@ -2,12 +2,16 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, Gift, ShieldCheck, Sparkles, Truck } from "lucide-react";
 import CuratedHero from "@/components/CuratedHero";
+import Preorder20mlSection from "@/components/Preorder20mlSection";
 import ProductGrid from "@/components/ProductGrid";
+import ReplacementNotice from "@/components/ReplacementNotice";
 import ScentFinder from "@/components/ScentFinder";
 import Footer from "@/components/Footer";
 import { listCatalogProducts } from "@/lib/catalog";
+import { getRandomHeroSlides } from "@/lib/hero";
 
 export default async function Home() {
+  const heroSlides = getRandomHeroSlides();
   const { products } = await listCatalogProducts({
     page: 1,
     pageSize: 12,
@@ -31,7 +35,7 @@ export default async function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: organizationJsonLd }}
       />
-      <CuratedHero />
+      <CuratedHero slides={heroSlides} />
       <section className="signal-strip" aria-label="Store services" data-reveal>
         <span>
           <Sparkles size={15} />
@@ -46,6 +50,10 @@ export default async function Home() {
           Secure Razorpay checkout
         </span>
       </section>
+      <Preorder20mlSection products={products} />
+      <div className="replacement-notice-wrap">
+        <ReplacementNotice />
+      </div>
       <ProductGrid products={products} />
       <section className="editorial-story" id="story">
         <div className="story-image" data-reveal="left">
@@ -146,6 +154,10 @@ export default async function Home() {
             [
               "How do I track delivery?",
               "When your order ships, its courier, tracking number and tracking link appear in your account and arrive by email.",
+            ],
+            [
+              "What do I need for a damaged or wrong product replacement?",
+              "Record one continuous video before and while opening the parcel, showing the sealed package and every item. Videos made after opening are not accepted for replacement.",
             ],
           ].map(([q, a]) => (
             <details key={q}>

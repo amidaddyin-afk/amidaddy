@@ -5,39 +5,9 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ArrowDownRight, Pause, Play } from "lucide-react";
 import { useReducedMotion } from "framer-motion";
+import type { HeroSlide } from "@/lib/hero";
 
-const slides = [
-  {
-    image: "/curated/hero-models.JPG",
-    kicker: "Amidaddy Eau de Parfum",
-    title: "Presence, before words.",
-    copy: "Four unisex signatures composed for the moods you remember.",
-    href: "/shop",
-  },
-  {
-    image: "/curated/billionaire.JPG",
-    kicker: "Billionaire Noir",
-    title: "Enter like you mean it.",
-    copy: "Bergamot, polished cedar and amber with a magnetic dry-down.",
-    href: "/products/billionaire",
-  },
-  {
-    image: "/curated/cold-war.JPG",
-    kicker: "Cold War",
-    title: "Clarity has a temperature.",
-    copy: "Mineral freshness, pepper and clean musk cut through the noise.",
-    href: "/products/coldwar",
-  },
-  {
-    image: "/curated/old-love.JPG",
-    kicker: "Old Love",
-    title: "Some feelings stay.",
-    copy: "Saffron, warm resin and vanilla, held close to the skin.",
-    href: "/products/old-love",
-  },
-];
-
-export default function CuratedHero() {
+export default function CuratedHero({ slides }: { slides: HeroSlide[] }) {
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   const reduceMotion = useReducedMotion();
@@ -48,7 +18,7 @@ export default function CuratedHero() {
       6500,
     );
     return () => window.clearInterval(id);
-  }, [paused, reduceMotion]);
+  }, [paused, reduceMotion, slides.length]);
   const slide = slides[active];
   return (
     <section

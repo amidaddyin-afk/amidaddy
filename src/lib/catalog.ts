@@ -45,14 +45,15 @@ function mapProduct(product: Record<string, unknown>): Product {
   const baseNotes = (product.base_notes as string[] | null) ?? [];
   const slug = String(product.slug);
   const fallback = PRODUCTS.find((item) => item.slug === slug);
+  const productImages = Array.from(
+    new Set([...images.map((item) => item.url), ...(fallback?.images ?? [])]),
+  );
   return {
     id: String(product.id),
     slug,
     name: String(product.name),
     image: images[0]?.url ?? fallback?.image ?? "/curated/billionaire.JPG",
-    images: images.length
-      ? images.map((item) => item.url)
-      : (fallback?.images ?? []),
+    images: productImages,
     profile: (product.fragrance_family ??
       fallback?.profile ??
       "Woody") as Product["profile"],
@@ -84,6 +85,23 @@ function mapProduct(product: Record<string, unknown>): Product {
     ),
     collection: "unisex",
   };
+}
+
+function withRandomTileImage(product: Product): Product {
+  const candidates = product.images.length ? product.images : [product.image];
+  return {
+    ...product,
+    image: candidates[Math.floor(Math.random() * candidates.length)],
+  };
+}
+
+function withShuffledGallery(product: Product): Product {
+  const images = [...product.images];
+  for (let index = images.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [images[index], images[swapIndex]] = [images[swapIndex], images[index]];
+  }
+  return { ...product, images };
 }
 
 function fallbackProducts(query: ListQuery) {
@@ -124,7 +142,9 @@ function fallbackProducts(query: ListQuery) {
   );
   const start = (query.page - 1) * query.pageSize;
   return {
-    products: products.slice(start, start + query.pageSize),
+    products: products
+      .slice(start, start + query.pageSize)
+      .map(withRandomTileImage),
     total: products.length,
     page: query.page,
     pageSize: query.pageSize,
@@ -181,7 +201,7 @@ export async function listCatalogProducts(query: ListQuery) {
   if (query.inStock === "true")
     products = products.filter((product) => product.stock > 0);
   return {
-    products,
+    products: products.map(withRandomTileImage),
     total: count ?? products.length,
     page: query.page,
     pageSize: query.pageSize,
@@ -189,10 +209,12 @@ export async function listCatalogProducts(query: ListQuery) {
 }
 
 export async function getCatalogProductBySlug(slug: string) {
-  if (!configured())
-    return process.env.NODE_ENV === "production"
+  if (!configured()) {
+    const fallback = PRODUCTS.find((product) => product.slug === slug);
+    return process.env.NODE_ENV === "production" || !fallback
       ? null
-      : (PRODUCTS.find((product) => product.slug === slug) ?? null);
+      : withShuffledGallery(fallback);
+  }
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("products")
@@ -201,11 +223,13 @@ export async function getCatalogProductBySlug(slug: string) {
     .eq("active", true)
     .is("deleted_at", null)
     .maybeSingle();
-  if (error || !data)
-    return process.env.NODE_ENV === "production"
+  if (error || !data) {
+    const fallback = PRODUCTS.find((product) => product.slug === slug);
+    return process.env.NODE_ENV === "production" || !fallback
       ? null
-      : (PRODUCTS.find((product) => product.slug === slug) ?? null);
-  return mapProduct(data as Record<string, unknown>);
+      : withShuffledGallery(fallback);
+  }
+  return withShuffledGallery(mapProduct(data as Record<string, unknown>));
 }
 
 export async function listAdminProducts() {

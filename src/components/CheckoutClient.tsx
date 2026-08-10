@@ -6,6 +6,7 @@ import { FormEvent, useRef, useState } from "react";
 import { ArrowLeft, LockKeyhole, ShoppingBag, Sparkles } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { formatInr } from "@/lib/money";
+import ReplacementNotice from "@/components/ReplacementNotice";
 
 type CheckoutQuote = {
   subtotalPaise: number;
@@ -316,6 +317,7 @@ export default function CheckoutClient() {
                 {error}
               </p>
             )}
+            <ReplacementNotice compact />
             <button disabled={submitting} className="lux-button mt-7 w-full">
               <LockKeyhole size={15} />
               {submitting
