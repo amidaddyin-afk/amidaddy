@@ -1,4 +1,4 @@
-export type FragranceFamily = "Woody" | "Floral" | "Fresh" | "Amber";
+export type FragranceFamily = "Woody" | "Floral" | "Fresh" | "Amber" | "Mixed";
 
 export interface ProductVariant {
   id: string;
@@ -18,6 +18,7 @@ export interface Product {
   name: string;
   image: string;
   images: string[];
+  variantImages?: Partial<Record<ProductVariant["name"], string[]>>;
   profile: FragranceFamily;
   concentration: string;
   genderPositioning: string;
@@ -39,7 +40,8 @@ export interface Product {
   price: number;
   originalPrice?: number;
   stock: number;
-  collection: "unisex";
+  collection: "unisex" | "combos";
+  packSize?: number;
 }
 
 const makeVariants = (
@@ -77,6 +79,26 @@ const galleryImages = (slug: string, count: number) =>
     (_, index) => `/gallery/${slug}/${String(index + 1).padStart(2, "0")}.webp`,
   );
 
+const singleVariant = (
+  slug: string,
+  name: ProductVariant["name"],
+  pricePaise: number,
+  mrpPaise: number,
+  stock: number,
+): ProductVariant[] => [
+  {
+    id: `${slug}-${name}`,
+    name,
+    sku: `AMI-${slug.toUpperCase()}-${name.replace("ml", "")}`,
+    pricePaise,
+    mrpPaise,
+    stock,
+    reserved: 0,
+    lowStockAt: 3,
+    active: true,
+  },
+];
+
 export const PRODUCTS: Product[] = [
   {
     id: "billionaire",
@@ -88,6 +110,9 @@ export const PRODUCTS: Product[] = [
       "/curated/products/billionaire/detail.JPG",
       ...galleryImages("billionaire", 11),
     ],
+    variantImages: {
+      "20ml": ["/products/20ml/billionaire.webp"],
+    },
     profile: "Woody",
     concentration: "Eau de Parfum",
     genderPositioning: "Unisex",
@@ -119,6 +144,9 @@ export const PRODUCTS: Product[] = [
       "/curated/products/coldwar/detail.JPG",
       ...galleryImages("coldwar", 10),
     ],
+    variantImages: {
+      "20ml": ["/products/20ml/cold-war.webp"],
+    },
     profile: "Fresh",
     concentration: "Eau de Parfum",
     genderPositioning: "Unisex",
@@ -151,6 +179,9 @@ export const PRODUCTS: Product[] = [
       "/curated/products/heavenly/detail.JPG",
       ...galleryImages("heavenly", 13),
     ],
+    variantImages: {
+      "20ml": ["/products/20ml/heavenly.webp"],
+    },
     profile: "Floral",
     concentration: "Eau de Parfum",
     genderPositioning: "Unisex",
@@ -182,6 +213,9 @@ export const PRODUCTS: Product[] = [
       "/curated/products/old-love/detail.JPG",
       ...galleryImages("old-love", 14),
     ],
+    variantImages: {
+      "20ml": ["/products/20ml/old-love.webp"],
+    },
     profile: "Amber",
     concentration: "Eau de Parfum",
     genderPositioning: "Unisex",
@@ -203,6 +237,104 @@ export const PRODUCTS: Product[] = [
     originalPrice: 1499,
     stock: 60,
     collection: "unisex",
+  },
+  {
+    id: "combo-20ml",
+    slug: "signature-combo-20ml",
+    name: "Signature Discovery Combo",
+    image: "/products/combos/20ml/01.webp",
+    images: [
+      "/products/combos/20ml/01.webp",
+      "/products/combos/20ml/02.webp",
+      "/products/combos/20ml/03.webp",
+      "/products/combos/20ml/04.webp",
+      "/products/combos/20ml/05.webp",
+      "/products/combos/20ml/06.webp",
+      "/products/combos/20ml/07.webp",
+      "/products/combos/20ml/08.webp",
+      "/products/combos/20ml/09.webp",
+    ],
+    variantImages: {
+      "20ml": [
+        "/products/combos/20ml/01.webp",
+        "/products/combos/20ml/02.webp",
+        "/products/combos/20ml/03.webp",
+        "/products/combos/20ml/04.webp",
+        "/products/combos/20ml/05.webp",
+        "/products/combos/20ml/06.webp",
+        "/products/combos/20ml/07.webp",
+        "/products/combos/20ml/08.webp",
+        "/products/combos/20ml/09.webp",
+      ],
+    },
+    profile: "Mixed",
+    concentration: "Eau de Parfum",
+    genderPositioning: "Unisex",
+    topNotes: ["Four signature openings"],
+    heartNotes: ["Floral, fresh, woody and amber"],
+    baseNotes: ["The complete Amidaddy wardrobe"],
+    notes: "Cold War · Heavenly · Old Love · Billionaire",
+    longevity: "6–10 hours",
+    mood: "Discover every signature",
+    occasion: "Discovery, travel and gifting",
+    description:
+      "All four Amidaddy fragrances together in travel-ready 20 ml bottles.",
+    story:
+      "A complete introduction to the house: four moods, four bottles, one considered set.",
+    badge: "Combo",
+    isNew: true,
+    featured: true,
+    active: true,
+    variants: singleVariant("combo-20", "20ml", 69_900, 99_600, 20),
+    price: 699,
+    originalPrice: 996,
+    stock: 20,
+    collection: "combos",
+    packSize: 4,
+  },
+  {
+    id: "combo-100ml",
+    slug: "signature-combo-100ml",
+    name: "Signature Collection Combo",
+    image: "/products/combos/100ml/01.webp",
+    images: [
+      "/products/combos/100ml/01.webp",
+      "/products/combos/100ml/02.webp",
+      "/products/combos/100ml/03.webp",
+      "/products/combos/100ml/04.webp",
+    ],
+    variantImages: {
+      "100ml": [
+        "/products/combos/100ml/01.webp",
+        "/products/combos/100ml/02.webp",
+        "/products/combos/100ml/03.webp",
+        "/products/combos/100ml/04.webp",
+      ],
+    },
+    profile: "Mixed",
+    concentration: "Eau de Parfum",
+    genderPositioning: "Unisex",
+    topNotes: ["Four signature openings"],
+    heartNotes: ["Floral, fresh, woody and amber"],
+    baseNotes: ["The complete Amidaddy wardrobe"],
+    notes: "Cold War · Heavenly · Old Love · Billionaire",
+    longevity: "6–10 hours",
+    mood: "The complete collection",
+    occasion: "Daily rotation and gifting",
+    description:
+      "The complete Amidaddy collection with all four fragrances in 100 ml bottles.",
+    story:
+      "Four full-size signatures composed for every side of your presence.",
+    badge: "Combo",
+    isNew: true,
+    featured: true,
+    active: true,
+    variants: singleVariant("combo-100", "100ml", 429_900, 599_600, 12),
+    price: 4299,
+    originalPrice: 5996,
+    stock: 12,
+    collection: "combos",
+    packSize: 4,
   },
 ];
 

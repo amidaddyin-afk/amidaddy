@@ -29,6 +29,7 @@ export default function ProductCard({
   const { addItem } = useCart();
   const variant =
     product.variants.find((item) => item.name === size) ?? product.variants[0];
+  const cardImage = product.variantImages?.[size]?.[0] ?? product.image;
   const add = () => {
     addItem(product, size);
     setAdded(true);
@@ -57,8 +58,9 @@ export default function ProductCard({
           className="absolute inset-0 z-10"
         />
         <Image
-          src={product.image}
-          alt={`${product.name} perfume`}
+          key={cardImage}
+          src={cardImage}
+          alt={`${product.name} ${product.packSize && product.packSize > 1 ? `${product.packSize} pack ` : ""}${size}`}
           fill
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
           className="object-cover transition-transform duration-700 group-hover:scale-[1.035]"
@@ -95,7 +97,9 @@ export default function ProductCard({
               onClick={() => setSize(item.name)}
               className={`size-chip ${size === item.name ? "active" : ""}`}
             >
-              {item.name}
+              {product.packSize && product.packSize > 1
+                ? `${product.packSize} × ${item.name}`
+                : item.name}
             </button>
           ))}
         </div>

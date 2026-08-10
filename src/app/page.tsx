@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, Gift, ShieldCheck, Sparkles, Truck } from "lucide-react";
 import CuratedHero from "@/components/CuratedHero";
-import Preorder20mlSection from "@/components/Preorder20mlSection";
 import ProductGrid from "@/components/ProductGrid";
 import ScentFinder from "@/components/ScentFinder";
 import Footer from "@/components/Footer";
@@ -49,7 +48,6 @@ export default async function Home() {
           Secure Razorpay checkout
         </span>
       </section>
-      <Preorder20mlSection products={products} />
       <ProductGrid products={products} />
       <section className="editorial-story" id="story">
         <div className="story-image" data-reveal="left">

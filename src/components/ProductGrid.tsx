@@ -11,12 +11,12 @@ export default function ProductGrid({ products }: { products: Product[] }) {
             <h2 className="display-title">
               Four moods.
               <br />
-              One instinct.
+              Two ways to collect.
             </h2>
           </div>
           <p>
-            Compositions designed around feeling—not convention. Begin with 20
-            ml, or make it your daily signature in 100 ml.
+            Choose one signature in 20 ml or 100 ml, or meet the complete house
+            in a four-bottle combo.
           </p>
         </div>
         <div className="product-grid">

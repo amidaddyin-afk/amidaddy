@@ -22,6 +22,8 @@ export default function CatalogManager({ products }: { products: Product[] }) {
     event.preventDefault();
     setMessage("Saving…");
     const data = new FormData(event.currentTarget);
+    const editingComboSize =
+      editing?.collection === "combos" ? editing.variants[0]?.name : null;
     const product = {
       name: data.get("name"),
       slug: data.get("slug"),
@@ -32,6 +34,8 @@ export default function CatalogManager({ products }: { products: Product[] }) {
       fragranceFamily: data.get("family"),
       concentration: "Eau de Parfum",
       genderPositioning: "Unisex",
+      collection: editing?.collection ?? "unisex",
+      packSize: editing?.packSize ?? 1,
       topNotes: split(data.get("topNotes")),
       heartNotes: split(data.get("heartNotes")),
       baseNotes: split(data.get("baseNotes")),
@@ -50,6 +54,7 @@ export default function CatalogManager({ products }: { products: Product[] }) {
       images: split(data.get("images")).map((url) => ({
         url,
         alt: String(data.get("name")),
+        variantName: editingComboSize,
       })),
       variants: [
         {
@@ -72,7 +77,7 @@ export default function CatalogManager({ products }: { products: Product[] }) {
           lowStockAt: 5,
           active: true,
         },
-      ],
+      ].filter((item) => !editingComboSize || item.name === editingComboSize),
     };
     const response = await fetch("/api/admin/products", {
       method: editing ? "PATCH" : "POST",
@@ -118,6 +123,8 @@ export default function CatalogManager({ products }: { products: Product[] }) {
     else setMessage(body.error ?? "Upload failed.");
   }
   const selected = editing;
+  const comboSize =
+    selected?.collection === "combos" ? selected.variants[0]?.name : null;
   const variant = (name: "20ml" | "100ml") =>
     selected?.variants.find((item) => item.name === name);
   return (
@@ -206,7 +213,7 @@ export default function CatalogManager({ products }: { products: Product[] }) {
               required
             />
             <select name="family" defaultValue={selected?.profile ?? "Woody"}>
-              {["Woody", "Fresh", "Floral", "Amber"].map((item) => (
+              {["Woody", "Fresh", "Floral", "Amber", "Mixed"].map((item) => (
                 <option key={item}>{item}</option>
               ))}
             </select>
@@ -280,7 +287,8 @@ export default function CatalogManager({ products }: { products: Product[] }) {
               name="sku20"
               placeholder="20 ml SKU"
               defaultValue={variant("20ml")?.sku}
-              required
+              required={!comboSize || comboSize === "20ml"}
+              disabled={comboSize === "100ml"}
             />
             <input
               name="price20"
@@ -289,7 +297,8 @@ export default function CatalogManager({ products }: { products: Product[] }) {
               step=".01"
               placeholder="20 ml price ₹"
               defaultValue={(variant("20ml")?.pricePaise ?? 19900) / 100}
-              required
+              required={!comboSize || comboSize === "20ml"}
+              disabled={comboSize === "100ml"}
             />
             <input
               name="mrp20"
@@ -298,7 +307,8 @@ export default function CatalogManager({ products }: { products: Product[] }) {
               step=".01"
               placeholder="20 ml MRP ₹"
               defaultValue={(variant("20ml")?.mrpPaise ?? 24900) / 100}
-              required
+              required={!comboSize || comboSize === "20ml"}
+              disabled={comboSize === "100ml"}
             />
             <input
               name="stock20"
@@ -306,13 +316,15 @@ export default function CatalogManager({ products }: { products: Product[] }) {
               min="0"
               placeholder="20 ml stock"
               defaultValue={variant("20ml")?.stock ?? 0}
-              required
+              required={!comboSize || comboSize === "20ml"}
+              disabled={comboSize === "100ml"}
             />
             <input
               name="sku100"
               placeholder="100 ml SKU"
               defaultValue={variant("100ml")?.sku}
-              required
+              required={!comboSize || comboSize === "100ml"}
+              disabled={comboSize === "20ml"}
             />
             <input
               name="price100"
@@ -321,7 +333,8 @@ export default function CatalogManager({ products }: { products: Product[] }) {
               step=".01"
               placeholder="100 ml price ₹"
               defaultValue={(variant("100ml")?.pricePaise ?? 119900) / 100}
-              required
+              required={!comboSize || comboSize === "100ml"}
+              disabled={comboSize === "20ml"}
             />
             <input
               name="mrp100"
@@ -330,7 +343,8 @@ export default function CatalogManager({ products }: { products: Product[] }) {
               step=".01"
               placeholder="100 ml MRP ₹"
               defaultValue={(variant("100ml")?.mrpPaise ?? 149900) / 100}
-              required
+              required={!comboSize || comboSize === "100ml"}
+              disabled={comboSize === "20ml"}
             />
             <input
               name="stock100"
@@ -338,7 +352,8 @@ export default function CatalogManager({ products }: { products: Product[] }) {
               min="0"
               placeholder="100 ml stock"
               defaultValue={variant("100ml")?.stock ?? 0}
-              required
+              required={!comboSize || comboSize === "100ml"}
+              disabled={comboSize === "20ml"}
             />
             <input name="seoTitle" placeholder="SEO title" />
             <input name="seoDescription" placeholder="SEO description" />

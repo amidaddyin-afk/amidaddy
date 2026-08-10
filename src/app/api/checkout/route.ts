@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth";
+import { takeRequestLimit } from "@/lib/request-rate-limit";
 import {
   cancelOrder,
   createPendingOrder,
@@ -37,6 +38,11 @@ const checkoutSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    if (!(await takeRequestLimit("checkout", 10, 10 * 60)))
+      return NextResponse.json(
+        { error: "Too many checkout attempts. Please try again shortly." },
+        { status: 429 },
+      );
     const parsed = checkoutSchema.safeParse(await request.json());
     if (!parsed.success)
       return NextResponse.json(

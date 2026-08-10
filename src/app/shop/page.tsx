@@ -20,8 +20,9 @@ export default async function ShopPage({
     page: 1,
     pageSize: 48,
     search: value("search"),
+    collection: value("collection") as "unisex" | "combos" | undefined,
     family: value("family") as
-      "Woody" | "Floral" | "Fresh" | "Amber" | undefined,
+      "Woody" | "Floral" | "Fresh" | "Amber" | "Mixed" | undefined,
     size: value("size") as "20ml" | "100ml" | undefined,
     inStock: "true" as const,
     sort: (value("sort") ?? "newest") as
@@ -38,8 +39,8 @@ export default async function ShopPage({
           that feels like you.
         </h1>
         <p>
-          Four unisex compositions. Two considered sizes. Filter by instinct,
-          family, or mood.
+          Four unisex compositions, two considered sizes, and complete
+          four-bottle combos. Filter by instinct, family, or mood.
         </p>
       </section>
       <section
@@ -56,10 +57,18 @@ export default async function ShopPage({
             />
           </label>
           <label>
+            <span>Range</span>
+            <select name="collection" defaultValue={query.collection ?? ""}>
+              <option value="">All products</option>
+              <option value="unisex">Single fragrances</option>
+              <option value="combos">Combos</option>
+            </select>
+          </label>
+          <label>
             <span>Scent family</span>
             <select name="family" defaultValue={query.family ?? ""}>
               <option value="">All families</option>
-              {["Woody", "Fresh", "Floral", "Amber"].map((item) => (
+              {["Woody", "Fresh", "Floral", "Amber", "Mixed"].map((item) => (
                 <option key={item}>{item}</option>
               ))}
             </select>
@@ -85,7 +94,7 @@ export default async function ShopPage({
         </form>
         <div className="mb-6 flex justify-between text-xs tracking-[.16em] text-white/40 uppercase">
           <span>{total} fragrances</span>
-          {(query.search || query.family || query.size) && (
+          {(query.search || query.collection || query.family || query.size) && (
             <a href="/shop" className="text-champagne">
               Clear filters
             </a>

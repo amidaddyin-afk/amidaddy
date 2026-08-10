@@ -23,6 +23,7 @@ function mapProduct(product: Record<string, unknown>): Product {
     (product.product_images as Array<{
       url: string;
       position?: number;
+      variant_name?: "20ml" | "100ml" | null;
     }> | null) ?? []
   ).sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
   const variants = (
@@ -45,15 +46,41 @@ function mapProduct(product: Record<string, unknown>): Product {
   const baseNotes = (product.base_notes as string[] | null) ?? [];
   const slug = String(product.slug);
   const fallback = PRODUCTS.find((item) => item.slug === slug);
+  const generalImages = images
+    .filter((item) => !item.variant_name)
+    .map((item) => item.url);
+  const variantImages = Object.fromEntries(
+    (["20ml", "100ml"] as const).map((name) => {
+      const explicit = images
+        .filter((item) => item.variant_name === name)
+        .map((item) => item.url);
+      const fallbackImages = fallback?.variantImages?.[name] ?? [];
+      const selected = explicit.length
+        ? explicit
+        : fallbackImages.length
+          ? fallbackImages
+          : name === "100ml"
+            ? generalImages
+            : [];
+      return [name, Array.from(new Set(selected))];
+    }),
+  ) as Product["variantImages"];
   const productImages = Array.from(
-    new Set([...images.map((item) => item.url), ...(fallback?.images ?? [])]),
+    new Set([
+      ...generalImages,
+      ...images.map((item) => item.url),
+      ...(fallback?.images ?? []),
+    ]),
   );
+  const defaultImages =
+    (defaultVariant && variantImages?.[defaultVariant.name]) ?? productImages;
   return {
     id: String(product.id),
     slug,
     name: String(product.name),
-    image: images[0]?.url ?? fallback?.image ?? "/curated/billionaire.JPG",
+    image: defaultImages[0] ?? fallback?.image ?? "/curated/billionaire.JPG",
     images: productImages,
+    variantImages,
     profile: (product.fragrance_family ??
       fallback?.profile ??
       "Woody") as Product["profile"],
@@ -83,7 +110,11 @@ function mapProduct(product: Record<string, unknown>): Product {
       (sum, variant) => sum + Math.max(0, variant.stock - variant.reserved),
       0,
     ),
-    collection: "unisex",
+    collection:
+      String(product.collection ?? fallback?.collection) === "combos"
+        ? "combos"
+        : "unisex",
+    packSize: Number(product.pack_size ?? fallback?.packSize ?? 1),
   };
 }
 
@@ -101,7 +132,22 @@ function withShuffledGallery(product: Product): Product {
     const swapIndex = Math.floor(Math.random() * (index + 1));
     [images[index], images[swapIndex]] = [images[swapIndex], images[index]];
   }
-  return { ...product, images };
+  const variantImages = product.variantImages
+    ? Object.fromEntries(
+        Object.entries(product.variantImages).map(([name, items]) => {
+          const shuffled = [...(items ?? [])];
+          for (let index = shuffled.length - 1; index > 0; index -= 1) {
+            const swapIndex = Math.floor(Math.random() * (index + 1));
+            [shuffled[index], shuffled[swapIndex]] = [
+              shuffled[swapIndex],
+              shuffled[index],
+            ];
+          }
+          return [name, shuffled];
+        }),
+      )
+    : undefined;
+  return { ...product, images, variantImages };
 }
 
 function fallbackProducts(query: ListQuery) {
@@ -116,6 +162,10 @@ function fallbackProducts(query: ListQuery) {
   }
   if (query.family)
     products = products.filter((product) => product.profile === query.family);
+  if (query.collection)
+    products = products.filter(
+      (product) => product.collection === query.collection,
+    );
   if (query.size)
     products = products.filter((product) =>
       product.variants.some(
@@ -163,9 +213,12 @@ export async function listCatalogProducts(query: ListQuery) {
   const start = (query.page - 1) * query.pageSize;
   let request = supabase
     .from("products")
-    .select("*, product_images(url, position), product_variants(*)", {
-      count: "exact",
-    })
+    .select(
+      "*, product_images(url, position, variant_name), product_variants(*)",
+      {
+        count: "exact",
+      },
+    )
     .eq("active", true)
     .is("deleted_at", null);
   if (query.search)
@@ -173,6 +226,7 @@ export async function listCatalogProducts(query: ListQuery) {
       `name.ilike.%${query.search.replace(/[%,_]/g, "")}%,description.ilike.%${query.search.replace(/[%,_]/g, "")}%`,
     );
   if (query.family) request = request.eq("fragrance_family", query.family);
+  if (query.collection) request = request.eq("collection", query.collection);
   if (query.minPrice !== undefined)
     request = request.gte("selling_price", query.minPrice);
   if (query.maxPrice !== undefined)
@@ -218,7 +272,9 @@ export async function getCatalogProductBySlug(slug: string) {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("products")
-    .select("*, product_images(url, position), product_variants(*)")
+    .select(
+      "*, product_images(url, position, variant_name), product_variants(*)",
+    )
     .eq("slug", slug)
     .eq("active", true)
     .is("deleted_at", null)
@@ -241,7 +297,9 @@ export async function listAdminProducts() {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("products")
-    .select("*, product_images(url, position), product_variants(*)")
+    .select(
+      "*, product_images(url, position, variant_name), product_variants(*)",
+    )
     .order("created_at", { ascending: false });
   if (error) throw new Error("Unable to load products.");
   return (data ?? []).map((item) =>
@@ -277,6 +335,8 @@ export async function createCatalogProduct(input: ProductInput) {
       fragrance_family: product.fragranceFamily,
       concentration: product.concentration,
       gender_positioning: product.genderPositioning,
+      collection: product.collection,
+      pack_size: product.packSize,
       top_notes: product.topNotes,
       heart_notes: product.heartNotes,
       base_notes: product.baseNotes,
@@ -295,6 +355,7 @@ export async function createCatalogProduct(input: ProductInput) {
         url: image.url,
         alt: image.alt,
         position,
+        variant_name: image.variantName ?? null,
       })),
     ),
     supabase.from("product_variants").insert(
@@ -342,6 +403,8 @@ export async function updateCatalogProduct(id: string, input: ProductInput) {
       fragrance_family: product.fragranceFamily,
       concentration: product.concentration,
       gender_positioning: product.genderPositioning,
+      collection: product.collection,
+      pack_size: product.packSize,
       top_notes: product.topNotes,
       heart_notes: product.heartNotes,
       base_notes: product.baseNotes,
@@ -363,6 +426,7 @@ export async function updateCatalogProduct(id: string, input: ProductInput) {
       url: image.url,
       alt: image.alt,
       position,
+      variant_name: image.variantName ?? null,
     })),
   );
   if (imageResult.error) throw new Error("Unable to update product media.");

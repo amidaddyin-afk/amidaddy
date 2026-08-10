@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { requireUser } from "@/lib/auth";
+import { requireAdminUser, requireUser } from "@/lib/auth";
 import {
   cancelOrder,
   getCustomerOrder,
@@ -48,8 +48,7 @@ export async function cancelAdminOrderAction(
   _: OrderActionState,
   formData: FormData,
 ): Promise<OrderActionState> {
-  const { user, profile } = await requireUser();
-  if (profile?.role !== "ADMIN") return { error: "Unauthorized." };
+  const { user } = await requireAdminUser();
   const parsed = z
     .object({
       orderId: z.string().min(8),
@@ -76,8 +75,7 @@ export async function updateFulfillmentAction(
   _: OrderActionState,
   formData: FormData,
 ): Promise<OrderActionState> {
-  const { user, profile } = await requireUser();
-  if (profile?.role !== "ADMIN") return { error: "Unauthorized." };
+  const { user } = await requireAdminUser();
   const parsed = z
     .object({
       orderId: z.string().min(8),
@@ -114,8 +112,7 @@ export async function refundOrderAction(
   _: OrderActionState,
   formData: FormData,
 ): Promise<OrderActionState> {
-  const { user, profile } = await requireUser();
-  if (profile?.role !== "ADMIN") return { error: "Unauthorized." };
+  const { user } = await requireAdminUser();
   const parsed = z
     .object({
       orderId: z.string().min(8),

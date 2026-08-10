@@ -86,6 +86,8 @@ model Product {
   mood              String?
   occasion          String?
   story             String?
+  collection        String              @default("unisex")
+  packSize          Int                 @default(1) @map("pack_size")
   deletedAt         DateTime?           @map("deleted_at") @db.Timestamptz(6)
   createdAt         DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt         DateTime            @updatedAt @map("updated_at") @db.Timestamptz(6)
@@ -125,13 +127,14 @@ model ProductVariant {
 }
 
 model ProductImage {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  productId String   @map("product_id") @db.Uuid
-  url       String
-  alt       String
-  position  Int      @default(0)
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  productId   String   @map("product_id") @db.Uuid
+  url         String
+  alt         String
+  position    Int      @default(0)
+  variantName String?  @map("variant_name")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@unique([productId, position])
   @@map("product_images")
@@ -337,4 +340,14 @@ model StoreSetting {
   updatedAt              DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   @@map("store_settings")
+}
+
+model RequestRateLimit {
+  scope        String
+  identityHash String   @map("identity_hash")
+  windowStart  DateTime @map("window_start") @db.Timestamptz(6)
+  attempts     Int      @default(1)
+
+  @@id([scope, identityHash, windowStart])
+  @@map("request_rate_limits")
 }

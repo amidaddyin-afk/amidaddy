@@ -155,10 +155,27 @@ export default function CheckoutClient() {
             email: data.customer.email,
             contact: data.customer.phone,
           },
-          handler: () =>
-            router.push(
-              `/checkout/success?order=${encodeURIComponent(data.applicationOrderId)}`,
-            ),
+          handler: async (payment: {
+            razorpay_payment_id: string;
+            razorpay_order_id: string;
+            razorpay_signature: string;
+          }) => {
+            try {
+              await fetch("/api/checkout/verify", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  razorpayOrderId: payment.razorpay_order_id,
+                  razorpayPaymentId: payment.razorpay_payment_id,
+                  razorpaySignature: payment.razorpay_signature,
+                }),
+              });
+            } finally {
+              router.push(
+                `/checkout/success?order=${encodeURIComponent(data.applicationOrderId)}`,
+              );
+            }
+          },
           modal: { ondismiss: () => setSubmitting(false) },
           theme: { color: "#c9a96e" },
         }).open();
@@ -343,7 +360,10 @@ export default function CheckoutClient() {
                   <div>
                     <p>{item.product.name}</p>
                     <p className="mt-1 text-xs text-white/45">
-                      {item.size} × {item.qty}
+                      {item.product.packSize && item.product.packSize > 1
+                        ? `${item.product.packSize} × ${item.size}`
+                        : item.size}{" "}
+                      × {item.qty}
                     </p>
                   </div>
                   <span>{formatInr(item.unitPricePaise * item.qty)}</span>

@@ -120,7 +120,9 @@ export default function CartSidebar() {
                           {item.product.name}
                         </p>
                         <p className="mb-3 text-xs tracking-wider text-white/30">
-                          {item.size}
+                          {item.product.packSize && item.product.packSize > 1
+                            ? `${item.product.packSize} × ${item.size}`
+                            : item.size}
                         </p>
 
                         <div className="flex items-center justify-between">

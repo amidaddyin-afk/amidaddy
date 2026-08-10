@@ -31,6 +31,8 @@ export function AuthForm({ mode }: { mode: Mode }) {
   const [oauthError, setOauthError] = useState<string | null>(null);
   const searchParams = useSearchParams();
   const next = searchParams.get("next");
+  const adminSessionExpired =
+    searchParams.get("reason") === "admin-session-expired";
   const safeNext =
     next?.startsWith("/") && !next.startsWith("//") ? next : "/account";
 
@@ -94,11 +96,10 @@ export function AuthForm({ mode }: { mode: Mode }) {
             className="checkout-input mb-3 w-full"
           />
         )}
-        {isLogin && (
-          <label className="mb-4 flex items-center gap-2 text-sm text-white/60">
-            <input type="checkbox" name="rememberMe" defaultChecked /> Keep me
-            signed in
-          </label>
+        {isLogin && adminSessionExpired && (
+          <p className="mb-4 text-sm text-[#D4AF37]" role="status">
+            Your admin session expired. Sign in again to continue.
+          </p>
         )}
         {state.error && (
           <p className="mb-4 text-sm text-red-300" role="alert">

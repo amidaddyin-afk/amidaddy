@@ -17,9 +17,6 @@ import { useCart } from "@/context/CartContext";
 import { formatInr } from "@/lib/money";
 
 export default function ProductDetail({ product }: { product: Product }) {
-  const [selectedImage, setSelectedImage] = useState(
-    product.images[0] ?? product.image,
-  );
   const available = product.variants.filter(
     (variant) => variant.active && variant.stock > variant.reserved,
   );
@@ -28,13 +25,18 @@ export default function ProductDetail({ product }: { product: Product }) {
       available[0]?.name ??
       "100ml",
   );
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [added, setAdded] = useState(false);
   const { addItem } = useCart();
   const variant = product.variants.find((item) => item.name === size);
-  const selectedImageIndex = Math.max(0, product.images.indexOf(selectedImage));
+  const activeImages =
+    product.variantImages?.[size]?.length && product.variantImages[size]
+      ? product.variantImages[size]!
+      : product.images;
+  const selectedImage = activeImages[selectedImageIndex] ?? activeImages[0];
   const showImage = (index: number) => {
-    const nextIndex = (index + product.images.length) % product.images.length;
-    setSelectedImage(product.images[nextIndex]);
+    const nextIndex = (index + activeImages.length) % activeImages.length;
+    setSelectedImageIndex(nextIndex);
   };
   const add = () => {
     addItem(product, size);
@@ -51,15 +53,16 @@ export default function ProductDetail({ product }: { product: Product }) {
           <section className="product-gallery" data-reveal="left">
             <div className="product-hero-image">
               <Image
+                key={selectedImage}
                 src={selectedImage}
-                alt={`${product.name} bottle`}
+                alt={`${product.name} ${product.packSize && product.packSize > 1 ? `${product.packSize} pack ` : ""}${size}`}
                 fill
                 priority
                 sizes="(max-width:1024px) 100vw, 58vw"
                 className="object-cover"
               />
               <div className="product-glow" />
-              {product.images.length > 1 && (
+              {activeImages.length > 1 && (
                 <div className="gallery-controls">
                   <button
                     type="button"
@@ -70,7 +73,7 @@ export default function ProductDetail({ product }: { product: Product }) {
                   </button>
                   <span>
                     <Images size={14} />
-                    {selectedImageIndex + 1} / {product.images.length}
+                    {selectedImageIndex + 1} / {activeImages.length}
                   </span>
                   <button
                     type="button"
@@ -86,13 +89,13 @@ export default function ProductDetail({ product }: { product: Product }) {
               className="product-thumbnail-rail"
               aria-label={`${product.name} photo gallery`}
             >
-              {product.images.map((image, index) => (
+              {activeImages.map((image, index) => (
                 <button
                   key={image}
-                  onClick={() => setSelectedImage(image)}
-                  className={`thumbnail ${selectedImage === image ? "active" : ""}`}
-                  aria-label={`Show ${product.name} image ${index + 1} of ${product.images.length}`}
-                  aria-pressed={selectedImage === image}
+                  onClick={() => setSelectedImageIndex(index)}
+                  className={`thumbnail ${selectedImageIndex === index ? "active" : ""}`}
+                  aria-label={`Show ${product.name} image ${index + 1} of ${activeImages.length}`}
+                  aria-pressed={selectedImageIndex === index}
                 >
                   <Image
                     src={image}
@@ -142,10 +145,17 @@ export default function ProductDetail({ product }: { product: Product }) {
                   <button
                     key={item.id}
                     disabled={!item.active || item.stock <= item.reserved}
-                    onClick={() => setSize(item.name)}
+                    onClick={() => {
+                      setSize(item.name);
+                      setSelectedImageIndex(0);
+                    }}
                     className={`variant-card ${size === item.name ? "active" : ""}`}
                   >
-                    <span>{item.name}</span>
+                    <span>
+                      {product.packSize && product.packSize > 1
+                        ? `${product.packSize} × ${item.name}`
+                        : item.name}
+                    </span>
                     <strong>{formatInr(item.pricePaise)}</strong>
                     <small>
                       {item.stock > item.reserved

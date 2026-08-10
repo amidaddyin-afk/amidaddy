@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth";
 import { quoteCheckout } from "@/lib/orders";
+import { takeRequestLimit } from "@/lib/request-rate-limit";
 
 const quoteSchema = z.object({
   email: z.string().trim().email().max(254),
@@ -23,6 +24,11 @@ const quoteSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    if (!(await takeRequestLimit("checkout-quote", 30, 10 * 60)))
+      return NextResponse.json(
+        { error: "Too many coupon attempts. Please try again shortly." },
+        { status: 429 },
+      );
     const parsed = quoteSchema.safeParse(await request.json());
     if (!parsed.success)
       return NextResponse.json(

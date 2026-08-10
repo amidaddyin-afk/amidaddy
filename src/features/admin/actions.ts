@@ -2,15 +2,13 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { requireUser } from "@/lib/auth";
+import { requireAdminUser } from "@/lib/auth";
 import { appendAuditEvent } from "@/lib/audit";
 import { db, transaction } from "@/lib/db";
 
 export type AdminActionState = { error?: string; message?: string };
 async function admin() {
-  const current = await requireUser();
-  if (current.profile?.role !== "ADMIN") throw new Error("Unauthorized.");
-  return current;
+  return requireAdminUser();
 }
 
 export async function createCouponAction(

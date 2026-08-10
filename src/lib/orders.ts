@@ -784,19 +784,27 @@ export async function sendOrderEmail(orderId: string, template: string) {
       "update public.notification_logs set status='SKIPPED',error='Resend is not configured' where id=$1",
       [log.rows[0].id],
     );
+    console.error(
+      `[email] Skipped ${template} for ${orderId}: RESEND_API_KEY or RESEND_FROM_EMAIL is missing.`,
+    );
     return;
   }
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "";
+  const orderNotificationEmail = process.env.ORDER_NOTIFICATION_EMAIL;
   try {
     const response = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
+        "Idempotency-Key": `${orderId}-${template}`,
       },
       body: JSON.stringify({
         from,
         to: order.email,
+        ...(template === "order-confirmed" && orderNotificationEmail
+          ? { bcc: orderNotificationEmail }
+          : {}),
         subject: emailSubject(template, order.id),
         html: `<div style="background:#090909;color:#f7f1e7;padding:36px;font-family:Arial,sans-serif"><p style="color:#d8b77a;letter-spacing:.2em">AMIDADDY</p><h1>${emailSubject(template, order.id)}</h1><p>Your order status is now <strong>${order.status.replaceAll("_", " ")}</strong>.</p><p>Order total: ₹${(order.totalPaise / 100).toLocaleString("en-IN")}</p>${order.trackingUrl ? `<p><a style="color:#d8b77a" href="${order.trackingUrl}">Track your shipment</a></p>` : ""}<p><a style="color:#d8b77a" href="${appUrl}/account/orders/${order.id}">View order details</a></p></div>`,
       }),
@@ -815,6 +823,9 @@ export async function sendOrderEmail(orderId: string, template: string) {
         log.rows[0].id,
         error instanceof Error ? error.message : "Unknown email error",
       ],
+    );
+    console.error(
+      `[email] Failed ${template} for ${orderId}: ${error instanceof Error ? error.message : "Unknown email error"}`,
     );
   }
 }
