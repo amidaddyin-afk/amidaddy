@@ -685,10 +685,6 @@ main {
   background: transparent;
   color: rgba(255, 255, 255, 0.35);
 }
-.replacement-notice-wrap {
-  padding: 0 2rem 9rem;
-  background: #0c0d0d;
-}
 .replacement-notice {
   display: grid;
   max-width: 1500px;
@@ -2253,9 +2249,6 @@ main {
   }
   .preorder-visual {
     height: clamp(360px, 112vw, 460px);
-  }
-  .replacement-notice-wrap {
-    padding: 0 1rem 6rem;
   }
   .replacement-notice,
   .replacement-notice--compact {

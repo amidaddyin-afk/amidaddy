@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ExternalLink } from "lucide-react";
-import OrderCancelForm from "@/components/OrderCancelForm";
+import { ExternalLink, RotateCcw, XCircle } from "lucide-react";
 import OrderTimeline from "@/components/OrderTimeline";
 import { requireUser } from "@/lib/auth";
 import { getCustomerOrder } from "@/lib/orders";
@@ -111,16 +110,29 @@ export default async function OrderPage({
                 </div>
               )}
             </section>
-            {canCancel && (
-              <section className="lux-panel p-6">
-                <p className="eyebrow">Need to change course?</p>
-                <p className="mt-3 text-sm leading-6 text-white/45">
-                  Cancellation is available until preparation begins. Paid
-                  orders receive a full Razorpay refund.
-                </p>
-                <OrderCancelForm orderId={order.id} />
-              </section>
-            )}
+            <section className="lux-panel p-6">
+              <p className="eyebrow">Need help with this order?</p>
+              <p className="mt-3 text-sm leading-6 text-white/45">
+                Cancellation, return and replacement information is available on
+                a separate page.
+              </p>
+              <div className="mt-5 grid gap-3">
+                {canCancel && (
+                  <Link
+                    href={`/account/orders/${order.id}/support#cancel`}
+                    className="btn-ghost w-full gap-2"
+                  >
+                    <XCircle size={15} /> Cancel order
+                  </Link>
+                )}
+                <Link
+                  href={`/account/orders/${order.id}/support#replacement`}
+                  className="btn-ghost w-full gap-2"
+                >
+                  <RotateCcw size={15} /> Return or replacement
+                </Link>
+              </div>
+            </section>
           </aside>
         </div>
       </div>
