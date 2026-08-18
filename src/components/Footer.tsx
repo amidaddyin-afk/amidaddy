@@ -20,8 +20,17 @@ export default function Footer() {
           <div>
             <h3>Client care</h3>
             <a href="mailto:support@amidaddy.com">Contact</a>
-            <Link href="/#faq">Shipping & cancellation</Link>
+            <Link href="/policies/shipping-delivery">Shipping & delivery</Link>
+            <Link href="/policies/returns-refunds-replacements">
+              Returns & refunds
+            </Link>
+            <Link href="/policies/payment-terms">Payment terms</Link>
             <Link href="/account/orders">Track an order</Link>
+          </div>
+          <div>
+            <h3>Legal</h3>
+            <Link href="/policies/terms-conditions">Terms & conditions</Link>
+            <Link href="/policies/privacy-policy">Privacy policy</Link>
           </div>
           <div>
             <h3>Your account</h3>

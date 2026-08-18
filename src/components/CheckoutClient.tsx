@@ -335,6 +335,27 @@ export default function CheckoutClient() {
               </p>
             )}
             <ReplacementNotice compact />
+            <label className="checkout-consent">
+              <input type="checkbox" required name="policyConsent" />
+              <span>
+                I agree to the{" "}
+                <Link href="/policies/terms-conditions" target="_blank">
+                  Terms & Conditions
+                </Link>
+                ,{" "}
+                <Link href="/policies/privacy-policy" target="_blank">
+                  Privacy Policy
+                </Link>
+                , and{" "}
+                <Link
+                  href="/policies/returns-refunds-replacements"
+                  target="_blank"
+                >
+                  Return, Refund & Replacement Policy
+                </Link>
+                .
+              </span>
+            </label>
             <button disabled={submitting} className="lux-button mt-7 w-full">
               <LockKeyhole size={15} />
               {submitting
