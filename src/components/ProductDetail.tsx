@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   ArrowLeft,
   Check,
@@ -27,6 +27,7 @@ export default function ProductDetail({ product }: { product: Product }) {
   );
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [added, setAdded] = useState(false);
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
   const { addItem } = useCart();
   const variant = product.variants.find((item) => item.name === size);
   const activeImages =
@@ -37,6 +38,19 @@ export default function ProductDetail({ product }: { product: Product }) {
   const showImage = (index: number) => {
     const nextIndex = (index + activeImages.length) % activeImages.length;
     setSelectedImageIndex(nextIndex);
+  };
+  const finishSwipe = (x: number, y: number) => {
+    const start = touchStart.current;
+    touchStart.current = null;
+    if (!start || activeImages.length < 2) return;
+    const horizontalDistance = x - start.x;
+    const verticalDistance = y - start.y;
+    if (
+      Math.abs(horizontalDistance) < 42 ||
+      Math.abs(horizontalDistance) <= Math.abs(verticalDistance)
+    )
+      return;
+    showImage(selectedImageIndex + (horizontalDistance < 0 ? 1 : -1));
   };
   const add = () => {
     addItem(product, size);
@@ -51,7 +65,20 @@ export default function ProductDetail({ product }: { product: Product }) {
         </Link>
         <div className="mt-8 grid gap-10 lg:grid-cols-[1.15fr_.85fr] lg:gap-16">
           <section className="product-gallery" data-reveal="left">
-            <div className="product-hero-image">
+            <div
+              className="product-hero-image"
+              onTouchStart={(event) => {
+                const touch = event.changedTouches[0];
+                touchStart.current = { x: touch.clientX, y: touch.clientY };
+              }}
+              onTouchEnd={(event) => {
+                const touch = event.changedTouches[0];
+                finishSwipe(touch.clientX, touch.clientY);
+              }}
+              onTouchCancel={() => {
+                touchStart.current = null;
+              }}
+            >
               <Image
                 key={selectedImage}
                 src={selectedImage}

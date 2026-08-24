@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowDownRight, Pause, Play } from "lucide-react";
 import { useReducedMotion } from "framer-motion";
 import type { HeroSlide } from "@/lib/hero";
@@ -10,6 +10,7 @@ import type { HeroSlide } from "@/lib/hero";
 export default function CuratedHero({ slides }: { slides: HeroSlide[] }) {
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
   const reduceMotion = useReducedMotion();
   useEffect(() => {
     if (paused || reduceMotion) return;
@@ -19,12 +20,41 @@ export default function CuratedHero({ slides }: { slides: HeroSlide[] }) {
     );
     return () => window.clearInterval(id);
   }, [paused, reduceMotion, slides.length]);
+  const finishSwipe = (x: number, y: number) => {
+    const start = touchStart.current;
+    touchStart.current = null;
+    if (!start || slides.length < 2) return;
+    const horizontalDistance = x - start.x;
+    const verticalDistance = y - start.y;
+    if (
+      Math.abs(horizontalDistance) < 42 ||
+      Math.abs(horizontalDistance) <= Math.abs(verticalDistance)
+    )
+      return;
+    setActive((value) =>
+      horizontalDistance < 0
+        ? (value + 1) % slides.length
+        : (value - 1 + slides.length) % slides.length,
+    );
+    setPaused(true);
+  };
   const slide = slides[active];
   return (
     <section
       className="cinematic-hero"
       aria-roledescription="carousel"
       aria-label="Featured fragrances"
+      onTouchStart={(event) => {
+        const touch = event.changedTouches[0];
+        touchStart.current = { x: touch.clientX, y: touch.clientY };
+      }}
+      onTouchEnd={(event) => {
+        const touch = event.changedTouches[0];
+        finishSwipe(touch.clientX, touch.clientY);
+      }}
+      onTouchCancel={() => {
+        touchStart.current = null;
+      }}
     >
       <div className="hero-media">
         {slides.map((item, index) => (

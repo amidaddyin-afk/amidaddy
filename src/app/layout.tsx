@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import CartSidebar from "@/components/CartSidebar";
 import { QueryProvider } from "@/providers/query-provider";
 import AnnouncementBar from "@/components/AnnouncementBar";
+import PerfumeSprayCursor from "@/components/PerfumeSprayCursor";
 
 const display = Cormorant_Garamond({
   subsets: ["latin"],
@@ -48,6 +49,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${display.variable} ${sans.variable}`}>
+        <PerfumeSprayCursor />
         <QueryProvider>
           <CartProvider>
             <AnnouncementBar />
