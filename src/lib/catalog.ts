@@ -49,22 +49,6 @@ function mapProduct(product: Record<string, unknown>): Product {
   const generalImages = images
     .filter((item) => !item.variant_name)
     .map((item) => item.url);
-  const variantImages = Object.fromEntries(
-    (["20ml", "100ml"] as const).map((name) => {
-      const explicit = images
-        .filter((item) => item.variant_name === name)
-        .map((item) => item.url);
-      const fallbackImages = fallback?.variantImages?.[name] ?? [];
-      const selected = explicit.length
-        ? explicit
-        : fallbackImages.length
-          ? fallbackImages
-          : name === "100ml"
-            ? generalImages
-            : [];
-      return [name, Array.from(new Set(selected))];
-    }),
-  ) as Product["variantImages"];
   const productImages = Array.from(
     new Set([
       ...generalImages,
@@ -72,6 +56,21 @@ function mapProduct(product: Record<string, unknown>): Product {
       ...(fallback?.images ?? []),
     ]),
   );
+  const variantImages = Object.fromEntries(
+    (["20ml", "100ml"] as const).map((name) => {
+      const explicit = images
+        .filter((item) => item.variant_name === name)
+        .map((item) => item.url);
+      const fallbackImages = fallback?.variantImages?.[name] ?? [];
+      const selected =
+        fallback?.collection === "combos"
+          ? explicit.length
+            ? explicit
+            : fallbackImages
+          : [...explicit, ...fallbackImages, ...productImages];
+      return [name, Array.from(new Set(selected))];
+    }),
+  ) as Product["variantImages"];
   const defaultImages =
     (defaultVariant && variantImages?.[defaultVariant.name]) ?? productImages;
   return {
@@ -124,30 +123,6 @@ function withRandomTileImage(product: Product): Product {
     ...product,
     image: candidates[Math.floor(Math.random() * candidates.length)],
   };
-}
-
-function withShuffledGallery(product: Product): Product {
-  const images = [...product.images];
-  for (let index = images.length - 1; index > 0; index -= 1) {
-    const swapIndex = Math.floor(Math.random() * (index + 1));
-    [images[index], images[swapIndex]] = [images[swapIndex], images[index]];
-  }
-  const variantImages = product.variantImages
-    ? Object.fromEntries(
-        Object.entries(product.variantImages).map(([name, items]) => {
-          const shuffled = [...(items ?? [])];
-          for (let index = shuffled.length - 1; index > 0; index -= 1) {
-            const swapIndex = Math.floor(Math.random() * (index + 1));
-            [shuffled[index], shuffled[swapIndex]] = [
-              shuffled[swapIndex],
-              shuffled[index],
-            ];
-          }
-          return [name, shuffled];
-        }),
-      )
-    : undefined;
-  return { ...product, images, variantImages };
 }
 
 function fallbackProducts(query: ListQuery) {
@@ -216,7 +191,7 @@ export async function listCatalogProducts(query: ListQuery) {
     .select(
       // Keep storefront reads compatible with databases that have not yet
       // applied the optional combo/variant-image catalog migration.
-      "*, product_images(url, position), product_variants(*)",
+      "*, product_images(url, position, variant_name), product_variants(*)",
       {
         count: "exact",
       },
@@ -267,25 +242,23 @@ export async function listCatalogProducts(query: ListQuery) {
 export async function getCatalogProductBySlug(slug: string) {
   if (!configured()) {
     const fallback = PRODUCTS.find((product) => product.slug === slug);
-    return process.env.NODE_ENV === "production" || !fallback
-      ? null
-      : withShuffledGallery(fallback);
+    return process.env.NODE_ENV === "production" || !fallback ? null : fallback;
   }
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("products")
-    .select("*, product_images(url, position), product_variants(*)")
+    .select(
+      "*, product_images(url, position, variant_name), product_variants(*)",
+    )
     .eq("slug", slug)
     .eq("active", true)
     .is("deleted_at", null)
     .maybeSingle();
   if (error || !data) {
     const fallback = PRODUCTS.find((product) => product.slug === slug);
-    return process.env.NODE_ENV === "production" || !fallback
-      ? null
-      : withShuffledGallery(fallback);
+    return process.env.NODE_ENV === "production" || !fallback ? null : fallback;
   }
-  return withShuffledGallery(mapProduct(data as Record<string, unknown>));
+  return mapProduct(data as Record<string, unknown>);
 }
 
 export async function listAdminProducts() {

@@ -2,16 +2,16 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { PRODUCTS } from "../src/lib/data.ts";
 
-test("signature products use dedicated 20 ml photography", () => {
+test("signature products lead with 20 ml photography and include the full gallery", () => {
   const signatures = PRODUCTS.filter(
     (product) => product.collection === "unisex",
   );
   assert.equal(signatures.length, 4);
   for (const product of signatures) {
     const twentyMlImages = product.variantImages?.["20ml"] ?? [];
-    assert.ok(twentyMlImages.length > 0);
-    assert.ok(twentyMlImages.every((image) => image.includes("/20ml/")));
-    assert.ok(twentyMlImages.every((image) => !product.images.includes(image)));
+    assert.ok(twentyMlImages[0]?.includes("/20ml/"));
+    assert.ok(twentyMlImages.length > product.images.length);
+    assert.ok(product.images.every((image) => twentyMlImages.includes(image)));
   }
 });
 

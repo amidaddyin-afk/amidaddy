@@ -35,6 +35,10 @@ export default function ProductDetail({ product }: { product: Product }) {
       ? product.variantImages[size]!
       : product.images;
   const selectedImage = activeImages[selectedImageIndex] ?? activeImages[0];
+  const nextImage =
+    activeImages.length > 1
+      ? activeImages[(selectedImageIndex + 1) % activeImages.length]
+      : undefined;
   const showImage = (index: number) => {
     const nextIndex = (index + activeImages.length) % activeImages.length;
     setSelectedImageIndex(nextIndex);
@@ -86,8 +90,20 @@ export default function ProductDetail({ product }: { product: Product }) {
                 fill
                 priority
                 sizes="(max-width:1024px) 100vw, 58vw"
-                className="object-cover"
+                className="product-gallery-active-image object-cover"
               />
+              {nextImage && nextImage !== selectedImage && (
+                <Image
+                  key={`preload-${nextImage}`}
+                  src={nextImage}
+                  alt=""
+                  fill
+                  loading="eager"
+                  sizes="(max-width:1024px) 100vw, 58vw"
+                  className="product-image-preload object-cover"
+                  aria-hidden="true"
+                />
+              )}
               <div className="product-glow" />
               {activeImages.length > 1 && (
                 <div className="gallery-controls">

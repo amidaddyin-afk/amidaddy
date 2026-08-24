@@ -111,7 +111,12 @@ export const PRODUCTS: Product[] = [
       ...galleryImages("billionaire", 11),
     ],
     variantImages: {
-      "20ml": ["/products/20ml/billionaire.webp"],
+      "20ml": [
+        "/products/20ml/billionaire.webp",
+        "/curated/billionaire.JPG",
+        "/curated/products/billionaire/detail.JPG",
+        ...galleryImages("billionaire", 11),
+      ],
     },
     profile: "Woody",
     concentration: "Eau de Parfum",
@@ -145,7 +150,12 @@ export const PRODUCTS: Product[] = [
       ...galleryImages("coldwar", 10),
     ],
     variantImages: {
-      "20ml": ["/products/20ml/cold-war.webp"],
+      "20ml": [
+        "/products/20ml/cold-war.webp",
+        "/curated/cold-war.JPG",
+        "/curated/products/coldwar/detail.JPG",
+        ...galleryImages("coldwar", 10),
+      ],
     },
     profile: "Fresh",
     concentration: "Eau de Parfum",
@@ -180,7 +190,12 @@ export const PRODUCTS: Product[] = [
       ...galleryImages("heavenly", 13),
     ],
     variantImages: {
-      "20ml": ["/products/20ml/heavenly.webp"],
+      "20ml": [
+        "/products/20ml/heavenly.webp",
+        "/curated/heavenly.JPG",
+        "/curated/products/heavenly/detail.JPG",
+        ...galleryImages("heavenly", 13),
+      ],
     },
     profile: "Floral",
     concentration: "Eau de Parfum",
@@ -214,7 +229,12 @@ export const PRODUCTS: Product[] = [
       ...galleryImages("old-love", 14),
     ],
     variantImages: {
-      "20ml": ["/products/20ml/old-love.webp"],
+      "20ml": [
+        "/products/20ml/old-love.webp",
+        "/curated/old-love.JPG",
+        "/curated/products/old-love/detail.JPG",
+        ...galleryImages("old-love", 14),
+      ],
     },
     profile: "Amber",
     concentration: "Eau de Parfum",
