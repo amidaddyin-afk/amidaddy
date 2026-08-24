@@ -191,7 +191,7 @@ export async function listCatalogProducts(query: ListQuery) {
     .select(
       // Keep storefront reads compatible with databases that have not yet
       // applied the optional combo/variant-image catalog migration.
-      "*, product_images(url, position, variant_name), product_variants(*)",
+      "*, product_images(url, position), product_variants(*)",
       {
         count: "exact",
       },
@@ -247,9 +247,7 @@ export async function getCatalogProductBySlug(slug: string) {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("products")
-    .select(
-      "*, product_images(url, position, variant_name), product_variants(*)",
-    )
+    .select("*, product_images(url, position), product_variants(*)")
     .eq("slug", slug)
     .eq("active", true)
     .is("deleted_at", null)
