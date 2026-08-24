@@ -52,7 +52,7 @@ export default function Navbar() {
             <Link href="/#story">Our story</Link>
           </nav>
           <Link href="/" className="wordmark" aria-label="Amidaddy home">
-            AMIDADDY<span>PARFUMS</span>
+            AMIDADDY<span>PERFUMES</span>
           </Link>
           <div className="nav-actions">
             <button

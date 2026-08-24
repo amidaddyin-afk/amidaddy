@@ -40,7 +40,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="footer-bottom">
-          <span>© {new Date().getFullYear()} Amidaddy Parfums</span>
+          <span>© {new Date().getFullYear()} Amidaddy Perfumes</span>
           <span>India · INR · GST-inclusive pricing</span>
         </div>
       </div>

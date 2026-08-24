@@ -19,22 +19,22 @@ export const metadata: Metadata = {
     process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
   ),
   title: {
-    default: "Amidaddy Parfums · Presence, before words",
+    default: "Amidaddy Perfumes · Presence, before words",
     template: "%s · Amidaddy",
   },
   description:
     "Four unisex Eau de Parfum signatures composed around mood, memory and presence.",
   openGraph: {
-    title: "Amidaddy Parfums · Presence, before words",
+    title: "Amidaddy Perfumes · Presence, before words",
     description: "Four unisex signatures. Find the scent that feels like you.",
     siteName: "Amidaddy",
     images: [
-      { url: "/og.png", width: 1536, height: 1024, alt: "Amidaddy Parfums" },
+      { url: "/og.png", width: 1536, height: 1024, alt: "Amidaddy Perfumes" },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Amidaddy Parfums · Presence, before words",
+    title: "Amidaddy Perfumes · Presence, before words",
     description: "Four unisex signatures. Find the scent that feels like you.",
     images: ["/og.png"],
   },
