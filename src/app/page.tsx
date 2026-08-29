@@ -6,8 +6,10 @@ import ProductGrid from "@/components/ProductGrid";
 import ScentFinder from "@/components/ScentFinder";
 import Footer from "@/components/Footer";
 import { listCatalogProducts } from "@/lib/catalog";
+import { getRandomHeroSlides } from "@/lib/hero";
 
 export default async function Home() {
+  const heroSlides = getRandomHeroSlides();
   const { products } = await listCatalogProducts({
     page: 1,
     pageSize: 12,
@@ -37,7 +39,7 @@ export default async function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: organizationJsonLd }}
       />
-      <CuratedHero />
+      <CuratedHero slides={heroSlides} />
       <section className="signal-strip" aria-label="Store services" data-reveal>
         <span>
           <Sparkles size={15} />
