@@ -11,30 +11,30 @@ const questions: Array<{
   options: Array<{ label: string; family: FragranceFamily }>;
 }> = [
   {
-    title: "How do you want the room to remember you?",
+    title: "Tonight, you are...",
     options: [
-      { label: "Quietly magnetic", family: "Woody" },
-      { label: "Bright and precise", family: "Fresh" },
-      { label: "Softly radiant", family: "Floral" },
-      { label: "Warm and intimate", family: "Amber" },
+      { label: "The one everyone notices", family: "Woody" },
+      { label: "The one nobody can read", family: "Fresh" },
+      { label: "The one someone wants closer", family: "Floral" },
+      { label: "The one someone remembers", family: "Amber" },
     ],
   },
   {
-    title: "Where will you wear it most?",
+    title: "Your energy is...",
     options: [
-      { label: "After dark", family: "Amber" },
-      { label: "Everyday movement", family: "Fresh" },
-      { label: "Celebrations", family: "Floral" },
-      { label: "Important entrances", family: "Woody" },
+      { label: "Powerful", family: "Woody" },
+      { label: "Sharp", family: "Fresh" },
+      { label: "Soft", family: "Floral" },
+      { label: "Romantic", family: "Amber" },
     ],
   },
   {
-    title: "Choose the texture that feels right.",
+    title: "Where are you going?",
     options: [
-      { label: "Polished wood", family: "Woody" },
-      { label: "Cold air", family: "Fresh" },
-      { label: "Silk petals", family: "Floral" },
-      { label: "Amber light", family: "Amber" },
+      { label: "A night out", family: "Woody" },
+      { label: "The office", family: "Fresh" },
+      { label: "Everyday", family: "Floral" },
+      { label: "A date", family: "Amber" },
     ],
   },
 ];
@@ -59,7 +59,9 @@ export default function ScentFinder({ products }: { products: Product[] }) {
       <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[.75fr_1.25fr]">
         <div data-reveal="left">
           <p className="eyebrow">Scent finder · 60 seconds</p>
-          <h2 className="display-title mt-5 text-5xl">Follow your instinct.</h2>
+          <h2 className="display-title mt-5 text-5xl">
+            Which version of you is here today?
+          </h2>
           <p className="mt-6 max-w-sm leading-7 text-white/50">
             Fragrance is difficult to describe and easy to feel. Three choices
             will bring you closer to yours.

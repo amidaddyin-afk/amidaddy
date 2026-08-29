@@ -48,6 +48,7 @@ export default function Navbar() {
           </button>
           <nav className="desktop-nav">
             <Link href="/shop">Shop</Link>
+            <Link href="/scent-school">Scent school</Link>
             <Link href="/#scent-finder">Scent finder</Link>
             <Link href="/#story">Our story</Link>
           </nav>
@@ -98,6 +99,7 @@ export default function Navbar() {
             <nav>
               {[
                 ["Shop", "/shop"],
+                ["Scent school", "/scent-school"],
                 ["Scent finder", "/#scent-finder"],
                 ["Our story", "/#story"],
                 ["My account", "/account"],

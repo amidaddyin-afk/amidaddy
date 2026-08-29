@@ -10,18 +10,27 @@ import {
   ChevronRight,
   Images,
   ShoppingBag,
+  ShieldCheck,
+  Sparkles,
   Truck,
 } from "lucide-react";
 import type { Product } from "@/lib/data";
 import { useCart } from "@/context/CartContext";
 import { formatInr } from "@/lib/money";
 
-export default function ProductDetail({ product }: { product: Product }) {
+export default function ProductDetail({
+  product,
+  initialSize,
+}: {
+  product: Product;
+  initialSize?: "20ml" | "100ml";
+}) {
   const available = product.variants.filter(
     (variant) => variant.active && variant.stock > variant.reserved,
   );
   const [size, setSize] = useState<"20ml" | "100ml">(
-    available.find((item) => item.name === "100ml")?.name ??
+    available.find((item) => item.name === initialSize)?.name ??
+      available.find((item) => item.name === "100ml")?.name ??
       available[0]?.name ??
       "100ml",
   );
@@ -30,6 +39,8 @@ export default function ProductDetail({ product }: { product: Product }) {
   const touchStart = useRef<{ x: number; y: number } | null>(null);
   const { addItem } = useCart();
   const variant = product.variants.find((item) => item.name === size);
+  const isCombo = product.collection === "combos";
+  const character = product.mood.split(/,| and /).filter(Boolean);
   const activeImages =
     product.variantImages?.[size]?.length && product.variantImages[size]
       ? product.variantImages[size]!
@@ -181,6 +192,25 @@ export default function ProductDetail({ product }: { product: Product }) {
                 <p>{product.baseNotes.join(" · ")}</p>
               </div>
             </div>
+            <div className="product-guidance-grid">
+              <div>
+                <span>Character</span>
+                <p>{character.join(" · ")}</p>
+              </div>
+              <div>
+                <span>Best for</span>
+                <p>{product.occasion}</p>
+              </div>
+              <div>
+                <span>Performance</span>
+                <p>{product.longevity}</p>
+                <small>Varies by skin, weather and application.</small>
+              </div>
+              <div>
+                <span>Intensity</span>
+                <p aria-label="Four out of five intensity">● ● ● ● ○</p>
+              </div>
+            </div>
             <div className="mt-8">
               <p className="eyebrow mb-3">Choose your ritual</p>
               <div className="grid grid-cols-2 gap-3">
@@ -202,7 +232,11 @@ export default function ProductDetail({ product }: { product: Product }) {
                     <strong>{formatInr(item.pricePaise)}</strong>
                     <small>
                       {item.stock > item.reserved
-                        ? "Ready to dispatch"
+                        ? item.name === "20ml" && !isCombo
+                          ? "Discover it"
+                          : item.name === "100ml" && !isCombo
+                            ? "Make it yours"
+                            : "Ready to dispatch"
                         : "Out of stock"}
                     </small>
                   </button>
@@ -233,6 +267,20 @@ export default function ProductDetail({ product }: { product: Product }) {
             <div className="mt-5 flex items-center justify-center gap-2 text-xs text-white/45">
               <Truck size={15} />
               <span>₹99 delivery · Complimentary above ₹1,999</span>
+            </div>
+            <div
+              className="purchase-assurance"
+              aria-label="Purchase reassurance"
+            >
+              <span>
+                <ShieldCheck size={15} /> Secure Razorpay payment
+              </span>
+              <span>
+                <Sparkles size={15} /> Authentic Eau de Parfum
+              </span>
+              <span>
+                <Truck size={15} /> Live order tracking
+              </span>
             </div>
           </section>
         </div>

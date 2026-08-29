@@ -6,16 +6,20 @@ import ProductGrid from "@/components/ProductGrid";
 import ScentFinder from "@/components/ScentFinder";
 import Footer from "@/components/Footer";
 import { listCatalogProducts } from "@/lib/catalog";
-import { getRandomHeroSlides } from "@/lib/hero";
 
 export default async function Home() {
-  const heroSlides = getRandomHeroSlides();
   const { products } = await listCatalogProducts({
     page: 1,
     pageSize: 12,
     sort: "newest",
     inStock: "true",
   });
+  const signatures = products.filter(
+    (product) => product.collection === "unisex",
+  );
+  const completeWardrobe = products.find(
+    (product) => product.slug === "signature-combo-20ml",
+  );
   const siteUrl =
     process.env.NEXT_PUBLIC_APP_URL ??
     process.env.NEXT_PUBLIC_SITE_URL ??
@@ -33,7 +37,7 @@ export default async function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: organizationJsonLd }}
       />
-      <CuratedHero slides={heroSlides} />
+      <CuratedHero />
       <section className="signal-strip" aria-label="Store services" data-reveal>
         <span>
           <Sparkles size={15} />
@@ -48,7 +52,47 @@ export default async function Home() {
           Secure Razorpay checkout
         </span>
       </section>
-      <ProductGrid products={products} />
+      <section className="four-worlds" aria-labelledby="four-worlds-title">
+        <div className="section-heading" data-reveal>
+          <div>
+            <p className="eyebrow">Four worlds</p>
+            <h2 className="display-title" id="four-worlds-title">
+              Four fragrances.
+              <br />
+              Four versions of you.
+            </h2>
+          </div>
+          <p>Choose by feeling first. The notes will tell you why it works.</p>
+        </div>
+        <div className="world-grid">
+          {signatures.map((product) => (
+            <Link
+              key={product.id}
+              href={`/products/${product.slug}`}
+              className={`world-card world-${product.slug}`}
+            >
+              <Image
+                src={product.image}
+                alt={`${product.name} fragrance world`}
+                fill
+                sizes="(max-width: 760px) 100vw, 25vw"
+                className="object-cover"
+              />
+              <span className="world-card-shade" />
+              <span className="world-card-copy">
+                <small>{product.profile}</small>
+                <strong>{product.name}</strong>
+                <em>{product.mood}</em>
+                <span>
+                  {product.story} <ArrowUpRight size={15} />
+                </span>
+              </span>
+            </Link>
+          ))}
+        </div>
+      </section>
+      <ScentFinder products={signatures} />
+      <ProductGrid products={signatures} />
       <section className="editorial-story" id="story">
         <div className="story-image" data-reveal="left">
           <Image
@@ -74,7 +118,34 @@ export default async function Home() {
           </Link>
         </div>
       </section>
-      <ScentFinder products={products} />
+      {completeWardrobe && (
+        <section className="wardrobe-banner">
+          <div data-reveal="left">
+            <p className="eyebrow">The complete wardrobe</p>
+            <h2 className="display-title">Four moods. One collection.</h2>
+            <p>
+              Cold War for clarity. Heavenly for closeness. Old Love for memory.
+              Billionaire for presence. Meet the whole house in travel-ready 20
+              ml bottles.
+            </p>
+            <Link
+              href={`/products/${completeWardrobe.slug}`}
+              className="lux-button"
+            >
+              Explore the complete wardrobe <ArrowUpRight size={16} />
+            </Link>
+          </div>
+          <div className="wardrobe-image" data-reveal>
+            <Image
+              src={completeWardrobe.image}
+              alt="The four Amidaddy fragrance signatures together"
+              fill
+              sizes="(max-width: 900px) 100vw, 50vw"
+              className="object-cover"
+            />
+          </div>
+        </section>
+      )}
       <section className="discovery-banner">
         <div data-reveal="left">
           <p className="eyebrow">The discovery ritual</p>
@@ -148,6 +219,14 @@ export default async function Home() {
             [
               "How do I track delivery?",
               "When your order ships, its courier, tracking number and tracking link appear in your account and arrive by email.",
+            ],
+            [
+              "How much fragrance should I apply?",
+              "Start with 2-4 sprays and adjust for the fragrance, setting, weather and your preference. More is not automatically better.",
+            ],
+            [
+              "How should I store perfume?",
+              "Keep the bottle closed and away from direct sunlight, high heat and large temperature swings.",
             ],
           ].map(([q, a]) => (
             <details key={q}>

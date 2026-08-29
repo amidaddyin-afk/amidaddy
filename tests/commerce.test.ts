@@ -8,6 +8,7 @@ import {
   shippingPaise,
 } from "../src/lib/commerce.ts";
 import { includedGstPaise } from "../src/lib/money.ts";
+import { isMatchingCapturedPayment } from "../src/lib/razorpay.ts";
 
 test("shipping is charged below the post-discount threshold", () => {
   assert.equal(shippingPaise(199_899), 9_900);
@@ -40,4 +41,39 @@ test("fulfillment only moves forward through the supported timeline", () => {
 test("remaining refundable amount cannot be negative", () => {
   assert.equal(refundablePaise(119_900, 20_000), 99_900);
   assert.equal(refundablePaise(119_900, 140_000), 0);
+});
+
+test("payment confirmation requires the exact order, amount, currency and captured state", () => {
+  const payment = {
+    orderId: "order_test",
+    paymentId: "pay_test",
+    amount: 119_900,
+    currency: "INR",
+    status: "captured",
+  };
+  assert.equal(isMatchingCapturedPayment(payment, "order_test", 119_900), true);
+  assert.equal(
+    isMatchingCapturedPayment({ ...payment, amount: 1 }, "order_test", 119_900),
+    false,
+  );
+  assert.equal(
+    isMatchingCapturedPayment(
+      { ...payment, currency: "USD" },
+      "order_test",
+      119_900,
+    ),
+    false,
+  );
+  assert.equal(
+    isMatchingCapturedPayment(
+      { ...payment, status: "authorized" },
+      "order_test",
+      119_900,
+    ),
+    false,
+  );
+  assert.equal(
+    isMatchingCapturedPayment(payment, "order_other", 119_900),
+    false,
+  );
 });

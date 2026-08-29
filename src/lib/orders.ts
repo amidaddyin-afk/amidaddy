@@ -611,6 +611,11 @@ export async function cancelOrder(
       throw new Error("Order status changed before cancellation completed.");
     if (locked.status === "PAYMENT_PENDING")
       await releaseReservations(client, orderId, "RELEASE");
+    if (locked.status === "PAYMENT_PENDING")
+      await client.query(
+        "delete from public.coupon_redemptions where order_id=$1",
+        [orderId],
+      );
     if (locked.status === "CONFIRMED")
       await restoreCommittedInventory(client, orderId);
     if (refundId)
@@ -727,6 +732,10 @@ export async function expirePendingOrders() {
     for (const row of rows) {
       await releaseReservations(client, String(row.id), "RELEASE");
       await client.query(
+        "delete from public.coupon_redemptions where order_id=$1",
+        [row.id],
+      );
+      await client.query(
         "update public.orders set status='EXPIRED',payment_status='FAILED',updated_at=now() where id=$1",
         [row.id],
       );
@@ -741,7 +750,11 @@ export async function registerWebhookEvent(event: string, payload: string) {
     "insert into public.webhook_events(id,provider,event,payload_hash) values($1,'razorpay',$2,$3) on conflict do nothing",
     [id, event, createHash("sha256").update(payload).digest("hex")],
   );
-  return Boolean(result.rowCount);
+  return result.rowCount ? id : null;
+}
+
+export async function unregisterWebhookEvent(id: string) {
+  await db().query("delete from public.webhook_events where id=$1", [id]);
 }
 
 export async function markRefundProcessed(paymentRefundId: string) {

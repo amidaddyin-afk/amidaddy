@@ -43,10 +43,11 @@ export const productInputSchema = z
             .trim()
             .min(1)
             .max(2048)
-            .refine(
-              (value) => value.startsWith("/") || URL.canParse(value),
-              "Use a valid image URL or site path.",
-            ),
+            .refine((value) => {
+              if (value.startsWith("/") && !value.startsWith("//")) return true;
+              if (!URL.canParse(value)) return false;
+              return new URL(value).protocol === "https:";
+            }, "Use an HTTPS image URL or site path."),
           alt: z.string().trim().min(1).max(160),
           variantName: z.enum(["20ml", "100ml"]).optional().nullable(),
         }),

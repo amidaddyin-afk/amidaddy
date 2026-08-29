@@ -20,7 +20,7 @@ function appUrl() {
 
 async function verifyCaptcha(token?: string) {
   const secret = process.env.TURNSTILE_SECRET_KEY;
-  if (!secret) return true;
+  if (!secret) return process.env.NODE_ENV !== "production";
   if (!token) return false;
   const response = await fetch(
     "https://challenges.cloudflare.com/turnstile/v0/siteverify",
@@ -46,7 +46,7 @@ export async function signUpAction(
     return {
       error: parsed.error.issues[0]?.message ?? "Invalid registration details.",
     };
-  if (!(await verifyCaptcha(parsed.data.captchaToken)))
+  if (!(await verifyCaptcha(parsed.data["cf-turnstile-response"])))
     return { error: "CAPTCHA verification failed." };
 
   const supabase = await createClient();
@@ -70,7 +70,7 @@ export async function signInAction(
   const parsed = signInSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success)
     return { error: "Enter a valid email address and password." };
-  if (!(await verifyCaptcha(parsed.data.captchaToken)))
+  if (!(await verifyCaptcha(parsed.data["cf-turnstile-response"])))
     return { error: "CAPTCHA verification failed." };
   if (!(await assertLoginAllowed(parsed.data.email)))
     return { error: "This account is temporarily locked. Try again later." };
@@ -94,7 +94,10 @@ export async function requestPasswordResetAction(
   formData: FormData,
 ): Promise<AuthActionState> {
   const parsed = resetSchema.safeParse(Object.fromEntries(formData));
-  if (!parsed.success || !(await verifyCaptcha(parsed.data.captchaToken)))
+  if (
+    !parsed.success ||
+    !(await verifyCaptcha(parsed.data["cf-turnstile-response"]))
+  )
     return { message: "If the account exists, a reset link has been sent." };
   const supabase = await createClient();
   await supabase.auth.resetPasswordForEmail(parsed.data.email, {

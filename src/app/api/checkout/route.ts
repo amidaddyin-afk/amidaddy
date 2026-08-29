@@ -117,7 +117,11 @@ export async function POST(request: NextRequest) {
       keyId,
       amount: pending.amountPaise,
       currency: "INR",
-      customer,
+      customer: {
+        name: customer.name,
+        email: customer.email,
+        phone: customer.phone,
+      },
       totals: pending,
     });
   } catch (error) {

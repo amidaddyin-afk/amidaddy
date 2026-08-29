@@ -12,6 +12,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     "",
     "/shop",
+    "/scent-school",
     ...policyLinks.map(({ slug }) => `/policies/${slug}`),
     ...products.map((product) => `/products/${product.slug}`),
   ].map((path) => ({

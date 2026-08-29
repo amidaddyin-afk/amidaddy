@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { requestUsesHttps, secureCookieOptions } from "@/lib/security";
 
 function adminSessionExpired(lastSignInAt?: string) {
   if (!lastSignInAt) return true;
@@ -16,6 +17,11 @@ function adminSessionExpired(lastSignInAt?: string) {
 }
 
 export async function proxy(request: NextRequest) {
+  if (process.env.NODE_ENV === "production" && !requestUsesHttps(request)) {
+    const secureUrl = request.nextUrl.clone();
+    secureUrl.protocol = "https:";
+    return NextResponse.redirect(secureUrl, 308);
+  }
   let response = NextResponse.next({ request });
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
@@ -30,7 +36,7 @@ export async function proxy(request: NextRequest) {
         );
         response = NextResponse.next({ request });
         cookiesToSet.forEach(({ name, value, options }) =>
-          response.cookies.set(name, value, options),
+          response.cookies.set(name, value, secureCookieOptions(options)),
         );
       },
     },

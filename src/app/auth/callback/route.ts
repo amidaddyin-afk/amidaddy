@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
+import { secureCookieOptions } from "@/lib/security";
 
 function safeNext(value: string | null) {
   return value?.startsWith("/") && !value.startsWith("//") ? value : "/account";
@@ -29,7 +30,7 @@ export async function GET(request: Request) {
           }) ?? [],
       setAll: (cookiesToSet) =>
         cookiesToSet.forEach(({ name, value, options }) =>
-          response.cookies.set(name, value, options),
+          response.cookies.set(name, value, secureCookieOptions(options)),
         ),
     },
   });

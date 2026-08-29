@@ -20,6 +20,7 @@ export async function GET(
     headers: {
       "Content-Type": "text/html; charset=utf-8",
       "Content-Disposition": `attachment; filename="amidaddy-${order.id}.html"`,
+      "Cache-Control": "private, no-store",
     },
   });
 }

@@ -9,6 +9,10 @@ export function db() {
   if (!connectionString) throw new Error("DATABASE_URL is not configured.");
   globalForDb.amidaddyPool ??= new Pool({
     connectionString,
+    ssl:
+      process.env.NODE_ENV === "production"
+        ? { rejectUnauthorized: true }
+        : undefined,
     max: 8,
     idleTimeoutMillis: 20_000,
   });

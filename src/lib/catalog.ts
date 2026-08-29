@@ -67,7 +67,13 @@ function mapProduct(product: Record<string, unknown>): Product {
           ? explicit.length
             ? explicit
             : fallbackImages
-          : [...explicit, ...fallbackImages, ...productImages];
+          : explicit.length
+            ? explicit
+            : fallbackImages.length
+              ? fallbackImages
+              : name === "100ml"
+                ? productImages
+                : [];
       return [name, Array.from(new Set(selected))];
     }),
   ) as Product["variantImages"];

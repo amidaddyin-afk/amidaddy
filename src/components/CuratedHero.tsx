@@ -2,113 +2,194 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-import { ArrowDownRight, Pause, Play } from "lucide-react";
-import { useReducedMotion } from "framer-motion";
-import type { HeroSlide } from "@/lib/hero";
+import { useRouter } from "next/navigation";
+import type { MouseEvent } from "react";
+import { useEffect, useState } from "react";
+import { ArrowDown, ArrowUpRight } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
 
-export default function CuratedHero({ slides }: { slides: HeroSlide[] }) {
-  const [active, setActive] = useState(0);
-  const [paused, setPaused] = useState(false);
-  const touchStart = useRef<{ x: number; y: number } | null>(null);
+const signatureCatalog = [
+  {
+    name: "Cold War",
+    profile: "Fresh · Cool and focused",
+    number: "01",
+    href: "/products/coldwar",
+    image: "/curated/cold-war.JPG",
+  },
+  {
+    name: "Heavenly",
+    profile: "Floral · Soft and elegant",
+    number: "02",
+    href: "/products/heavenly",
+    image: "/curated/heavenly.JPG",
+  },
+  {
+    name: "Old Love",
+    profile: "Amber · Warm and intimate",
+    number: "03",
+    href: "/products/old-love",
+    image: "/curated/old-love.JPG",
+  },
+  {
+    name: "Billionaire",
+    profile: "Woody · Bold and magnetic",
+    number: "04",
+    href: "/products/billionaire",
+    image: "/curated/billionaire.JPG",
+  },
+] as const;
+
+export default function CuratedHero() {
+  const [open, setOpen] = useState(false);
+  const [leaving, setLeaving] = useState(false);
+  const router = useRouter();
   const reduceMotion = useReducedMotion();
+  const coverTransition = {
+    duration: reduceMotion ? 0.01 : 1.4,
+    ease: [0.65, 0, 0.35, 1] as const,
+  };
+
   useEffect(() => {
-    if (paused || reduceMotion) return;
-    const id = window.setInterval(
-      () => setActive((value) => (value + 1) % slides.length),
-      6500,
-    );
-    return () => window.clearInterval(id);
-  }, [paused, reduceMotion, slides.length]);
-  const finishSwipe = (x: number, y: number) => {
-    const start = touchStart.current;
-    touchStart.current = null;
-    if (!start || slides.length < 2) return;
-    const horizontalDistance = x - start.x;
-    const verticalDistance = y - start.y;
+    if (!open) return;
+    const close = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", close);
+    return () => window.removeEventListener("keydown", close);
+  }, [open]);
+
+  const visitProduct = (event: MouseEvent<HTMLAnchorElement>, href: string) => {
     if (
-      Math.abs(horizontalDistance) < 42 ||
-      Math.abs(horizontalDistance) <= Math.abs(verticalDistance)
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
     )
       return;
-    setActive((value) =>
-      horizontalDistance < 0
-        ? (value + 1) % slides.length
-        : (value - 1 + slides.length) % slides.length,
-    );
-    setPaused(true);
+    event.preventDefault();
+    if (leaving) return;
+    setLeaving(true);
+    window.setTimeout(() => router.push(href), 420);
   };
-  const slide = slides[active];
+
   return (
     <section
-      className="cinematic-hero"
-      aria-roledescription="carousel"
-      aria-label="Featured fragrances"
-      onTouchStart={(event) => {
-        const touch = event.changedTouches[0];
-        touchStart.current = { x: touch.clientX, y: touch.clientY };
-      }}
-      onTouchEnd={(event) => {
-        const touch = event.changedTouches[0];
-        finishSwipe(touch.clientX, touch.clientY);
-      }}
-      onTouchCancel={() => {
-        touchStart.current = null;
-      }}
+      className={`book-hero ${open ? "is-open" : ""} ${leaving ? "is-leaving" : ""}`}
+      aria-label="Enter the Amidaddy fragrance collection"
+      aria-busy={leaving}
     >
-      <div className="hero-media">
-        {slides.map((item, index) => (
-          <Image
-            key={item.image}
-            src={item.image}
-            alt=""
-            fill
-            priority={index === 0}
-            sizes="100vw"
-            className={index === active ? "active" : ""}
-          />
-        ))}
-      </div>
-      <div className="hero-wash" />
-      <div className="hero-copy" aria-live="polite">
-        <p className="eyebrow">{slide.kicker}</p>
-        <h1>{slide.title}</h1>
-        <p className="hero-description">{slide.copy}</p>
-        <Link href={slide.href} className="lux-button">
-          Discover the scent <ArrowDownRight size={17} />
-        </Link>
-      </div>
-      <div className="hero-controls">
-        <button
-          onClick={() => setPaused((value) => !value)}
-          disabled={Boolean(reduceMotion)}
-          aria-label={
-            reduceMotion
-              ? "Automatic slideshow disabled by motion preference"
-              : paused
-                ? "Play slideshow"
-                : "Pause slideshow"
-          }
-        >
-          {paused ? <Play size={14} /> : <Pause size={14} />}
-        </button>
-        <div>
-          {slides.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setActive(index)}
-              aria-label={`Show slide ${index + 1}`}
-              aria-current={index === active}
-            >
-              <span>{String(index + 1).padStart(2, "0")}</span>
-            </button>
-          ))}
+      <div className="book-hero-reveal" aria-hidden={!open}>
+        <div className="book-reveal-heading">
+          <p className="eyebrow">The signature collection</p>
+          <h1>Choose the scent that feels like you.</h1>
+          <p>
+            Meet all four Amidaddy perfumes, each composed around a distinct
+            mood.
+          </p>
         </div>
+        <nav className="family-gateway" aria-label="Shop Amidaddy perfumes">
+          {signatureCatalog.map((product) => (
+            <Link
+              key={product.name}
+              href={product.href}
+              onClick={(event) => visitProduct(event, product.href)}
+              tabIndex={open ? undefined : -1}
+            >
+              <span>{product.number}</span>
+              <strong>{product.name}</strong>
+              <div className="family-product-image">
+                <Image
+                  src={product.image}
+                  alt={`${product.name} perfume`}
+                  fill
+                  sizes="(max-width: 700px) 50vw, 25vw"
+                  className="object-cover"
+                />
+              </div>
+              <small>{product.profile}</small>
+              <ArrowUpRight aria-hidden="true" />
+            </Link>
+          ))}
+        </nav>
+        <button
+          type="button"
+          className="book-close"
+          onClick={() => setOpen(false)}
+          tabIndex={open ? undefined : -1}
+        >
+          Close the cover
+        </button>
       </div>
-      <div className="hero-index">
-        {String(active + 1).padStart(2, "0")}
-        <span /> {String(slides.length).padStart(2, "0")}
+
+      <div className="book-cover" aria-hidden={open}>
+        <motion.div
+          className="book-leaf book-leaf-left"
+          initial={false}
+          animate={{ rotateY: open ? -96 : 0 }}
+          transition={coverTransition}
+        >
+          <div className="book-image-half">
+            <Image
+              src="/curated/hero-models.JPG"
+              alt=""
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover"
+            />
+          </div>
+        </motion.div>
+        <motion.div
+          className="book-leaf book-leaf-right"
+          initial={false}
+          animate={{ rotateY: open ? 96 : 0 }}
+          transition={coverTransition}
+        >
+          <div className="book-image-half">
+            <Image
+              src="/curated/hero-models.JPG"
+              alt=""
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover"
+            />
+          </div>
+        </motion.div>
+        <div className="book-cover-shade" />
+        <div className="book-cover-copy">
+          <p className="eyebrow">The house of Amidaddy</p>
+          <h1>
+            Wear the
+            <br />
+            feeling.
+          </h1>
+          <p>Four fragrances. Four versions of you.</p>
+        </div>
+        <span className="book-spine" />
       </div>
+
+      <button
+        type="button"
+        className="book-open-trigger"
+        onClick={() => setOpen(true)}
+        aria-expanded={open}
+        aria-label="Open the fragrance collection"
+        disabled={open}
+      >
+        <span>Explore the four signatures</span>
+        <ArrowDown aria-hidden="true" />
+      </button>
+      {!open && (
+        <button
+          type="button"
+          className="book-skip"
+          onClick={() => setOpen(true)}
+        >
+          Skip intro
+        </button>
+      )}
     </section>
   );
 }

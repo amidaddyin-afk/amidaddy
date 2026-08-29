@@ -12,7 +12,7 @@ const campaigns = [
   {
     slug: "billionaire",
     count: 11,
-    kicker: "Billionaire Noir",
+    kicker: "Billionaire",
     title: "Enter like you mean it.",
     copy: "Bergamot, polished cedar and amber with a magnetic dry-down.",
     href: "/products/billionaire",

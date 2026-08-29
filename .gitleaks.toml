@@ -1,0 +1,8 @@
+title = "Amidaddy secret scanning"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Documented placeholder connection strings"
+paths = ['''^\.env\.example$''', '''^prisma\.config\.ts$''']

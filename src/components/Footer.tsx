@@ -14,6 +14,7 @@ export default function Footer() {
           <div>
             <h3>Explore</h3>
             <Link href="/shop">All fragrances</Link>
+            <Link href="/scent-school">Scent school</Link>
             <Link href="/#scent-finder">Scent finder</Link>
             <Link href="/#story">Our story</Link>
           </div>

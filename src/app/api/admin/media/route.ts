@@ -1,17 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isAdmin } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
+import { takeRequestLimit } from "@/lib/request-rate-limit";
+import { isAllowedProductImage } from "@/lib/security";
 
 export async function POST(request: NextRequest) {
   if (!(await isAdmin()))
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+  if (!(await takeRequestLimit("admin-media", 20, 10 * 60)))
+    return NextResponse.json({ error: "Too many uploads." }, { status: 429 });
   const data = await request.formData();
   const file = data.get("file");
-  if (
-    !(file instanceof File) ||
-    file.size > 5 * 1024 * 1024 ||
-    !["image/jpeg", "image/png", "image/webp"].includes(file.type)
-  )
+  if (!(file instanceof File) || !(await isAllowedProductImage(file)))
     return NextResponse.json(
       { error: "Upload a JPG, PNG or WebP up to 5 MB." },
       { status: 400 },

@@ -21,7 +21,7 @@ The store includes a database-backed fragrance catalog, variant inventory, guest
 4. In Supabase Auth, enable email confirmation and Google, then add `http://localhost:3000/auth/callback` and the production callback URL to the redirect allow list.
 5. Configure Razorpay's signed webhook at `/api/razorpay/webhook` and enable automatic payment capture. Checkout also verifies Razorpay's signed success response at `/api/checkout/verify` for immediate confirmation.
 6. In Resend, verify your sending domain, create an API key, and set `RESEND_API_KEY` plus `RESEND_FROM_EMAIL`. Optionally set `ORDER_NOTIFICATION_EMAIL` to receive a private store copy of confirmed-order emails.
-7. Set `CRON_SECRET` for `/api/maintenance` and choose `ADMIN_SESSION_MAX_AGE_HOURS` (12 by default).
+7. Set `CRON_SECRET` for `/api/maintenance`, configure both Turnstile keys, and choose `ADMIN_SESSION_MAX_AGE_HOURS` (12 by default). Production authentication fails closed when the Turnstile secret is absent.
 8. Run `npm run dev`, then open `http://localhost:3000`.
 
 ## Authentication
@@ -32,7 +32,7 @@ Email sign-up, email/password login, Google OAuth, password reset, session refre
 update public.profiles set role = 'ADMIN' where email = 'admin@example.com';
 ```
 
-Do not expose the database URL, Supabase service-role key, Razorpay secret, or CAPTCHA secret to the browser. Turnstile validation is enabled only when `TURNSTILE_SECRET_KEY` is configured.
+Do not expose the database URL, Supabase service-role key, Razorpay secret, or CAPTCHA secret to the browser. Both Turnstile variables are required in production.
 
 ## Quality gates
 
@@ -40,4 +40,6 @@ Do not expose the database URL, Supabase service-role key, Razorpay secret, or C
 
 ## Security baseline
 
-Environment files are ignored, secrets are server-only, server action payloads are capped at 1 MB, and baseline browser security headers are configured in `next.config.ts`. Add secrets only through local environment files and Vercel project settings.
+Environment files are ignored, secrets are server-only, server action payloads are capped at 1 MB, and browser security headers including CSP and HSTS are configured in `next.config.ts`. Production requests are redirected to HTTPS, database connections require verified TLS, and authentication cookies receive explicit `HttpOnly`, `Secure`, and `SameSite=Lax` policy. Add secrets only through local environment files and Vercel project settings.
+
+GitHub Actions scans the complete Git history with Gitleaks and blocks high-severity dependency advisories on pushes, pull requests, and a weekly schedule. The production PostgreSQL provider must also have encryption at rest enabled; Supabase projects provide this platform control, but it must be confirmed in the project and backup settings before launch.

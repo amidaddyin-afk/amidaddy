@@ -30,6 +30,7 @@ export default function ProductCard({
   const variant =
     product.variants.find((item) => item.name === size) ?? product.variants[0];
   const cardImage = product.variantImages?.[size]?.[0] ?? product.image;
+  const productHref = `/products/${product.slug}?size=${size}`;
   const add = () => {
     addItem(product, size);
     setAdded(true);
@@ -53,8 +54,8 @@ export default function ProductCard({
     >
       <div className="product-visual">
         <Link
-          href={`/products/${product.slug}`}
-          aria-label={`View ${product.name}`}
+          href={productHref}
+          aria-label={`View ${product.name} ${size}`}
           className="absolute inset-0 z-10"
         />
         <Image
@@ -71,7 +72,7 @@ export default function ProductCard({
             {product.isNew ? "New composition" : product.badge}
           </span>
         )}
-        <Link href={`/products/${product.slug}`} className="product-view">
+        <Link href={productHref} className="product-view">
           Discover <ArrowUpRight size={14} />
         </Link>
       </div>

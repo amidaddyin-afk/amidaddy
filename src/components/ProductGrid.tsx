@@ -9,14 +9,14 @@ export default function ProductGrid({ products }: { products: Product[] }) {
           <div>
             <p className="eyebrow">The signature collection</p>
             <h2 className="display-title">
-              Four moods.
+              Signature fragrances.
               <br />
-              Two ways to collect.
+              Choose your feeling.
             </h2>
           </div>
           <p>
-            Choose one signature in 20 ml or 100 ml, or meet the complete house
-            in a four-bottle combo.
+            Mood, key notes and performance at a glance. Open a fragrance to
+            discover its full story and the moments it suits best.
           </p>
         </div>
         <div className="product-grid">

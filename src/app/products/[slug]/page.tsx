@@ -17,10 +17,17 @@ export async function generateMetadata({
 
 export default async function ProductPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ size?: string | string[] }>;
 }) {
   const { slug } = await params;
+  const requestedSize = (await searchParams).size;
+  const initialSize =
+    requestedSize === "20ml" || requestedSize === "100ml"
+      ? requestedSize
+      : undefined;
   const product = await getCatalogProductBySlug(slug);
   if (!product) notFound();
   const siteUrl =
@@ -80,7 +87,7 @@ export default async function ProductPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLd }}
       />
-      <ProductDetail product={product} />
+      <ProductDetail product={product} initialSize={initialSize} />
     </>
   );
 }

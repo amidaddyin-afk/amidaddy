@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getOrderByPaymentSession, markOrderPaid } from "@/lib/orders";
 import { takeRequestLimit } from "@/lib/request-rate-limit";
+import { isMatchingCapturedPayment } from "@/lib/razorpay";
 
 const verificationSchema = z.object({
   razorpayOrderId: z.string().regex(/^order_[A-Za-z0-9]+$/),
@@ -74,12 +75,7 @@ export async function POST(request: NextRequest) {
       currency?: string;
       status?: string;
     };
-    if (
-      !paymentResponse.ok ||
-      payment.order_id !== order.paymentOrderId ||
-      payment.amount !== order.totalPaise ||
-      payment.currency !== "INR"
-    )
+    if (!paymentResponse.ok)
       return NextResponse.json(
         { error: "Payment details could not be confirmed." },
         { status: 400 },
@@ -87,6 +83,24 @@ export async function POST(request: NextRequest) {
 
     if (payment.status !== "captured")
       return NextResponse.json({ confirmed: false }, { status: 202 });
+
+    if (
+      !isMatchingCapturedPayment(
+        {
+          orderId: payment.order_id,
+          paymentId: input.razorpayPaymentId,
+          amount: payment.amount,
+          currency: payment.currency,
+          status: payment.status,
+        },
+        order.paymentOrderId,
+        order.totalPaise,
+      )
+    )
+      return NextResponse.json(
+        { error: "Payment details could not be confirmed." },
+        { status: 400 },
+      );
 
     await markOrderPaid(
       order.id,

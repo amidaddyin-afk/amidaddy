@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useActionState, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import Script from "next/script";
 import { createClient } from "@/lib/supabase/client";
 import {
   requestPasswordResetAction,
@@ -35,6 +36,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
     searchParams.get("reason") === "admin-session-expired";
   const safeNext =
     next?.startsWith("/") && !next.startsWith("//") ? next : "/account";
+  const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
   async function signInWithGoogle() {
     setOauthError(null);
@@ -95,6 +97,19 @@ export function AuthForm({ mode }: { mode: Mode }) {
             placeholder="Password"
             className="checkout-input mb-3 w-full"
           />
+        )}
+        {mode !== "reset-password" && turnstileSiteKey && (
+          <>
+            <Script
+              src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+              strategy="afterInteractive"
+            />
+            <div
+              className="cf-turnstile mb-4"
+              data-sitekey={turnstileSiteKey}
+              data-theme="dark"
+            />
+          </>
         )}
         {isLogin && adminSessionExpired && (
           <p className="mb-4 text-sm text-[#D4AF37]" role="status">

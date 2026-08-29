@@ -11,6 +11,7 @@
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "security:audit": "npm audit --audit-level=high",
     "prepare": "husky",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
@@ -53,5 +54,8 @@
   },
   "optionalDependencies": {
     "@next/swc-win32-x64-msvc": "^16.3.0"
+  },
+  "overrides": {
+    "deepmerge-ts": "^8.0.0"
   }
 }
