@@ -43,3 +43,77 @@ test("20 ml and 100 ml combos have separate products and galleries", () => {
     false,
   );
 });
+
+test("signature fragrance notes match the approved note chart", () => {
+  const bySlug = Object.fromEntries(
+    PRODUCTS.filter((product) => product.collection === "unisex").map(
+      (product) => [product.slug, product],
+    ),
+  );
+
+  assert.deepEqual(bySlug["old-love"].topNotes, [
+    "Saffron",
+    "Mango",
+    "Jasmine",
+  ]);
+  assert.deepEqual(bySlug["old-love"].heartNotes, [
+    "Amber",
+    "Sugar",
+    "Ambergris",
+  ]);
+  assert.deepEqual(bySlug["old-love"].baseNotes, [
+    "Fir resin",
+    "Ambroxan",
+    "Cedarwood",
+    "Oakmoss",
+  ]);
+  assert.deepEqual(bySlug.coldwar.topNotes, [
+    "Plum",
+    "Bergamot",
+    "Mandarin orange",
+  ]);
+  assert.deepEqual(bySlug.coldwar.heartNotes, [
+    "Plum",
+    "Juniper",
+    "Thyme",
+    "Tarragon",
+  ]);
+  assert.deepEqual(bySlug.coldwar.baseNotes, [
+    "Oakmoss",
+    "Cedar",
+    "Sandalwood",
+  ]);
+  assert.deepEqual(bySlug.heavenly.topNotes, [
+    "Madagascar vanilla orchid",
+    "Jasmine",
+  ]);
+  assert.deepEqual(bySlug.heavenly.heartNotes, [
+    "Brazilian tonka bean",
+    "Vanilla",
+    "Vanilla absolute",
+  ]);
+  assert.deepEqual(bySlug.heavenly.baseNotes, [
+    "Brown sugar",
+    "Tonka bean absolute",
+    "Vanilla orchid",
+    "Amberwood",
+    "Musk",
+    "Patchouli",
+  ]);
+  assert.deepEqual(bySlug.billionaire.topNotes, ["Whiskey"]);
+  assert.deepEqual(bySlug.billionaire.heartNotes, [
+    "Spicy notes",
+    "Cinnamon",
+    "Coriander",
+  ]);
+  assert.deepEqual(bySlug.billionaire.baseNotes, [
+    "Tobacco",
+    "Agarwood (oud)",
+    "Incense",
+    "Sandalwood",
+    "Patchouli",
+    "Benzoin",
+    "Vanilla",
+    "Cedar",
+  ]);
+});

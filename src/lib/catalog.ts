@@ -41,11 +41,20 @@ function mapProduct(product: Record<string, unknown>): Product {
   }));
   const defaultVariant =
     variants.find((variant) => variant.name === "100ml") ?? variants[0];
-  const topNotes = (product.top_notes as string[] | null) ?? [];
-  const heartNotes = (product.heart_notes as string[] | null) ?? [];
-  const baseNotes = (product.base_notes as string[] | null) ?? [];
   const slug = String(product.slug);
   const fallback = PRODUCTS.find((item) => item.slug === slug);
+  // The approved signature compositions in the catalog are authoritative.
+  // This also prevents stale deployed database rows from reaching product pages.
+  const useApprovedSignatureNotes = fallback?.collection === "unisex";
+  const topNotes = useApprovedSignatureNotes
+    ? fallback.topNotes
+    : ((product.top_notes as string[] | null) ?? fallback?.topNotes ?? []);
+  const heartNotes = useApprovedSignatureNotes
+    ? fallback.heartNotes
+    : ((product.heart_notes as string[] | null) ?? fallback?.heartNotes ?? []);
+  const baseNotes = useApprovedSignatureNotes
+    ? fallback.baseNotes
+    : ((product.base_notes as string[] | null) ?? fallback?.baseNotes ?? []);
   const generalImages = images
     .filter((item) => !item.variant_name)
     .map((item) => item.url);

@@ -18,6 +18,31 @@ import type { Product } from "@/lib/data";
 import { useCart } from "@/context/CartContext";
 import { formatInr } from "@/lib/money";
 
+const ingredientVisuals: Partial<
+  Record<string, { src: string; width: number; height: number }>
+> = {
+  "old-love": {
+    src: "/ingredients/old-love-notes.jpg",
+    width: 915,
+    height: 223,
+  },
+  coldwar: {
+    src: "/ingredients/coldwar-notes.jpg",
+    width: 915,
+    height: 223,
+  },
+  heavenly: {
+    src: "/ingredients/heavenly-notes.jpg",
+    width: 915,
+    height: 218,
+  },
+  billionaire: {
+    src: "/ingredients/billionaire-notes.jpg",
+    width: 915,
+    height: 194,
+  },
+};
+
 export default function ProductDetail({
   product,
   initialSize,
@@ -40,6 +65,7 @@ export default function ProductDetail({
   const { addItem } = useCart();
   const variant = product.variants.find((item) => item.name === size);
   const isCombo = product.collection === "combos";
+  const ingredientVisual = ingredientVisuals[product.slug];
   const character = product.mood.split(/,| and /).filter(Boolean);
   const activeImages =
     product.variantImages?.[size]?.length && product.variantImages[size]
@@ -192,6 +218,18 @@ export default function ProductDetail({
                 <p>{product.baseNotes.join(" · ")}</p>
               </div>
             </div>
+            {ingredientVisual && (
+              <figure className="ingredient-notes-visual">
+                <Image
+                  src={ingredientVisual.src}
+                  alt={`${product.name} top, heart and base note ingredients`}
+                  width={ingredientVisual.width}
+                  height={ingredientVisual.height}
+                  sizes="(max-width: 1024px) 100vw, 40vw"
+                />
+                <figcaption>Ingredients shown for visual reference</figcaption>
+              </figure>
+            )}
             <div className="product-guidance-grid">
               <div>
                 <span>Character</span>
