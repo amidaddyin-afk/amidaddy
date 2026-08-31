@@ -332,7 +332,7 @@ model NotificationLog {
 
 model StoreSetting {
   id                     Int      @id @default(1)
-  supportEmail           String   @default("support@amidaddy.com") @map("support_email")
+  supportEmail           String   @default("support@amidaddy.in") @map("support_email")
   supportPhone           String?  @map("support_phone")
   shippingFeePaise       Int      @default(9900) @map("shipping_fee_paise")
   freeShippingAbovePaise Int      @default(199900) @map("free_shipping_above_paise")

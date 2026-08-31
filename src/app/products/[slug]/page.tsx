@@ -33,7 +33,7 @@ export default async function ProductPage({
   const siteUrl =
     process.env.NEXT_PUBLIC_APP_URL ??
     process.env.NEXT_PUBLIC_SITE_URL ??
-    "https://amidaddy.com";
+    "https://amidaddy.in";
   const image = product.image.startsWith("http")
     ? product.image
     : `${siteUrl}${product.image}`;

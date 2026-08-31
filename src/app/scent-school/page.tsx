@@ -42,7 +42,7 @@ const signatures = [
     notes: "Saffron · Amber · Fir resin",
     time: "8-9 hours",
     slug: "old-love",
-    image: "/curated/old-love.JPG",
+    image: "/curated/products/old-love/detail.JPG",
   },
   {
     name: "Billionaire",

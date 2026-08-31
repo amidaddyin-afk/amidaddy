@@ -1,6 +1,6 @@
 export const policyDetails = {
   brand: "Amidaddy (AD Perfume)",
-  supportEmail: "support@amidaddy.com",
+  supportEmail: "support@amidaddy.in",
   lastUpdated: "18 August 2026",
   shippingFee: "₹99",
   freeShippingAbove: "₹1,999",

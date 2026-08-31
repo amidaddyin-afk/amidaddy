@@ -141,7 +141,7 @@ export async function getAdminOverview(): Promise<AdminOverview> {
       endsAt: row.ends_at ? new Date(row.ends_at).toISOString() : null,
     })),
     settings: {
-      supportEmail: String(setting.support_email ?? "support@amidaddy.com"),
+      supportEmail: String(setting.support_email ?? "support@amidaddy.in"),
       supportPhone: setting.support_phone
         ? String(setting.support_phone)
         : null,

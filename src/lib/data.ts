@@ -224,9 +224,8 @@ export const PRODUCTS: Product[] = [
     id: "old-love",
     slug: "old-love",
     name: "Old Love",
-    image: "/curated/old-love.JPG",
+    image: "/curated/products/old-love/detail.JPG",
     images: [
-      "/curated/old-love.JPG",
       "/curated/products/old-love/detail.JPG",
       ...galleryImages("old-love", 14),
     ],

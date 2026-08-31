@@ -25,7 +25,7 @@ export default async function Home() {
   const siteUrl =
     process.env.NEXT_PUBLIC_APP_URL ??
     process.env.NEXT_PUBLIC_SITE_URL ??
-    "https://amidaddy.com";
+    "https://amidaddy.in";
   const organizationJsonLd = JSON.stringify({
     "@context": "https://schema.org",
     "@type": "Organization",

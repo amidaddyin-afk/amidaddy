@@ -815,6 +815,7 @@ export async function sendOrderEmail(orderId: string, template: string) {
       body: JSON.stringify({
         from,
         to: order.email,
+        reply_to: "support@amidaddy.in",
         ...(template === "order-confirmed" && orderNotificationEmail
           ? { bcc: orderNotificationEmail }
           : {}),

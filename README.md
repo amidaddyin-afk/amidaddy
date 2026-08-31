@@ -18,7 +18,7 @@ The store includes a database-backed fragrance catalog, variant inventory, guest
 1. Copy `.env.example` to `.env.local` and populate values from your Supabase project.
 2. Run `npm run db:generate` after changing the Prisma schema.
 3. Back up the database, then apply the migrations in `prisma/migrations` in timestamp order. The commerce upgrade creates the `product-media` Storage bucket and customer/admin RLS policies.
-4. In Supabase Auth, enable email confirmation and Google, then add `http://localhost:3000/auth/callback` and the production callback URL to the redirect allow list.
+4. In Supabase Auth, enable email confirmation, disable Google (and any other social providers), then add `http://localhost:3000/auth/callback` and the production callback URL to the redirect allow list.
 5. Configure Razorpay's signed webhook at `/api/razorpay/webhook` and enable automatic payment capture. Checkout also verifies Razorpay's signed success response at `/api/checkout/verify` for immediate confirmation.
 6. In Resend, verify your sending domain, create an API key, and set `RESEND_API_KEY` plus `RESEND_FROM_EMAIL`. Optionally set `ORDER_NOTIFICATION_EMAIL` to receive a private store copy of confirmed-order emails.
 7. Set `CRON_SECRET` for `/api/maintenance`, configure both Turnstile keys, and choose `ADMIN_SESSION_MAX_AGE_HOURS` (12 by default). Production authentication fails closed when the Turnstile secret is absent.
@@ -26,7 +26,7 @@ The store includes a database-backed fragrance catalog, variant inventory, guest
 
 ## Authentication
 
-Email sign-up, email/password login, Google OAuth, password reset, session refresh, account lockouts, and Supabase-backed admin roles are implemented. Customer sessions use Supabase's normal refresh behavior; admin access has a separate absolute lifetime and requires a fresh sign-in after expiry. The first administrator must be promoted manually after signup:
+Email sign-up, email/password login, password reset, session refresh, account lockouts, and Supabase-backed admin roles are implemented. Customer sessions use Supabase's normal refresh behavior; admin access has a separate absolute lifetime and requires a fresh sign-in after expiry. The first administrator must be promoted manually after signup:
 
 ```sql
 update public.profiles set role = 'ADMIN' where email = 'admin@example.com';

@@ -91,7 +91,7 @@ export default async function OrderSupportPage({
                 reply with the next steps.
               </p>
               <a
-                href={`mailto:support@amidaddy.com?subject=${supportSubject}`}
+                href={`mailto:support@amidaddy.in?subject=${supportSubject}`}
                 className="lux-button mt-6 w-full"
               >
                 <Mail size={16} /> Contact support

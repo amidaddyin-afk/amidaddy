@@ -1,10 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useState } from "react";
+import { useActionState } from "react";
 import { useSearchParams } from "next/navigation";
 import Script from "next/script";
-import { createClient } from "@/lib/supabase/client";
 import {
   requestPasswordResetAction,
   signInAction,
@@ -29,7 +28,6 @@ export function AuthForm({ mode }: { mode: Mode }) {
   const isSignup = mode === "signup";
   const isLogin = mode === "login";
   const isResetRequest = mode === "forgot-password";
-  const [oauthError, setOauthError] = useState<string | null>(null);
   const searchParams = useSearchParams();
   const next = searchParams.get("next");
   const adminSessionExpired =
@@ -37,18 +35,6 @@ export function AuthForm({ mode }: { mode: Mode }) {
   const safeNext =
     next?.startsWith("/") && !next.startsWith("//") ? next : "/account";
   const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
-
-  async function signInWithGoogle() {
-    setOauthError(null);
-    const { error } = await createClient().auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=/account`,
-      },
-    });
-    if (error)
-      setOauthError("Google sign-in is unavailable. Please try again.");
-  }
 
   return (
     <main className="auth-shell min-h-screen px-6 pt-36">
@@ -140,23 +126,6 @@ export function AuthForm({ mode }: { mode: Mode }) {
                   ? "Send reset link"
                   : "Update password"}
         </button>
-        {(isLogin || isSignup) && (
-          <>
-            <div className="my-5 border-t border-white/10" />
-            <button
-              type="button"
-              onClick={signInWithGoogle}
-              className="btn-ghost w-full"
-            >
-              Continue with Google
-            </button>
-            {oauthError && (
-              <p className="mt-4 text-sm text-red-300" role="alert">
-                {oauthError}
-              </p>
-            )}
-          </>
-        )}
         {isLogin && (
           <div className="mt-5 flex justify-between text-sm text-white/60">
             <Link href="/signup" className="hover:text-[#D4AF37]">
