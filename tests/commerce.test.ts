@@ -11,8 +11,8 @@ import { includedGstPaise } from "../src/lib/money.ts";
 import { isMatchingCapturedPayment } from "../src/lib/razorpay.ts";
 
 test("shipping is charged below the post-discount threshold", () => {
-  assert.equal(shippingPaise(199_899), 9_900);
-  assert.equal(shippingPaise(199_900), 0);
+  assert.equal(shippingPaise(59_899), 9_900);
+  assert.equal(shippingPaise(59_900), 0);
 });
 
 test("coupon calculations enforce maximum discount and subtotal", () => {

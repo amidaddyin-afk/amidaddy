@@ -53,7 +53,7 @@ export default function ProductDetail({
   const available = product.variants.filter(
     (variant) => variant.active && variant.stock > variant.reserved,
   );
-  const [size, setSize] = useState<"20ml" | "100ml">(
+  const [size] = useState<"20ml" | "100ml">(
     available.find((item) => item.name === initialSize)?.name ??
       available.find((item) => item.name === "100ml")?.name ??
       available[0]?.name ??
@@ -127,7 +127,7 @@ export default function ProductDetail({
                 fill
                 priority
                 sizes="(max-width:1024px) 100vw, 58vw"
-                className="product-gallery-active-image object-cover"
+                className="product-gallery-active-image object-contain"
               />
               {nextImage && nextImage !== selectedImage && (
                 <Image
@@ -137,7 +137,7 @@ export default function ProductDetail({
                   fill
                   loading="eager"
                   sizes="(max-width:1024px) 100vw, 58vw"
-                  className="product-image-preload object-cover"
+                  className="product-image-preload object-contain"
                   aria-hidden="true"
                 />
               )}
@@ -181,7 +181,7 @@ export default function ProductDetail({
                     src={image}
                     alt=""
                     fill
-                    className="object-cover"
+                    className="object-contain"
                     sizes="68px"
                   />
                 </button>
@@ -250,35 +250,33 @@ export default function ProductDetail({
               </div>
             </div>
             <div className="mt-8">
-              <p className="eyebrow mb-3">Choose your ritual</p>
-              <div className="grid grid-cols-2 gap-3">
-                {product.variants.map((item) => (
-                  <button
-                    key={item.id}
-                    disabled={!item.active || item.stock <= item.reserved}
-                    onClick={() => {
-                      setSize(item.name);
-                      setSelectedImageIndex(0);
-                    }}
-                    className={`variant-card ${size === item.name ? "active" : ""}`}
-                  >
-                    <span>
-                      {product.packSize && product.packSize > 1
-                        ? `${product.packSize} × ${item.name}`
-                        : item.name}
-                    </span>
-                    <strong>{formatInr(item.pricePaise)}</strong>
-                    <small>
-                      {item.stock > item.reserved
-                        ? item.name === "20ml" && !isCombo
-                          ? "Discover it"
-                          : item.name === "100ml" && !isCombo
-                            ? "Make it yours"
-                            : "Ready to dispatch"
-                        : "Out of stock"}
-                    </small>
-                  </button>
-                ))}
+              <p className="eyebrow mb-3">Selected format</p>
+              <div className="grid grid-cols-1 gap-3">
+                {product.variants
+                  .filter((item) => item.name === size)
+                  .map((item) => (
+                    <button
+                      key={item.id}
+                      disabled={!item.active || item.stock <= item.reserved}
+                      className={`variant-card ${size === item.name ? "active" : ""}`}
+                    >
+                      <span>
+                        {product.packSize && product.packSize > 1
+                          ? `${product.packSize} × ${item.name}`
+                          : item.name}
+                      </span>
+                      <strong>{formatInr(item.pricePaise)}</strong>
+                      <small>
+                        {item.stock > item.reserved
+                          ? item.name === "20ml" && !isCombo
+                            ? "Discover it"
+                            : item.name === "100ml" && !isCombo
+                              ? "Make it yours"
+                              : "Ready to dispatch"
+                          : "Out of stock"}
+                      </small>
+                    </button>
+                  ))}
               </div>
             </div>
             <div className="mt-6 flex items-end justify-between">
@@ -304,7 +302,7 @@ export default function ProductDetail({
             </button>
             <div className="mt-5 flex items-center justify-center gap-2 text-xs text-white/45">
               <Truck size={15} />
-              <span>₹99 delivery · Complimentary above ₹1,999</span>
+              <span>₹99 delivery · Complimentary on ₹599 or more</span>
             </div>
             <div
               className="purchase-assurance"
@@ -323,6 +321,126 @@ export default function ProductDetail({
           </section>
         </div>
       </div>
+      <section className="product-offers" aria-label="Current offers">
+        <article>
+          <span>DELIVERY · SAVE</span>
+          <h2>Complimentary shipping</h2>
+          <p>
+            Free delivery is applied automatically when your order reaches ₹599.
+          </p>
+        </article>
+        <article>
+          <span>DISCOVERY · CHOOSE</span>
+          <h2>Start with 20ml</h2>
+          <p>
+            Experience the same Eau de Parfum composition in a travel-ready
+            format.
+          </p>
+        </article>
+      </section>
+      <section className="product-description-block">
+        <p className="eyebrow">Product description</p>
+        <h2 className="display-title">
+          {product.name}, made for {product.mood.toLowerCase()}.
+        </h2>
+        <p>{product.description}</p>
+        <p>{product.story}</p>
+      </section>
+      <section className="product-notes-block">
+        <div className="product-notes-intro">
+          <p className="eyebrow">The composition</p>
+          <h2 className="display-title">How it unfolds.</h2>
+        </div>
+        <div className="product-note-columns">
+          <article>
+            <span>01 · Top notes</span>
+            <h3>{product.topNotes.join(", ")}</h3>
+            <p>
+              The first impression: immediate, expressive and designed to draw
+              you closer.
+            </p>
+          </article>
+          <article>
+            <span>02 · Heart notes</span>
+            <h3>{product.heartNotes.join(", ")}</h3>
+            <p>
+              The character of the fragrance appears as it settles into the
+              skin.
+            </p>
+          </article>
+          <article>
+            <span>03 · Base notes</span>
+            <h3>{product.baseNotes.join(", ")}</h3>
+            <p>
+              The lasting trail: warm, grounded and remembered after you leave.
+            </p>
+          </article>
+        </div>
+      </section>
+      <section className="product-application">
+        <div>
+          <p className="eyebrow">How to apply</p>
+          <h2 className="display-title">Make the trail last.</h2>
+        </div>
+        <div className="application-steps">
+          <article>
+            <span>01</span>
+            <h3>Spray pulse points</h3>
+            <p>Apply to wrists, neck and behind the ears from 15–20 cm away.</p>
+          </article>
+          <article>
+            <span>02</span>
+            <h3>Do not rub</h3>
+            <p>
+              Let the perfume settle naturally so the composition develops
+              properly.
+            </p>
+          </article>
+          <article>
+            <span>03</span>
+            <h3>Store with care</h3>
+            <p>Keep away from direct sunlight, moisture and excessive heat.</p>
+          </article>
+        </div>
+      </section>
+      <section className="product-faq-block">
+        <div>
+          <p className="eyebrow">Frequently asked</p>
+          <h2 className="display-title">A little clarity.</h2>
+        </div>
+        <div>
+          <details>
+            <summary>
+              How long does {product.name} last?<span>+</span>
+            </summary>
+            <p>
+              {product.longevity}. Performance varies with skin, climate and
+              application.
+            </p>
+          </details>
+          <details>
+            <summary>
+              When should I wear it?<span>+</span>
+            </summary>
+            <p>{product.occasion}.</p>
+          </details>
+          <details>
+            <summary>
+              Is it unisex?<span>+</span>
+            </summary>
+            <p>
+              Yes. Every Amidaddy fragrance is composed around character and
+              mood rather than gender.
+            </p>
+          </details>
+          <details>
+            <summary>
+              Is the 20ml fragrance different?<span>+</span>
+            </summary>
+            <p>No. Both formats contain the same Eau de Parfum composition.</p>
+          </details>
+        </div>
+      </section>
     </main>
   );
 }

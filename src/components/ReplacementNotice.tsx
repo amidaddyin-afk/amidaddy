@@ -32,9 +32,8 @@ export default function ReplacementNotice({
           helps us review damage, missing-item and wrong-product claims quickly.
         </p>
         <p className="replacement-notice-hindi">
-          Wrong product ya broken/damaged bottle ke replacement ke liye parcel
-          kholte waqt continuous video banana strongly recommended hai. Isse
-          damage, missing item ya wrong product claim jaldi review hota hai.
+          A clear, uninterrupted unboxing video helps us verify and resolve an
+          eligible replacement request without unnecessary delay.
         </p>
       </div>
     </aside>

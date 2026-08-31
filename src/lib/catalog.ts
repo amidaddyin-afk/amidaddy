@@ -72,17 +72,19 @@ function mapProduct(product: Record<string, unknown>): Product {
         .map((item) => item.url);
       const fallbackImages = fallback?.variantImages?.[name] ?? [];
       const selected =
-        fallback?.collection === "combos"
-          ? explicit.length
-            ? explicit
-            : fallbackImages
-          : explicit.length
-            ? explicit
-            : fallbackImages.length
+        name === "20ml" && fallbackImages.length
+          ? fallbackImages
+          : fallback?.collection === "combos"
+            ? fallbackImages.length
               ? fallbackImages
-              : name === "100ml"
-                ? productImages
-                : [];
+              : explicit
+            : explicit.length
+              ? explicit
+              : fallbackImages.length
+                ? fallbackImages
+                : name === "100ml"
+                  ? productImages
+                  : [];
       return [name, Array.from(new Set(selected))];
     }),
   ) as Product["variantImages"];
@@ -238,6 +240,34 @@ export async function listCatalogProducts(query: ListQuery) {
   let products = (data ?? []).map((item) =>
     mapProduct(item as Record<string, unknown>),
   );
+  // Keep the advertised 20ml discovery set available even when an older
+  // Supabase catalogue has not been seeded with the combo row yet.
+  const discoveryCombo = PRODUCTS.find(
+    (product) => product.slug === "signature-combo-20ml",
+  );
+  const searchNeedle = query.search?.toLowerCase();
+  const comboMatchesQuery =
+    discoveryCombo &&
+    (!query.collection || query.collection === discoveryCombo.collection) &&
+    (!query.family || query.family === discoveryCombo.profile) &&
+    (!query.size ||
+      discoveryCombo.variants.some(
+        (variant) => variant.name === query.size && variant.active,
+      )) &&
+    (query.inStock !== "true" || discoveryCombo.stock > 0) &&
+    (query.minPrice === undefined || discoveryCombo.price >= query.minPrice) &&
+    (query.maxPrice === undefined || discoveryCombo.price <= query.maxPrice) &&
+    (!searchNeedle ||
+      `${discoveryCombo.name} ${discoveryCombo.notes} ${discoveryCombo.mood}`
+        .toLowerCase()
+        .includes(searchNeedle));
+  if (
+    query.page === 1 &&
+    comboMatchesQuery &&
+    !products.some((product) => product.slug === discoveryCombo.slug)
+  ) {
+    products.push(discoveryCombo);
+  }
   if (query.size)
     products = products.filter((product) =>
       product.variants.some(
@@ -248,7 +278,17 @@ export async function listCatalogProducts(query: ListQuery) {
     products = products.filter((product) => product.stock > 0);
   return {
     products: products.map(withRandomTileImage),
-    total: count ?? products.length,
+    total:
+      (count ?? products.length) +
+      (discoveryCombo &&
+      comboMatchesQuery &&
+      !(data ?? []).some(
+        (item) =>
+          String((item as Record<string, unknown>).slug) ===
+          discoveryCombo.slug,
+      )
+        ? 1
+        : 0),
     page: query.page,
     pageSize: query.pageSize,
   };
@@ -269,7 +309,11 @@ export async function getCatalogProductBySlug(slug: string) {
     .maybeSingle();
   if (error || !data) {
     const fallback = PRODUCTS.find((product) => product.slug === slug);
-    return process.env.NODE_ENV === "production" || !fallback ? null : fallback;
+    const isRequiredDiscoveryCombo = slug === "signature-combo-20ml";
+    return !fallback ||
+      (process.env.NODE_ENV === "production" && !isRequiredDiscoveryCombo)
+      ? null
+      : fallback;
   }
   return mapProduct(data as Record<string, unknown>);
 }

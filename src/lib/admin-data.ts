@@ -147,7 +147,7 @@ export async function getAdminOverview(): Promise<AdminOverview> {
         : null,
       shippingFeePaise: Number(setting.shipping_fee_paise ?? 9900),
       freeShippingAbovePaise: Number(
-        setting.free_shipping_above_paise ?? 199900,
+        setting.free_shipping_above_paise ?? 59900,
       ),
       cancellationMessage: String(
         setting.cancellation_message ??

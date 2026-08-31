@@ -23,12 +23,54 @@ export default async function ShopPage({
     collection: value("collection") as "unisex" | "combos" | undefined,
     family: value("family") as
       "Woody" | "Floral" | "Fresh" | "Amber" | "Mixed" | undefined,
-    size: value("size") as "20ml" | "100ml" | undefined,
     inStock: "true" as const,
     sort: (value("sort") ?? "newest") as
       "newest" | "price_asc" | "price_desc" | "name",
   };
   const { products, total } = await listCatalogProducts(query);
+  const hasSize = (
+    product: (typeof products)[number],
+    size: "20ml" | "100ml",
+  ) =>
+    product.variants.some(
+      (variant) =>
+        variant.name === size &&
+        variant.active &&
+        variant.stock > variant.reserved,
+    );
+  const singleFragrances = products.filter(
+    (product) => product.collection === "unisex",
+  );
+  const sections: Array<{
+    id: string;
+    size?: "20ml" | "100ml";
+    eyebrow: string;
+    title: string;
+    products: typeof products;
+  }> = [
+    {
+      id: "100ml",
+      size: "100ml",
+      eyebrow: "The full ritual",
+      title: "100ml fragrances",
+      products: singleFragrances.filter((product) => hasSize(product, "100ml")),
+    },
+    {
+      id: "20ml",
+      size: "20ml",
+      eyebrow: "The discovery edit",
+      title: "20ml fragrances",
+      products: singleFragrances.filter((product) => hasSize(product, "20ml")),
+    },
+    {
+      id: "pack-of-4",
+      eyebrow: "The complete discovery wardrobe",
+      title: "Combo pack of 4",
+      products: products.filter(
+        (product) => product.slug === "signature-combo-20ml",
+      ),
+    },
+  ];
   return (
     <main className="shop-page">
       <section className="shop-hero" data-reveal>
@@ -74,14 +116,6 @@ export default async function ShopPage({
             </select>
           </label>
           <label>
-            <span>Size</span>
-            <select name="size" defaultValue={query.size ?? ""}>
-              <option value="">All sizes</option>
-              <option>20ml</option>
-              <option>100ml</option>
-            </select>
-          </label>
-          <label>
             <span>Sort</span>
             <select name="sort" defaultValue={query.sort}>
               <option value="newest">Featured</option>
@@ -94,17 +128,37 @@ export default async function ShopPage({
         </form>
         <div className="mb-6 flex justify-between text-xs tracking-[.16em] text-white/40 uppercase">
           <span>{total} fragrances</span>
-          {(query.search || query.collection || query.family || query.size) && (
+          {(query.search || query.collection || query.family) && (
             <a href="/shop" className="text-champagne">
               Clear filters
             </a>
           )}
         </div>
         {products.length ? (
-          <div className="product-grid">
-            {products.map((product, index) => (
-              <ProductCard key={product.id} product={product} index={index} />
-            ))}
+          <div className="shop-size-sections">
+            {sections.map(
+              (section) =>
+                section.products.length > 0 && (
+                  <section key={section.id} className="shop-size-section">
+                    <div className="shop-size-heading">
+                      <p className="eyebrow">{section.eyebrow}</p>
+                      <h2 className="display-title">{section.title}</h2>
+                      <span>{section.products.length} options</span>
+                    </div>
+                    <div className="product-grid">
+                      {section.products.map((product, index) => (
+                        <ProductCard
+                          key={`${section.id}-${product.id}`}
+                          product={product}
+                          index={index}
+                          initialSize={section.size}
+                          lockSize
+                        />
+                      ))}
+                    </div>
+                  </section>
+                ),
+            )}
           </div>
         ) : (
           <div className="empty-results">

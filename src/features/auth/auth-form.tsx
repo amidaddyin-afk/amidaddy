@@ -15,7 +15,13 @@ import {
 type Mode = "login" | "signup" | "forgot-password" | "reset-password";
 const initialState: AuthActionState = {};
 
-export function AuthForm({ mode }: { mode: Mode }) {
+export function AuthForm({
+  mode,
+  turnstileSiteKey,
+}: {
+  mode: Mode;
+  turnstileSiteKey?: string;
+}) {
   const action =
     mode === "login"
       ? signInAction
@@ -34,8 +40,6 @@ export function AuthForm({ mode }: { mode: Mode }) {
     searchParams.get("reason") === "admin-session-expired";
   const safeNext =
     next?.startsWith("/") && !next.startsWith("//") ? next : "/account";
-  const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
-
   return (
     <main className="auth-shell min-h-screen px-6 pt-36">
       <form
@@ -93,7 +97,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
             <div
               className="cf-turnstile mb-4"
               data-sitekey={turnstileSiteKey}
-              data-theme="dark"
+              data-theme="light"
             />
           </>
         )}

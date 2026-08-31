@@ -335,7 +335,7 @@ model StoreSetting {
   supportEmail           String   @default("support@amidaddy.in") @map("support_email")
   supportPhone           String?  @map("support_phone")
   shippingFeePaise       Int      @default(9900) @map("shipping_fee_paise")
-  freeShippingAbovePaise Int      @default(199900) @map("free_shipping_above_paise")
+  freeShippingAbovePaise Int      @default(59900) @map("free_shipping_above_paise")
   cancellationMessage    String   @default("Orders can be cancelled before processing begins.") @map("cancellation_message")
   updatedAt              DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 

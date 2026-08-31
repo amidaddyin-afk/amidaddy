@@ -9,6 +9,10 @@ import React, {
   useState,
 } from "react";
 import type { Product } from "@/lib/data";
+import {
+  DEFAULT_FREE_SHIPPING_PAISE,
+  DEFAULT_SHIPPING_FEE_PAISE,
+} from "@/lib/commerce";
 
 export interface CartItem {
   product: Product;
@@ -133,7 +137,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       0,
     );
     const estimatedShippingPaise =
-      subtotalPaise > 0 && subtotalPaise < 199_900 ? 9_900 : 0;
+      subtotalPaise > 0 && subtotalPaise < DEFAULT_FREE_SHIPPING_PAISE
+        ? DEFAULT_SHIPPING_FEE_PAISE
+        : 0;
     return {
       subtotalPaise,
       estimatedShippingPaise,

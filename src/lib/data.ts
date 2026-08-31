@@ -111,7 +111,7 @@ export const PRODUCTS: Product[] = [
       ...galleryImages("billionaire", 11),
     ],
     variantImages: {
-      "20ml": ["/products/20ml/billionaire.webp"],
+      "20ml": ["/products/20ml/studio/billionaire.webp"],
     },
     profile: "Woody",
     concentration: "Eau de Parfum",
@@ -155,7 +155,7 @@ export const PRODUCTS: Product[] = [
       ...galleryImages("coldwar", 10),
     ],
     variantImages: {
-      "20ml": ["/products/20ml/cold-war.webp"],
+      "20ml": ["/products/20ml/studio/cold-war.webp"],
     },
     profile: "Fresh",
     concentration: "Eau de Parfum",
@@ -190,7 +190,7 @@ export const PRODUCTS: Product[] = [
       ...galleryImages("heavenly", 13),
     ],
     variantImages: {
-      "20ml": ["/products/20ml/heavenly.webp"],
+      "20ml": ["/products/20ml/studio/heavenly.webp"],
     },
     profile: "Floral",
     concentration: "Eau de Parfum",
@@ -230,7 +230,7 @@ export const PRODUCTS: Product[] = [
       ...galleryImages("old-love", 14),
     ],
     variantImages: {
-      "20ml": ["/products/20ml/old-love.webp"],
+      "20ml": ["/products/20ml/studio/old-love.webp"],
     },
     profile: "Amber",
     concentration: "Eau de Parfum",

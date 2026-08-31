@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Menu, Search, ShoppingBag, UserRound, X } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { useCart } from "@/context/CartContext";
 
 export default function Navbar() {
@@ -47,13 +48,23 @@ export default function Navbar() {
             <Menu />
           </button>
           <nav className="desktop-nav">
-            <Link href="/shop">Shop</Link>
-            <Link href="/scent-school">Scent school</Link>
-            <Link href="/#scent-finder">Scent finder</Link>
+            <Link href="/shop">Shop all</Link>
+            <Link href="/#shop-100ml">100ml</Link>
+            <Link href="/#shop-20ml">20ml</Link>
+            <Link href="/#discovery-set">Pack of 4</Link>
             <Link href="/#story">Our story</Link>
           </nav>
           <Link href="/" className="wordmark" aria-label="Amidaddy home">
-            AMIDADDY<span>PERFUMES</span>
+            <Image
+              src="/brand/amidaddy-ad-signature-mark.png"
+              alt=""
+              width={512}
+              height={512}
+              priority
+            />
+            <span className="wordmark-title" aria-hidden="true">
+              am<span>i</span>daddy
+            </span>
           </Link>
           <div className="nav-actions">
             <button
@@ -98,9 +109,10 @@ export default function Navbar() {
             </button>
             <nav>
               {[
-                ["Shop", "/shop"],
-                ["Scent school", "/scent-school"],
-                ["Scent finder", "/#scent-finder"],
+                ["Shop all", "/shop"],
+                ["100ml fragrances", "/#shop-100ml"],
+                ["20ml fragrances", "/#shop-20ml"],
+                ["Pack of 4", "/#discovery-set"],
                 ["Our story", "/#story"],
                 ["My account", "/account"],
               ].map(([label, href]) => (

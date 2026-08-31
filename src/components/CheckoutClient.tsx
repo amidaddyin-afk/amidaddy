@@ -6,7 +6,6 @@ import { FormEvent, useRef, useState } from "react";
 import { ArrowLeft, LockKeyhole, ShoppingBag, Sparkles } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { formatInr } from "@/lib/money";
-import ReplacementNotice from "@/components/ReplacementNotice";
 
 type CheckoutQuote = {
   subtotalPaise: number;
@@ -218,8 +217,12 @@ export default function CheckoutClient() {
           >
             <p className="eyebrow">Secure checkout</p>
             <h1 className="display-title mt-4 text-4xl">
-              Where should we send your signature?
+              Fill in your delivery details.
             </h1>
+            <p className="checkout-intro">
+              Enter your contact and address information to continue to secure
+              payment.
+            </p>
             <div className="mt-9 grid gap-4 sm:grid-cols-2">
               <label className="field sm:col-span-2">
                 <span>Full name</span>
@@ -232,6 +235,7 @@ export default function CheckoutClient() {
                   type="email"
                   name="email"
                   autoComplete="email"
+                  placeholder="you@example.com"
                   onChange={(event) => {
                     if (
                       appliedCoupon &&
@@ -248,6 +252,11 @@ export default function CheckoutClient() {
                   name="phone"
                   autoComplete="tel"
                   inputMode="tel"
+                  type="tel"
+                  minLength={8}
+                  maxLength={20}
+                  pattern="[+0-9 ()-]{8,20}"
+                  placeholder="+91 98765 43210"
                 />
               </label>
               <label className="field sm:col-span-2">
@@ -334,38 +343,12 @@ export default function CheckoutClient() {
                 {error}
               </p>
             )}
-            <ReplacementNotice compact />
-            <label className="checkout-consent">
-              <input type="checkbox" required name="policyConsent" />
-              <span>
-                I agree to the{" "}
-                <Link href="/policies/terms-conditions" target="_blank">
-                  Terms & Conditions
-                </Link>
-                ,{" "}
-                <Link href="/policies/privacy-policy" target="_blank">
-                  Privacy Policy
-                </Link>
-                , and{" "}
-                <Link
-                  href="/policies/returns-refunds-replacements"
-                  target="_blank"
-                >
-                  Return, Refund & Replacement Policy
-                </Link>
-                .
-              </span>
-            </label>
             <button disabled={submitting} className="lux-button mt-7 w-full">
               <LockKeyhole size={15} />
               {submitting
                 ? "Opening secure payment…"
                 : `Pay ${formatInr(displayedTotalPaise)}`}
             </button>
-            <p className="mt-4 text-center text-xs text-white/40">
-              Final pricing and coupon eligibility are verified securely before
-              payment.
-            </p>
           </form>
           <aside className="lux-panel h-fit p-6 lg:sticky lg:top-32">
             <div className="flex items-center gap-3">
@@ -416,7 +399,8 @@ export default function CheckoutClient() {
               </div>
             </dl>
             <p className="mt-4 text-xs leading-5 text-white/40">
-              Prices include GST. Shipping is complimentary above ₹1,999.
+              Prices include GST. Shipping is complimentary on orders of ₹599 or
+              more.
             </p>
           </aside>
         </div>

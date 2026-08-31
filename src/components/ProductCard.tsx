@@ -12,15 +12,20 @@ import { formatInr } from "@/lib/money";
 export default function ProductCard({
   product,
   index = 0,
+  initialSize,
+  lockSize = false,
 }: {
   product: Product;
   index?: number;
+  initialSize?: "20ml" | "100ml";
+  lockSize?: boolean;
 }) {
   const available = product.variants.filter(
     (variant) => variant.active && variant.stock > variant.reserved,
   );
   const [size, setSize] = useState<"20ml" | "100ml">(
-    available.find((item) => item.name === "100ml")?.name ??
+    available.find((item) => item.name === initialSize)?.name ??
+      available.find((item) => item.name === "100ml")?.name ??
       available[0]?.name ??
       "100ml",
   );
@@ -64,7 +69,7 @@ export default function ProductCard({
           alt={`${product.name} ${product.packSize && product.packSize > 1 ? `${product.packSize} pack ` : ""}${size}`}
           fill
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-          className="object-cover transition-transform duration-700 group-hover:scale-[1.035]"
+          className="object-contain transition-transform duration-700 group-hover:scale-[1.025]"
         />
         <div className="product-glow" />
         {(product.badge || product.isNew) && (
@@ -90,20 +95,29 @@ export default function ProductCard({
           {product.topNotes[0]} · {product.heartNotes[0]} ·{" "}
           {product.baseNotes[0]}
         </p>
-        <div className="mt-5 flex gap-2" aria-label="Choose bottle size">
-          {product.variants.map((item) => (
-            <button
-              key={item.id}
-              disabled={!item.active || item.stock <= item.reserved}
-              onClick={() => setSize(item.name)}
-              className={`size-chip ${size === item.name ? "active" : ""}`}
-            >
-              {product.packSize && product.packSize > 1
-                ? `${product.packSize} × ${item.name}`
-                : item.name}
-            </button>
-          ))}
-        </div>
+        {!lockSize && (
+          <div className="mt-5 flex gap-2" aria-label="Choose bottle size">
+            {product.variants.map((item) => (
+              <button
+                key={item.id}
+                disabled={!item.active || item.stock <= item.reserved}
+                onClick={() => setSize(item.name)}
+                className={`size-chip ${size === item.name ? "active" : ""}`}
+              >
+                {product.packSize && product.packSize > 1
+                  ? `${product.packSize} × ${item.name}`
+                  : item.name}
+              </button>
+            ))}
+          </div>
+        )}
+        {lockSize && (
+          <p className="text-champagne mt-5 text-xs tracking-[.16em] uppercase">
+            {product.packSize && product.packSize > 1
+              ? `${product.packSize} × ${size}`
+              : size}
+          </p>
+        )}
         <div className="mt-5 flex items-center justify-between gap-3">
           <div>
             <p className="text-lg">

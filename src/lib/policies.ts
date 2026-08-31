@@ -3,7 +3,7 @@ export const policyDetails = {
   supportEmail: "support@amidaddy.in",
   lastUpdated: "18 August 2026",
   shippingFee: "₹99",
-  freeShippingAbove: "₹1,999",
+  freeShippingAbove: "₹599",
   paymentGateway: "Razorpay",
 };
 

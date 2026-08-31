@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import { useReducedMotion } from "framer-motion";
 
 const messages = [
+  "Best offers applied at checkout",
   "Four unisex signatures · Made for a feeling",
-  "Discovery bottles from ₹199",
-  "Complimentary shipping above ₹1,999",
+  "Complimentary shipping on orders of ₹599 or more",
 ];
 
 export default function AnnouncementBar() {

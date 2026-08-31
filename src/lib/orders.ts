@@ -5,6 +5,7 @@ import type { PoolClient } from "pg";
 import { appendAuditEvent } from "@/lib/audit";
 import {
   couponDiscountPaise,
+  DEFAULT_FREE_SHIPPING_PAISE,
   isCustomerCancellationAllowed,
   isFulfillmentTransitionAllowed,
   refundablePaise,
@@ -331,13 +332,16 @@ async function calculateCheckoutPricing(
     await client.query("select * from public.store_settings where id=1")
   ).rows[0] ?? {
     shipping_fee_paise: 9900,
-    free_shipping_above_paise: 199900,
+    free_shipping_above_paise: DEFAULT_FREE_SHIPPING_PAISE,
   };
   const discountedMerchandise = subtotalPaise - discountPaise;
   const orderShippingPaise = shippingPaise(
     discountedMerchandise,
     Number(settings.shipping_fee_paise),
-    Number(settings.free_shipping_above_paise),
+    Math.min(
+      Number(settings.free_shipping_above_paise),
+      DEFAULT_FREE_SHIPPING_PAISE,
+    ),
   );
   const taxPaise = includedGstPaise(discountedMerchandise, 18);
   const totalPaise = discountedMerchandise + orderShippingPaise;

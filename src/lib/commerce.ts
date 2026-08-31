@@ -1,5 +1,5 @@
 export const DEFAULT_SHIPPING_FEE_PAISE = 9_900;
-export const DEFAULT_FREE_SHIPPING_PAISE = 199_900;
+export const DEFAULT_FREE_SHIPPING_PAISE = 59_900;
 
 export function shippingPaise(
   discountedMerchandisePaise: number,

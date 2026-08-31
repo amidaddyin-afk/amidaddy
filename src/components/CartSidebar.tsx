@@ -7,6 +7,8 @@ import Image from "next/image";
 import { useCart } from "@/context/CartContext";
 import { useRouter } from "next/navigation";
 import { formatInr } from "@/lib/money";
+import { DEFAULT_FREE_SHIPPING_PAISE } from "@/lib/commerce";
+import { PRODUCTS } from "@/lib/data";
 
 export default function CartSidebar() {
   const {
@@ -19,9 +21,31 @@ export default function CartSidebar() {
     estimatedShippingPaise,
     estimatedTotalPaise,
     totalQty,
+    addItem,
   } = useCart();
   const router = useRouter();
   const reduceMotion = useReducedMotion();
+  const freeShippingRemainingPaise = Math.max(
+    0,
+    DEFAULT_FREE_SHIPPING_PAISE - subtotalPaise,
+  );
+  const shippingProgress = Math.min(
+    100,
+    (subtotalPaise / DEFAULT_FREE_SHIPPING_PAISE) * 100,
+  );
+  const cartProductIds = new Set(items.map((item) => item.product.id));
+  const suggestions = PRODUCTS.filter(
+    (product) =>
+      product.collection === "unisex" &&
+      product.active &&
+      !cartProductIds.has(product.id) &&
+      product.variants.some(
+        (variant) =>
+          variant.name === "20ml" &&
+          variant.active &&
+          variant.stock > variant.reserved,
+      ),
+  ).slice(0, 3);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -108,11 +132,14 @@ export default function CartSidebar() {
                     >
                       <div className="h-24 w-20 flex-shrink-0 overflow-hidden bg-[#0d0d0d]">
                         <Image
-                          src={item.product.image}
+                          src={
+                            item.product.variantImages?.[item.size]?.[0] ??
+                            item.product.image
+                          }
                           alt={item.product.name}
                           width={80}
                           height={96}
-                          className="h-full w-full object-cover"
+                          className="h-full w-full object-contain"
                         />
                       </div>
                       <div className="min-w-0 flex-1">
@@ -183,6 +210,70 @@ export default function CartSidebar() {
             {/* Summary */}
             {items.length > 0 && (
               <div className="space-y-3 border-t border-white/5 p-6">
+                <div className="cart-shipping-progress">
+                  <div className="flex items-center justify-between gap-3 text-xs">
+                    <span className="text-white/65">
+                      {freeShippingRemainingPaise > 0
+                        ? `Add ${formatInr(freeShippingRemainingPaise)} more for free delivery`
+                        : "You unlocked free delivery"}
+                    </span>
+                    <span className="text-[#D4AF37]">₹599</span>
+                  </div>
+                  <div className="mt-2 h-1 overflow-hidden rounded-full bg-white/10">
+                    <div
+                      className="h-full rounded-full bg-[#D4AF37] transition-[width] duration-500"
+                      style={{ width: `${shippingProgress}%` }}
+                    />
+                  </div>
+                </div>
+                {suggestions.length > 0 && (
+                  <div className="cart-quick-add">
+                    <p className="mb-2 text-[10px] tracking-[0.18em] text-white/40 uppercase">
+                      You may also like
+                    </p>
+                    <div className="flex gap-2 overflow-x-auto pb-1">
+                      {suggestions.map((product) => {
+                        const image =
+                          product.variantImages?.["20ml"]?.[0] ?? product.image;
+                        const price = product.variants.find(
+                          (variant) => variant.name === "20ml",
+                        )?.pricePaise;
+                        return (
+                          <article
+                            key={product.id}
+                            className="min-w-[112px] flex-1 border border-white/8 bg-white/[.025] p-2"
+                          >
+                            <div className="relative mb-2 aspect-[4/5] overflow-hidden bg-white/5">
+                              <Image
+                                src={image}
+                                alt={`${product.name} 20 ml`}
+                                fill
+                                sizes="112px"
+                                className="object-contain"
+                              />
+                            </div>
+                            <p className="truncate text-[11px] text-white">
+                              {product.name}
+                            </p>
+                            <div className="mt-1.5 flex items-center justify-between gap-1">
+                              <span className="text-[10px] text-white/45">
+                                {price ? formatInr(price) : "20 ml"}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => addItem(product, "20ml")}
+                                className="border border-[#D4AF37]/60 px-2 py-1 text-[9px] text-[#D4AF37] uppercase"
+                                aria-label={`Quick add ${product.name} 20 ml`}
+                              >
+                                Add
+                              </button>
+                            </div>
+                          </article>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
                 <div className="flex justify-between text-sm">
                   <span className="tracking-wider text-white/40">Subtotal</span>
                   <span className="text-white">{formatInr(subtotalPaise)}</span>

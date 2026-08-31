@@ -12,32 +12,36 @@ export default function Footer() {
             <p>Presence, before words.</p>
           </div>
           <div>
-            <h3>Explore</h3>
-            <Link href="/shop">All fragrances</Link>
-            <Link href="/scent-school">Scent school</Link>
-            <Link href="/#scent-finder">Scent finder</Link>
-            <Link href="/#story">Our story</Link>
+            <h3>Fragrances</h3>
+            <Link href="/shop">Shop all</Link>
+            <Link href="/#shop-100ml">100ml collection</Link>
+            <Link href="/#shop-20ml">20ml collection</Link>
+            <Link href="/#discovery-set">Pack of 4</Link>
           </div>
           <div>
             <h3>Client care</h3>
-            <a href="mailto:support@amidaddy.in">Contact</a>
-            <Link href="/policies/shipping-delivery">Shipping & delivery</Link>
-            <Link href="/policies/returns-refunds-replacements">
-              Returns & refunds
+            <a href="mailto:support@amidaddy.in">support@amidaddy.in</a>
+            <Link href="/policies/shipping-delivery">
+              Shipping &amp; delivery
             </Link>
-            <Link href="/policies/payment-terms">Payment terms</Link>
+            <Link href="/policies/returns-refunds-replacements">
+              Returns &amp; refunds
+            </Link>
             <Link href="/account/orders">Track an order</Link>
           </div>
           <div>
-            <h3>Legal</h3>
-            <Link href="/policies/terms-conditions">Terms & conditions</Link>
+            <h3>Company</h3>
+            <Link href="/#story">Our story</Link>
+            <Link href="/scent-school">Scent school</Link>
+            <Link href="/policies/terms-conditions">
+              Terms &amp; conditions
+            </Link>
             <Link href="/policies/privacy-policy">Privacy policy</Link>
           </div>
           <div>
             <h3>Your account</h3>
             <Link href="/login">Sign in</Link>
             <Link href="/signup">Create account</Link>
-            <Link href="/admin">Store admin</Link>
           </div>
         </div>
         <div className="footer-bottom">
