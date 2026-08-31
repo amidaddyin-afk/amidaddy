@@ -73,7 +73,7 @@ export default async function ShopPage({
   ];
   return (
     <main className="shop-page">
-      <section className="shop-hero" data-reveal>
+      <section className="shop-hero">
         <p className="eyebrow">The olfactory wardrobe</p>
         <h1 className="display-title">
           Find the scent
@@ -85,10 +85,7 @@ export default async function ShopPage({
           four-bottle combos. Filter by instinct, family, or mood.
         </p>
       </section>
-      <section
-        className="mx-auto max-w-[1500px] px-5 pb-28 sm:px-8"
-        data-reveal
-      >
+      <section className="mx-auto max-w-[1500px] px-5 pb-28 sm:px-8">
         <form className="shop-filters" action="/shop">
           <label>
             <span>Search</span>
