@@ -5,7 +5,7 @@ import { listCatalogProducts } from "@/lib/catalog";
 export const metadata: Metadata = {
   title: "Shop all fragrances",
   description:
-    "Explore Amidaddy unisex perfume by scent family, mood and bottle size.",
+    "Explore Amidaddy Perfumes unisex Eau de Parfum by scent family, mood and bottle size.",
 };
 
 export default async function ShopPage({

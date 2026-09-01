@@ -66,7 +66,11 @@ export default function ProductCard({
         <Image
           key={cardImage}
           src={cardImage}
-          alt={`${product.name} ${product.packSize && product.packSize > 1 ? `${product.packSize} pack ` : ""}${size}`}
+          alt={`${product.name} — ${product.profile} ${product.concentration}${
+            product.packSize && product.packSize > 1
+              ? `, pack of ${product.packSize}`
+              : ""
+          }, ${size} bottle`}
           fill
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
           className="object-cover object-center transition-transform duration-700 group-hover:scale-[1.025]"
@@ -91,10 +95,7 @@ export default function ProductCard({
           </div>
           <span className="text-sm text-white/45">{product.longevity}</span>
         </div>
-        <p className="mt-4 text-sm leading-6 text-white/52">
-          {product.topNotes[0]} · {product.heartNotes[0]} ·{" "}
-          {product.baseNotes[0]}
-        </p>
+        <p className="mt-4 text-sm leading-6 text-white/52">{product.notes}</p>
         {!lockSize && (
           <div className="mt-5 flex gap-2" aria-label="Choose bottle size">
             {product.variants.map((item) => (

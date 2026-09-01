@@ -8,52 +8,39 @@ import {
   Sun,
   ThermometerSun,
 } from "lucide-react";
-import Footer from "@/components/Footer";
+import { PRODUCTS } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Scent School",
   description:
-    "Understand fragrance, learn how to wear it, and discover the AMI DADDY signature that feels like you.",
+    "Understand fragrance, learn how to wear it, and discover the Amidaddy Perfumes signature that feels like you.",
 };
 
-const signatures = [
-  {
-    name: "Cold War",
-    family: "Fresh",
-    mood: "Cold · Clean · Controlled",
-    notes: "Plum · Juniper · Oakmoss",
-    time: "6-8 hours",
-    slug: "coldwar",
-    image: "/curated/cold-war.JPG",
-  },
-  {
-    name: "Heavenly",
-    family: "Floral",
-    mood: "Soft · Intimate · Ethereal",
-    notes: "Vanilla orchid · Tonka bean · Brown sugar",
-    time: "7-9 hours",
-    slug: "heavenly",
-    image: "/curated/heavenly.JPG",
-  },
-  {
-    name: "Old Love",
-    family: "Amber",
-    mood: "Nostalgic · Romantic · Warm",
-    notes: "Saffron · Amber · Fir resin",
-    time: "8-9 hours",
-    slug: "old-love",
-    image: "/curated/products/old-love/detail.JPG",
-  },
-  {
-    name: "Billionaire",
-    family: "Woody",
-    mood: "Powerful · Sophisticated · Magnetic",
-    notes: "Whiskey · Spicy notes · Tobacco",
-    time: "8-10 hours",
-    slug: "billionaire",
-    image: "/curated/billionaire.JPG",
-  },
-];
+// Scent notes, family and longevity are read from the shared catalogue so this
+// page can never disagree with the homepage, /shop or the product pages.
+const catalogueBySlug = Object.fromEntries(
+  PRODUCTS.map((product) => [product.slug, product]),
+);
+
+const signatures = (
+  [
+    { slug: "coldwar", mood: "Cold · Clean · Controlled" },
+    { slug: "heavenly", mood: "Soft · Intimate · Ethereal" },
+    { slug: "old-love", mood: "Nostalgic · Romantic · Warm" },
+    { slug: "billionaire", mood: "Powerful · Sophisticated · Magnetic" },
+  ] as const
+).map(({ slug, mood }) => {
+  const product = catalogueBySlug[slug];
+  return {
+    name: product.name,
+    family: product.profile,
+    mood,
+    notes: product.notes,
+    time: product.longevity,
+    slug,
+    image: product.image,
+  };
+});
 
 const timeline = [
   [
@@ -87,8 +74,8 @@ export default function ScentSchoolPage() {
     <main className="scent-school">
       <section className="school-hero">
         <Image
-          src="/curated/hero-models-3.JPG"
-          alt="AMI DADDY fragrance campaign"
+          src="/curated/hero-models-3.webp"
+          alt="Amidaddy Perfumes models photographed together for a fragrance campaign"
           fill
           priority
           sizes="100vw"
@@ -96,7 +83,7 @@ export default function ScentSchoolPage() {
         />
         <div className="school-hero-shade" />
         <div className="school-hero-copy">
-          <p className="eyebrow">AMI DADDY Scent School</p>
+          <p className="eyebrow">Amidaddy Perfumes Scent School</p>
           <h1>
             Understand fragrance.
             <br />
@@ -104,7 +91,7 @@ export default function ScentSchoolPage() {
           </h1>
           <p>
             A practical guide to perfume, India&apos;s fragrance heritage and
-            the four signatures of AMI DADDY.
+            the four signatures of Amidaddy Perfumes.
           </p>
           <a href="#perfume-101" className="lux-button">
             Begin the lesson <ArrowRight size={16} />
@@ -117,7 +104,7 @@ export default function ScentSchoolPage() {
         <a href="#attar">India & Attar</a>
         <a href="#perfume-101">Perfume 101</a>
         <a href="#wear">How to wear</a>
-        <a href="#signatures">Meet AMI DADDY</a>
+        <a href="#signatures">Meet Amidaddy Perfumes</a>
       </nav>
 
       <section className="school-section" id="history">
@@ -227,7 +214,8 @@ export default function ScentSchoolPage() {
           <p>
             For all-day presence, apply 5–6 sprays to the body and 5–7 light
             sprays across your clothing. Our wear guarantee: on unwashed fabric,
-            Ami Daddy perfume remains noticeable for two days or longer.
+            Amidaddy Perfumes fragrance remains noticeable for two days or
+            longer.
           </p>
         </div>
         <div className="wear-steps">
@@ -264,7 +252,7 @@ export default function ScentSchoolPage() {
 
       <section className="school-signatures" id="signatures">
         <div className="school-intro">
-          <p className="eyebrow">05 · Meet AMI DADDY</p>
+          <p className="eyebrow">05 · Meet Amidaddy Perfumes</p>
           <h2 className="display-title">Read the four signatures.</h2>
           <p>
             Begin with the feeling, then notice how the materials bring that
@@ -277,7 +265,7 @@ export default function ScentSchoolPage() {
               <div className="school-signature-image">
                 <Image
                   src={item.image}
-                  alt={`${item.name} perfume`}
+                  alt={`${item.name} — ${item.family} Eau de Parfum by Amidaddy Perfumes`}
                   fill
                   sizes="(max-width: 760px) 100vw, 25vw"
                   className="object-cover"
@@ -308,7 +296,6 @@ export default function ScentSchoolPage() {
           </Link>
         </div>
       </section>
-      <Footer />
     </main>
   );
 }

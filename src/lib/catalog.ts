@@ -1,7 +1,7 @@
 import "server-only";
 
 import type { Product } from "@/lib/data";
-import { PRODUCTS } from "@/lib/data";
+import { deriveNotes, PRODUCTS } from "@/lib/data";
 import { createClient } from "@/lib/supabase/server";
 import type {
   productInputSchema,
@@ -18,6 +18,15 @@ const configured = () =>
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
   );
 
+/**
+ * The photography under public/ is now WebP; the camera originals live outside
+ * public/ in assets-source/. A deployed database that has not yet run the
+ * webp_image_urls migration still holds .JPG paths, which would 404, so legacy
+ * extensions are normalised on read as well as fixed by the migration.
+ */
+const toWebpPath = (url: string) =>
+  url.startsWith("/") ? url.replace(/\.(jpe?g)$/i, ".webp") : url;
+
 function mapProduct(product: Record<string, unknown>): Product {
   const images = (
     (product.product_images as Array<{
@@ -25,7 +34,9 @@ function mapProduct(product: Record<string, unknown>): Product {
       position?: number;
       variant_name?: "20ml" | "100ml" | null;
     }> | null) ?? []
-  ).sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
+  )
+    .map((item) => ({ ...item, url: toWebpPath(item.url) }))
+    .sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
   const variants = (
     (product.product_variants as Array<Record<string, unknown>> | null) ?? []
   ).map((variant) => ({
@@ -94,7 +105,7 @@ function mapProduct(product: Record<string, unknown>): Product {
     id: String(product.id),
     slug,
     name: String(product.name),
-    image: defaultImages[0] ?? fallback?.image ?? "/curated/billionaire.JPG",
+    image: defaultImages[0] ?? fallback?.image ?? "/curated/billionaire.webp",
     images: productImages,
     variantImages,
     profile: (product.fragrance_family ??
@@ -105,7 +116,11 @@ function mapProduct(product: Record<string, unknown>): Product {
     topNotes,
     heartNotes,
     baseNotes,
-    notes: [...topNotes, ...heartNotes, ...baseNotes].slice(0, 3).join(" · "),
+    // Always derive the summary line from the same note pyramid every surface
+    // renders, so the homepage, /shop and the product page cannot disagree.
+    notes: useApprovedSignatureNotes
+      ? deriveNotes(topNotes, heartNotes, baseNotes)
+      : (fallback?.notes ?? deriveNotes(topNotes, heartNotes, baseNotes)),
     longevity: String(product.longevity ?? ""),
     mood: String(product.mood ?? ""),
     occasion: String(product.occasion ?? ""),

@@ -99,15 +99,35 @@ const singleVariant = (
   },
 ];
 
-export const PRODUCTS: Product[] = [
+/**
+ * Single source of truth for the summary "notes" line.
+ *
+ * The homepage listing, the /shop listing and the /products/[slug] page must
+ * always show identical notes for a product. Rather than let each surface hand
+ * its own short string, every surface reads `product.notes`, and `product.notes`
+ * is always the first note of each tier (top · heart · base) derived from the
+ * authoritative note pyramid below. Change a note in one place, every surface
+ * updates together.
+ */
+export function deriveNotes(
+  topNotes: readonly string[],
+  heartNotes: readonly string[],
+  baseNotes: readonly string[],
+): string {
+  return [topNotes[0], heartNotes[0], baseNotes[0]]
+    .filter((note): note is string => Boolean(note && note.trim()))
+    .join(" · ");
+}
+
+const CATALOG: Product[] = [
   {
     id: "billionaire",
     slug: "billionaire",
     name: "Billionaire",
-    image: "/curated/billionaire.JPG",
+    image: "/curated/billionaire.webp",
     images: [
-      "/curated/billionaire.JPG",
-      "/curated/products/billionaire/detail.JPG",
+      "/curated/billionaire.webp",
+      "/curated/products/billionaire/detail.webp",
       ...galleryImages("billionaire", 11),
     ],
     variantImages: {
@@ -148,10 +168,10 @@ export const PRODUCTS: Product[] = [
     id: "coldwar",
     slug: "coldwar",
     name: "Cold War",
-    image: "/curated/cold-war.JPG",
+    image: "/curated/cold-war.webp",
     images: [
-      "/curated/cold-war.JPG",
-      "/curated/products/coldwar/detail.JPG",
+      "/curated/cold-war.webp",
+      "/curated/products/coldwar/detail.webp",
       ...galleryImages("coldwar", 10),
     ],
     variantImages: {
@@ -161,9 +181,9 @@ export const PRODUCTS: Product[] = [
     concentration: "Eau de Parfum",
     genderPositioning: "Unisex",
     topNotes: ["Plum", "Bergamot", "Mandarin orange"],
-    heartNotes: ["Plum", "Juniper", "Thyme", "Tarragon"],
+    heartNotes: ["Pepper", "Juniper", "Thyme", "Tarragon"],
     baseNotes: ["Oakmoss", "Cedar", "Sandalwood"],
-    notes: "Plum · Juniper · Oakmoss",
+    notes: "Plum · Pepper · Oakmoss",
     longevity: "6–8 hours",
     mood: "Cold, clean and controlled",
     occasion: "Day and office",
@@ -183,10 +203,10 @@ export const PRODUCTS: Product[] = [
     id: "heavenly",
     slug: "heavenly",
     name: "Heavenly",
-    image: "/curated/heavenly.JPG",
+    image: "/curated/heavenly.webp",
     images: [
-      "/curated/heavenly.JPG",
-      "/curated/products/heavenly/detail.JPG",
+      "/curated/heavenly.webp",
+      "/curated/products/heavenly/detail.webp",
       ...galleryImages("heavenly", 13),
     ],
     variantImages: {
@@ -224,9 +244,9 @@ export const PRODUCTS: Product[] = [
     id: "old-love",
     slug: "old-love",
     name: "Old Love",
-    image: "/curated/products/old-love/detail.JPG",
+    image: "/curated/products/old-love/detail.webp",
     images: [
-      "/curated/products/old-love/detail.JPG",
+      "/curated/products/old-love/detail.webp",
       ...galleryImages("old-love", 14),
     ],
     variantImages: {
@@ -353,5 +373,18 @@ export const PRODUCTS: Product[] = [
     packSize: 4,
   },
 ];
+
+export const PRODUCTS: Product[] = CATALOG.map((product) =>
+  product.collection === "unisex"
+    ? {
+        ...product,
+        notes: deriveNotes(
+          product.topNotes,
+          product.heartNotes,
+          product.baseNotes,
+        ),
+      }
+    : product,
+);
 
 export const TESTIMONIALS: never[] = [];

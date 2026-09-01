@@ -4,9 +4,9 @@ import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
 import Navbar from "@/components/Navbar";
 import CartSidebar from "@/components/CartSidebar";
-import { QueryProvider } from "@/providers/query-provider";
 import AnnouncementBar from "@/components/AnnouncementBar";
 import PerfumeSprayCursor from "@/components/PerfumeSprayCursor";
+import Footer from "@/components/Footer";
 
 const display = Cormorant_Garamond({
   subsets: ["latin"],
@@ -21,16 +21,16 @@ export const metadata: Metadata = {
   ),
   title: {
     default: "Amidaddy Perfumes · Presence, before words",
-    template: "%s · Amidaddy",
+    template: "%s · Amidaddy Perfumes",
   },
   description:
     "Four unisex Eau de Parfum signatures composed around mood, memory and presence.",
   openGraph: {
     title: "Amidaddy Perfumes · Presence, before words",
     description: "Four unisex signatures. Find the scent that feels like you.",
-    siteName: "Amidaddy",
+    siteName: "Amidaddy Perfumes",
     images: [
-      { url: "/og.png", width: 1536, height: 1024, alt: "Amidaddy Perfumes" },
+      { url: "/og.png", width: 1200, height: 800, alt: "Amidaddy Perfumes" },
     ],
   },
   twitter: {
@@ -50,14 +50,13 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${display.variable} ${sans.variable}`}>
         <PerfumeSprayCursor />
-        <QueryProvider>
-          <CartProvider>
-            <AnnouncementBar />
-            <Navbar />
-            <CartSidebar />
-            {children}
-          </CartProvider>
-        </QueryProvider>
+        <CartProvider>
+          <AnnouncementBar />
+          <Navbar />
+          <CartSidebar />
+          {children}
+          <Footer />
+        </CartProvider>
       </body>
     </html>
   );

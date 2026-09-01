@@ -50,3 +50,6 @@ Edited Photos-*.zip
 /src/generated/
 
 .env*
+
+# scratch output (audit/report artifacts)
+tmp/

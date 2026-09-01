@@ -11,7 +11,6 @@ import {
 } from "lucide-react";
 import CuratedHero from "@/components/CuratedHero";
 import ProductCard from "@/components/ProductCard";
-import Footer from "@/components/Footer";
 import { listCatalogProducts } from "@/lib/catalog";
 
 const reviews = [
@@ -60,7 +59,7 @@ export default async function Home() {
   const organizationJsonLd = JSON.stringify({
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: "Amidaddy",
+    name: "Amidaddy Perfumes",
     url: siteUrl,
     logo: `${siteUrl}/og.png`,
   }).replace(/</g, "\\u003c");
@@ -128,7 +127,7 @@ export default async function Home() {
           <div className="home-combo-media">
             <Image
               src="/products/combos/20ml/01.webp"
-              alt="Amidaddy Pack of 4 with four 20ml fragrances"
+              alt="Amidaddy Perfumes Pack of 4 gift set with four 20 ml Eau de Parfum bottles"
               fill
               sizes="(max-width: 900px) 100vw, 58vw"
               className="object-contain"
@@ -177,8 +176,8 @@ export default async function Home() {
       <section className="home-story" id="story">
         <div className="home-story-media">
           <Image
-            src="/curated/product-detail-1.jpg"
-            alt="Amidaddy fragrances in warm studio light"
+            src="/curated/product-detail-1.webp"
+            alt="Amidaddy Perfumes fragrance bottles arranged in warm studio light"
             fill
             sizes="(max-width: 900px) 100vw, 50vw"
             className="object-cover"
@@ -273,8 +272,6 @@ export default async function Home() {
           ))}
         </div>
       </section>
-
-      <Footer />
     </main>
   );
 }

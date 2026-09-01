@@ -3,6 +3,14 @@ import type { Metadata } from "next";
 import ProductDetail from "@/components/ProductDetail";
 import { getCatalogProductBySlug } from "@/lib/catalog";
 
+const SITE_URL =
+  process.env.NEXT_PUBLIC_APP_URL ??
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  "https://amidaddy.in";
+
+const toAbsolute = (path: string) =>
+  path.startsWith("http") ? path : `${SITE_URL}${path}`;
+
 export async function generateMetadata({
   params,
 }: {
@@ -10,9 +18,40 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const product = await getCatalogProductBySlug(slug);
-  return product
-    ? { title: product.name, description: product.description }
-    : {};
+  if (!product) return {};
+
+  // Unique, per-product title and description so no two product pages inherit
+  // the site-wide default. The "· Amidaddy Perfumes" suffix comes from the
+  // title template in the root layout.
+  const title = `${product.name} · ${product.profile} ${product.concentration}`;
+  const description =
+    `${product.name}: ${product.profile} ${product.concentration} with notes of ${product.notes}. ` +
+    `${product.mood}. Longevity ${product.longevity}. Unisex fragrance from Amidaddy Perfumes.`;
+  const canonical = `${SITE_URL}/products/${product.slug}`;
+  const ogImage = {
+    url: toAbsolute(product.image),
+    alt: `${product.name} ${product.concentration} by Amidaddy Perfumes`,
+  };
+
+  return {
+    title,
+    description,
+    alternates: { canonical },
+    openGraph: {
+      type: "website",
+      url: canonical,
+      siteName: "Amidaddy Perfumes",
+      title: `${title} · Amidaddy Perfumes`,
+      description,
+      images: [ogImage],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${title} · Amidaddy Perfumes`,
+      description,
+      images: [ogImage.url],
+    },
+  };
 }
 
 export default async function ProductPage({
@@ -30,23 +69,16 @@ export default async function ProductPage({
       : undefined;
   const product = await getCatalogProductBySlug(slug);
   if (!product) notFound();
-  const siteUrl =
-    process.env.NEXT_PUBLIC_APP_URL ??
-    process.env.NEXT_PUBLIC_SITE_URL ??
-    "https://amidaddy.in";
-  const image = product.image.startsWith("http")
-    ? product.image
-    : `${siteUrl}${product.image}`;
+  const siteUrl = SITE_URL;
+  const image = toAbsolute(product.image);
   const jsonLd = JSON.stringify([
     {
       "@context": "https://schema.org",
       "@type": "Product",
       name: product.name,
       description: product.description,
-      image: product.images.map((item) =>
-        item.startsWith("http") ? item : `${siteUrl}${item}`,
-      ),
-      brand: { "@type": "Brand", name: "Amidaddy" },
+      image: product.images.map((item) => toAbsolute(item)),
+      brand: { "@type": "Brand", name: "Amidaddy Perfumes" },
       category: "Perfume",
       offers: product.variants.map((variant) => ({
         "@type": "Offer",

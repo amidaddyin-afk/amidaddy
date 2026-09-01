@@ -22,22 +22,22 @@ const ingredientVisuals: Partial<
   Record<string, { src: string; width: number; height: number }>
 > = {
   "old-love": {
-    src: "/ingredients/old-love-notes.jpg",
+    src: "/ingredients/old-love-notes.webp",
     width: 915,
     height: 223,
   },
   coldwar: {
-    src: "/ingredients/coldwar-notes.jpg",
+    src: "/ingredients/coldwar-notes.webp",
     width: 915,
     height: 223,
   },
   heavenly: {
-    src: "/ingredients/heavenly-notes.jpg",
+    src: "/ingredients/heavenly-notes.webp",
     width: 915,
     height: 218,
   },
   billionaire: {
-    src: "/ingredients/billionaire-notes.jpg",
+    src: "/ingredients/billionaire-notes.webp",
     width: 915,
     height: 194,
   },
@@ -123,7 +123,11 @@ export default function ProductDetail({
               <Image
                 key={selectedImage}
                 src={selectedImage}
-                alt={`${product.name} ${product.packSize && product.packSize > 1 ? `${product.packSize} pack ` : ""}${size}`}
+                alt={`${product.name} — ${product.genderPositioning} ${product.profile} ${product.concentration}${
+                  product.packSize && product.packSize > 1
+                    ? `, pack of ${product.packSize}`
+                    : ""
+                }, ${size} bottle (photo ${selectedImageIndex + 1} of ${activeImages.length})`}
                 fill
                 priority
                 sizes="(max-width:1024px) 100vw, 58vw"
@@ -179,7 +183,7 @@ export default function ProductDetail({
                 >
                   <Image
                     src={image}
-                    alt=""
+                    alt={`${product.name} ${product.profile} ${product.concentration} thumbnail ${index + 1}`}
                     fill
                     className="object-contain"
                     sizes="68px"

@@ -54,10 +54,14 @@ export default function Navbar() {
             <Link href="/#discovery-set">Pack of 4</Link>
             <Link href="/#story">Our story</Link>
           </nav>
-          <Link href="/" className="wordmark" aria-label="Amidaddy home">
+          <Link
+            href="/"
+            className="wordmark"
+            aria-label="Amidaddy Perfumes home"
+          >
             <Image
               src="/brand/amidaddy-ad-signature-mark.png"
-              alt=""
+              alt="Amidaddy Perfumes"
               width={512}
               height={512}
               priority

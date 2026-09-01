@@ -9,43 +9,43 @@ const slides = [
   {
     desktop: "/hero/heavenly-wide.webp",
     mobile: "/hero/heavenly-mobile.webp",
-    alt: "Model holding an Amidaddy Heavenly perfume bottle beside her face",
+    alt: "Model holding an Amidaddy Perfumes Heavenly Eau de Parfum bottle beside her face",
     kicker: "Heavenly",
     title: "Leave a softer trace.",
     copy: "White florals, vanilla and musk with a quiet, lasting presence.",
     href: "/products/heavenly",
   },
   {
-    desktop: "/curated/product-detail-1.jpg",
+    desktop: "/curated/product-detail-1.webp",
     mobile: "/products/20ml/studio/pack-of-4.webp",
-    alt: "The four Amidaddy signature fragrances",
+    alt: "The four Amidaddy Perfumes signature Eau de Parfum bottles arranged together",
     kicker: "The discovery wardrobe",
     title: "Four signatures. One feeling.",
     copy: "Meet every mood in a travel-ready collection.",
     href: "/products/signature-combo-20ml",
   },
   {
-    desktop: "/curated/products/billionaire/detail.JPG",
+    desktop: "/curated/products/billionaire/detail.webp",
     mobile: "/gallery/billionaire/01.webp",
-    alt: "Amidaddy Billionaire perfume campaign",
+    alt: "Amidaddy Perfumes Billionaire Eau de Parfum campaign photograph",
     kicker: "Billionaire",
     title: "Own the room.",
     copy: "Whiskey, spice and dark woods composed with confidence.",
     href: "/products/billionaire",
   },
   {
-    desktop: "/curated/products/coldwar/detail.JPG",
+    desktop: "/curated/products/coldwar/detail.webp",
     mobile: "/gallery/coldwar/02.webp",
-    alt: "Amidaddy Cold War perfume campaign",
+    alt: "Amidaddy Perfumes Cold War Eau de Parfum campaign photograph",
     kicker: "Cold War",
     title: "Make your move.",
     copy: "Bright fruit, aromatic herbs and woods with a sharp edge.",
     href: "/products/coldwar",
   },
   {
-    desktop: "/curated/products/old-love/detail.JPG",
+    desktop: "/curated/products/old-love/detail.webp",
     mobile: "/gallery/old-love/01.webp",
-    alt: "Amidaddy Old Love perfume campaign",
+    alt: "Amidaddy Perfumes Old Love Eau de Parfum campaign photograph",
     kicker: "Old Love",
     title: "Stay unforgettable.",
     copy: "Warm saffron, amber and resin designed to linger.",
@@ -54,7 +54,7 @@ const slides = [
   {
     desktop: "/products/combos/100ml/01.webp",
     mobile: "/products/20ml/studio/pack-of-4.webp",
-    alt: "Amidaddy fragrance collection arranged in studio light",
+    alt: "Amidaddy Perfumes fragrance collection arranged in studio light",
     kicker: "The full collection",
     title: "Meet every mood.",
     copy: "All four signatures, composed for every side of you.",
@@ -106,10 +106,9 @@ export default function CuratedHero({ slideOrder }: { slideOrder: number[] }) {
             <source media="(min-width: 768px)" srcSet={slide.desktop} />
             <Image
               src={slide.mobile}
-              alt={index === active ? slide.alt : ""}
+              alt={slide.alt}
               fill
               priority={index === 0}
-              unoptimized
               sizes="100vw"
             />
           </picture>

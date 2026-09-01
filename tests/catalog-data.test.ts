@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { PRODUCTS } from "../src/lib/data.ts";
+import { deriveNotes, PRODUCTS } from "../src/lib/data.ts";
 
 test("signature products keep 20 ml photography separate", () => {
   const signatures = PRODUCTS.filter(
@@ -73,7 +73,7 @@ test("signature fragrance notes match the approved note chart", () => {
     "Mandarin orange",
   ]);
   assert.deepEqual(bySlug.coldwar.heartNotes, [
-    "Plum",
+    "Pepper",
     "Juniper",
     "Thyme",
     "Tarragon",
@@ -116,4 +116,37 @@ test("signature fragrance notes match the approved note chart", () => {
     "Vanilla",
     "Cedar",
   ]);
+});
+
+test("signature summary notes are derived from the shared note pyramid", () => {
+  for (const product of PRODUCTS.filter(
+    (product) => product.collection === "unisex",
+  )) {
+    assert.equal(
+      product.notes,
+      deriveNotes(product.topNotes, product.heartNotes, product.baseNotes),
+      `${product.slug} summary notes must match top/heart/base first notes`,
+    );
+  }
+});
+
+test("no signature note is duplicated across note tiers", () => {
+  for (const product of PRODUCTS.filter(
+    (product) => product.collection === "unisex",
+  )) {
+    const seen = new Map<string, string>();
+    for (const [tier, notes] of [
+      ["top", product.topNotes],
+      ["heart", product.heartNotes],
+      ["base", product.baseNotes],
+    ] as const) {
+      for (const note of notes) {
+        assert.ok(
+          !seen.has(note),
+          `${product.slug}: "${note}" appears in both ${seen.get(note)} and ${tier} notes`,
+        );
+        seen.set(note, tier);
+      }
+    }
+  }
 });

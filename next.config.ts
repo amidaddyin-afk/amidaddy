@@ -19,6 +19,19 @@ const contentSecurityPolicy = [
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   experimental: { serverActions: { bodySizeLimit: "1mb" } },
+  images: {
+    // AVIF first: roughly 20-30% smaller than WebP on this photography, with
+    // WebP as the fallback for older Safari.
+    formats: ["image/avif", "image/webp"],
+    // Trimmed to the widths this storefront actually renders at. Every extra
+    // entry is another on-demand encode of the same source image.
+    deviceSizes: [400, 640, 828, 1080, 1280, 1920, 2400],
+    imageSizes: [64, 96, 128, 256, 384],
+    // 75 is next/image's own default and must stay allowed, otherwise any
+    // component that omits `quality` (or sets it explicitly) gets a 400.
+    qualities: [70, 75, 82, 90],
+    minimumCacheTTL: 60 * 60 * 24 * 365,
+  },
   async headers() {
     return [
       {

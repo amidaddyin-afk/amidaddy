@@ -101,7 +101,7 @@ export default function ScentFinder({ products }: { products: Product[] }) {
               <div className="relative aspect-[4/5] overflow-hidden">
                 <Image
                   src={result.image}
-                  alt={result.name}
+                  alt={`${result.name} — ${result.profile} ${result.concentration} by Amidaddy Perfumes`}
                   fill
                   className="object-cover"
                 />
