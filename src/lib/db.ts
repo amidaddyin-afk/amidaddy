@@ -1,6 +1,7 @@
 import "server-only";
 
 import { Pool, type PoolClient } from "pg";
+import { databaseSslConfig } from "@/lib/database-ssl";
 
 const globalForDb = globalThis as unknown as { amidaddyPool?: Pool };
 
@@ -9,10 +10,7 @@ export function db() {
   if (!connectionString) throw new Error("DATABASE_URL is not configured.");
   globalForDb.amidaddyPool ??= new Pool({
     connectionString,
-    ssl:
-      process.env.NODE_ENV === "production"
-        ? { rejectUnauthorized: true }
-        : undefined,
+    ssl: databaseSslConfig(process.env.NODE_ENV, process.env.DATABASE_SSL_CA),
     max: 8,
     idleTimeoutMillis: 20_000,
   });
