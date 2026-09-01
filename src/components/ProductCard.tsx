@@ -69,7 +69,7 @@ export default function ProductCard({
           alt={`${product.name} ${product.packSize && product.packSize > 1 ? `${product.packSize} pack ` : ""}${size}`}
           fill
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-          className="object-contain transition-transform duration-700 group-hover:scale-[1.025]"
+          className="object-cover object-center transition-transform duration-700 group-hover:scale-[1.025]"
         />
         <div className="product-glow" />
         {(product.badge || product.isNew) && (

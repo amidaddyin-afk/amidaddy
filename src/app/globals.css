@@ -4930,3 +4930,239 @@ main {
     flex-direction: column;
   }
 }
+
+/* Final storefront theme guardrails.
+   Keep customer and operational pages on the same warm-paper system even
+   when legacy component rules appear earlier in the cascade. */
+body .shop-page,
+body .product-page,
+body .checkout-shell,
+body .account-shell,
+body .auth-shell,
+body .policy-shell,
+body .empty-state,
+body .system-state,
+body .route-loading,
+body .admin-shell,
+body .scent-school {
+  --paper: #171512;
+  --muted: #6b645b;
+  --line: #d8d0c2;
+  --surface: #fbf9f5;
+  --surface-raised: #fff;
+}
+
+body .shop-page,
+body .product-page,
+body .checkout-shell,
+body .account-shell,
+body .auth-shell,
+body .policy-shell,
+body .empty-state,
+body .system-state,
+body .route-loading,
+body .admin-shell {
+  background: #f4f0e8;
+  color: #171512;
+}
+
+body .shop-page .eyebrow,
+body .product-page .eyebrow,
+body .checkout-shell .eyebrow,
+body .account-shell .eyebrow,
+body .auth-shell .eyebrow,
+body .policy-shell .eyebrow,
+body .empty-state .eyebrow,
+body .system-state .eyebrow,
+body .admin-shell .eyebrow,
+body .scent-school .eyebrow,
+body .shop-page .text-champagne,
+body .product-page .text-champagne,
+body .checkout-shell .text-champagne,
+body .account-shell .text-champagne,
+body .policy-shell .text-champagne,
+body .admin-shell .text-champagne {
+  color: #87682e;
+}
+
+body .shop-page .text-link,
+body .product-page .text-link,
+body .checkout-shell .text-link,
+body .account-shell .text-link,
+body .policy-shell .text-link,
+body .scent-school .text-link {
+  border-color: rgba(135, 104, 46, 0.45);
+  color: #6f5423;
+}
+
+body .checkout-shell [class*="text-white/"],
+body .account-shell [class*="text-white/"],
+body .auth-shell [class*="text-white/"],
+body .policy-shell [class*="text-white/"],
+body .empty-state [class*="text-white/"],
+body .system-state [class*="text-white/"] {
+  color: #6b645b;
+}
+
+body .checkout-shell [class*="border-white/"],
+body .account-shell [class*="border-white/"],
+body .auth-shell [class*="border-white/"],
+body .policy-shell [class*="border-white/"] {
+  border-color: #d8d0c2;
+}
+
+body .account-shell .lux-panel,
+body .checkout-shell .lux-panel,
+body .auth-shell .auth-panel,
+body .policy-document,
+body .system-state > div {
+  border-color: #d2c9bb;
+  background: #fbf9f5;
+  color: #171512;
+  box-shadow: 0 24px 80px rgba(55, 42, 22, 0.08);
+}
+
+body .account-shell .order-list {
+  border-color: #d8d0c2;
+}
+body .account-shell .order-list > a {
+  border-color: #d8d0c2;
+  background: transparent;
+}
+body .account-shell .order-list > a:hover {
+  background: #fbf9f5;
+}
+body .account-shell .order-list p,
+body .account-shell .order-line span,
+body .account-shell .order-totals div,
+body .account-shell .order-timeline li {
+  color: #6b645b;
+}
+body .account-shell .order-line,
+body .account-shell .order-totals div:last-child,
+body .account-shell .order-timeline li::before {
+  border-color: #d8d0c2;
+}
+body .account-shell .order-totals div:last-child {
+  color: #171512;
+}
+body .account-shell .order-timeline li::before {
+  background: #d8d0c2;
+}
+body .account-shell .order-timeline li span {
+  border-color: #cfc6b7;
+  background: #fbf9f5;
+  color: #6b645b;
+}
+body .account-shell .order-timeline li.active,
+body .account-shell .order-list span {
+  color: #87682e;
+}
+body .account-shell .order-timeline li.active::before {
+  background: #9f7d45;
+}
+body .account-shell .order-timeline li.active span {
+  border-color: #9f7d45;
+  color: #6f5423;
+}
+body .account-shell .order-terminal {
+  border-color: rgba(159, 125, 69, 0.38);
+  background: rgba(159, 125, 69, 0.06);
+  color: #6f5423;
+}
+
+body .checkout-shell .coupon-feedback {
+  color: #2f6f46;
+}
+body .checkout-shell .coupon-feedback .coupon-error,
+body .checkout-shell .error-banner,
+body .auth-shell [role="alert"] {
+  color: #a33434;
+}
+body .checkout-shell .error-banner {
+  border-color: rgba(163, 52, 52, 0.28);
+  background: rgba(163, 52, 52, 0.06);
+}
+body .checkout-shell .coupon-apply-button:hover:not(:disabled) {
+  background: #171512;
+  color: #fff;
+}
+
+body .product-page .variant-card small,
+body .product-page .purchase-assurance span {
+  color: #6b645b;
+}
+body .product-page .purchase-assurance span,
+body .product-page .ingredient-notes-visual {
+  border-color: #d8d0c2;
+}
+body .product-page .ingredient-notes-visual figcaption {
+  background: #e9e2d6;
+  color: #6b645b;
+}
+
+body .policy-document section {
+  border-color: #d8d0c2;
+}
+body .policy-document section h2 {
+  color: #3b342d;
+}
+body .policy-contact {
+  border-color: rgba(159, 125, 69, 0.32);
+  background: rgba(159, 125, 69, 0.07);
+  color: #5f5951;
+}
+body .policy-contact strong,
+body .policy-contact a,
+body .policy-nav a {
+  color: #6f5423;
+}
+
+body .empty-state,
+body .system-state {
+  min-height: 100svh;
+}
+body .empty-state > p:not(.eyebrow),
+body .system-state p:not(.eyebrow) {
+  color: #6b645b;
+}
+body .empty-state svg,
+body .system-state svg {
+  color: #9f7d45;
+}
+
+body .route-loading .loading-mark {
+  color: #87682e;
+}
+body .route-loading .loading-line,
+body .route-loading .loading-block {
+  background: linear-gradient(90deg, #e1d9cc, #f8f5ef, #e1d9cc);
+}
+
+body .scent-school {
+  background: #f4f0e8;
+  color: #171512;
+}
+body .scent-school .school-hero,
+body .scent-school .attar-feature {
+  color: #fff;
+}
+body .scent-school .school-hero .eyebrow,
+body .scent-school .attar-feature .eyebrow {
+  color: #d5b87b;
+}
+body .scent-school .note-evolution span {
+  color: #746d64;
+}
+
+body .admin-shell .inventory-row,
+body .admin-shell .activity-list,
+body .admin-shell .settings-form {
+  border-color: #d2c9bb;
+  background: #fbf9f5;
+  color: #171512;
+}
+
+body .site-footer {
+  color: #fff;
+}
