@@ -223,31 +223,31 @@ export default function ScentSchoolPage() {
       <section className="wear-school" id="wear">
         <div>
           <p className="eyebrow">04 · How to wear perfume</p>
-          <h2 className="display-title">Start with 2-4 sprays.</h2>
+          <h2 className="display-title">A ritual made to last.</h2>
           <p>
-            Apply to the neck, upper chest, behind the ears or inner elbows. Let
-            the fragrance dry naturally and adjust for strength, setting,
-            weather and personal preference.
+            For all-day presence, apply 5–6 sprays to the body and 5–7 light
+            sprays across your clothing. Our wear guarantee: on unwashed fabric,
+            Ami Daddy perfume remains noticeable for two days or longer.
           </p>
         </div>
         <div className="wear-steps">
           <article>
             <Droplets />
             <span>01</span>
-            <h3>Spray</h3>
-            <p>Begin lightly. More is not automatically better.</p>
+            <h3>5–6 on the body</h3>
+            <p>Focus on the neck, upper chest and inner elbows.</p>
           </article>
           <article>
             <Clock3 />
             <span>02</span>
-            <h3>Let it settle</h3>
-            <p>The opening will evolve into its heart and base.</p>
+            <h3>5–7 on clothing</h3>
+            <p>Mist evenly from a short distance for a lasting scent trail.</p>
           </article>
           <article>
             <Sun />
             <span>03</span>
-            <h3>Do not rub</h3>
-            <p>Let the sprayed area dry naturally.</p>
+            <h3>Let it settle</h3>
+            <p>Do not rub. Let every sprayed area dry naturally.</p>
           </article>
           <article>
             <ThermometerSun />

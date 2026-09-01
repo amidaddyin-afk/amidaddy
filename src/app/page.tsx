@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { randomInt } from "node:crypto";
 import {
   ArrowUpRight,
   Gift,
@@ -32,6 +33,14 @@ const reviews = [
 ];
 
 export default async function Home() {
+  const heroSlideOrder = Array.from({ length: 6 }, (_, index) => index);
+  for (let index = heroSlideOrder.length - 1; index > 0; index -= 1) {
+    const swapIndex = randomInt(index + 1);
+    [heroSlideOrder[index], heroSlideOrder[swapIndex]] = [
+      heroSlideOrder[swapIndex],
+      heroSlideOrder[index],
+    ];
+  }
   const { products } = await listCatalogProducts({
     page: 1,
     pageSize: 24,
@@ -62,18 +71,30 @@ export default async function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: organizationJsonLd }}
       />
-      <CuratedHero />
+      <CuratedHero slideOrder={heroSlideOrder} />
 
       <section className="home-trust-strip" aria-label="Shopping benefits">
-        <span>
-          <Truck size={15} /> Free shipping above &#8377;599
-        </span>
-        <span>
-          <Sparkles size={15} /> Four unisex signatures
-        </span>
-        <span>
-          <ShieldCheck size={15} /> Secure Razorpay checkout
-        </span>
+        <article>
+          <Truck size={18} />
+          <div>
+            <h2>Complimentary delivery</h2>
+            <p>Free shipping on orders of &#8377;599 or more.</p>
+          </div>
+        </article>
+        <article>
+          <Sparkles size={18} />
+          <div>
+            <h2>Four unisex signatures</h2>
+            <p>Composed around mood, memory and presence.</p>
+          </div>
+        </article>
+        <article>
+          <ShieldCheck size={18} />
+          <div>
+            <h2>Secure Razorpay checkout</h2>
+            <p>Protected payments with GST-inclusive pricing.</p>
+          </div>
+        </article>
       </section>
 
       <section className="home-collection" id="shop-100ml">

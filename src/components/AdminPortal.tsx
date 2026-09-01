@@ -6,6 +6,10 @@ import {
   BadgePercent,
   Boxes,
   ChartNoAxesCombined,
+  Mail,
+  MapPin,
+  Package,
+  Phone,
   Settings,
   ShoppingBag,
   Users,
@@ -157,6 +161,97 @@ function InventoryForm({ item }: { item: AdminOverview["inventory"][number] }) {
     </form>
   );
 }
+
+function OrderCard({ order }: { order: AdminOverview["orders"][number] }) {
+  const locality = [order.city, order.state, order.postalCode]
+    .filter(Boolean)
+    .join(", ");
+  const itemCount = order.lines.reduce((sum, line) => sum + line.qty, 0);
+
+  return (
+    <article className="admin-order-card">
+      <header>
+        <div>
+          <span className="admin-order-label">Order</span>
+          <strong>{order.id}</strong>
+          <time dateTime={order.createdAt}>
+            {new Date(order.createdAt).toLocaleString("en-IN", {
+              dateStyle: "medium",
+              timeStyle: "short",
+            })}
+          </time>
+        </div>
+        <div className="admin-order-summary">
+          <span className="status-pill">
+            {order.status.replaceAll("_", " ")}
+          </span>
+          <strong>{formatInr(order.totalPaise)}</strong>
+          <span>{order.paymentStatus.replaceAll("_", " ")}</span>
+        </div>
+      </header>
+
+      <div className="admin-order-body">
+        <section className="admin-order-contact" aria-label="Customer details">
+          <span className="admin-order-label">Customer & delivery</span>
+          <strong>{order.customerName}</strong>
+          <a href={`mailto:${order.email}`}>
+            <Mail size={14} aria-hidden="true" /> {order.email}
+          </a>
+          <a href={`tel:${order.phone}`}>
+            <Phone size={14} aria-hidden="true" /> {order.phone}
+          </a>
+          <address>
+            <MapPin size={15} aria-hidden="true" />
+            <span>
+              {order.address}
+              {locality && (
+                <>
+                  ,<br />
+                  {locality}
+                </>
+              )}
+              {order.country && (
+                <>
+                  ,<br />
+                  {order.country}
+                </>
+              )}
+            </span>
+          </address>
+        </section>
+
+        <section className="admin-order-items" aria-label="Order items">
+          <span className="admin-order-label">
+            <Package size={14} aria-hidden="true" /> {itemCount} item
+            {itemCount === 1 ? "" : "s"}
+          </span>
+          <div>
+            {order.lines.map((line) => (
+              <p key={line.id}>
+                <span>
+                  {line.qty} × {line.name} · {line.size}
+                </span>
+                <strong>{formatInr(line.lineTotalPaise)}</strong>
+              </p>
+            ))}
+          </div>
+        </section>
+      </div>
+
+      <footer>
+        <div className="admin-order-meta">
+          {order.couponCode && <span>Coupon: {order.couponCode}</span>}
+          {order.courierName && <span>Courier: {order.courierName}</span>}
+          {order.trackingNumber && (
+            <span>Tracking: {order.trackingNumber}</span>
+          )}
+        </div>
+        <OrderActions order={order} />
+      </footer>
+    </article>
+  );
+}
+
 export default function AdminPortal({ overview }: { overview: AdminOverview }) {
   const [coupon, couponAction, couponPending] = useActionState(
     createCouponAction,
@@ -168,7 +263,7 @@ export default function AdminPortal({ overview }: { overview: AdminOverview }) {
   );
   const [orderSearch, setOrderSearch] = useState("");
   const visibleOrders = overview.orders.filter((order) =>
-    `${order.id} ${order.email} ${order.customerName}`
+    `${order.id} ${order.email} ${order.customerName} ${order.phone} ${order.address} ${order.city ?? ""} ${order.state ?? ""} ${order.postalCode ?? ""}`
       .toLowerCase()
       .includes(orderSearch.toLowerCase()),
   );
@@ -180,8 +275,8 @@ export default function AdminPortal({ overview }: { overview: AdminOverview }) {
   ];
   return (
     <main className="admin-shell">
-      <div>
-        <aside>
+      <div className="admin-layout">
+        <aside className="admin-sidebar">
           <p className="eyebrow px-3 pb-5">Store control</p>
           <nav className="grid gap-1">
             {sections.map(([label, Icon]) => (
@@ -195,7 +290,9 @@ export default function AdminPortal({ overview }: { overview: AdminOverview }) {
         <div className="min-w-0">
           <section id="overview">
             <p className="eyebrow">Operations</p>
-            <h1 className="display-title mt-3 text-5xl">The control room.</h1>
+            <h1 className="display-title admin-title mt-3">
+              The control room.
+            </h1>
             <div className="admin-cards">
               {cards.map(([label, value]) => (
                 <article key={label}>
@@ -214,51 +311,17 @@ export default function AdminPortal({ overview }: { overview: AdminOverview }) {
               <input
                 value={orderSearch}
                 onChange={(event) => setOrderSearch(event.target.value)}
-                placeholder="Search order, customer or email"
+                placeholder="Search order, customer, phone or address"
+                aria-label="Search orders"
               />
             </div>
-            <div className="admin-table">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Order</th>
-                    <th>Customer</th>
-                    <th>Status</th>
-                    <th>Total</th>
-                    <th>Placed</th>
-                    <th />
-                  </tr>
-                </thead>
-                <tbody>
-                  {visibleOrders.map((order) => (
-                    <tr key={order.id}>
-                      <td>
-                        <strong>{order.id}</strong>
-                        <span>
-                          {order.lines.reduce((sum, line) => sum + line.qty, 0)}{" "}
-                          items
-                        </span>
-                      </td>
-                      <td>
-                        {order.customerName}
-                        <span>{order.email}</span>
-                      </td>
-                      <td>
-                        <span className="status-pill">
-                          {order.status.replaceAll("_", " ")}
-                        </span>
-                      </td>
-                      <td>{formatInr(order.totalPaise)}</td>
-                      <td>
-                        {new Date(order.createdAt).toLocaleDateString("en-IN")}
-                      </td>
-                      <td>
-                        <OrderActions order={order} />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="admin-orders-list">
+              {visibleOrders.map((order) => (
+                <OrderCard key={order.id} order={order} />
+              ))}
+              {visibleOrders.length === 0 && (
+                <p className="admin-empty">No matching orders found.</p>
+              )}
             </div>
           </section>
           <section id="products">
@@ -292,14 +355,16 @@ export default function AdminPortal({ overview }: { overview: AdminOverview }) {
                 <tbody>
                   {overview.customers.map((customer) => (
                     <tr key={customer.id}>
-                      <td>
+                      <td data-label="Customer">
                         {customer.fullName ?? "—"}
                         <span>{customer.email}</span>
                       </td>
-                      <td>{customer.role}</td>
-                      <td>{customer.orderCount}</td>
-                      <td>{formatInr(customer.lifetimePaise)}</td>
-                      <td>
+                      <td data-label="Role">{customer.role}</td>
+                      <td data-label="Orders">{customer.orderCount}</td>
+                      <td data-label="Lifetime value">
+                        {formatInr(customer.lifetimePaise)}
+                      </td>
+                      <td data-label="Access">
                         <form action={updateUserRoleAction}>
                           <input
                             type="hidden"

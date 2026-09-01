@@ -47,6 +47,9 @@ export default function Footer() {
         <div className="footer-bottom">
           <span>© {new Date().getFullYear()} Amidaddy Perfumes</span>
           <span>India · INR · GST-inclusive pricing</span>
+          <Link href="/admin" className="footer-admin-link">
+            Admin portal
+          </Link>
         </div>
       </div>
     </footer>
