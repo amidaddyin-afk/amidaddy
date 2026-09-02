@@ -124,3 +124,26 @@ test("footer offers an admin sign-in without advertising the admin route", () =>
     "footer should not link straight to /admin",
   );
 });
+
+test("JSX carries no hard-coded hex colours", () => {
+  // Arbitrary Tailwind values like bg-[#0e0e0e] and text-[#D4AF37] are
+  // theme-blind: they looked right on the old dark-only design and become
+  // invisible under the light theme.
+  const offenders: string[] = [];
+  for (const file of walk("src").filter((f) => f.endsWith(".tsx"))) {
+    if (/\[#[0-9a-fA-F]{3,8}\]/.test(read(file))) offenders.push(file);
+  }
+  assert.deepEqual(offenders, [], `hard-coded hex in: ${offenders.join(", ")}`);
+});
+
+test("fill images always have a positioned parent", () => {
+  // next/image with `fill` needs position: relative|absolute|fixed on its
+  // parent. Setting it only inside a media query leaves the image unanchored
+  // at every other width.
+  const css = read("src/app/globals.css");
+  assert.match(
+    css,
+    /\.auth-aside \{\s*position: relative;/,
+    ".auth-aside must be positioned at every width, not only in a media query",
+  );
+});

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Photo from "@/components/Photo";
 import { useActionState } from "react";
 import { useSearchParams } from "next/navigation";
 import Script from "next/script";
@@ -41,16 +42,28 @@ export function AuthForm({
   const safeNext =
     next?.startsWith("/") && !next.startsWith("//") ? next : "/account";
   return (
-    <main
-      data-surface="commerce"
-      className="auth-shell min-h-screen px-6 pt-36"
-    >
+    <main data-surface="commerce" className="auth-shell">
+      {/* Editorial split. These pages were a bare form on an empty field;
+          the campaign frame gives the account flow the same footing as the
+          rest of the house. Hidden below lg so the form stays the whole
+          screen on a phone. */}
+      <aside className="auth-aside" aria-hidden="true">
+        <Photo
+          src="/curated/product-detail-2.webp"
+          alt=""
+          fill
+          sizes="(max-width: 1024px) 0px, 45vw"
+          className="object-cover"
+        />
+        <div className="auth-aside-scrim" />
+        <p className="auth-aside-copy">Presence, before words.</p>
+      </aside>
       <form
         action={formAction}
-        className="auth-panel border-line mx-auto max-w-md border bg-[#0e0e0e] p-7 sm:p-9"
+        className="auth-panel border-line bg-raised border p-7 sm:p-9"
       >
         {isLogin && <input type="hidden" name="next" value={safeNext} />}
-        <p className="mb-3 text-xs tracking-[0.2em] text-[#D4AF37] uppercase">
+        <p className="text-accent mb-3 text-xs tracking-[0.2em] uppercase">
           Amidaddy account
         </p>
         <h1 className="font-cinzel text-fg mb-6 text-2xl">
@@ -105,7 +118,7 @@ export function AuthForm({
           </>
         )}
         {isLogin && adminSessionExpired && (
-          <p className="mb-4 text-sm text-[#D4AF37]" role="status">
+          <p className="text-accent mb-4 text-sm" role="status">
             Your admin session expired. Sign in again to continue.
           </p>
         )}
@@ -115,7 +128,7 @@ export function AuthForm({
           </p>
         )}
         {state.message && (
-          <p className="mb-4 text-sm text-[#D4AF37]" role="status">
+          <p className="text-accent mb-4 text-sm" role="status">
             {state.message}
           </p>
         )}
@@ -135,10 +148,10 @@ export function AuthForm({
         </button>
         {isLogin && (
           <div className="text-muted mt-5 flex justify-between text-sm">
-            <Link href="/signup" className="hover:text-[#D4AF37]">
+            <Link href="/signup" className="hover:text-accent">
               Create account
             </Link>
-            <Link href="/forgot-password" className="hover:text-[#D4AF37]">
+            <Link href="/forgot-password" className="hover:text-accent">
               Forgot password?
             </Link>
           </div>
@@ -146,7 +159,7 @@ export function AuthForm({
         {isSignup && (
           <p className="text-muted mt-5 text-sm">
             Already have an account?{" "}
-            <Link href="/login" className="text-[#D4AF37]">
+            <Link href="/login" className="text-accent">
               Sign in
             </Link>
           </p>

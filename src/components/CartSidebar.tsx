@@ -83,7 +83,7 @@ export default function CartSidebar() {
               duration: reduceMotion ? 0 : 0.5,
               ease: [0.16, 1, 0.3, 1],
             }}
-            className="cart-panel border-line fixed top-0 right-0 bottom-0 z-[70] flex w-full max-w-[420px] flex-col border-l bg-[#0e0e0e]"
+            className="cart-panel border-line bg-raised fixed top-0 right-0 bottom-0 z-[70] flex w-full max-w-[420px] flex-col border-l"
             role="dialog"
             aria-modal="true"
             aria-label="Shopping bag"
@@ -91,7 +91,7 @@ export default function CartSidebar() {
             {/* Header */}
             <div className="border-line flex items-center justify-between border-b p-6">
               <div className="flex items-center gap-3">
-                <ShoppingBag size={20} className="text-[#D4AF37]" />
+                <ShoppingBag size={20} className="text-accent" />
                 <span className="font-cinzel text-fg text-sm tracking-widest uppercase">
                   Cart ({totalQty})
                 </span>
@@ -130,7 +130,7 @@ export default function CartSidebar() {
                       layout
                       className="cart-item border-line bg-raised flex gap-4 border p-3"
                     >
-                      <div className="h-24 w-20 flex-shrink-0 overflow-hidden bg-[#0d0d0d]">
+                      <div className="bg-raised h-24 w-20 flex-shrink-0 overflow-hidden">
                         <Image
                           src={
                             item.product.variantImages?.[item.size]?.[0] ??
@@ -193,7 +193,7 @@ export default function CartSidebar() {
                               onClick={() =>
                                 removeItem(item.product.id, item.size)
                               }
-                              className="text-subtle transition-colors hover:text-[#8e1f2f]"
+                              className="text-subtle transition-colors hover:text-[color:var(--danger)]"
                               aria-label={`Remove ${item.product.name} from bag`}
                             >
                               <Trash2 size={14} />
@@ -217,11 +217,11 @@ export default function CartSidebar() {
                         ? `Add ${formatInr(freeShippingRemainingPaise)} more for free delivery`
                         : "You unlocked free delivery"}
                     </span>
-                    <span className="text-[#D4AF37]">₹599</span>
+                    <span className="text-accent">₹599</span>
                   </div>
                   <div className="bg-raised mt-2 h-1 overflow-hidden rounded-full">
                     <div
-                      className="h-full rounded-full bg-[#D4AF37] transition-[width] duration-500"
+                      className="bg-accent h-full rounded-full transition-[width] duration-500"
                       style={{ width: `${shippingProgress}%` }}
                     />
                   </div>
@@ -262,7 +262,7 @@ export default function CartSidebar() {
                               <button
                                 type="button"
                                 onClick={() => addItem(product, "20ml")}
-                                className="border border-[#D4AF37]/60 px-2 py-1 text-[9px] text-[#D4AF37] uppercase"
+                                className="border-accent/60 text-accent border px-2 py-1 text-[9px] uppercase"
                                 aria-label={`Quick add ${product.name} 20 ml`}
                               >
                                 Add

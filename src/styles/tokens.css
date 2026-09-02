@@ -128,6 +128,9 @@
      the page under atelier. */
   --chrome-bg: #161411;
 
+  /* Destructive actions (remove from bag, cancel). Readable on both palettes. */
+  --danger: #a33434;
+
   /* Text drawn over photography, never over a themed surface. */
   --on-image: #f7f2e8;
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import ProductCard from "@/components/ProductCard";
 import { listCatalogProducts } from "@/lib/catalog";
+import Photo from "@/components/Photo";
 
 export const metadata: Metadata = {
   title: "Shop all fragrances",
@@ -73,17 +74,34 @@ export default async function ShopPage({
   ];
   return (
     <main data-surface="commerce" className="shop-page">
-      <section className="shop-hero">
-        <p className="eyebrow">The olfactory wardrobe</p>
-        <h1 className="display-title">
-          Find the scent
-          <br />
-          that feels like you.
-        </h1>
-        <p>
-          Four unisex compositions, two considered sizes, and complete
-          four-bottle combos. Filter by instinct, family, or mood.
-        </p>
+      {/* Full-bleed campaign banner. The page previously opened on plain text
+          with no imagery at all, which read as a catalogue rather than a
+          house. The frame is one of the campaign shots that was sitting
+          unreferenced in public/curated. */}
+      <section className="shop-hero" data-surface="story">
+        <div className="shop-hero-media">
+          <Photo
+            src="/curated/hero-models.webp"
+            alt="Amidaddy Perfumes campaign portrait of models wearing the signature fragrances"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-[center_22%]"
+          />
+          <div className="shop-hero-scrim" />
+        </div>
+        <div className="shop-hero-copy">
+          <p className="eyebrow">The olfactory wardrobe</p>
+          <h1 className="display-title">
+            Find the scent
+            <br />
+            that feels like you.
+          </h1>
+          <p>
+            Four unisex compositions, two considered sizes, and complete
+            four-bottle combos. Filter by instinct, family, or mood.
+          </p>
+        </div>
       </section>
       <section className="mx-auto max-w-[1500px] px-5 pb-28 sm:px-8">
         <form className="shop-filters" action="/shop">

@@ -1929,17 +1929,48 @@ main {
   background: #080909;
 }
 .shop-hero {
+  position: relative;
+  display: grid;
+  align-items: end;
+  min-height: clamp(26rem, 52vh, 40rem);
+  isolation: isolate;
+}
+.shop-hero-media {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+}
+/* Weighted to the bottom so the headline keeps contrast wherever the crop
+   lands, without dimming the whole photograph. */
+.shop-hero-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgb(8 9 10 / 0.88) 0%,
+    rgb(8 9 10 / 0.55) 38%,
+    rgb(8 9 10 / 0.12) 72%,
+    transparent 100%
+  );
+}
+.shop-hero-copy {
   max-width: 1500px;
-  margin: auto;
-  padding: 7rem 2rem 5rem;
+  width: 100%;
+  margin-inline: auto;
+  padding: 9rem 2rem 4rem;
+  color: var(--on-image);
+}
+.shop-hero-copy .eyebrow {
+  color: var(--gold-300);
 }
 .shop-hero h1 {
-  margin: 1.5rem 0;
-  font-size: clamp(4rem, 9vw, 8rem);
+  margin: 1.25rem 0;
+  font-size: clamp(3rem, 7.5vw, 6.5rem);
 }
-.shop-hero > p:last-child {
-  max-width: 550px;
-  color: var(--fg-subtle);
+.shop-hero-copy > p:last-child {
+  max-width: 46ch;
+  color: rgb(247 242 232 / 0.78);
   line-height: 1.8;
 }
 .shop-size-sections {
@@ -4991,4 +5022,63 @@ body .catalog-editor > button {
 .footer-admin-link:focus-visible {
   border-color: var(--accent);
   color: var(--accent);
+}
+
+/* Auth pages: editorial split. Previously a bare form on an empty field. */
+.auth-shell {
+  display: grid;
+  min-height: 100svh;
+  grid-template-columns: 1fr;
+  align-items: center;
+  padding: 9rem 1.5rem 4rem;
+}
+.auth-shell .auth-panel {
+  width: 100%;
+  max-width: 28rem;
+  margin-inline: auto;
+}
+/* position must be set at every width: the fill image inside needs a
+   positioned parent even while the aside itself is hidden. */
+.auth-aside {
+  position: relative;
+  display: none;
+}
+@media (min-width: 1024px) {
+  .auth-shell {
+    grid-template-columns: 0.95fr 1fr;
+    gap: clamp(3rem, 6vw, 7rem);
+    max-width: 1400px;
+    margin-inline: auto;
+    padding-inline: clamp(2rem, 5vw, 5rem);
+  }
+  .auth-aside {
+    display: block;
+    overflow: hidden;
+    height: min(70vh, 40rem);
+    border-radius: var(--radius-lg);
+  }
+  .auth-aside-scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      rgb(8 9 10 / 0.8),
+      rgb(8 9 10 / 0.1) 60%
+    );
+  }
+  .auth-aside-copy {
+    position: absolute;
+    right: 2rem;
+    bottom: 2rem;
+    left: 2rem;
+    color: var(--on-image);
+    font-family: var(--font-display), serif;
+    font-size: 1.9rem;
+    font-style: italic;
+    line-height: 1.25;
+  }
+  .auth-shell .auth-panel {
+    margin-inline: 0;
+    max-width: 30rem;
+  }
 }
