@@ -52,7 +52,7 @@ export default function Navbar() {
             <Link href="/#shop-100ml">100ml</Link>
             <Link href="/#shop-20ml">20ml</Link>
             <Link href="/#discovery-set">Pack of 4</Link>
-            <Link href="/#story">Our story</Link>
+            <Link href="/scent-school">Scent School</Link>
           </nav>
           <Link
             href="/"
@@ -117,7 +117,7 @@ export default function Navbar() {
                 ["100ml fragrances", "/#shop-100ml"],
                 ["20ml fragrances", "/#shop-20ml"],
                 ["Pack of 4", "/#discovery-set"],
-                ["Our story", "/#story"],
+                ["Scent School", "/scent-school"],
                 ["My account", "/account"],
               ].map(([label, href]) => (
                 <Link key={href} href={href} onClick={() => setOpen(false)}>

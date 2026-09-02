@@ -223,17 +223,6 @@ body .wordmark-title {
 .shop-page .product-card .text-white\/35 {
   color: var(--fg-muted);
 }
-.storefront-home .icon-add,
-.shop-page .icon-add {
-  background: var(--bg-band);
-  border-color: var(--fg);
-  color: var(--fg);
-}
-.storefront-home .icon-add:hover,
-.shop-page .icon-add:hover {
-  background: #b49454;
-  border-color: var(--accent);
-}
 .home-combo {
   display: grid;
   grid-template-columns: 1.15fr 0.85fr;
@@ -1952,9 +1941,8 @@ without dimming the whole photograph. */
   font-size: clamp(2.4rem, 5vw, 4.5rem);
 }
 .shop-size-heading-lead {
-  font-family: var(--font-sans), sans-serif;
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  font-variant-numeric: lining-nums;
+  letter-spacing: 0.01em;
   margin-right: 0.35ch;
 }
 .shop-size-heading > span {
