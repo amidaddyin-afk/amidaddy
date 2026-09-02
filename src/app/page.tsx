@@ -12,6 +12,7 @@ import {
 import CuratedHero from "@/components/CuratedHero";
 import ProductCard from "@/components/ProductCard";
 import SignaturePanels from "@/components/SignaturePanels";
+import ScentFinder from "@/components/ScentFinder";
 import { listCatalogProducts } from "@/lib/catalog";
 
 const reviews = [
@@ -201,6 +202,10 @@ export default async function Home() {
           </Link>
         </div>
       </section>
+
+      {/* Scent School already links to #scent-finder; the quiz existed but was
+          never mounted, so that link went nowhere. */}
+      <ScentFinder products={signatures} />
 
       <section className="home-reviews">
         <div className="commerce-heading">

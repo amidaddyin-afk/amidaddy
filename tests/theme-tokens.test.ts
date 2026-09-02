@@ -147,3 +147,21 @@ test("fill images always have a positioned parent", () => {
     ".auth-aside must be positioned at every width, not only in a media query",
   );
 });
+
+test("the SITE_THEME override is read outside the cache", () => {
+  const theme = read("src/lib/theme.ts");
+  // Checked inside the cached function, an entry written before the variable
+  // was set keeps being served, so the escape hatch does nothing until the tag
+  // expires - which defeats the point of an emergency override.
+  const overrideAt = theme.indexOf("process.env.SITE_THEME");
+  const cacheAt = theme.indexOf("unstable_cache");
+  assert.ok(overrideAt > -1, "SITE_THEME override must exist");
+  assert.ok(
+    overrideAt > theme.indexOf("export async function getSiteTheme"),
+    "the override must live in the exported wrapper, not the cached reader",
+  );
+  assert.ok(
+    cacheAt < overrideAt,
+    "cached reader is declared before the wrapper",
+  );
+});

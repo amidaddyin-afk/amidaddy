@@ -232,7 +232,7 @@ body .wordmark-title {
 .storefront-home .icon-add:hover,
 .shop-page .icon-add:hover {
   background: #b49454;
-  border-color: #b49454;
+  border-color: var(--accent);
 }
 .home-combo {
   display: grid;
@@ -1051,7 +1051,7 @@ a {
   width: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: #080909;
+  background: var(--bg-raised);
 }
 ::-webkit-scrollbar-thumb {
   background: #6f5a34;
@@ -1421,7 +1421,7 @@ main {
   height: clamp(4.2rem, 11vh, 7rem);
   margin: 0.35rem 0 0.8rem;
   overflow: hidden;
-  background: #111313;
+  background: var(--bg-raised);
 }
 .family-product-image img {
   object-position: center 42%;
@@ -1493,7 +1493,7 @@ main {
     inset: 0;
     height: auto;
     margin: 0;
-    background: #111313;
+    background: var(--bg-raised);
   }
   .family-product-image::after {
     position: absolute;
@@ -1690,7 +1690,7 @@ main {
   position: relative;
   height: 380px;
   overflow: hidden;
-  background: #090a0a;
+  background: var(--bg-raised);
 }
 .preorder-visual::after {
   position: absolute;
@@ -1798,7 +1798,7 @@ main {
 .product-card {
   overflow: hidden;
   border: 1px solid var(--line);
-  background: #0e1010;
+  background: var(--bg-raised);
 }
 .product-card:hover {
   border-color: rgba(213, 184, 123, 0.35);
@@ -1878,7 +1878,7 @@ main {
   position: relative;
   overflow: hidden;
   padding: 10rem 2rem;
-  background: #070808;
+  background: var(--bg);
 }
 .finder-orbit {
   position: absolute;
@@ -1886,7 +1886,7 @@ main {
   left: 20%;
   width: 480px;
   height: 480px;
-  border: 1px solid rgba(213, 184, 123, 0.1);
+  border: 1px solid var(--accent-quiet);
   border-radius: 50%;
   transform: translate(-50%, -50%);
   box-shadow: 0 0 120px rgba(213, 184, 123, 0.05) inset;
@@ -1895,7 +1895,7 @@ main {
   position: relative;
   min-height: 430px;
   border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.025);
+  background: var(--bg-raised);
   padding: clamp(1.5rem, 5vw, 4rem);
 }
 .finder-progress {
@@ -1905,7 +1905,7 @@ main {
 .finder-progress span {
   width: 3.5rem;
   height: 2px;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--line-strong);
 }
 .finder-progress span.active {
   background: var(--champagne);
@@ -1934,7 +1934,7 @@ main {
 .admin-shell {
   min-height: 100svh;
   padding-top: 8rem;
-  background: #080909;
+  background: var(--bg-raised);
 }
 .shop-hero {
   position: relative;
@@ -2017,7 +2017,7 @@ main {
   margin-bottom: 2rem;
   padding: 1rem;
   border: 1px solid var(--line);
-  background: #0e1010;
+  background: var(--bg-raised);
 }
 .shop-filters label,
 .field {
@@ -2282,7 +2282,7 @@ main {
 .admin-shell aside {
   height: max-content;
   border: 1px solid var(--line);
-  background: #0e1010;
+  background: var(--bg-raised);
   padding: 1rem;
 }
 .admin-shell section {
@@ -2397,7 +2397,7 @@ main {
   margin: auto;
   border: 1px solid var(--line);
   border-radius: 50%;
-  background: #080909;
+  background: var(--bg-raised);
   font-size: 0.7rem;
 }
 .order-timeline li p {
@@ -2557,7 +2557,7 @@ main {
   margin-top: 0.8rem;
   padding: 1rem;
   border: 1px solid var(--line);
-  background: #090a0a;
+  background: var(--bg-raised);
 }
 .admin-form input,
 .admin-form select {
@@ -3161,7 +3161,7 @@ main {
   z-index: 120;
   overflow: auto;
   border: 1px solid rgba(213, 184, 123, 0.35);
-  background: #090a0a;
+  background: var(--bg-raised);
   padding: clamp(1.5rem, 4vw, 3rem);
   box-shadow: 0 40px 120px #000;
 }
@@ -4880,13 +4880,13 @@ body .catalog-editor > button {
 }
 .theme-swatch-noir i:nth-child(2) {
   background: #14161700;
-  background: #141617;
+  background: var(--bg-raised);
 }
 .theme-swatch-noir i:nth-child(3) {
   background: #d5b87b;
 }
 .theme-swatch-atelier i:nth-child(1) {
-  background: #f4f0e8;
+  background: var(--bg-raised);
 }
 .theme-swatch-atelier i:nth-child(2) {
   background: #fdfbf7;
@@ -4898,7 +4898,7 @@ body .catalog-editor > button {
   background: #08090a;
 }
 .theme-swatch-duality i:nth-child(2) {
-  background: #f4f0e8;
+  background: var(--bg-raised);
 }
 .theme-swatch-duality i:nth-child(3) {
   background: #d5b87b;

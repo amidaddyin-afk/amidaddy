@@ -54,10 +54,8 @@ const withTimeout = <T>(work: Promise<T>, fallback: T): Promise<T> =>
  * connection error, a slow pooler - resolves to DEFAULT_THEME so the site never
  * fails to render over a settings lookup.
  */
-export const getSiteTheme = unstable_cache(
+const readThemeFromDatabase = unstable_cache(
   async (): Promise<SiteTheme> => {
-    const override = process.env.SITE_THEME;
-    if (isSiteTheme(override)) return override;
     if (!process.env.DATABASE_URL) return DEFAULT_THEME;
     return withTimeout(
       (async () => {
@@ -73,3 +71,12 @@ export const getSiteTheme = unstable_cache(
   ["site-theme"],
   { tags: [SITE_THEME_TAG], revalidate: 3600 },
 );
+
+export async function getSiteTheme(): Promise<SiteTheme> {
+  // Checked OUTSIDE the cache on purpose. Inside it, a cache entry written
+  // before the variable was set would keep being served, so the escape hatch
+  // would not actually take effect until the tag expired.
+  const override = process.env.SITE_THEME;
+  if (isSiteTheme(override)) return override;
+  return readThemeFromDatabase();
+}
