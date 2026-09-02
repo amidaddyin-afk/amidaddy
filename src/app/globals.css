@@ -1951,6 +1951,12 @@ without dimming the whole photograph. */
 .shop-size-heading h2 {
   font-size: clamp(2.4rem, 5vw, 4.5rem);
 }
+.shop-size-heading-lead {
+  font-family: var(--font-sans), sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-right: 0.35ch;
+}
 .shop-size-heading > span {
   padding-bottom: 0.5rem;
   color: var(--fg-subtle);

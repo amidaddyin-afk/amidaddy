@@ -46,6 +46,7 @@ export default async function ShopPage({
     id: string;
     size?: "20ml" | "100ml";
     eyebrow: string;
+    titleLead?: string;
     title: string;
     products: typeof products;
   }> = [
@@ -53,14 +54,16 @@ export default async function ShopPage({
       id: "100ml",
       size: "100ml",
       eyebrow: "The full ritual",
-      title: "100ml fragrances",
+      titleLead: "100ml",
+      title: "fragrances",
       products: singleFragrances.filter((product) => hasSize(product, "100ml")),
     },
     {
       id: "20ml",
       size: "20ml",
       eyebrow: "The discovery edit",
-      title: "20ml fragrances",
+      titleLead: "20ml",
+      title: "fragrances",
       products: singleFragrances.filter((product) => hasSize(product, "20ml")),
     },
     {
@@ -157,7 +160,14 @@ export default async function ShopPage({
                   <section key={section.id} className="shop-size-section">
                     <div className="shop-size-heading">
                       <p className="eyebrow">{section.eyebrow}</p>
-                      <h2 className="display-title">{section.title}</h2>
+                      <h2 className="display-title">
+                        {section.titleLead && (
+                          <span className="shop-size-heading-lead">
+                            {section.titleLead}
+                          </span>
+                        )}
+                        {section.title}
+                      </h2>
                       <span>{section.products.length} options</span>
                     </div>
                     <div className="product-grid">
