@@ -74,7 +74,23 @@ test("reduced motion is honoured by the new motion primitives", () => {
   assert.match(read("src/components/Reveal.tsx"), /useReducedMotion/);
   assert.match(read("src/components/CuratedHero.tsx"), /useReducedMotion/);
   const css = read("src/app/globals.css");
-  assert.match(css, /prefers-reduced-motion[\s\S]*?photo-fade/);
+  // The story reveal and its parallax are the motion that has to stand down.
+  assert.match(css, /prefers-reduced-motion[\s\S]*?\.story-media/);
+});
+
+test("Photo holds no state, so a cached image cannot update it before mount", () => {
+  const photo = read("src/components/Photo.tsx");
+  // onLoad fires before mount for an already-cached image, which React reports
+  // as a state update on an unmounted component and which broke hydration on
+  // image-heavy pages. next/image cross-fades the blur placeholder natively.
+  // Match call/prop syntax, not the prose in the doc comment above.
+  assert.ok(!/useState\(/.test(photo), "Photo must not hold load state");
+  assert.ok(!/onLoad=/.test(photo), "Photo must not bind onLoad");
+  assert.ok(
+    !/"use client"/.test(photo),
+    "Photo should stay a Server Component",
+  );
+  assert.match(photo, /placeholder: "blur"/);
 });
 
 test("the PDP carousel is gone and the vertical story replaces it", () => {

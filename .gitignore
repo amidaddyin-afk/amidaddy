@@ -53,3 +53,6 @@ Edited Photos-*.zip
 
 # scratch output (audit/report artifacts)
 tmp/
+
+# Playwright MCP artifacts
+.playwright-mcp/

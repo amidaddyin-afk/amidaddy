@@ -101,11 +101,13 @@ export default function CartSidebar() {
                   Cart ({totalQty})
                 </span>
               </div>
+              {/* -m-2.5 keeps the icon visually where it was while giving the
+                  hit area the 44px minimum. It was a 20x20 target. */}
               <button
                 autoFocus
                 onClick={closeCart}
                 aria-label="Close shopping bag"
-                className="text-subtle hover:text-fg transition-colors"
+                className="text-subtle hover:text-fg -m-2.5 inline-flex min-h-11 min-w-11 items-center justify-center transition-colors"
               >
                 <X size={20} />
               </button>

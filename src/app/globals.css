@@ -2019,8 +2019,11 @@ without dimming the whole photograph. */
   font-family: var(--font-display);
   font-size: 3rem;
 }
+/* --page-pad lets the story sequence escape this padding on mobile without
+   guessing the value or using 100vw, which would overflow by the scrollbar. */
 .product-page {
-  padding: 10rem 2rem 7rem;
+  --page-pad: 2rem;
+  padding: 10rem var(--page-pad) 7rem;
 }
 .product-hero-image {
   position: relative;
@@ -2861,16 +2864,6 @@ without dimming the whole photograph. */
 so it did nothing at all in Safari and
    Firefox. */
 
-/* Blur-up fade for <Photo>. The blurred placeholder is painted by next/image;
-   this only cross-fades the decoded image over it. */
-.photo-fade {
-  opacity: 0;
-  transition: opacity var(--dur-slow) var(--ease-premium);
-}
-.photo-fade.is-loaded {
-  opacity: 1;
-}
-
 /* Shared-element morph between a product card and the product page hero.
    The blur hides pixel interpolation while the image is resized mid-flight. */
 ::view-transition-group(.morph) {
@@ -2887,10 +2880,6 @@ so it did nothing at all in Safari and
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .photo-fade {
-    opacity: 1;
-    transition: none;
-  }
   ::view-transition-group(*),
   ::view-transition-image-pair(*) {
     animation: none !important;
@@ -3053,7 +3042,8 @@ so it did nothing at all in Safari and
     grid-template-columns: 1fr;
   }
   .product-page {
-    padding: 8.5rem 1rem 5rem;
+    --page-pad: 1rem;
+    padding: 8.5rem var(--page-pad) 5rem;
   }
   .note-pyramid {
     grid-template-columns: 1fr;
@@ -6036,4 +6026,14 @@ so it carries
   border-color: var(--gold-300);
   background: rgba(213, 184, 123, 0.14);
   transform: translateY(-2px);
+}
+
+/* Mobile: the story images run to the screen edges.
+   Escaping the page padding by its own variable rather than 100vw, which
+   would overflow by the width of a visible scrollbar. The copy keeps its own
+   inset so text never touches the edge. */
+@media (max-width: 767px) {
+  .product-story {
+    margin-inline: calc(-1 * var(--page-pad, 1rem));
+  }
 }
