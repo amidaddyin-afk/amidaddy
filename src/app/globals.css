@@ -3290,187 +3290,98 @@ main {
 .perfume-spray-template {
   display: none;
 }
+/* Centred on the pointer, so the ring reads as coming from the click itself
+   rather than from a drawn object sitting beside it. */
 .perfume-spray-burst {
   position: fixed;
   z-index: 9999;
-  width: 7.5rem;
-  height: 5.5rem;
+  width: 0;
+  height: 0;
   pointer-events: none;
-  transform: translate(-1.05rem, -3.85rem);
   isolation: isolate;
 }
-.perfume-spray-bottle {
+.perfume-spray-burst > span {
   position: absolute;
-  bottom: 0;
+  top: 0;
   left: 0;
+}
+/* A single hairline ring opening out of the click point. */
+.perfume-spray-ring {
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 1px solid rgba(226, 199, 141, 0.55);
+  border-radius: 50%;
+  margin: -0.75rem 0 0 -0.75rem;
+  animation: perfume-ring 0.72s var(--ease-premium) both;
+}
+.perfume-spray-ring-wide {
   width: 2.4rem;
-  filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.38));
-  transform: rotate(-13deg);
-  transform-origin: 70% 85%;
-  animation: perfume-bottle-press 0.62s var(--ease-premium) both;
+  height: 2.4rem;
+  margin: -1.2rem 0 0 -1.2rem;
+  border-color: rgba(226, 199, 141, 0.26);
+  animation-duration: 0.95s;
+  animation-delay: 0.06s;
 }
-.spray-cap,
-.spray-nozzle,
-.spray-neck {
-  fill: #d8bd83;
-  stroke: #fff1cf;
-  stroke-width: 0.8;
-}
-.spray-glass {
-  fill: rgba(199, 157, 82, 0.36);
-  stroke: #f2d59d;
-  stroke-width: 1.25;
-}
-.spray-shine {
-  fill: rgba(255, 255, 255, 0.48);
-}
-.spray-label {
-  fill: #111;
-  stroke: #d8bd83;
-  stroke-width: 0.7;
-}
-.perfume-spray-jet {
-  position: absolute;
-  top: 0.76rem;
-  left: 2.15rem;
-  width: 2.8rem;
-  height: 1px;
-  background: linear-gradient(90deg, rgba(243, 222, 180, 0.9), transparent);
-  transform: rotate(-8deg) scaleX(0);
-  transform-origin: left;
-  animation: perfume-jet 0.34s ease-out 0.05s both;
-}
-.perfume-spray-cloud {
-  position: absolute;
-  top: -0.4rem;
-  left: 4.25rem;
-  width: 2.7rem;
-  height: 2.15rem;
+/* The mist itself: a soft champagne bloom, no hard edge anywhere. */
+.perfume-spray-haze {
+  width: 5rem;
+  height: 5rem;
+  margin: -2.5rem 0 0 -2.5rem;
   border-radius: 50%;
   background: radial-gradient(
     circle,
-    rgba(255, 247, 225, 0.58),
-    rgba(213, 184, 123, 0.16) 45%,
-    transparent 72%
+    rgba(247, 242, 232, 0.3),
+    rgba(213, 184, 123, 0.14) 42%,
+    transparent 70%
   );
-  filter: blur(3px);
-  animation: perfume-cloud 0.82s ease-out 0.08s both;
+  filter: blur(6px);
+  animation: perfume-haze 0.95s ease-out both;
 }
-.perfume-spray-cloud-soft {
-  top: 0.35rem;
-  left: 3.55rem;
-  animation-delay: 0.14s;
-}
+/* Fine particles, few and dim — suggestion rather than confetti. */
 .perfume-spray-mist i {
   position: absolute;
-  top: 0.72rem;
-  left: 4.1rem;
-  width: 3px;
-  height: 3px;
+  top: 0;
+  left: 0;
+  width: 2px;
+  height: 2px;
   border-radius: 50%;
-  background: #fff3d5;
-  box-shadow: 0 0 5px rgba(240, 205, 139, 0.9);
-  animation: perfume-droplet 0.72s ease-out both;
+  background: rgba(240, 228, 202, 0.85);
+  animation: perfume-drift 1.05s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
-.perfume-spray-mist i:nth-child(1) {
-  --mist-x: 40px;
-  --mist-y: -18px;
-}
-.perfume-spray-mist i:nth-child(2) {
-  --mist-x: 54px;
-  --mist-y: -7px;
-  animation-delay: 0.03s;
-}
-.perfume-spray-mist i:nth-child(3) {
-  --mist-x: 65px;
-  --mist-y: 5px;
-  animation-delay: 0.06s;
-}
-.perfume-spray-mist i:nth-child(4) {
-  --mist-x: 45px;
-  --mist-y: 14px;
-  animation-delay: 0.09s;
-}
-.perfume-spray-mist i:nth-child(5) {
-  --mist-x: 75px;
-  --mist-y: -14px;
-  animation-delay: 0.04s;
-}
-.perfume-spray-mist i:nth-child(6) {
-  --mist-x: 84px;
-  --mist-y: 12px;
-  animation-delay: 0.1s;
-}
-.perfume-spray-mist i:nth-child(7) {
-  --mist-x: 57px;
-  --mist-y: 24px;
-  animation-delay: 0.12s;
-}
-.perfume-spray-mist i:nth-child(8) {
-  --mist-x: 92px;
-  --mist-y: -2px;
-  animation-delay: 0.07s;
-}
-.perfume-spray-mist i:nth-child(9) {
-  --mist-x: 72px;
-  --mist-y: 25px;
-  animation-delay: 0.15s;
-}
-@keyframes perfume-bottle-press {
-  0% {
-    opacity: 0;
-    transform: rotate(-13deg) scale(0.72);
-  }
-  18% {
-    opacity: 1;
-    transform: rotate(-20deg) scale(1);
-  }
-  60% {
-    opacity: 1;
-    transform: rotate(-11deg) scale(0.96);
-  }
-  100% {
-    opacity: 0;
-    transform: rotate(-8deg) translateY(4px) scale(0.9);
-  }
-}
-@keyframes perfume-jet {
-  0% {
-    opacity: 0;
-    transform: rotate(-8deg) scaleX(0);
-  }
-  30% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    transform: rotate(-8deg) scaleX(1);
-  }
-}
-@keyframes perfume-cloud {
+@keyframes perfume-ring {
   from {
-    opacity: 0;
-    transform: translateX(-18px) scale(0.35);
-  }
-  35% {
-    opacity: 0.72;
+    opacity: 0.9;
+    transform: scale(0.25);
   }
   to {
     opacity: 0;
-    transform: translate(18px, -5px) scale(1.5);
+    transform: scale(1.9);
   }
 }
-@keyframes perfume-droplet {
-  0% {
+@keyframes perfume-haze {
+  from {
     opacity: 0;
-    transform: translate(0, 0) scale(0.4);
+    transform: scale(0.4);
   }
-  22% {
-    opacity: 1;
+  30% {
+    opacity: 0.85;
   }
-  100% {
+  to {
     opacity: 0;
-    transform: translate(var(--mist-x), var(--mist-y)) scale(0.1);
+    transform: scale(1.45);
+  }
+}
+@keyframes perfume-drift {
+  from {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.6);
+  }
+  20% {
+    opacity: 0.9;
+  }
+  to {
+    opacity: 0;
+    transform: translate(var(--mist-x, 0), var(--mist-y, -18px)) scale(0.2);
   }
 }
 
@@ -5602,5 +5513,205 @@ body[data-overlay="cart"] .site-header {
   body[data-overlay="cart"] .announcement-bar,
   body[data-overlay="cart"] .site-header {
     transition: none;
+  }
+}
+
+/* =========================================================================
+   Signature panels — desktop spread
+   -------------------------------------------------------------------------
+   Every gallery frame is a 4:5 portrait. Full-bleeding one across a wide
+   desktop panel scales it up and crops vertically through the middle, which
+   is what removed the bottle and left a torso. From 901px up the photograph
+   gets its own 4:5 plate beside the type, so the frame is shown whole, and
+   the plate alternates sides down the stack.
+   ========================================================================= */
+@media (min-width: 901px) {
+  .signature-panel {
+    align-items: center;
+    min-height: min(90svh, 54rem);
+    grid-template-columns: 1fr 1fr;
+    background:
+      radial-gradient(
+        90% 70% at 50% 0%,
+        rgba(213, 184, 123, 0.07),
+        transparent 60%
+      ),
+      var(--ink-950, #08090a);
+    column-gap: clamp(2rem, 5vw, 6rem);
+    padding: clamp(3rem, 5vw, 5.5rem) clamp(2rem, 6vw, 7rem);
+  }
+  .signature-panel-media {
+    position: relative;
+    z-index: 0;
+    inset: auto;
+    width: min(100%, 34rem);
+    aspect-ratio: 4 / 5;
+    max-height: min(72svh, 42rem);
+    overflow: hidden;
+    border-radius: var(--radius-lg, 1.25rem);
+    box-shadow:
+      0 40px 90px rgba(0, 0, 0, 0.45),
+      inset 0 0 0 1px rgba(233, 219, 190, 0.12);
+  }
+  .signature-panel[data-side="right"] .signature-panel-media {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: start;
+  }
+  .signature-panel[data-side="right"] .signature-panel-copy {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .signature-panel[data-side="left"] .signature-panel-media {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: end;
+  }
+  .signature-panel[data-side="left"] .signature-panel-copy {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  /* The scrim existed to hold the overlaid name legible. The type has left the
+     photograph, so it becomes a light vignette instead of a black wash. */
+  .signature-panel-scrim {
+    border-radius: inherit;
+    background: linear-gradient(
+      to top,
+      rgb(8 9 10 / 0.34) 0%,
+      rgb(8 9 10 / 0.06) 38%,
+      transparent 70%
+    );
+  }
+  .signature-panel-copy {
+    max-width: 30rem;
+    padding: 0;
+    text-align: left;
+  }
+  .signature-panel[data-side="left"] .signature-panel-copy {
+    justify-self: end;
+  }
+  .signature-panel-copy h2 {
+    font-size: clamp(3rem, 5vw, 5.25rem);
+    letter-spacing: -0.02em;
+  }
+  .signature-panel-character {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-top: 1.15rem;
+  }
+  .signature-panel-character::before {
+    content: "";
+    width: 2.25rem;
+    height: 1px;
+    background: linear-gradient(90deg, var(--gold-500, #b8965a), transparent);
+    flex: 0 0 auto;
+  }
+  .signature-panel-copy a {
+    margin-top: 2rem;
+  }
+}
+
+/* =========================================================================
+   Signature panels — editorial copy and second frame
+   -------------------------------------------------------------------------
+   The tagline, the fact list and the inset photograph are desktop-only: the
+   phone panel is a portrait photo with the name over it and has no room for
+   any of them.
+   ========================================================================= */
+.signature-panel-story,
+.signature-panel-facts,
+.signature-panel-inset {
+  display: none;
+}
+/* Positioned in every state, so the fill image inside always has a
+   containing block even before the desktop rules apply. */
+.signature-panel-inset {
+  position: relative;
+}
+
+@media (min-width: 901px) {
+  /* Was inline-flex, which let the Explore link flow onto the same line as
+     the character list. Block-level flex keeps the rule-and-traits row on its
+     own line while the ::before hairline still centres against the text. */
+  .signature-panel-character {
+    display: flex;
+    align-items: center;
+    margin-top: 1rem;
+  }
+  .signature-panel-story {
+    display: block;
+    max-width: 24ch;
+    color: var(--gold-300, #e2c78d);
+    font-family: var(--font-display), serif;
+    font-size: clamp(1.1rem, 1.5vw, 1.45rem);
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 1.4;
+    text-wrap: balance;
+  }
+  .signature-panel-copy h2 {
+    margin-top: 0.85rem;
+  }
+  .signature-panel-facts {
+    display: grid;
+    gap: 0.7rem;
+    margin-top: 1.9rem;
+    border-top: 1px solid rgba(233, 219, 190, 0.13);
+    padding-top: 1.4rem;
+  }
+  .signature-panel-facts > div {
+    display: grid;
+    align-items: baseline;
+    gap: 1rem;
+    grid-template-columns: 5.5rem 1fr;
+  }
+  .signature-panel-facts dt {
+    color: rgba(247, 242, 232, 0.42);
+    font-size: 0.58rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+  .signature-panel-facts dd {
+    color: rgba(247, 242, 232, 0.82);
+    font-size: 0.86rem;
+    line-height: 1.5;
+  }
+
+  /* The second frame, hung off the inner edge of the main plate so it fills
+     the gap the two columns leave down the middle of the panel. */
+  .signature-panel-inset {
+    position: relative;
+    z-index: 2;
+    display: block;
+    grid-row: 1;
+    width: clamp(7.5rem, 11vw, 11.5rem);
+    aspect-ratio: 4 / 5;
+    align-self: end;
+    overflow: hidden;
+    border-radius: calc(var(--radius-lg, 1.25rem) - 0.5rem);
+    box-shadow:
+      0 0 0 6px var(--ink-950, #08090a),
+      0 30px 60px rgba(0, 0, 0, 0.55);
+  }
+  .signature-panel[data-side="right"] .signature-panel-inset {
+    grid-column: 2;
+    justify-self: start;
+    transform: translate(-46%, 14%);
+  }
+  .signature-panel[data-side="left"] .signature-panel-inset {
+    grid-column: 1;
+    justify-self: end;
+    transform: translate(46%, 14%);
+  }
+}
+
+/* Below this the copy column is too narrow to carry the fact list beside an
+   inset, so the second frame steps aside and the type keeps the width. */
+@media (min-width: 901px) and (max-width: 1180px) {
+  .signature-panel-inset {
+    display: none;
   }
 }

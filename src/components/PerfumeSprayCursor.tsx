@@ -2,7 +2,19 @@
 
 import { useEffect, useRef } from "react";
 
-const MIST_DROPS = Array.from({ length: 9 });
+/**
+ * Click atomiser.
+ *
+ * A restrained version of the old effect. That one drew a literal gold perfume
+ * bottle at the cursor and fired nine bright droplets out of it, which read as
+ * a game effect rather than a house. This is the breath instead of the object:
+ * a hairline ring, a soft champagne haze, and a few fine particles drifting
+ * off. Nothing is illustrated, so nothing can look cartoonish.
+ */
+const MIST_DROPS = Array.from({ length: 6 });
+
+/** Total life of one burst; kept just above the longest animation. */
+const BURST_MS = 1150;
 
 export default function PerfumeSprayCursor() {
   const templateRef = useRef<HTMLDivElement>(null);
@@ -24,8 +36,28 @@ export default function PerfumeSprayCursor() {
       burst.classList.remove("perfume-spray-template");
       burst.style.left = `${event.clientX}px`;
       burst.style.top = `${event.clientY}px`;
+
+      // Each particle gets its own direction and reach, so repeated clicks
+      // never trace the same fixed starburst.
+      const drift = burst.querySelectorAll<HTMLElement>(
+        ".perfume-spray-mist i",
+      );
+      const base = Math.random() * Math.PI * 2;
+      drift.forEach((particle, index) => {
+        const angle =
+          base + (index / drift.length) * Math.PI * 2 + Math.random() * 0.5;
+        const reach = 26 + Math.random() * 26;
+        particle.style.setProperty("--mist-x", `${Math.cos(angle) * reach}px`);
+        // Biased upward: mist rises as it disperses.
+        particle.style.setProperty(
+          "--mist-y",
+          `${Math.sin(angle) * reach - 12}px`,
+        );
+        particle.style.animationDelay = `${index * 0.035}s`;
+      });
+
       document.body.appendChild(burst);
-      window.setTimeout(() => burst.remove(), 950);
+      window.setTimeout(() => burst.remove(), BURST_MS);
     };
 
     window.addEventListener("pointerdown", spray, { passive: true });
@@ -39,24 +71,9 @@ export default function PerfumeSprayCursor() {
       className="perfume-spray-burst perfume-spray-template"
       aria-hidden="true"
     >
-      <svg
-        className="perfume-spray-bottle"
-        viewBox="0 0 46 62"
-        focusable="false"
-      >
-        <path className="spray-cap" d="M18 3h18v7H18z" />
-        <path className="spray-nozzle" d="M31 5h11v4H31z" />
-        <path className="spray-neck" d="M20 10h14v8H20z" />
-        <path
-          className="spray-glass"
-          d="M13 18h27l3 7v29c0 3-2 5-5 5H11c-3 0-5-2-5-5V25l7-7Z"
-        />
-        <path className="spray-shine" d="M14 24h5v27h-5z" />
-        <path className="spray-label" d="M17 33h16v12H17z" />
-      </svg>
-      <span className="perfume-spray-cloud" />
-      <span className="perfume-spray-cloud perfume-spray-cloud-soft" />
-      <span className="perfume-spray-jet" />
+      <span className="perfume-spray-ring" />
+      <span className="perfume-spray-ring perfume-spray-ring-wide" />
+      <span className="perfume-spray-haze" />
       <span className="perfume-spray-mist">
         {MIST_DROPS.map((_, index) => (
           <i key={index} />
