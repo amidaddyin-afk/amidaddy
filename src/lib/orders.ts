@@ -13,6 +13,8 @@ import {
 } from "@/lib/commerce";
 import { db, transaction } from "@/lib/db";
 import { includedGstPaise } from "@/lib/money";
+import { recordLeadCheckoutStarted, recordLeadOrderPaid } from "@/lib/leads";
+import { brandedEmailHtml, sendMail } from "@/lib/mailer";
 
 export type OrderStatus =
   | "PAYMENT_PENDING"
@@ -374,7 +376,7 @@ export async function quoteCheckout(
 }
 
 export async function createPendingOrder(input: CheckoutInput) {
-  return transaction(async (client) => {
+  const result = await transaction(async (client) => {
     const pricing = await calculateCheckoutPricing(
       client,
       {
@@ -462,6 +464,12 @@ export async function createPendingOrder(input: CheckoutInput) {
       expiresAt: expiresAt.toISOString(),
     };
   });
+  await recordLeadCheckoutStarted(input.customer.email, {
+    fullName: input.customer.name,
+    phone: input.customer.phone,
+    customerId: input.customerId ?? null,
+  }).catch(() => {});
+  return result;
 }
 
 export async function recordPaymentOrder(
@@ -508,7 +516,17 @@ export async function markOrderPaid(
     );
     return true;
   });
-  if (changed) await sendOrderEmail(orderId, "order-confirmed");
+  if (changed) {
+    await sendOrderEmail(orderId, "order-confirmed");
+    const order = await getOrder(orderId);
+    if (order)
+      await recordLeadOrderPaid(
+        order.email,
+        order.id,
+        order.totalPaise,
+        order.customerId ?? null,
+      ).catch(() => {});
+  }
 }
 
 export async function listOrders(filters?: {
@@ -790,62 +808,22 @@ export async function markRefundProcessed(paymentRefundId: string) {
 export async function sendOrderEmail(orderId: string, template: string) {
   const order = await getOrder(orderId);
   if (!order) return;
-  const log = await db().query(
-    "insert into public.notification_logs(order_id,recipient,template,status,attempts) values($1,$2,$3,'PENDING',1) returning id",
-    [orderId, order.email, template],
-  );
-  const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.RESEND_FROM_EMAIL;
-  if (!apiKey || !from) {
-    await db().query(
-      "update public.notification_logs set status='SKIPPED',error='Resend is not configured' where id=$1",
-      [log.rows[0].id],
-    );
-    console.error(
-      `[email] Skipped ${template} for ${orderId}: RESEND_API_KEY or RESEND_FROM_EMAIL is missing.`,
-    );
-    return;
-  }
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "";
   const orderNotificationEmail = process.env.ORDER_NOTIFICATION_EMAIL;
-  try {
-    const response = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-        "Idempotency-Key": `${orderId}-${template}`,
-      },
-      body: JSON.stringify({
-        from,
-        to: order.email,
-        reply_to: "support@amidaddy.in",
-        ...(template === "order-confirmed" && orderNotificationEmail
-          ? { bcc: orderNotificationEmail }
-          : {}),
-        subject: emailSubject(template, order.id),
-        html: `<div style="background:#090909;color:#f7f1e7;padding:36px;font-family:Arial,sans-serif"><p style="color:#d8b77a;letter-spacing:.2em">AMIDADDY</p><h1>${emailSubject(template, order.id)}</h1><p>Your order status is now <strong>${order.status.replaceAll("_", " ")}</strong>.</p><p>Order total: ₹${(order.totalPaise / 100).toLocaleString("en-IN")}</p>${order.trackingUrl ? `<p><a style="color:#d8b77a" href="${order.trackingUrl}">Track your shipment</a></p>` : ""}<p><a style="color:#d8b77a" href="${appUrl}/account/orders/${order.id}">View order details</a></p></div>`,
-      }),
-    });
-    const body = (await response.json()) as { id?: string; message?: string };
-    if (!response.ok)
-      throw new Error(body.message ?? "Email provider rejected the message.");
-    await db().query(
-      "update public.notification_logs set status='SENT',provider_id=$2,sent_at=now() where id=$1",
-      [log.rows[0].id, body.id ?? null],
-    );
-  } catch (error) {
-    await db().query(
-      "update public.notification_logs set status='FAILED',error=$2 where id=$1",
-      [
-        log.rows[0].id,
-        error instanceof Error ? error.message : "Unknown email error",
-      ],
-    );
-    console.error(
-      `[email] Failed ${template} for ${orderId}: ${error instanceof Error ? error.message : "Unknown email error"}`,
-    );
-  }
+  await sendMail({
+    to: order.email,
+    template,
+    orderId,
+    idempotencyKey: `${orderId}-${template}`,
+    bcc:
+      template === "order-confirmed" && orderNotificationEmail
+        ? orderNotificationEmail
+        : undefined,
+    subject: emailSubject(template, order.id),
+    html: brandedEmailHtml(
+      `<h1>${emailSubject(template, order.id)}</h1><p>Your order status is now <strong>${order.status.replaceAll("_", " ")}</strong>.</p><p>Order total: ₹${(order.totalPaise / 100).toLocaleString("en-IN")}</p>${order.trackingUrl ? `<p><a style="color:#d8b77a" href="${order.trackingUrl}">Track your shipment</a></p>` : ""}<p><a style="color:#d8b77a" href="${appUrl}/account/orders/${order.id}">View order details</a></p>`,
+    ),
+  });
 }
 
 function emailSubject(template: string, orderId: string) {

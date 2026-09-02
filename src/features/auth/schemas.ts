@@ -29,3 +29,13 @@ export const resetSchema = z.object({
   "cf-turnstile-response": z.string().max(2048).optional(),
 });
 export const updatePasswordSchema = z.object({ password: passwordSchema });
+
+export const verifyOtpSchema = z.object({
+  email: emailSchema,
+  token: z
+    .string()
+    .trim()
+    .regex(/^\d{6}$/, "Enter the 6-digit code."),
+});
+
+export const resendOtpSchema = z.object({ email: emailSchema });

@@ -21,6 +21,7 @@ model Profile {
   updatedAt         DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
   orders            Order[]
   couponRedemptions CouponRedemption[]
+  leads             Lead[]
 
   @@map("profiles")
 }
@@ -227,6 +228,7 @@ model Order {
   items              OrderItem[]
   refunds            Refund[]
   couponRedemptions  CouponRedemption[]
+  campaignSends      CampaignSend[]
 
   @@index([customerId, createdAt])
   @@index([status, createdAt])
@@ -321,6 +323,7 @@ model NotificationLog {
   template   String
   status     String
   providerId String?   @map("provider_id")
+  campaign   String?
   attempts   Int       @default(0)
   error      String?
   createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
@@ -350,4 +353,72 @@ model RequestRateLimit {
 
   @@id([scope, identityHash, windowStart])
   @@map("request_rate_limits")
+}
+
+enum LeadStage {
+  SUBSCRIBER
+  SIGNED_UP
+  CHECKOUT_STARTED
+  ABANDONED
+  CUSTOMER
+  REPEAT_CUSTOMER
+}
+
+model Lead {
+  email          String      @id
+  fullName       String?     @map("full_name")
+  phone          String?
+  customerId     String?     @map("customer_id") @db.Uuid
+  source         String      @default("SIGNUP")
+  stage          LeadStage   @default(SUBSCRIBER)
+  marketingOptIn Boolean     @default(true) @map("marketing_opt_in")
+  unsubscribedAt DateTime?   @map("unsubscribed_at") @db.Timestamptz(6)
+  signedUpAt     DateTime?   @map("signed_up_at") @db.Timestamptz(6)
+  firstSeenAt    DateTime    @default(now()) @map("first_seen_at") @db.Timestamptz(6)
+  lastSeenAt     DateTime    @default(now()) @map("last_seen_at") @db.Timestamptz(6)
+  lastCheckoutAt DateTime?   @map("last_checkout_at") @db.Timestamptz(6)
+  firstOrderAt   DateTime?   @map("first_order_at") @db.Timestamptz(6)
+  lastOrderAt    DateTime?   @map("last_order_at") @db.Timestamptz(6)
+  orderCount     Int         @default(0) @map("order_count")
+  lifetimePaise  BigInt      @default(0) @map("lifetime_paise")
+  notes          String?
+  createdAt      DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime    @updatedAt @map("updated_at") @db.Timestamptz(6)
+  customer       Profile?    @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  events         LeadEvent[]
+
+  @@index([stage, lastSeenAt])
+  @@index([createdAt])
+  @@index([customerId])
+  @@map("leads")
+}
+
+model LeadEvent {
+  id        BigInt   @id @default(autoincrement())
+  email     String
+  type      String
+  metadata  Json     @default("{}")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  lead      Lead     @relation(fields: [email], references: [email], onDelete: Cascade)
+
+  @@index([email, createdAt])
+  @@map("lead_events")
+}
+
+model CampaignSend {
+  id        BigInt   @id @default(autoincrement())
+  email     String
+  campaign  String
+  orderId   String?  @map("order_id")
+  status    String   @default("SENT")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  order     Order?   @relation(fields: [orderId], references: [id], onDelete: SetNull)
+
+  // Real uniqueness lives on campaign_sends_unique_idx, a NULL-collapsing
+  // expression index the migration creates by hand -- Prisma's declarative
+  // @@unique can't express coalesce(order_id, ''), so it is intentionally
+  // left off this model to avoid claiming a constraint that doesn't exist.
+  @@index([email, campaign, orderId])
+  @@index([campaign, createdAt])
+  @@map("campaign_sends")
 }

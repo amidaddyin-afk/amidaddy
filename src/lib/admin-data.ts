@@ -4,6 +4,12 @@ import { listAdminProducts } from "@/lib/catalog";
 import { listOrders, type OrderRecord } from "@/lib/orders";
 import type { Product } from "@/lib/data";
 import { DEFAULT_THEME, SITE_THEMES, type SiteTheme } from "@/lib/theme-config";
+import {
+  getLeadFunnel,
+  listLeads,
+  type LeadFunnel,
+  type LeadRecord,
+} from "@/lib/leads";
 
 export type AdminOverview = {
   orders: OrderRecord[];
@@ -49,6 +55,8 @@ export type AdminOverview = {
     reserved: number;
     lowStockAt: number;
   }>;
+  leadFunnel: LeadFunnel;
+  leads: LeadRecord[];
   metrics: {
     netRevenuePaise: number;
     refundsPaise: number;
@@ -56,6 +64,7 @@ export type AdminOverview = {
     averageOrderPaise: number;
     customerCount: number;
     lowStockCount: number;
+    potentialCustomers: number;
   };
 };
 export async function getAdminOverview(): Promise<AdminOverview> {
@@ -68,6 +77,8 @@ export async function getAdminOverview(): Promise<AdminOverview> {
     settings,
     inventory,
     refunds,
+    leadFunnel,
+    leads,
   ] = await Promise.all([
     listOrders().catch(() => []),
     listAdminProducts().catch(() => []),
@@ -99,6 +110,19 @@ export async function getAdminOverview(): Promise<AdminOverview> {
         "select coalesce(sum(amount_paise) filter(where status='PROCESSED'),0) total from public.refunds",
       )
       .catch(() => ({ rows: [{ total: 0 }] })),
+    getLeadFunnel().catch(
+      () =>
+        ({
+          subscribers: 0,
+          signedUp: 0,
+          checkoutStarted: 0,
+          abandoned: 0,
+          customers: 0,
+          repeatCustomers: 0,
+          total: 0,
+        }) satisfies LeadFunnel,
+    ),
+    listLeads({ limit: 250 }).catch(() => []),
   ]);
   const refundsPaise = Number(refunds.rows[0]?.total ?? 0);
   const paid = orders.filter((order) =>
@@ -160,6 +184,8 @@ export async function getAdminOverview(): Promise<AdminOverview> {
         : DEFAULT_THEME,
     },
     inventory: inventoryRows,
+    leadFunnel,
+    leads,
     metrics: {
       netRevenuePaise: gross - refundsPaise,
       refundsPaise,
@@ -170,6 +196,7 @@ export async function getAdminOverview(): Promise<AdminOverview> {
       lowStockCount: inventoryRows.filter(
         (item) => item.stock - item.reserved <= item.lowStockAt,
       ).length,
+      potentialCustomers: leadFunnel.signedUp + leadFunnel.checkoutStarted,
     },
   };
 }

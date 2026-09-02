@@ -6,6 +6,7 @@ import {
   BadgePercent,
   Boxes,
   ChartNoAxesCombined,
+  Download,
   Mail,
   MapPin,
   Package,
@@ -13,6 +14,7 @@ import {
   Palette,
   Settings,
   ShoppingBag,
+  TrendingUp,
   Users,
 } from "lucide-react";
 import type { AdminOverview } from "@/lib/admin-data";
@@ -41,6 +43,7 @@ const sections = [
   ["Products", Boxes],
   ["Inventory", Boxes],
   ["Customers", Users],
+  ["Leads", TrendingUp],
   ["Coupons", BadgePercent],
   ["Activity", Activity],
   ["Appearance", Palette],
@@ -280,6 +283,40 @@ export default function AdminPortal({ overview }: { overview: AdminOverview }) {
     ["Orders", String(overview.metrics.orderCount)],
     ["Average order", formatInr(overview.metrics.averageOrderPaise)],
     ["Low stock", String(overview.metrics.lowStockCount)],
+    ["Potential customers", String(overview.metrics.potentialCustomers)],
+  ];
+  const [leadSearch, setLeadSearch] = useState("");
+  const [leadStageFilter, setLeadStageFilter] = useState("");
+  const visibleLeads = overview.leads.filter((lead) => {
+    if (leadStageFilter && lead.stage !== leadStageFilter) return false;
+    if (!leadSearch) return true;
+    return `${lead.email} ${lead.fullName ?? ""}`
+      .toLowerCase()
+      .includes(leadSearch.toLowerCase());
+  });
+  const leadStages = [
+    "SUBSCRIBER",
+    "SIGNED_UP",
+    "CHECKOUT_STARTED",
+    "ABANDONED",
+    "CUSTOMER",
+    "REPEAT_CUSTOMER",
+  ] as const;
+  const leadStageLabels: Record<(typeof leadStages)[number], string> = {
+    SUBSCRIBER: "Subscriber",
+    SIGNED_UP: "Signed up",
+    CHECKOUT_STARTED: "Checkout started",
+    ABANDONED: "Abandoned checkout",
+    CUSTOMER: "Customer",
+    REPEAT_CUSTOMER: "Repeat customer",
+  };
+  const funnelCards: Array<[string, number]> = [
+    ["Subscribers", overview.leadFunnel.subscribers],
+    ["Signed up", overview.leadFunnel.signedUp],
+    ["Started checkout", overview.leadFunnel.checkoutStarted],
+    ["Abandoned", overview.leadFunnel.abandoned],
+    ["Customers", overview.leadFunnel.customers],
+    ["Repeat customers", overview.leadFunnel.repeatCustomers],
   ];
   return (
     <main data-surface="commerce" className="admin-shell">
@@ -394,6 +431,95 @@ export default function AdminPortal({ overview }: { overview: AdminOverview }) {
                       </td>
                     </tr>
                   ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+          <section id="leads">
+            <div className="admin-heading">
+              <div>
+                <p className="eyebrow">Funnel</p>
+                <h2>Potential customers</h2>
+              </div>
+              <a
+                href="/api/admin/leads"
+                className="btn-ghost inline-flex items-center gap-2"
+              >
+                <Download size={15} />
+                Export CSV
+              </a>
+            </div>
+            <div className="admin-cards">
+              {funnelCards.map(([label, value]) => (
+                <article key={label}>
+                  <span>{label}</span>
+                  <strong>{value}</strong>
+                </article>
+              ))}
+            </div>
+            <div className="admin-heading mt-6">
+              <input
+                value={leadSearch}
+                onChange={(event) => setLeadSearch(event.target.value)}
+                placeholder="Search email or name"
+                aria-label="Search leads"
+              />
+              <select
+                value={leadStageFilter}
+                onChange={(event) => setLeadStageFilter(event.target.value)}
+                aria-label="Filter by stage"
+              >
+                <option value="">All stages</option>
+                {leadStages.map((stage) => (
+                  <option key={stage} value={stage}>
+                    {leadStageLabels[stage]}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="admin-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Lead</th>
+                    <th>Stage</th>
+                    <th>Signed up</th>
+                    <th>Last activity</th>
+                    <th>Orders</th>
+                    <th>Lifetime value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {visibleLeads.map((lead) => (
+                    <tr key={lead.email}>
+                      <td data-label="Lead">
+                        {lead.fullName ?? "—"}
+                        <span>{lead.email}</span>
+                      </td>
+                      <td data-label="Stage">{leadStageLabels[lead.stage]}</td>
+                      <td data-label="Signed up">
+                        {lead.signedUpAt
+                          ? new Date(lead.signedUpAt).toLocaleDateString(
+                              "en-IN",
+                            )
+                          : "—"}
+                      </td>
+                      <td data-label="Last activity">
+                        {new Date(lead.lastSeenAt).toLocaleDateString("en-IN")}
+                      </td>
+                      <td data-label="Orders">{lead.orderCount}</td>
+                      <td data-label="Lifetime value">
+                        {formatInr(lead.lifetimePaise)}
+                      </td>
+                    </tr>
+                  ))}
+                  {visibleLeads.length === 0 && (
+                    <tr>
+                      <td colSpan={6} className="admin-empty">
+                        No matching leads found.
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
