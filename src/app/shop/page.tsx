@@ -7,6 +7,9 @@ export const metadata: Metadata = {
   title: "Shop all fragrances",
   description:
     "Explore Amidaddy Perfumes unisex Eau de Parfum by scent family, mood and bottle size.",
+  // Search/filter query params (?search=, ?family=, ?collection=, ?sort=) create
+  // crawlable URL variants of the same content; canonicalize them all to /shop.
+  alternates: { canonical: "/shop" },
 };
 
 export default async function ShopPage({

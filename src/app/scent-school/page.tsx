@@ -9,6 +9,7 @@ export const metadata: Metadata = {
   title: "Scent School",
   description:
     "An eight-chapter course in fragrance: how perfume works, India's attar heritage, how to wear it, and how to find the signature that is yours.",
+  alternates: { canonical: "/scent-school" },
 };
 
 /**

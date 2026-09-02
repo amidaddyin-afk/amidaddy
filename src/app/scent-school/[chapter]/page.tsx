@@ -26,6 +26,7 @@ export async function generateMetadata({
   return {
     title: `${lesson.title} · Scent School`,
     description: lesson.summary,
+    alternates: { canonical: `/scent-school/${lesson.slug}` },
   };
 }
 

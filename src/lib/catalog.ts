@@ -230,10 +230,15 @@ export async function listCatalogProducts(query: ListQuery) {
     )
     .eq("active", true)
     .is("deleted_at", null);
-  if (query.search)
-    request = request.or(
-      `name.ilike.%${query.search.replace(/[%,_]/g, "")}%,description.ilike.%${query.search.replace(/[%,_]/g, "")}%`,
-    );
+  if (query.search) {
+    // PostgREST's .or() filter string treats `,`, `.`, `(`, `)` as syntax
+    // (clause separator, operator separator, grouping) and ilike treats `%`/`_`
+    // as wildcards — strip all of them so search input can't distort or break
+    // out of the intended two-clause filter.
+    const term = query.search.replace(/[%,._()]/g, "").slice(0, 200);
+    if (term)
+      request = request.or(`name.ilike.%${term}%,description.ilike.%${term}%`);
+  }
   if (query.family) request = request.eq("fragrance_family", query.family);
   if (query.collection) request = request.eq("collection", query.collection);
   if (query.minPrice !== undefined)

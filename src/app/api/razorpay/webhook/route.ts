@@ -82,13 +82,15 @@ export async function POST(request: NextRequest) {
     const razorpayOrder = body.payload?.order?.entity;
     if (event === "order.paid" && razorpayOrder?.id) {
       const order = await getOrderByPaymentSession(razorpayOrder.id);
+      const orderPaymentId = body.payload?.payment?.entity?.id;
       if (
         order &&
+        orderPaymentId &&
         razorpayOrder.status === "paid" &&
         razorpayOrder.amount === order.totalPaise &&
         razorpayOrder.currency === "INR"
       )
-        await markOrderPaid(order.id, razorpayOrder.id);
+        await markOrderPaid(order.id, razorpayOrder.id, orderPaymentId);
     }
     const refund = body.payload?.refund?.entity;
     if (event === "refund.processed" && refund?.id)

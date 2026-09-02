@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { randomInt } from "node:crypto";
@@ -14,6 +15,12 @@ import ProductCard from "@/components/ProductCard";
 import SignaturePanels from "@/components/SignaturePanels";
 import ScentFinder from "@/components/ScentFinder";
 import { listCatalogProducts } from "@/lib/catalog";
+
+export const metadata: Metadata = {
+  description:
+    "Amidaddy Perfumes: four unisex Eau de Parfum signatures in 20ml and 100ml, plus a complete discovery pack. Shop fragrances built around mood, memory and presence.",
+  alternates: { canonical: "/" },
+};
 
 const reviews = [
   {
