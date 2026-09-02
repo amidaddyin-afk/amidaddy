@@ -2,9 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
 /** Slide dwell time. Kept in sync with the Ken Burns transform in CSS. */
 const HERO_SLIDE_MS = 6500;
@@ -17,6 +17,7 @@ const slides = [
     kicker: "Heavenly",
     title: "Leave a softer trace.",
     copy: "White florals, vanilla and musk with a quiet, lasting presence.",
+    notes: ["White floral", "Vanilla", "Musk"],
     href: "/products/heavenly",
   },
   {
@@ -26,6 +27,7 @@ const slides = [
     kicker: "The discovery wardrobe",
     title: "Four signatures. One feeling.",
     copy: "Meet every mood in a travel-ready collection.",
+    notes: ["4 x 20ml", "Gift ready"],
     href: "/products/signature-combo-20ml",
   },
   {
@@ -35,6 +37,7 @@ const slides = [
     kicker: "Billionaire",
     title: "Own the room.",
     copy: "Whiskey, spice and dark woods composed with confidence.",
+    notes: ["Whiskey", "Spice", "Dark woods"],
     href: "/products/billionaire",
   },
   {
@@ -44,6 +47,7 @@ const slides = [
     kicker: "Cold War",
     title: "Make your move.",
     copy: "Bright fruit, aromatic herbs and woods with a sharp edge.",
+    notes: ["Bright fruit", "Herbs", "Woods"],
     href: "/products/coldwar",
   },
   {
@@ -53,6 +57,7 @@ const slides = [
     kicker: "Old Love",
     title: "Stay unforgettable.",
     copy: "Warm saffron, amber and resin designed to linger.",
+    notes: ["Saffron", "Amber", "Resin"],
     href: "/products/old-love",
   },
   {
@@ -62,9 +67,12 @@ const slides = [
     kicker: "The full collection",
     title: "Meet every mood.",
     copy: "All four signatures, composed for every side of you.",
+    notes: ["4 signatures", "20ml & 100ml"],
     href: "/shop",
   },
 ] as const;
+
+const EASE = [0.16, 1, 0.3, 1] as const;
 
 export default function CuratedHero({ slideOrder }: { slideOrder: number[] }) {
   const orderedSlides = slideOrder
@@ -77,6 +85,7 @@ export default function CuratedHero({ slideOrder }: { slideOrder: number[] }) {
   const [paused, setPaused] = useState(false);
   const reduceMotion = useReducedMotion();
   const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const current = carouselSlides[active];
 
   useEffect(() => {
     if (paused || reduceMotion) return;
@@ -104,6 +113,16 @@ export default function CuratedHero({ slideOrder }: { slideOrder: number[] }) {
     show(active + (dx < 0 ? 1 : -1));
   };
 
+  // The editorial column re-animates on each slide. Reduced motion collapses
+  // that to a plain swap instead of a fade-and-rise.
+  const rise = reduceMotion
+    ? {}
+    : {
+        initial: { opacity: 0, y: 20 },
+        animate: { opacity: 1, y: 0 },
+        exit: { opacity: 0, y: -14 },
+      };
+
   return (
     <section
       className="cinematic-hero hero-carousel"
@@ -130,30 +149,111 @@ export default function CuratedHero({ slideOrder }: { slideOrder: number[] }) {
       onFocus={() => setPaused(true)}
       onBlur={() => setPaused(false)}
     >
-      {carouselSlides.map((slide, index) => (
-        <div
-          key={slide.desktop}
-          className={`hero-slide ${index === active ? "is-active" : ""}`}
-          aria-hidden={index !== active}
-        >
-          <picture className="hero-picture">
-            <source media="(min-width: 768px)" srcSet={slide.desktop} />
-            <Image
-              src={slide.mobile}
-              alt={slide.alt}
-              fill
-              priority={index === 0}
-              sizes="100vw"
-            />
-          </picture>
-        </div>
-      ))}
+      {/* The stage boxes the imagery so the desktop layout can sit it beside
+          the editorial column instead of only behind it. */}
+      <div className="hero-stage">
+        {carouselSlides.map((slide, index) => (
+          <div
+            key={slide.desktop}
+            className={`hero-slide ${index === active ? "is-active" : ""}`}
+            aria-hidden={index !== active}
+          >
+            <picture className="hero-picture">
+              <source media="(min-width: 768px)" srcSet={slide.desktop} />
+              <Image
+                src={slide.mobile}
+                alt={slide.alt}
+                fill
+                priority={index === 0}
+                sizes="100vw"
+              />
+            </picture>
+          </div>
+        ))}
+        <span className="hero-stage-veil" aria-hidden="true" />
+      </div>
 
+      {/* Desktop art direction: typography gets its own column so the hero
+          reads as a campaign spread rather than one bare photograph. */}
+      <div className="hero-editorial">
+        <p className="hero-editorial-house">
+          Amidaddy <span aria-hidden="true">&middot;</span> Eau de Parfum
+        </p>
+
+        <div className="hero-editorial-body" aria-live="polite">
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={current.kicker}
+              {...rise}
+              transition={{ duration: 0.62, ease: EASE }}
+            >
+              <p className="hero-editorial-kicker">{current.kicker}</p>
+              <h1 className="hero-editorial-title">{current.title}</h1>
+              <p className="hero-editorial-copy">{current.copy}</p>
+              <ul className="hero-editorial-notes">
+                {current.notes.map((note) => (
+                  <li key={note}>{note}</li>
+                ))}
+              </ul>
+              <div className="hero-editorial-actions">
+                <Link href={current.href} className="lux-button">
+                  Discover the scent <ArrowUpRight size={16} />
+                </Link>
+                <Link href="/shop" className="hero-editorial-link">
+                  Shop all fragrances
+                </Link>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        <div className="hero-editorial-rail">
+          <div className="hero-editorial-nav">
+            <button
+              type="button"
+              onClick={() => show(active - 1)}
+              aria-label="Previous campaign image"
+            >
+              <ChevronLeft size={16} />
+            </button>
+            <span className="hero-editorial-count">
+              {String(active + 1).padStart(2, "0")}
+              <i aria-hidden="true" />
+              {String(slideCount).padStart(2, "0")}
+            </span>
+            <button
+              type="button"
+              onClick={() => show(active + 1)}
+              aria-label="Next campaign image"
+            >
+              <ChevronRight size={16} />
+            </button>
+          </div>
+          <ul className="hero-editorial-thumbs">
+            {carouselSlides.map((slide, index) => (
+              <li key={slide.desktop}>
+                <button
+                  type="button"
+                  className={index === active ? "is-active" : ""}
+                  onClick={() => show(index)}
+                  aria-label={`Show ${slide.kicker}`}
+                  aria-current={index === active ? "true" : undefined}
+                >
+                  <Image src={slide.desktop} alt="" fill sizes="96px" />
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      {/* The editorial column and this block are each display:none at the
+          other's breakpoint, so only one of the two headings is ever live. */}
       <div className="mobile-hero-copy" aria-live="polite">
-        <p>{carouselSlides[active].kicker}</p>
-        <h1>{carouselSlides[active].title}</h1>
-        <span>{carouselSlides[active].copy}</span>
-        <Link href={carouselSlides[active].href}>Discover the scent</Link>
+        <p>{current.kicker}</p>
+        <h1>{current.title}</h1>
+        <span>{current.copy}</span>
+        <Link href={current.href}>Discover the scent</Link>
       </div>
 
       <div className="hero-carousel-controls">
@@ -184,10 +284,6 @@ export default function CuratedHero({ slideOrder }: { slideOrder: number[] }) {
           <ChevronRight size={18} />
         </button>
       </div>
-      <span className="hero-carousel-count" aria-hidden="true">
-        {String(active + 1).padStart(2, "0")} /{" "}
-        {String(carouselSlides.length).padStart(2, "0")}
-      </span>
     </section>
   );
 }

@@ -54,9 +54,14 @@ export default function CartSidebar() {
       if (event.key === "Escape") closeCart();
     };
     document.body.style.overflow = "hidden";
+    // The announcement bar sits at z-index 80, above the cart panel, so it
+    // covered the close button. Collapsing the fixed chrome while the cart is
+    // open keeps the panel's own controls reachable at every width.
+    document.body.dataset.overlay = "cart";
     window.addEventListener("keydown", closeOnEscape);
     return () => {
       document.body.style.overflow = previousOverflow;
+      delete document.body.dataset.overlay;
       window.removeEventListener("keydown", closeOnEscape);
     };
   }, [closeCart, isOpen]);

@@ -133,6 +133,8 @@
 
   /* Text drawn over photography, never over a themed surface. */
   --on-image: #f7f2e8;
+  --on-image-muted: rgb(247 242 232 / 0.82);
+  --on-image-subtle: rgb(247 242 232 / 0.62);
 }
 
 /* Legacy token aliases.
@@ -209,4 +211,43 @@
 [data-theme="atelier"] [data-surface="chrome"] .site-footer,
 [data-theme="atelier"] [data-surface="chrome"] .site-header {
   color: var(--fg);
+}
+
+/* ==========================================================================
+   Image surfaces.
+
+   Anything painted on top of photography must NOT follow the theme. The
+   photograph is identical in every theme, so a theme-following colour goes
+   invisible the moment the palette flips - dark ink on a dark campaign frame
+   under atelier, which is exactly what happened on mobile.
+
+   Re-pointing the semantic tokens here means every descendant that reads
+   --fg / --fg-muted / --accent becomes image-appropriate automatically,
+   in all three themes, without patching each rule.
+   ========================================================================== */
+[data-surface="image"],
+/* Full-screen overlays paint their own dark scrim regardless of theme, so
+   their contents are in the same situation as text on a photograph. */
+.mobile-menu,
+.search-overlay,
+.school-hero,
+.mobile-hero-copy,
+.signature-panel-copy,
+.shop-hero-copy,
+.auth-aside-copy,
+.hero-carousel-controls,
+.hero-carousel-count,
+.product-badge,
+.product-view {
+  --fg: var(--on-image);
+  --fg-muted: var(--on-image-muted);
+  --fg-subtle: var(--on-image-subtle);
+  --paper: var(--on-image);
+  --muted: var(--on-image-muted);
+  /* The lighter gold: the deep one is for paper, and disappears on a photo. */
+  --accent: var(--gold-300);
+  --champagne: var(--gold-300);
+  --line: rgb(247 242 232 / 0.28);
+  --line-strong: rgb(247 242 232 / 0.45);
+  color: var(--on-image);
 }

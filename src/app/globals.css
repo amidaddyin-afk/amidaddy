@@ -5305,3 +5305,302 @@ body .catalog-editor > button {
   border-color: var(--gold-300);
   color: var(--gold-300);
 }
+
+/* =========================================================================
+   Hero — desktop editorial spread
+   -------------------------------------------------------------------------
+   Below 901px the hero stays the full-bleed campaign photograph with the
+   overlaid mobile copy. From 901px up it becomes a two-column spread: a dark
+   type column on the left, the campaign image framed on the right, with a
+   thumbnail rail so the other signatures are visible rather than implied.
+   ========================================================================= */
+.hero-stage {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.hero-stage-veil {
+  display: none;
+}
+.hero-editorial {
+  display: none;
+}
+
+@media (min-width: 901px) {
+  .storefront-home .cinematic-hero {
+    display: grid;
+    height: min(calc(100svh - 8.5rem), 50rem);
+    min-height: 36rem;
+    align-items: stretch;
+    grid-template-columns: minmax(24rem, 43fr) 57fr;
+    aspect-ratio: auto;
+    background:
+      radial-gradient(
+        120% 90% at 0% 0%,
+        rgba(213, 184, 123, 0.09),
+        transparent 62%
+      ),
+      var(--ink-950, #08090a);
+  }
+
+  /* Column two: the photograph, inset so it reads as a plate, not a banner. */
+  .hero-stage {
+    position: relative;
+    inset: auto;
+    grid-column: 2;
+    margin: clamp(1.25rem, 2vw, 2rem);
+    margin-left: 0;
+    border-radius: calc(var(--radius-lg, 18px) - 4px);
+  }
+  .storefront-home .hero-picture img {
+    object-position: center;
+  }
+  /* Feathers the plate into the type column so the seam is not a hard edge. */
+  .hero-stage-veil {
+    position: absolute;
+    z-index: 2;
+    display: block;
+    inset: 0;
+    pointer-events: none;
+    border-radius: inherit;
+    box-shadow: inset 0 0 0 1px rgba(233, 219, 190, 0.14);
+    background: linear-gradient(
+      90deg,
+      rgba(8, 9, 10, 0.55) 0%,
+      rgba(8, 9, 10, 0.12) 22%,
+      transparent 48%
+    );
+  }
+
+  /* Column one: the type. */
+  .hero-editorial {
+    display: flex;
+    position: relative;
+    z-index: 3;
+    grid-column: 1;
+    grid-row: 1;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 2rem;
+    padding: clamp(2.25rem, 3.4vw, 3.5rem) clamp(1.75rem, 3vw, 3.25rem)
+      clamp(1.75rem, 2.6vw, 2.75rem) clamp(2.25rem, 4.5vw, 4.75rem);
+    color: var(--bone-50, #f7f2e8);
+  }
+  .hero-editorial-house {
+    color: rgba(247, 242, 232, 0.5);
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+  }
+  .hero-editorial-house span {
+    margin: 0 0.4rem;
+    color: var(--gold-400, #d5b87b);
+  }
+  .hero-editorial-body {
+    display: flex;
+    min-height: 0;
+    flex: 1 1 auto;
+    align-items: center;
+  }
+  .hero-editorial-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    color: var(--gold-300, #e2c78d);
+    font-size: 0.64rem;
+    font-weight: 600;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+  }
+  .hero-editorial-kicker::before {
+    content: "";
+    width: 2.25rem;
+    height: 1px;
+    background: linear-gradient(90deg, var(--gold-500, #b8965a), transparent);
+  }
+  .hero-editorial-title {
+    max-width: 13ch;
+    margin-top: 1rem;
+    font-family: var(--font-display), serif;
+    font-size: clamp(2.9rem, 4.4vw, 4.75rem);
+    font-weight: 500;
+    letter-spacing: -0.035em;
+    line-height: 0.94;
+    text-wrap: balance;
+  }
+  .hero-editorial-copy {
+    max-width: 36ch;
+    margin-top: 1.15rem;
+    color: rgba(247, 242, 232, 0.68);
+    font-size: 0.95rem;
+    line-height: 1.65;
+  }
+  .hero-editorial-notes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-top: 1.4rem;
+  }
+  .hero-editorial-notes li {
+    border: 1px solid rgba(233, 219, 190, 0.18);
+    border-radius: 999px;
+    padding: 0.4rem 0.8rem;
+    color: rgba(247, 242, 232, 0.72);
+    font-size: 0.6rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .hero-editorial-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+  .hero-editorial-link {
+    border-bottom: 1px solid rgba(213, 184, 123, 0.45);
+    padding-bottom: 0.3rem;
+    color: rgba(247, 242, 232, 0.82);
+    font-size: 0.66rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    transition:
+      color 0.25s ease,
+      border-color 0.25s ease;
+  }
+  .hero-editorial-link:hover {
+    border-color: var(--gold-300, #e2c78d);
+    color: var(--gold-300, #e2c78d);
+  }
+
+  /* The rail: counter, arrows and the other campaigns as real thumbnails. */
+  .hero-editorial-rail {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    border-top: 1px solid rgba(233, 219, 190, 0.13);
+    padding-top: 1.25rem;
+  }
+  .hero-editorial-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+  }
+  .hero-editorial-nav button {
+    display: grid;
+    width: 2.3rem;
+    height: 2.3rem;
+    cursor: pointer;
+    place-items: center;
+    border: 1px solid rgba(233, 219, 190, 0.2);
+    border-radius: 50%;
+    background: transparent;
+    color: rgba(247, 242, 232, 0.8);
+    transition:
+      background 0.25s ease,
+      border-color 0.25s ease,
+      color 0.25s ease;
+  }
+  .hero-editorial-nav button:hover,
+  .hero-editorial-nav button:focus-visible {
+    border-color: var(--gold-400, #d5b87b);
+    background: rgba(213, 184, 123, 0.12);
+    color: var(--gold-300, #e2c78d);
+    outline: none;
+  }
+  .hero-editorial-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: rgba(247, 242, 232, 0.6);
+    font-size: 0.62rem;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.16em;
+  }
+  .hero-editorial-count i {
+    width: 1.5rem;
+    height: 1px;
+    background: rgba(233, 219, 190, 0.28);
+  }
+  .hero-editorial-thumbs {
+    display: flex;
+    gap: 0.5rem;
+  }
+  .hero-editorial-thumbs button {
+    position: relative;
+    width: 3.1rem;
+    height: 3.9rem;
+    cursor: pointer;
+    overflow: hidden;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    padding: 0;
+    opacity: 0.42;
+    filter: grayscale(0.55);
+    transition:
+      opacity 0.35s var(--ease-premium, ease),
+      filter 0.35s ease,
+      transform 0.35s var(--ease-premium, ease),
+      border-color 0.35s ease;
+  }
+  .hero-editorial-thumbs button img {
+    object-fit: cover;
+  }
+  .hero-editorial-thumbs button:hover,
+  .hero-editorial-thumbs button:focus-visible {
+    opacity: 0.85;
+    filter: none;
+    outline: none;
+    transform: translateY(-2px);
+  }
+  .hero-editorial-thumbs button.is-active {
+    border-color: var(--gold-400, #d5b87b);
+    opacity: 1;
+    filter: none;
+  }
+
+  /* Superseded on desktop by the editorial rail. */
+  .storefront-home .hero-carousel-controls,
+  .storefront-home .hero-carousel-count {
+    display: none;
+  }
+}
+
+/* Narrow desktops and portrait tablets: keep the spread but stack the rail. */
+@media (min-width: 901px) and (max-width: 1120px) {
+  .storefront-home .cinematic-hero {
+    grid-template-columns: minmax(20rem, 47fr) 53fr;
+  }
+  .hero-editorial-thumbs button {
+    width: 2.6rem;
+    height: 3.3rem;
+  }
+}
+
+@media (min-width: 901px) and (max-height: 720px) {
+  .storefront-home .cinematic-hero {
+    height: auto;
+    min-height: 34rem;
+  }
+}
+
+/* Collapse the fixed chrome while the cart is open.
+   The announcement bar (z-index 80) and header (z-index 70) both sit above the
+   cart panel, and the bar was covering the panel's close button. */
+body[data-overlay="cart"] .announcement-bar,
+body[data-overlay="cart"] .site-header {
+  transform: translate3d(0, -100%, 0);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    transform var(--dur-base) var(--ease-premium),
+    opacity var(--dur-fast) ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  body[data-overlay="cart"] .announcement-bar,
+  body[data-overlay="cart"] .site-header {
+    transition: none;
+  }
+}

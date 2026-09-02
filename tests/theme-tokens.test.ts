@@ -165,3 +165,43 @@ test("the SITE_THEME override is read outside the cache", () => {
     "cached reader is declared before the wrapper",
   );
 });
+
+test("text on photography does not follow the theme", () => {
+  const tokens = read("src/styles/tokens.css");
+  // A photograph looks the same in every theme, so overlay text coloured from
+  // --fg goes invisible the moment the palette flips - dark ink on a dark
+  // campaign frame under atelier. These contexts re-point the tokens instead.
+  const block = tokens.slice(tokens.indexOf('[data-surface="image"]'));
+  for (const sel of [
+    ".school-hero",
+    ".mobile-menu",
+    ".search-overlay",
+    ".signature-panel-copy",
+    ".shop-hero-copy",
+    ".product-badge",
+  ]) {
+    assert.ok(
+      block.includes(sel),
+      `${sel} sits on a dark scrim and must use the image tokens`,
+    );
+  }
+  assert.match(block, /--fg: var\(--on-image\)/);
+  assert.match(block, /--fg-muted: var\(--on-image-muted\)/);
+});
+
+test("the fixed chrome collapses while the cart is open", () => {
+  // The announcement bar is z-index 80 and the header 70, both above the cart
+  // panel, so the bar covered the panel's close button.
+  assert.match(
+    read("src/app/globals.css"),
+    /body\[data-overlay="cart"\][\s\S]{0,120}\.site-header/,
+  );
+  assert.match(
+    read("src/components/CartSidebar.tsx"),
+    /document\.body\.dataset\.overlay = "cart"/,
+  );
+  assert.match(
+    read("src/components/CartSidebar.tsx"),
+    /delete document\.body\.dataset\.overlay/,
+  );
+});
