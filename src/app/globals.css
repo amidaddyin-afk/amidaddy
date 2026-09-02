@@ -727,59 +727,6 @@ body .scent-school {
   background: var(--bg);
   color: var(--fg);
 }
-body .school-chapters {
-  border-color: var(--line);
-  background: var(--bg-raised);
-}
-body .school-chapters a {
-  color: var(--fg-muted);
-}
-body .school-section {
-  background: var(--bg);
-  color: var(--fg);
-}
-body .school-intro > p:last-child,
-body .scent-timeline p,
-body .term-grid p {
-  color: var(--fg-muted);
-}
-body .scent-timeline,
-body .term-grid,
-body .note-evolution {
-  border-color: var(--line);
-}
-body .scent-timeline article,
-body .term-grid article,
-body .note-evolution div {
-  border-color: var(--line);
-}
-body .attar-feature {
-  background: var(--bg-band);
-  color: var(--fg);
-}
-body .wear-school {
-  background: var(--bg-band);
-  color: var(--fg);
-}
-body .wear-school > div:first-child > p:last-child,
-body .wear-steps p,
-body .safety-note {
-  color: var(--fg-muted);
-}
-body .wear-steps article {
-  border-color: var(--line);
-}
-body .school-signatures {
-  background: var(--bg);
-  color: var(--fg);
-}
-body .school-signature-grid > a {
-  border-color: var(--line);
-}
-body .school-signature-grid small,
-body .school-signature-grid p {
-  color: var(--fg-muted);
-}
 
 body .admin-shell {
   background: var(--bg);
@@ -1950,7 +1897,8 @@ main {
   overflow: hidden;
 }
 /* Weighted to the bottom so the headline keeps contrast wherever the crop
-   lands, without dimming the whole photograph. */
+   lands,
+without dimming the whole photograph. */
 .shop-hero-scrim {
   position: absolute;
   inset: 0;
@@ -2909,7 +2857,8 @@ main {
 
 /* Scroll reveals are handled by <Reveal> (src/components/Reveal.tsx).
    The previous implementation lived behind @supports (animation-timeline:
-   view()) with no fallback branch, so it did nothing at all in Safari and
+   view()) with no fallback branch,
+so it did nothing at all in Safari and
    Firefox. */
 
 /* Blur-up fade for <Photo>. The blurred placeholder is painted by next/image;
@@ -3290,7 +3239,8 @@ main {
 .perfume-spray-template {
   display: none;
 }
-/* Centred on the pointer, so the ring reads as coming from the click itself
+/* Centred on the pointer,
+so the ring reads as coming from the click itself
    rather than from a drawn object sitting beside it. */
 .perfume-spray-burst {
   position: fixed;
@@ -3322,7 +3272,8 @@ main {
   animation-duration: 0.95s;
   animation-delay: 0.06s;
 }
-/* The mist itself: a soft champagne bloom, no hard edge anywhere. */
+/* The mist itself: a soft champagne bloom,
+no hard edge anywhere. */
 .perfume-spray-haze {
   width: 5rem;
   height: 5rem;
@@ -3337,7 +3288,8 @@ main {
   filter: blur(6px);
   animation: perfume-haze 0.95s ease-out both;
 }
-/* Fine particles, few and dim — suggestion rather than confetti. */
+/* Fine particles,
+few and dim — suggestion rather than confetti. */
 .perfume-spray-mist i {
   position: absolute;
   top: 0;
@@ -3398,11 +3350,6 @@ main {
     animation: none !important;
     transform: none !important;
   }
-}
-
-.school-section,
-.school-signatures {
-  padding: 8rem max(5vw, 1.5rem);
 }
 .world-card-shade {
   position: absolute;
@@ -3522,240 +3469,6 @@ main {
 .school-hero .lux-button {
   margin-top: 2rem;
 }
-.school-chapters {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  display: flex;
-  justify-content: center;
-  gap: clamp(1rem, 4vw, 4rem);
-  padding: 1.2rem 1rem;
-  overflow-x: auto;
-  background: rgba(12, 12, 11, 0.92);
-  border-block: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(16px);
-}
-.school-chapters a {
-  white-space: nowrap;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  font-size: 0.62rem;
-  color: var(--fg-muted);
-}
-.school-intro {
-  max-width: 52rem;
-  margin-bottom: 4rem;
-}
-.school-intro h2,
-.attar-feature h2,
-.wear-school h2 {
-  margin: 1rem 0 1.5rem;
-  font-size: clamp(3.2rem, 6vw, 6.5rem);
-}
-.school-intro > p:last-child,
-.attar-feature p,
-.wear-school > div:first-child > p:last-child {
-  color: var(--fg-muted);
-  line-height: 1.8;
-}
-.scent-timeline {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  max-width: 1500px;
-  margin: auto;
-  border-top: 1px solid var(--line);
-}
-.scent-timeline article {
-  position: relative;
-  padding: 2.5rem 1.5rem;
-  border-right: 1px solid var(--line);
-}
-.scent-timeline article::before {
-  content: "";
-  position: absolute;
-  top: -0.35rem;
-  left: 1.5rem;
-  width: 0.7rem;
-  height: 0.7rem;
-  border-radius: 50%;
-  background: #c9a96e;
-}
-.scent-timeline span,
-.wear-steps span {
-  color: var(--accent);
-  font-size: 0.65rem;
-  letter-spacing: 0.16em;
-}
-.scent-timeline h3 {
-  margin: 1.25rem 0 0.8rem;
-  font: 500 1.6rem var(--font-display);
-}
-.scent-timeline p {
-  color: var(--fg-subtle);
-  font-size: 0.74rem;
-  line-height: 1.7;
-}
-.attar-feature {
-  display: grid;
-  grid-template-columns: 0.9fr 1.1fr;
-  align-items: center;
-  gap: clamp(3rem, 8vw, 9rem);
-  padding: 9rem max(7vw, 1.5rem);
-  background: var(--bg-band);
-  color: var(--fg);
-}
-.attar-feature p {
-  color: rgba(23, 21, 18, 0.65);
-}
-.attar-visual {
-  min-height: 28rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  background: radial-gradient(circle at 50% 80%, #9d673b, #2d2119 65%);
-}
-.attar-visual span {
-  display: grid;
-  place-items: center;
-  width: 9rem;
-  height: 12rem;
-  border: 1px solid #e3b66d;
-  border-radius: 1rem 1rem 3rem 3rem;
-  font: 500 1.5rem var(--font-display);
-}
-.attar-visual i {
-  width: 25%;
-  height: 1px;
-  background: #e3b66d;
-}
-.school-note {
-  margin-top: 1.5rem;
-  padding-left: 1.2rem;
-  border-left: 2px solid #9d673b;
-  font-size: 0.82rem;
-}
-.term-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  max-width: 1500px;
-  margin: auto;
-}
-.term-grid article {
-  min-height: 15rem;
-  padding: 2rem;
-  border: 1px solid var(--line);
-}
-.term-grid strong {
-  font: 500 2.4rem var(--font-display);
-}
-.term-grid p {
-  margin-top: 1.5rem;
-  color: var(--fg-subtle);
-  line-height: 1.7;
-  font-size: 0.8rem;
-}
-.note-evolution {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  max-width: 60rem;
-  margin: 4rem auto 0;
-}
-.note-evolution div {
-  padding: 1.8rem;
-  text-align: center;
-  border-bottom: 2px solid #c9a96e;
-}
-.note-evolution span {
-  display: block;
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-  font-size: 0.62rem;
-  color: var(--fg-subtle);
-}
-.note-evolution strong {
-  display: block;
-  margin-top: 0.6rem;
-  font: 500 1.5rem var(--font-display);
-}
-.wear-school {
-  padding: 9rem max(6vw, 1.5rem);
-  background: var(--bg-band);
-}
-.wear-school > div:first-child {
-  max-width: 52rem;
-}
-.wear-steps {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  margin-top: 4rem;
-}
-.wear-steps article {
-  padding: 2rem;
-  border: 1px solid var(--line);
-}
-.wear-steps svg {
-  color: var(--accent);
-  margin-bottom: 2rem;
-}
-.wear-steps h3 {
-  margin: 0.7rem 0;
-  font: 500 1.8rem var(--font-display);
-}
-.wear-steps p {
-  font-size: 0.78rem;
-  line-height: 1.6;
-  color: var(--fg-subtle);
-}
-.safety-note {
-  margin-top: 2rem;
-  color: var(--fg-subtle);
-  font-size: 0.72rem;
-}
-.school-signature-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  max-width: 1500px;
-  margin: auto;
-}
-.school-signature-grid > a {
-  padding-bottom: 1.5rem;
-  color: inherit;
-  border-bottom: 1px solid var(--line);
-}
-.school-signature-image {
-  position: relative;
-  aspect-ratio: 4/5;
-  overflow: hidden;
-  margin-bottom: 1.3rem;
-}
-.school-signature-grid img {
-  transition: transform 0.7s var(--ease-premium);
-}
-.school-signature-grid a:hover img {
-  transform: scale(1.035);
-}
-.school-signature-grid small {
-  color: var(--fg-subtle);
-  text-transform: uppercase;
-  letter-spacing: 0.13em;
-  font-size: 0.6rem;
-}
-.school-signature-grid h3 {
-  margin-top: 0.5rem;
-  font: 500 2.3rem var(--font-display);
-}
-.school-signature-grid p {
-  color: var(--fg-muted);
-  font-size: 0.72rem;
-}
-.school-signature-grid a > span {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  margin-top: 1rem;
-  font-size: 0.7rem;
-}
 .school-final {
   padding: 10rem 1.5rem;
   text-align: center;
@@ -3775,34 +3488,11 @@ main {
 }
 
 @media (max-width: 900px) {
-  .school-section,
-  .school-signatures {
-    padding-block: 5rem;
-  }
-  .school-signature-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-  .attar-feature {
-    grid-template-columns: 1fr;
-  }
-  .scent-timeline {
-    grid-template-columns: 1fr 1fr;
-  }
-  .term-grid,
-  .wear-steps {
-    grid-template-columns: 1fr 1fr;
-  }
   .purchase-assurance {
     grid-template-columns: 1fr;
   }
 }
 @media (max-width: 600px) {
-  .school-signature-grid,
-  .scent-timeline,
-  .term-grid,
-  .wear-steps {
-    grid-template-columns: 1fr;
-  }
   .school-hero {
     min-height: 82vh;
   }
@@ -3811,19 +3501,6 @@ main {
   }
   .school-hero h1 {
     font-size: 4rem;
-  }
-  .attar-feature {
-    padding-block: 5rem;
-  }
-  .attar-visual {
-    min-height: 20rem;
-  }
-  .attar-visual span {
-    width: 6.5rem;
-    height: 9rem;
-  }
-  .note-evolution {
-    grid-template-columns: 1fr;
   }
   .product-guidance-grid {
     grid-template-columns: 1fr;
@@ -4019,16 +3696,11 @@ body .scent-school {
   background: var(--bg);
   color: var(--fg);
 }
-body .scent-school .school-hero,
-body .scent-school .attar-feature {
+body .scent-school .school-hero {
   color: var(--fg);
 }
-body .scent-school .school-hero .eyebrow,
-body .scent-school .attar-feature .eyebrow {
+body .scent-school .school-hero .eyebrow {
   color: var(--accent);
-}
-body .scent-school .note-evolution span {
-  color: var(--fg-muted);
 }
 
 body .admin-shell .inventory-row,
@@ -4670,59 +4342,6 @@ body .catalog-editor > button {
     scroll-snap-align: start;
     scroll-snap-stop: always;
   }
-  body .school-chapters {
-    position: relative;
-    top: auto;
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0;
-    width: 100%;
-    max-width: 100%;
-    overflow: hidden;
-    border-block: 1px solid #d2c9bb;
-    padding: 0;
-    background: var(--bg-raised);
-    backdrop-filter: none;
-    counter-reset: school-chapter;
-    scrollbar-width: none;
-  }
-  body .school-chapters::-webkit-scrollbar {
-    display: none;
-  }
-  body .school-chapters a {
-    display: flex;
-    min-width: 0;
-    min-height: 4.2rem;
-    align-items: center;
-    gap: 0.65rem;
-    border-right: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
-    padding: 0.9rem 0.8rem;
-    color: #4f4942;
-    font-size: 0.58rem;
-    line-height: 1.45;
-    letter-spacing: 0.1em;
-    white-space: normal;
-    counter-increment: school-chapter;
-  }
-  body .school-chapters a::before {
-    content: "0" counter(school-chapter);
-    flex: 0 0 auto;
-    color: var(--accent);
-    font-family: var(--font-display);
-    font-size: 0.82rem;
-    letter-spacing: 0;
-  }
-  body .school-chapters a:nth-child(even) {
-    border-right: 0;
-  }
-  body .school-chapters a:last-child {
-    grid-column: 1 / -1;
-    justify-content: center;
-    border-right: 0;
-    border-bottom: 0;
-    background: var(--bg-raised);
-  }
 }
 
 /* Storefront theme picker (admin > Appearance) */
@@ -4909,7 +4528,8 @@ body .catalog-editor > button {
 }
 
 /* ==========================================================================
-   Product story: vertical, alternating image + copy sequence.
+   Product story: vertical,
+alternating image + copy sequence.
    Replaces the old PDP carousel. Mobile-first; alternation is desktop-only.
    ========================================================================== */
 .product-story {
@@ -4923,7 +4543,8 @@ body .catalog-editor > button {
   gap: 1.5rem;
   align-items: center;
 }
-/* aspect-ratio reserves the box before the image decodes, so the sequence
+/* aspect-ratio reserves the box before the image decodes,
+so the sequence
    never shifts while loading. */
 .story-media {
   position: relative;
@@ -4972,8 +4593,10 @@ body .catalog-editor > button {
   transform: translate3d(0, 0, 0);
 }
 
-/* Tablet: two columns, tightened. Below this the text column would fall
-   under ~200px of usable width, so it stays single-column. */
+/* Tablet: two columns,
+tightened. Below this the text column would fall
+   under ~200px of usable width,
+so it stays single-column. */
 @media (min-width: 768px) {
   .product-story {
     gap: clamp(4rem, 7vw, 6rem);
@@ -5034,7 +4657,8 @@ body .catalog-editor > button {
 
 /* ==========================================================================
    Floating purchase bar on the product page.
-   Fixed, so it can never shift the layout. Hidden until the primary Add to
+   Fixed,
+so it can never shift the layout. Hidden until the primary Add to
    bag button has scrolled past.
    ========================================================================== */
 .sticky-buy {
@@ -5118,7 +4742,8 @@ body .catalog-editor > button {
   color: var(--accent);
 }
 
-/* Desktop: a card in the bottom-right rather than a full-width bar, so it
+/* Desktop: a card in the bottom-right rather than a full-width bar,
+so it
    does not sit across the photography. */
 @media (min-width: 768px) {
   .sticky-buy {
@@ -5222,7 +4847,9 @@ body .catalog-editor > button {
    -------------------------------------------------------------------------
    Below 901px the hero stays the full-bleed campaign photograph with the
    overlaid mobile copy. From 901px up it becomes a two-column spread: a dark
-   type column on the left, the campaign image framed on the right, with a
+   type column on the left,
+the campaign image framed on the right,
+with a
    thumbnail rail so the other signatures are visible rather than implied.
    ========================================================================= */
 .hero-stage {
@@ -5254,7 +4881,9 @@ body .catalog-editor > button {
       var(--ink-950, #08090a);
   }
 
-  /* Column two: the photograph, inset so it reads as a plate, not a banner. */
+  /* Column two: the photograph,
+inset so it reads as a plate,
+not a banner. */
   .hero-stage {
     position: relative;
     inset: auto;
@@ -5385,7 +5014,8 @@ body .catalog-editor > button {
     color: var(--gold-300, #e2c78d);
   }
 
-  /* The rail: counter, arrows and the other campaigns as real thumbnails. */
+  /* The rail: counter,
+arrows and the other campaigns as real thumbnails. */
   .hero-editorial-rail {
     display: flex;
     align-items: center;
@@ -5499,7 +5129,8 @@ body .catalog-editor > button {
 
 /* Collapse the fixed chrome while the cart is open.
    The announcement bar (z-index 80) and header (z-index 70) both sit above the
-   cart panel, and the bar was covering the panel's close button. */
+   cart panel,
+and the bar was covering the panel's close button. */
 body[data-overlay="cart"] .announcement-bar,
 body[data-overlay="cart"] .site-header {
   transform: translate3d(0, -100%, 0);
@@ -5520,9 +5151,12 @@ body[data-overlay="cart"] .site-header {
    Signature panels — desktop spread
    -------------------------------------------------------------------------
    Every gallery frame is a 4:5 portrait. Full-bleeding one across a wide
-   desktop panel scales it up and crops vertically through the middle, which
+   desktop panel scales it up and crops vertically through the middle,
+which
    is what removed the bottle and left a torso. From 901px up the photograph
-   gets its own 4:5 plate beside the type, so the frame is shown whole, and
+   gets its own 4:5 plate beside the type,
+so the frame is shown whole,
+and
    the plate alternates sides down the stack.
    ========================================================================= */
 @media (min-width: 901px) {
@@ -5615,7 +5249,8 @@ body[data-overlay="cart"] .site-header {
 /* =========================================================================
    Signature panels — editorial copy and second frame
    -------------------------------------------------------------------------
-   The tagline, the fact list and the inset photograph are desktop-only: the
+   The tagline,
+the fact list and the inset photograph are desktop-only: the
    phone panel is a portrait photo with the name over it and has no room for
    any of them.
    ========================================================================= */
@@ -5624,14 +5259,16 @@ body[data-overlay="cart"] .site-header {
 .signature-panel-inset {
   display: none;
 }
-/* Positioned in every state, so the fill image inside always has a
+/* Positioned in every state,
+so the fill image inside always has a
    containing block even before the desktop rules apply. */
 .signature-panel-inset {
   position: relative;
 }
 
 @media (min-width: 901px) {
-  /* Was inline-flex, which let the Explore link flow onto the same line as
+  /* Was inline-flex,
+which let the Explore link flow onto the same line as
      the character list. Block-level flex keeps the rule-and-traits row on its
      own line while the ::before hairline still centres against the text. */
   .signature-panel-character {
@@ -5680,7 +5317,8 @@ body[data-overlay="cart"] .site-header {
     line-height: 1.5;
   }
 
-  /* The second frame, hung off the inner edge of the main plate so it fills
+  /* The second frame,
+hung off the inner edge of the main plate so it fills
      the gap the two columns leave down the middle of the panel. */
   .signature-panel-inset {
     position: relative;
@@ -5709,9 +5347,693 @@ body[data-overlay="cart"] .site-header {
 }
 
 /* Below this the copy column is too narrow to carry the fact list beside an
-   inset, so the second frame steps aside and the type keeps the width. */
+   inset,
+so the second frame steps aside and the type keeps the width. */
 @media (min-width: 901px) and (max-width: 1180px) {
   .signature-panel-inset {
     display: none;
   }
+}
+
+/* =========================================================================
+   Scent School — course hub and chapter pages
+   -------------------------------------------------------------------------
+   The school used to be one long page of anchors. It is now a hub plus eight
+   real routes,
+so these styles cover a course index and a repeatable lesson
+   template rather than a single bespoke page.
+   ========================================================================= */
+.school-hub,
+.lesson-page {
+  background: var(--bg);
+  color: var(--fg);
+}
+
+/* ---- hub: hero additions ---- */
+.school-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+.school-hero-meta {
+  margin-top: 1.5rem;
+  color: rgba(247, 242, 232, 0.62);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* ---- hub: what you will learn ---- */
+.school-promise {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-band);
+}
+.school-promise article {
+  border-right: 1px solid var(--line);
+  padding: clamp(2.5rem, 4vw, 3.75rem) clamp(1.5rem, 3vw, 2.75rem);
+}
+.school-promise article:last-child {
+  border-right: 0;
+}
+.school-promise svg {
+  color: var(--accent);
+}
+.school-promise h2 {
+  margin: 1rem 0 0.6rem;
+  font-family: var(--font-display), serif;
+  font-size: 1.5rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+.school-promise p {
+  color: var(--fg-muted);
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+
+/* ---- hub: the curriculum grid ---- */
+.school-curriculum {
+  padding: clamp(4.5rem, 9vw, 8rem) max(5vw, 1.25rem);
+}
+.school-chapter-cards {
+  display: grid;
+  gap: clamp(1.25rem, 2.5vw, 2rem);
+  grid-template-columns: repeat(auto-fill, minmax(19rem, 1fr));
+  margin-top: 3.5rem;
+  list-style: none;
+}
+.school-chapter-card a {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--bg-raised);
+  transition:
+    border-color 0.35s var(--ease-premium),
+    transform 0.35s var(--ease-premium),
+    box-shadow 0.35s var(--ease-premium);
+}
+.school-chapter-card a:hover,
+.school-chapter-card a:focus-visible {
+  border-color: rgba(213, 184, 123, 0.5);
+  outline: none;
+  transform: translateY(-4px);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.32);
+}
+.school-chapter-image {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: var(--bg-band);
+}
+.school-chapter-image::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(8, 9, 10, 0.15),
+    rgba(8, 9, 10, 0.72)
+  );
+}
+.school-chapter-card a:hover .school-chapter-image img {
+  transform: scale(1.04);
+}
+.school-chapter-image img {
+  transition: transform 0.7s var(--ease-premium);
+}
+.school-chapter-number {
+  position: absolute;
+  bottom: 0.9rem;
+  left: 1.1rem;
+  z-index: 2;
+  color: var(--gold-300);
+  font-family: var(--font-display), serif;
+  font-size: 2.1rem;
+  line-height: 1;
+}
+.school-chapter-copy {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  padding: 1.4rem 1.35rem 1.5rem;
+}
+.school-chapter-copy h3 {
+  font-family: var(--font-display), serif;
+  font-size: 1.4rem;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+}
+.school-chapter-copy > p {
+  flex: 1 1 auto;
+  margin-top: 0.65rem;
+  color: var(--fg-muted);
+  font-size: 0.88rem;
+  line-height: 1.65;
+}
+.school-chapter-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.4rem;
+  color: var(--accent);
+  font-size: 0.64rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.school-chapter-meta i {
+  width: 1px;
+  height: 0.8rem;
+  margin: 0 0.15rem;
+  background: var(--line-strong);
+}
+.school-chapter-meta svg:last-child {
+  transition: transform 0.3s var(--ease-premium);
+}
+.school-chapter-card a:hover .school-chapter-meta svg:last-child {
+  transform: translateX(3px);
+}
+
+/* ---- lesson: progress and hero ---- */
+.lesson-progress {
+  position: sticky;
+  z-index: 5;
+  top: 0;
+  height: 2px;
+  background: var(--line);
+}
+.lesson-progress span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold-500), var(--gold-300));
+}
+.lesson-hero {
+  display: grid;
+  align-items: center;
+  gap: clamp(2rem, 5vw, 5rem);
+  grid-template-columns: 1fr 1fr;
+  padding: clamp(3rem, 6vw, 6rem) max(5vw, 1.25rem);
+  background: var(--bg-band);
+}
+.lesson-hero-media {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  max-height: 34rem;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+}
+.lesson-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--fg-muted);
+  font-size: 0.66rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  transition: color 0.25s ease;
+}
+.lesson-back:hover {
+  color: var(--accent);
+}
+.lesson-kicker {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-top: 1.75rem;
+  color: var(--accent);
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+.lesson-kicker i {
+  width: 1.6rem;
+  height: 1px;
+  background: var(--line-strong);
+}
+.lesson-hero h1 {
+  margin-top: 1rem;
+  font-family: var(--font-display), serif;
+  font-size: clamp(2.6rem, 4.6vw, 4.5rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  text-wrap: balance;
+}
+.lesson-lede {
+  max-width: 42ch;
+  margin-top: 1.35rem;
+  color: var(--fg-muted);
+  font-size: 1.02rem;
+  line-height: 1.75;
+}
+.lesson-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 1.75rem;
+  color: var(--fg-subtle);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* ---- lesson: body ---- */
+.lesson-body {
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: clamp(3.5rem, 7vw, 6rem) max(5vw, 1.25rem);
+}
+.lesson-block + .lesson-block {
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+}
+.lesson-prose p {
+  color: var(--fg-muted);
+  font-size: 1.02rem;
+  line-height: 1.85;
+}
+.lesson-prose p + p {
+  margin-top: 1.2rem;
+}
+
+.lesson-timeline {
+  display: grid;
+  gap: 0;
+  list-style: none;
+}
+.lesson-timeline li {
+  position: relative;
+  border-left: 1px solid var(--line);
+  padding: 0 0 2.25rem 2rem;
+}
+.lesson-timeline li:last-child {
+  border-left-color: transparent;
+  padding-bottom: 0;
+}
+.lesson-timeline-index {
+  position: absolute;
+  top: 0.1rem;
+  left: 0;
+  display: grid;
+  width: 1.9rem;
+  height: 1.9rem;
+  place-items: center;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  background: var(--bg);
+  color: var(--accent);
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  transform: translateX(-50%);
+}
+.lesson-timeline h3 {
+  font-family: var(--font-display), serif;
+  font-size: 1.45rem;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+}
+.lesson-timeline p {
+  margin-top: 0.5rem;
+  color: var(--fg-muted);
+  font-size: 0.95rem;
+  line-height: 1.75;
+}
+
+.lesson-terms {
+  display: grid;
+  gap: 0;
+  border-top: 1px solid var(--line);
+}
+.lesson-terms > div {
+  display: grid;
+  gap: 0.35rem 2rem;
+  border-bottom: 1px solid var(--line);
+  padding: 1.3rem 0;
+  grid-template-columns: 13rem 1fr;
+}
+.lesson-terms dt {
+  color: var(--fg);
+  font-family: var(--font-display), serif;
+  font-size: 1.15rem;
+  font-weight: 500;
+}
+.lesson-terms dd {
+  color: var(--fg-muted);
+  font-size: 0.95rem;
+  line-height: 1.75;
+}
+
+.lesson-steps {
+  display: grid;
+  gap: 1.6rem;
+  list-style: none;
+}
+.lesson-steps li {
+  display: grid;
+  align-items: start;
+  gap: 1.35rem;
+  grid-template-columns: auto 1fr;
+}
+.lesson-steps li > span {
+  display: grid;
+  width: 2.4rem;
+  height: 2.4rem;
+  place-items: center;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  color: var(--accent);
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+}
+.lesson-steps h3 {
+  font-family: var(--font-display), serif;
+  font-size: 1.3rem;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+}
+.lesson-steps p {
+  margin-top: 0.4rem;
+  color: var(--fg-muted);
+  font-size: 0.95rem;
+  line-height: 1.75;
+}
+
+/* Weight increases down the pyramid,
+so the shape carries the idea. */
+.lesson-pyramid {
+  display: grid;
+  gap: 0.6rem;
+}
+.lesson-pyramid > div {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 1.35rem 1.5rem;
+}
+.lesson-pyramid > div[data-stage="top"] {
+  background: rgba(226, 199, 141, 0.05);
+}
+.lesson-pyramid > div[data-stage="heart"] {
+  background: rgba(226, 199, 141, 0.1);
+}
+.lesson-pyramid > div[data-stage="base"] {
+  border-color: rgba(213, 184, 123, 0.34);
+  background: rgba(226, 199, 141, 0.17);
+}
+.lesson-pyramid span {
+  color: var(--accent);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+.lesson-pyramid strong {
+  display: block;
+  margin-top: 0.4rem;
+  font-family: var(--font-display), serif;
+  font-size: 1.35rem;
+  font-weight: 500;
+}
+.lesson-pyramid p {
+  margin-top: 0.3rem;
+  color: var(--fg-muted);
+  font-size: 0.88rem;
+}
+
+.lesson-deg-visual {
+  display: flex;
+  min-height: 17rem;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  border-radius: var(--radius-lg);
+  background: radial-gradient(circle at 50% 80%, #9d673b, #2d2119 65%);
+}
+.lesson-deg-visual span {
+  display: grid;
+  width: 7.5rem;
+  height: 10rem;
+  place-items: center;
+  border: 1px solid #e3b66d;
+  border-radius: 1rem 1rem 3rem 3rem;
+  color: #f4e3c4;
+  font: 500 1.25rem var(--font-display);
+}
+.lesson-deg-visual i {
+  width: 18%;
+  height: 1px;
+  background: #e3b66d;
+}
+.lesson-deg figcaption {
+  margin-top: 0.9rem;
+  color: var(--fg-subtle);
+  font-size: 0.76rem;
+  line-height: 1.6;
+}
+
+.lesson-signatures {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+}
+.lesson-signatures a {
+  display: block;
+  transition: transform 0.35s var(--ease-premium);
+}
+.lesson-signatures a:hover {
+  transform: translateY(-4px);
+}
+.lesson-signature-image {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background: var(--bg-band);
+}
+.lesson-signatures small {
+  display: block;
+  margin-top: 0.9rem;
+  color: var(--fg-subtle);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.lesson-signatures h3 {
+  margin-top: 0.3rem;
+  font-family: var(--font-display), serif;
+  font-size: 1.3rem;
+  font-weight: 500;
+}
+.lesson-signatures > a > p {
+  margin-top: 0.25rem;
+  color: var(--fg-muted);
+  font-size: 0.8rem;
+}
+.lesson-signatures a > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.7rem;
+  color: var(--accent);
+  font-size: 0.74rem;
+}
+
+.lesson-note {
+  border-left: 2px solid var(--accent);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  background: rgba(226, 199, 141, 0.07);
+  padding: 1.4rem 1.6rem;
+}
+.lesson-note h3 {
+  color: var(--accent);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.lesson-note p {
+  margin-top: 0.7rem;
+  color: var(--fg);
+  font-size: 0.97rem;
+  line-height: 1.75;
+}
+
+.lesson-takeaway {
+  margin-top: clamp(3rem, 6vw, 4.5rem);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 2.25rem 0;
+}
+.lesson-takeaway > p:last-child {
+  margin-top: 0.9rem;
+  font-family: var(--font-display), serif;
+  font-size: clamp(1.35rem, 2.3vw, 1.85rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.35;
+  text-wrap: balance;
+}
+.lesson-sources {
+  margin-top: 2.5rem;
+}
+.lesson-sources h2 {
+  color: var(--fg-subtle);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+.lesson-sources ul {
+  margin-top: 0.8rem;
+  list-style: none;
+}
+.lesson-sources li {
+  color: var(--fg-subtle);
+  font-size: 0.78rem;
+  line-height: 1.8;
+}
+
+/* ---- lesson: prev / next ---- */
+.lesson-nav {
+  display: grid;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  grid-template-columns: 1fr 1fr;
+}
+.lesson-nav a {
+  padding: clamp(2rem, 4vw, 3rem) max(5vw, 1.25rem);
+  transition: background 0.3s ease;
+}
+.lesson-nav a[data-direction="next"] {
+  border-left: 1px solid var(--line);
+  text-align: right;
+}
+.lesson-nav a:hover {
+  background: var(--bg-band);
+}
+.lesson-nav span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--accent);
+  font-size: 0.64rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.lesson-nav strong {
+  display: block;
+  margin-top: 0.7rem;
+  font-family: var(--font-display), serif;
+  font-size: clamp(1.2rem, 2vw, 1.75rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+/* ---- lesson: full curriculum,
+always reachable ---- */
+.lesson-index {
+  padding: clamp(3rem, 6vw, 5rem) max(5vw, 1.25rem);
+  background: var(--bg-band);
+}
+.lesson-index ol {
+  display: grid;
+  gap: 0.5rem 2rem;
+  margin-top: 1.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+  list-style: none;
+}
+.lesson-index a {
+  display: flex;
+  align-items: baseline;
+  gap: 0.9rem;
+  border-bottom: 1px solid var(--line);
+  padding: 0.75rem 0;
+  color: var(--fg-muted);
+  font-size: 0.92rem;
+  transition: color 0.25s ease;
+}
+.lesson-index a:hover {
+  color: var(--fg);
+}
+.lesson-index a[aria-current="page"] {
+  color: var(--accent);
+}
+.lesson-index a span {
+  color: var(--fg-subtle);
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+}
+
+@media (max-width: 900px) {
+  .school-promise {
+    grid-template-columns: 1fr;
+  }
+  .school-promise article {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .lesson-hero {
+    grid-template-columns: 1fr;
+  }
+  .lesson-hero-media {
+    max-height: 24rem;
+    aspect-ratio: 3 / 2;
+  }
+  .lesson-terms > div {
+    gap: 0.4rem;
+    grid-template-columns: 1fr;
+  }
+  .lesson-nav {
+    grid-template-columns: 1fr;
+  }
+  .lesson-nav a[data-direction="next"] {
+    border-top: 1px solid var(--line);
+    border-left: 0;
+    text-align: left;
+  }
+}
+
+/* The .text-link CTA was 0.72rem champagne on a dark ground with a 50% rule -
+   legible,
+but it read as fine print rather than the next step. Given weight,
+size and a full-strength rule so it holds its own as a call to action. */
+.text-link {
+  border-bottom-color: rgba(213, 184, 123, 0.85);
+  padding-bottom: 0.4rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  transition:
+    color 0.25s ease,
+    border-color 0.25s ease;
+}
+.text-link:hover,
+.text-link:focus-visible {
+  border-bottom-color: var(--gold-200);
+  color: var(--gold-200);
+}
+/* The scent-philosophy link closes a full-height story panel,
+so it carries
+   more presence than an inline text link elsewhere on the page. */
+.home-story-copy .text-link {
+  margin-top: 2rem;
+  border: 1px solid rgba(213, 184, 123, 0.55);
+  border-radius: 999px;
+  padding: 0.85rem 1.4rem;
+  transition:
+    background 0.3s var(--ease-premium),
+    border-color 0.3s ease,
+    color 0.3s ease,
+    transform 0.3s var(--ease-premium);
+}
+.home-story-copy .text-link:hover,
+.home-story-copy .text-link:focus-visible {
+  border-color: var(--gold-300);
+  background: rgba(213, 184, 123, 0.14);
+  transform: translateY(-2px);
 }
