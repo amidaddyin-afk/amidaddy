@@ -1,0 +1,19 @@
+# Camera originals. public/ holds the WebP derivatives that actually ship, so
+# uploading ~65 MB of source JPEGs to every Vercel build is pure cost in
+# upload and build time. Regenerate locally with scripts/optimize-images.mjs.
+assets-source/
+
+# Local scratch and logs, never needed by a build.
+tmp/
+.tmp/
+*.log
+dev-server.err.log
+dev-server.log
+
+# Source photography drops that live outside public/.
+productPics/
+shopify-migration/
+Edited Photos-*.zip
+
+# Local-only data snapshot; the storefront reads Supabase in production.
+data/

@@ -89,3 +89,38 @@ test("every page shell declares a data-surface", () => {
     );
   }
 });
+
+test("footer account links are client-resolved, not server-rendered", () => {
+  const footer = read("src/components/Footer.tsx");
+  const links = read("src/components/FooterAccountLinks.tsx");
+
+  // Reading the session in the footer would call cookies() from the root
+  // layout and turn every statically prerendered route into a per-request
+  // render, so the footer must not import the server auth helpers.
+  assert.ok(
+    !/getCurrentUser|@\/lib\/auth|lib\/supabase\/server/.test(footer),
+    "Footer must not read auth on the server - it would de-optimise every static route",
+  );
+  assert.match(footer, /<FooterAccountLinks \/>/);
+
+  // Both branches must exist: signed-out offers sign in / create account,
+  // signed-in replaces them with account links.
+  assert.match(links, /"use client"/);
+  assert.match(links, /signed-in/);
+  assert.match(links, /href="\/account"/);
+  assert.match(links, /href="\/login"/);
+  assert.match(links, /href="\/signup"/);
+});
+
+test("footer offers an admin sign-in without advertising the admin route", () => {
+  const footer = read("src/components/Footer.tsx");
+  assert.match(
+    footer,
+    /href="\/login\?next=\/admin"/,
+    "admin entry point should go through the login page",
+  );
+  assert.ok(
+    !/href="\/admin"/.test(footer),
+    "footer should not link straight to /admin",
+  );
+});

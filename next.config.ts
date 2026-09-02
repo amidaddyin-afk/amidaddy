@@ -30,7 +30,11 @@ const nextConfig: NextConfig = {
     // 75 is next/image's own default and must stay allowed, otherwise any
     // component that omits `quality` (or sets it explicitly) gets a 400.
     qualities: [70, 75, 82, 90],
-    minimumCacheTTL: 60 * 60 * 24 * 365,
+    // 30 days, not a year. The optimizer keys its cache on path + width +
+    // quality, so replacing a photo at the same filename serves the old bytes
+    // until this expires. A year would make a swapped product shot effectively
+    // unfixable without renaming the file.
+    minimumCacheTTL: 60 * 60 * 24 * 30,
   },
   async headers() {
     return [

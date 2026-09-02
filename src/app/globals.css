@@ -4961,3 +4961,25 @@ body .catalog-editor > button {
   border-color: var(--fg-subtle);
   background: rgba(8, 9, 9, 0.55);
 }
+
+/* Admin sign-in link in the footer base line. */
+.footer-admin-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  padding: 0.5rem 0.9rem;
+  color: var(--fg-muted);
+  font-size: 0.6rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  transition:
+    border-color var(--dur-base) ease,
+    color var(--dur-base) ease;
+}
+.footer-admin-link:hover,
+.footer-admin-link:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent);
+}
