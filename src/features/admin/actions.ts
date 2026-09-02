@@ -219,6 +219,20 @@ export async function updateSiteThemeAction(
     revalidatePath("/", "layout");
     return { message: `Theme switched to ${theme}.` };
   } catch (error) {
+    // 42703 is undefined_column. It means the site_theme migration has not run
+    // against this database, which a raw Postgres error does not make
+    // actionable for whoever is looking at the admin screen.
+    const code =
+      typeof error === "object" && error && "code" in error
+        ? String((error as { code?: unknown }).code)
+        : undefined;
+    if (code === "42703")
+      return {
+        error:
+          "The theme column is missing. Run the site_theme migration " +
+          "(prisma/migrations/20260902140000_site_theme) against this database, " +
+          "then try again.",
+      };
     return {
       error:
         error instanceof Error ? error.message : "Unable to change the theme.",
