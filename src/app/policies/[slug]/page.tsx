@@ -323,7 +323,7 @@ export default async function PolicyPage({
   if (!isPolicySlug(slug)) notFound();
   const policy = policies[slug];
   return (
-    <main className="policy-shell">
+    <main data-surface="commerce" className="policy-shell">
       <article className="policy-document">
         <p className="eyebrow">Client care · Legal</p>
         <h1 className="display-title">{policy.title}</h1>

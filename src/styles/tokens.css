@@ -1,0 +1,209 @@
+/* =========================================================================
+   Amidaddy design tokens
+   -------------------------------------------------------------------------
+   One palette layer, three art directions. The raw brand scales below never
+   change; the semantic tokens (--bg, --fg, --accent, ...) are re-pointed per
+   theme x surface so every component that reads a semantic token follows the
+   active theme with no per-page overrides.
+
+   Themes (set as data-theme on <html>):
+     noir      every surface dark
+     atelier   every surface light
+     duality   story + chrome dark, commerce light  (default; matches the
+               storefront's original intended look)
+
+   Surfaces (set as data-surface on the page/section root):
+     story     home, product story, Scent School
+     commerce  shop grid, checkout, account, admin
+     chrome    header, footer, cart, overlays
+   ========================================================================= */
+
+@theme {
+  /* Expose the semantic tokens to Tailwind so `text-fg`, `text-muted`,
+     `border-line`, `bg-raised`, `text-accent` become theme-aware utilities
+     and JSX can stop hard-coding `text-white/NN`. */
+  --color-bg: var(--bg);
+  --color-bg-raised: var(--bg-raised);
+  --color-bg-band: var(--bg-band);
+  --color-fg: var(--fg);
+  --color-muted: var(--fg-muted);
+  --color-subtle: var(--fg-subtle);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
+
+  --font-display: var(--font-display-stack);
+  --font-sans: var(--font-sans-stack);
+
+  --ease-premium: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-entrance: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-exit: cubic-bezier(0.55, 0, 0.45, 1);
+}
+
+:root {
+  /* ---- raw brand scales (theme-independent) ---- */
+  --ink-950: #08090a;
+  --ink-900: #0d0f10;
+  --ink-850: #141617;
+  --ink-800: #1b1e1f;
+  --ink-700: #232627;
+
+  --bone-50: #f7f2e8;
+  --bone-100: #efe9db;
+  --bone-200: #e3dbc9;
+  --bone-300: #cbc3b1;
+  --bone-400: #a49c8b;
+
+  --paper-25: #fdfbf7;
+  --paper-50: #f4f0e8;
+  --paper-100: #ece6da;
+  --paper-200: #e2dacb;
+
+  --stone-200: #d8d0c2;
+  --stone-300: #cfc5b5;
+  --stone-400: #a8a091;
+  --stone-500: #7c7568;
+  --stone-600: #6b6459;
+  --stone-700: #4f4942;
+
+  --gold-200: #ead9b8;
+  --gold-300: #e2c78d;
+  --gold-400: #d5b87b;
+  --gold-500: #b8965a;
+  --gold-600: #8a6a35;
+  --gold-700: #6f5423;
+
+  /* ---- fluid type scale ---- */
+  --step--1: clamp(0.78rem, 0.74rem + 0.2vw, 0.88rem);
+  --step-0: clamp(0.95rem, 0.9rem + 0.25vw, 1.05rem);
+  --step-1: clamp(1.15rem, 1.05rem + 0.5vw, 1.4rem);
+  --step-2: clamp(1.5rem, 1.3rem + 1vw, 2.1rem);
+  --step-3: clamp(2.1rem, 1.7rem + 2vw, 3.2rem);
+  --step-4: clamp(2.8rem, 2rem + 3.6vw, 4.6rem);
+  --step-5: clamp(3.4rem, 2.2rem + 5.4vw, 6.4rem);
+  --step-6: clamp(4rem, 2.2rem + 8vw, 8.5rem);
+
+  /* ---- spacing scale ---- */
+  --space-2xs: 0.375rem;
+  --space-xs: 0.625rem;
+  --space-sm: 1rem;
+  --space-md: 1.75rem;
+  --space-lg: 3rem;
+  --space-xl: clamp(4rem, 8vw, 8rem);
+  --space-2xl: clamp(6rem, 12vw, 12rem);
+
+  --radius-sm: 0.55rem;
+  --radius-md: 0.9rem;
+  --radius-lg: 1.25rem;
+  --radius-pill: 999px;
+
+  --dur-fast: 0.18s;
+  --dur-base: 0.32s;
+  --dur-slow: 0.55s;
+  --dur-slower: 0.9s;
+
+  --font-display-stack:
+    var(--font-display), "Cormorant Garamond", Georgia, serif;
+  --font-sans-stack: var(--font-sans), "Manrope", system-ui, sans-serif;
+
+  /* ---- semantic tokens: DEFAULT = light (atelier / duality-commerce) ---- */
+  --bg: var(--paper-50);
+  --bg-raised: var(--paper-25);
+  --bg-band: var(--ink-900);
+  --fg: #171512;
+  --fg-muted: var(--stone-600);
+  --fg-subtle: var(--stone-500);
+  --line: var(--stone-200);
+  --line-strong: var(--stone-300);
+  --accent: var(--gold-600);
+  --accent-fg: var(--paper-25);
+  --accent-quiet: rgba(138, 106, 53, 0.14);
+  --shadow-color: 55 42 22;
+  --shadow-soft: 0 24px 80px rgb(var(--shadow-color) / 0.09);
+  --shadow-lift: 0 30px 90px rgb(var(--shadow-color) / 0.14);
+
+  /* Chrome (header / footer / overlays) is painted from its own token so it can
+     stay dark under duality/noir while the page beneath is light, and follow
+     the page under atelier. */
+  --chrome-bg: #161411;
+
+  /* Text drawn over photography, never over a themed surface. */
+  --on-image: #f7f2e8;
+}
+
+/* Legacy token aliases.
+   These MUST be re-declared per surface, not only on :root. A `--paper:
+   var(--fg)` declared at :root resolves against :root's --fg and then inherits
+   that already-resolved value, so it would stay light even inside a dark
+   surface. Re-declaring here re-resolves them against each surface's own
+   tokens, keeping ~300 existing var(--paper)/var(--muted)/var(--champagne)
+   references theme-aware without having to rewrite them. */
+:root,
+[data-surface] {
+  --ink: var(--bg);
+  --ink-soft: var(--bg-raised);
+  --paper: var(--fg);
+  --muted: var(--fg-muted);
+  --champagne: var(--accent);
+  --champagne-deep: var(--accent);
+  --surface: var(--bg-raised);
+  --surface-raised: var(--bg-raised);
+}
+
+/* ---- DARK surface resolution ---- */
+:root[data-theme="noir"],
+[data-theme="noir"] [data-surface],
+[data-theme="duality"] [data-surface="story"],
+[data-theme="duality"] [data-surface="chrome"],
+/* chrome (header/footer/cart) has no data-theme ancestor scoping issues -
+   it is always dark unless the theme is atelier */
+:root:not([data-theme="atelier"]) [data-surface="chrome"] {
+  --bg: var(--ink-950);
+  --bg-raised: var(--ink-900);
+  /* Rhythm bands lift slightly out of the page rather than inverting to paper -
+     an inverted band on a dark surface leaves light text on a light ground. */
+  --bg-band: var(--ink-850);
+  --fg: var(--bone-50);
+  --fg-muted: var(--bone-300);
+  --fg-subtle: var(--bone-400);
+  --line: rgba(247, 242, 232, 0.12);
+  --line-strong: rgba(247, 242, 232, 0.2);
+  --accent: var(--gold-400);
+  --accent-fg: var(--ink-950);
+  --accent-quiet: rgba(213, 184, 123, 0.16);
+  --shadow-color: 0 0 0;
+  --shadow-soft: 0 24px 80px rgb(0 0 0 / 0.35);
+  --shadow-lift: 0 34px 100px rgb(0 0 0 / 0.45);
+}
+
+/* ---- atelier forces every surface light, even story/chrome ---- */
+[data-theme="atelier"] [data-surface] {
+  --bg: var(--paper-50);
+  --bg-raised: var(--paper-25);
+  --bg-band: var(--paper-100);
+  --fg: #171512;
+  --fg-muted: var(--stone-600);
+  --fg-subtle: var(--stone-500);
+  --line: var(--stone-200);
+  --line-strong: var(--stone-300);
+  --accent: var(--gold-600);
+  --accent-fg: var(--paper-25);
+  --accent-quiet: rgba(138, 106, 53, 0.14);
+  --shadow-color: 55 42 22;
+  --shadow-soft: 0 24px 80px rgb(var(--shadow-color) / 0.09);
+  --shadow-lift: 0 30px 90px rgb(var(--shadow-color) / 0.14);
+}
+
+:root[data-theme="noir"] {
+  --chrome-bg: var(--ink-950);
+}
+
+/* ---- atelier lifts the chrome to paper so the whole site reads light ---- */
+:root[data-theme="atelier"] {
+  --chrome-bg: var(--paper-25);
+}
+[data-theme="atelier"] [data-surface="chrome"] .site-footer,
+[data-theme="atelier"] [data-surface="chrome"] .site-header {
+  color: var(--fg);
+}

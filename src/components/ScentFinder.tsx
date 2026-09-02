@@ -62,7 +62,7 @@ export default function ScentFinder({ products }: { products: Product[] }) {
           <h2 className="display-title mt-5 text-5xl">
             Which version of you is here today?
           </h2>
-          <p className="mt-6 max-w-sm leading-7 text-white/50">
+          <p className="text-subtle mt-6 max-w-sm leading-7">
             Fragrance is difficult to describe and easy to feel. Three choices
             will bring you closer to yours.
           </p>
@@ -75,7 +75,7 @@ export default function ScentFinder({ products }: { products: Product[] }) {
                   <span key={index} className={index <= step ? "active" : ""} />
                 ))}
               </div>
-              <p className="mt-8 text-xs tracking-[.18em] text-white/35 uppercase">
+              <p className="text-subtle mt-8 text-xs tracking-[.18em] uppercase">
                 Question {step + 1} of {questions.length}
               </p>
               <h3 className="display-title mt-4 text-3xl">
@@ -109,7 +109,7 @@ export default function ScentFinder({ products }: { products: Product[] }) {
               <div>
                 <p className="eyebrow">Your instinct says</p>
                 <h3 className="display-title mt-3 text-4xl">{result.name}</h3>
-                <p className="mt-4 leading-7 text-white/55">
+                <p className="text-muted mt-4 leading-7">
                   {result.description}
                 </p>
                 <Link
@@ -120,7 +120,7 @@ export default function ScentFinder({ products }: { products: Product[] }) {
                 </Link>
                 <button
                   onClick={() => setAnswers([])}
-                  className="mt-5 flex items-center gap-2 text-xs tracking-[.15em] text-white/40 uppercase hover:text-white"
+                  className="text-subtle hover:text-fg mt-5 flex items-center gap-2 text-xs tracking-[.15em] uppercase"
                 >
                   <RotateCcw size={13} /> Start again
                 </button>

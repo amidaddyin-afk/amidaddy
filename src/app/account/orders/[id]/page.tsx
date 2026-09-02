@@ -18,7 +18,7 @@ export default async function OrderPage({
   if (!order) notFound();
   const canCancel = ["PAYMENT_PENDING", "CONFIRMED"].includes(order.status);
   return (
-    <main className="account-shell">
+    <main data-surface="commerce" className="account-shell">
       <div className="mx-auto max-w-5xl px-5 pt-16 pb-24 sm:px-8">
         <Link href="/account/orders" className="eyebrow">
           ← All orders
@@ -93,8 +93,8 @@ export default async function OrderPage({
                 India
               </p>
               {order.trackingNumber && (
-                <div className="mt-5 border-t border-white/10 pt-5">
-                  <p className="text-sm text-white/45">
+                <div className="border-line mt-5 border-t pt-5">
+                  <p className="text-subtle text-sm">
                     {order.courierName} · {order.trackingNumber}
                   </p>
                   {order.trackingUrl && (
@@ -112,7 +112,7 @@ export default async function OrderPage({
             </section>
             <section className="lux-panel p-6">
               <p className="eyebrow">Need help with this order?</p>
-              <p className="mt-3 text-sm leading-6 text-white/45">
+              <p className="text-subtle mt-3 text-sm leading-6">
                 Cancellation, return and replacement information is available on
                 a separate page.
               </p>

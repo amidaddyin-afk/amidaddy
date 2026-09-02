@@ -1,10 +1,11 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { z } from "zod";
 import { requireAdminUser } from "@/lib/auth";
 import { appendAuditEvent } from "@/lib/audit";
 import { db, transaction } from "@/lib/db";
+import { SITE_THEME_TAG, SITE_THEMES } from "@/lib/theme-config";
 
 export type AdminActionState = { error?: string; message?: string };
 async function admin() {
@@ -183,6 +184,44 @@ export async function updateStoreSettingsAction(
     return {
       error:
         error instanceof Error ? error.message : "Unable to update settings.",
+    };
+  }
+}
+
+/**
+ * Switches the storefront art direction for every visitor.
+ *
+ * updateTag expires the cached theme read immediately (read-your-own-writes),
+ * and revalidatePath("/", "layout") drops the rendered HTML of every route
+ * below the root layout, which is where data-theme is written.
+ */
+export async function updateSiteThemeAction(
+  _: AdminActionState,
+  formData: FormData,
+): Promise<AdminActionState> {
+  try {
+    const { user } = await admin();
+    const parsed = z
+      .object({ theme: z.enum(SITE_THEMES) })
+      .safeParse(Object.fromEntries(formData));
+    if (!parsed.success) return { error: "Unknown theme." };
+    const { theme } = parsed.data;
+    await transaction(async (client) => {
+      await client.query(
+        "update public.store_settings set theme=$1,updated_at=now() where id=1",
+        [theme],
+      );
+      await appendAuditEvent(client, user.id, "settings.theme_changed", {
+        theme,
+      });
+    });
+    updateTag(SITE_THEME_TAG);
+    revalidatePath("/", "layout");
+    return { message: `Theme switched to ${theme}.` };
+  } catch (error) {
+    return {
+      error:
+        error instanceof Error ? error.message : "Unable to change the theme.",
     };
   }
 }

@@ -13,7 +13,7 @@ export default async function CheckoutSuccessPage({
   const order = id ? await getOrder(id).catch(() => undefined) : undefined;
   const paid = Boolean(order && order.paymentStatus === "PAID");
   return (
-    <main className="empty-state">
+    <main data-surface="commerce" className="empty-state">
       <ClearCartOnSuccess paid={paid} />
       {paid ? <CheckCircle2 size={52} /> : <Clock3 size={52} />}
       <p className="eyebrow mt-6">
@@ -24,7 +24,7 @@ export default async function CheckoutSuccessPage({
           ? "Your signature is on its way."
           : "We are checking your payment."}
       </h1>
-      <p className="max-w-lg text-sm leading-7 text-white/48">
+      <p className="text-subtle max-w-lg text-sm leading-7">
         {paid
           ? `Order ${order!.id} is confirmed. Sign in with the same verified email to track every step.`
           : "Razorpay confirmation can take a few moments. Your order will update automatically from the secure payment notification."}

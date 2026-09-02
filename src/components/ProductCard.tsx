@@ -93,9 +93,9 @@ export default function ProductCard({
             </p>
             <h3 className="display-title mt-2 text-2xl">{product.name}</h3>
           </div>
-          <span className="text-sm text-white/45">{product.longevity}</span>
+          <span className="text-subtle text-sm">{product.longevity}</span>
         </div>
-        <p className="mt-4 text-sm leading-6 text-white/52">{product.notes}</p>
+        <p className="text-subtle mt-4 text-sm leading-6">{product.notes}</p>
         {!lockSize && (
           <div className="mt-5 flex gap-2" aria-label="Choose bottle size">
             {product.variants.map((item) => (
@@ -125,7 +125,7 @@ export default function ProductCard({
               {variant ? formatInr(variant.pricePaise) : "Unavailable"}
             </p>
             {variant && variant.mrpPaise > variant.pricePaise && (
-              <p className="text-xs text-white/35 line-through">
+              <p className="text-subtle text-xs line-through">
                 {formatInr(variant.mrpPaise)}
               </p>
             )}

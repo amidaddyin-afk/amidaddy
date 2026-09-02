@@ -65,7 +65,7 @@ export default async function Home() {
   }).replace(/</g, "\\u003c");
 
   return (
-    <main className="storefront-home">
+    <main data-surface="story" className="storefront-home">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: organizationJsonLd }}

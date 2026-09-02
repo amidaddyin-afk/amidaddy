@@ -14,7 +14,7 @@ export default async function AccountPage() {
       : [];
   const paid = orders.reduce((sum, order) => sum + order.totalPaise, 0);
   return (
-    <main className="account-shell">
+    <main data-surface="commerce" className="account-shell">
       <div className="mx-auto max-w-6xl px-5 pt-16 pb-24 sm:px-8">
         <p className="eyebrow">Your Amidaddy</p>
         <div className="mt-4 flex flex-wrap items-end justify-between gap-5">
@@ -22,7 +22,7 @@ export default async function AccountPage() {
             <h1 className="display-title text-5xl">
               Welcome, {profile?.full_name?.split(" ")[0] ?? "back"}.
             </h1>
-            <p className="mt-3 text-white/45">{user.email}</p>
+            <p className="text-subtle mt-3">{user.email}</p>
           </div>
           <form action={signOutAction}>
             <button className="btn-ghost">Sign out</button>
@@ -79,7 +79,7 @@ export default async function AccountPage() {
               ))}
               {!orders.length && (
                 <div className="lux-panel p-8">
-                  <p className="text-white/45">
+                  <p className="text-subtle">
                     Your fragrance history will appear here.
                   </p>
                   <Link href="/shop" className="lux-button mt-5">
@@ -94,7 +94,7 @@ export default async function AccountPage() {
             <h2 className="display-title mt-4 text-3xl">
               Everything in one place.
             </h2>
-            <p className="mt-5 text-sm leading-7 text-white/48">
+            <p className="text-subtle mt-5 text-sm leading-7">
               Track fulfillment, open courier updates, download receipts and
               cancel eligible orders without waiting for support.
             </p>

@@ -71,7 +71,7 @@ const timeline = [
 
 export default function ScentSchoolPage() {
   return (
-    <main className="scent-school">
+    <main data-surface="story" className="scent-school">
       <section className="school-hero">
         <Image
           src="/curated/hero-models-3.webp"

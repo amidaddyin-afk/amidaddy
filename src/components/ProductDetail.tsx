@@ -99,7 +99,7 @@ export default function ProductDetail({
     window.setTimeout(() => setAdded(false), 1800);
   };
   return (
-    <main className="product-page">
+    <main data-surface="story" className="product-page">
       <div className="mx-auto max-w-[1500px]">
         <Link href="/shop" className="eyebrow inline-flex items-center gap-2">
           <ArrowLeft size={14} /> All fragrances
@@ -202,7 +202,7 @@ export default function ProductDetail({
             <h1 className="display-title mt-4 text-5xl sm:text-6xl">
               {product.name}
             </h1>
-            <p className="mt-6 max-w-xl text-base leading-8 text-white/62">
+            <p className="text-muted mt-6 max-w-xl text-base leading-8">
               {product.description}
             </p>
             <p className="text-champagne/85 mt-6 font-serif text-xl leading-8 italic">
@@ -288,9 +288,9 @@ export default function ProductDetail({
                 <p className="text-3xl">
                   {variant ? formatInr(variant.pricePaise) : "Unavailable"}
                 </p>
-                <p className="mt-1 text-xs text-white/40">Inclusive of GST</p>
+                <p className="text-subtle mt-1 text-xs">Inclusive of GST</p>
               </div>
-              <p className="text-right text-xs leading-5 text-white/40">
+              <p className="text-subtle text-right text-xs leading-5">
                 {product.longevity}
                 <br />
                 {product.occasion}
@@ -304,7 +304,7 @@ export default function ProductDetail({
               {added ? <Check size={17} /> : <ShoppingBag size={17} />}{" "}
               {added ? "Added to your bag" : "Add to bag"}
             </button>
-            <div className="mt-5 flex items-center justify-center gap-2 text-xs text-white/45">
+            <div className="text-subtle mt-5 flex items-center justify-center gap-2 text-xs">
               <Truck size={15} />
               <span>₹99 delivery · Complimentary on ₹599 or more</span>
             </div>

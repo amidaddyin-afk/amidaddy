@@ -83,16 +83,16 @@ export default function CartSidebar() {
               duration: reduceMotion ? 0 : 0.5,
               ease: [0.16, 1, 0.3, 1],
             }}
-            className="cart-panel fixed top-0 right-0 bottom-0 z-[70] flex w-full max-w-[420px] flex-col border-l border-white/8 bg-[#0e0e0e]"
+            className="cart-panel border-line fixed top-0 right-0 bottom-0 z-[70] flex w-full max-w-[420px] flex-col border-l bg-[#0e0e0e]"
             role="dialog"
             aria-modal="true"
             aria-label="Shopping bag"
           >
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-white/5 p-6">
+            <div className="border-line flex items-center justify-between border-b p-6">
               <div className="flex items-center gap-3">
                 <ShoppingBag size={20} className="text-[#D4AF37]" />
-                <span className="font-cinzel text-sm tracking-widest text-white uppercase">
+                <span className="font-cinzel text-fg text-sm tracking-widest uppercase">
                   Cart ({totalQty})
                 </span>
               </div>
@@ -100,7 +100,7 @@ export default function CartSidebar() {
                 autoFocus
                 onClick={closeCart}
                 aria-label="Close shopping bag"
-                className="text-white/40 transition-colors hover:text-white"
+                className="text-subtle hover:text-fg transition-colors"
               >
                 <X size={20} />
               </button>
@@ -113,7 +113,7 @@ export default function CartSidebar() {
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="flex h-60 flex-col items-center justify-center text-white/20"
+                    className="text-subtle flex h-60 flex-col items-center justify-center"
                   >
                     <ShoppingBag size={40} className="mb-4" />
                     <p className="text-sm tracking-widest uppercase">
@@ -128,7 +128,7 @@ export default function CartSidebar() {
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: 20 }}
                       layout
-                      className="cart-item flex gap-4 border border-white/5 bg-white/3 p-3"
+                      className="cart-item border-line bg-raised flex gap-4 border p-3"
                     >
                       <div className="h-24 w-20 flex-shrink-0 overflow-hidden bg-[#0d0d0d]">
                         <Image
@@ -143,17 +143,17 @@ export default function CartSidebar() {
                         />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="mb-1 truncate text-sm font-medium text-white">
+                        <p className="text-fg mb-1 truncate text-sm font-medium">
                           {item.product.name}
                         </p>
-                        <p className="mb-3 text-xs tracking-wider text-white/30">
+                        <p className="text-subtle mb-3 text-xs tracking-wider">
                           {item.product.packSize && item.product.packSize > 1
                             ? `${item.product.packSize} × ${item.size}`
                             : item.size}
                         </p>
 
                         <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2 border border-white/10">
+                          <div className="border-line flex items-center gap-2 border">
                             <button
                               onClick={() =>
                                 updateQty(
@@ -162,12 +162,12 @@ export default function CartSidebar() {
                                   item.qty - 1,
                                 )
                               }
-                              className="px-2 py-1 text-white/40 transition-colors hover:text-white"
+                              className="text-subtle hover:text-fg px-2 py-1 transition-colors"
                               aria-label={`Decrease ${item.product.name} quantity`}
                             >
                               <Minus size={12} />
                             </button>
-                            <span className="w-5 text-center text-sm text-white">
+                            <span className="text-fg w-5 text-center text-sm">
                               {item.qty}
                             </span>
                             <button
@@ -179,21 +179,21 @@ export default function CartSidebar() {
                                 )
                               }
                               disabled={item.qty >= 10}
-                              className="px-2 py-1 text-white/40 transition-colors hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
+                              className="text-subtle hover:text-fg px-2 py-1 transition-colors disabled:cursor-not-allowed disabled:opacity-30"
                               aria-label={`Increase ${item.product.name} quantity`}
                             >
                               <Plus size={12} />
                             </button>
                           </div>
                           <div className="flex items-center gap-3">
-                            <span className="text-sm text-white">
+                            <span className="text-fg text-sm">
                               {formatInr(item.unitPricePaise * item.qty)}
                             </span>
                             <button
                               onClick={() =>
                                 removeItem(item.product.id, item.size)
                               }
-                              className="text-white/20 transition-colors hover:text-[#8e1f2f]"
+                              className="text-subtle transition-colors hover:text-[#8e1f2f]"
                               aria-label={`Remove ${item.product.name} from bag`}
                             >
                               <Trash2 size={14} />
@@ -209,17 +209,17 @@ export default function CartSidebar() {
 
             {/* Summary */}
             {items.length > 0 && (
-              <div className="space-y-3 border-t border-white/5 p-6">
+              <div className="border-line space-y-3 border-t p-6">
                 <div className="cart-shipping-progress">
                   <div className="flex items-center justify-between gap-3 text-xs">
-                    <span className="text-white/65">
+                    <span className="text-muted">
                       {freeShippingRemainingPaise > 0
                         ? `Add ${formatInr(freeShippingRemainingPaise)} more for free delivery`
                         : "You unlocked free delivery"}
                     </span>
                     <span className="text-[#D4AF37]">₹599</span>
                   </div>
-                  <div className="mt-2 h-1 overflow-hidden rounded-full bg-white/10">
+                  <div className="bg-raised mt-2 h-1 overflow-hidden rounded-full">
                     <div
                       className="h-full rounded-full bg-[#D4AF37] transition-[width] duration-500"
                       style={{ width: `${shippingProgress}%` }}
@@ -228,7 +228,7 @@ export default function CartSidebar() {
                 </div>
                 {suggestions.length > 0 && (
                   <div className="cart-quick-add">
-                    <p className="mb-2 text-[10px] tracking-[0.18em] text-white/40 uppercase">
+                    <p className="text-subtle mb-2 text-[10px] tracking-[0.18em] uppercase">
                       You may also like
                     </p>
                     <div className="flex gap-2 overflow-x-auto pb-1">
@@ -241,9 +241,9 @@ export default function CartSidebar() {
                         return (
                           <article
                             key={product.id}
-                            className="min-w-[112px] flex-1 border border-white/8 bg-white/[.025] p-2"
+                            className="border-line bg-raised[.025] min-w-[112px] flex-1 border p-2"
                           >
-                            <div className="relative mb-2 aspect-[4/5] overflow-hidden bg-white/5">
+                            <div className="bg-raised relative mb-2 aspect-[4/5] overflow-hidden">
                               <Image
                                 src={image}
                                 alt={`${product.name} 20 ml`}
@@ -252,11 +252,11 @@ export default function CartSidebar() {
                                 className="object-contain"
                               />
                             </div>
-                            <p className="truncate text-[11px] text-white">
+                            <p className="text-fg truncate text-[11px]">
                               {product.name}
                             </p>
                             <div className="mt-1.5 flex items-center justify-between gap-1">
-                              <span className="text-[10px] text-white/45">
+                              <span className="text-subtle text-[10px]">
                                 {price ? formatInr(price) : "20 ml"}
                               </span>
                               <button
@@ -275,20 +275,20 @@ export default function CartSidebar() {
                   </div>
                 )}
                 <div className="flex justify-between text-sm">
-                  <span className="tracking-wider text-white/40">Subtotal</span>
-                  <span className="text-white">{formatInr(subtotalPaise)}</span>
+                  <span className="text-subtle tracking-wider">Subtotal</span>
+                  <span className="text-fg">{formatInr(subtotalPaise)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="tracking-wider text-white/40">Shipping</span>
-                  <span className="text-white">
+                  <span className="text-subtle tracking-wider">Shipping</span>
+                  <span className="text-fg">
                     {estimatedShippingPaise
                       ? formatInr(estimatedShippingPaise)
                       : "Complimentary"}
                   </span>
                 </div>
-                <div className="flex justify-between border-t border-white/5 pt-3 text-lg font-semibold">
-                  <span className="text-white">Total</span>
-                  <span className="text-white">
+                <div className="border-line flex justify-between border-t pt-3 text-lg font-semibold">
+                  <span className="text-fg">Total</span>
+                  <span className="text-fg">
                     {formatInr(estimatedTotalPaise)}
                   </span>
                 </div>

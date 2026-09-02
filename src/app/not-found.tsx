@@ -3,7 +3,7 @@ import { ArrowUpRight } from "lucide-react";
 
 export default function NotFound() {
   return (
-    <main className="system-state">
+    <main data-surface="commerce" className="system-state">
       <div>
         <p className="eyebrow">404 · Scent not found</p>
         <h1>This trail has faded.</h1>

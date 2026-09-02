@@ -5,7 +5,7 @@ import { RefreshCw } from "lucide-react";
 
 export default function ErrorPage({ reset }: { reset: () => void }) {
   return (
-    <main className="system-state">
+    <main data-surface="commerce" className="system-state">
       <div>
         <p className="eyebrow">A brief interruption</p>
         <h1>Let&apos;s return to the ritual.</h1>

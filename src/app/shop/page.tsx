@@ -72,7 +72,7 @@ export default async function ShopPage({
     },
   ];
   return (
-    <main className="shop-page">
+    <main data-surface="commerce" className="shop-page">
       <section className="shop-hero">
         <p className="eyebrow">The olfactory wardrobe</p>
         <h1 className="display-title">
@@ -123,7 +123,7 @@ export default async function ShopPage({
           </label>
           <button className="lux-button">Refine</button>
         </form>
-        <div className="mb-6 flex justify-between text-xs tracking-[.16em] text-white/40 uppercase">
+        <div className="text-subtle mb-6 flex justify-between text-xs tracking-[.16em] uppercase">
           <span>{total} fragrances</span>
           {(query.search || query.collection || query.family) && (
             <a href="/shop" className="text-champagne">

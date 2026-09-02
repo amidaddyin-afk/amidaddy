@@ -41,16 +41,19 @@ export function AuthForm({
   const safeNext =
     next?.startsWith("/") && !next.startsWith("//") ? next : "/account";
   return (
-    <main className="auth-shell min-h-screen px-6 pt-36">
+    <main
+      data-surface="commerce"
+      className="auth-shell min-h-screen px-6 pt-36"
+    >
       <form
         action={formAction}
-        className="auth-panel mx-auto max-w-md border border-white/10 bg-[#0e0e0e] p-7 sm:p-9"
+        className="auth-panel border-line mx-auto max-w-md border bg-[#0e0e0e] p-7 sm:p-9"
       >
         {isLogin && <input type="hidden" name="next" value={safeNext} />}
         <p className="mb-3 text-xs tracking-[0.2em] text-[#D4AF37] uppercase">
           Amidaddy account
         </p>
-        <h1 className="font-cinzel mb-6 text-2xl text-white">
+        <h1 className="font-cinzel text-fg mb-6 text-2xl">
           {isLogin
             ? "Sign in"
             : isSignup
@@ -131,7 +134,7 @@ export function AuthForm({
                   : "Update password"}
         </button>
         {isLogin && (
-          <div className="mt-5 flex justify-between text-sm text-white/60">
+          <div className="text-muted mt-5 flex justify-between text-sm">
             <Link href="/signup" className="hover:text-[#D4AF37]">
               Create account
             </Link>
@@ -141,7 +144,7 @@ export function AuthForm({
           </div>
         )}
         {isSignup && (
-          <p className="mt-5 text-sm text-white/60">
+          <p className="text-muted mt-5 text-sm">
             Already have an account?{" "}
             <Link href="/login" className="text-[#D4AF37]">
               Sign in

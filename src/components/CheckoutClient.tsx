@@ -204,7 +204,7 @@ export default function CheckoutClient() {
     );
 
   return (
-    <main className="checkout-shell">
+    <main data-surface="commerce" className="checkout-shell">
       <div className="mx-auto max-w-6xl">
         <Link href="/shop" className="eyebrow inline-flex items-center gap-2">
           <ArrowLeft size={14} /> Continue exploring
@@ -355,7 +355,7 @@ export default function CheckoutClient() {
               <Sparkles size={16} className="text-champagne" />
               <h2 className="display-title text-2xl">Your selection</h2>
             </div>
-            <div className="mt-6 space-y-5 border-b border-white/10 pb-6">
+            <div className="border-line mt-6 space-y-5 border-b pb-6">
               {items.map((item) => (
                 <div
                   key={item.variantId}
@@ -363,7 +363,7 @@ export default function CheckoutClient() {
                 >
                   <div>
                     <p>{item.product.name}</p>
-                    <p className="mt-1 text-xs text-white/45">
+                    <p className="text-subtle mt-1 text-xs">
                       {item.product.packSize && item.product.packSize > 1
                         ? `${item.product.packSize} × ${item.size}`
                         : item.size}{" "}
@@ -398,7 +398,7 @@ export default function CheckoutClient() {
                 <dd>{formatInr(displayedTotalPaise)}</dd>
               </div>
             </dl>
-            <p className="mt-4 text-xs leading-5 text-white/40">
+            <p className="text-subtle mt-4 text-xs leading-5">
               Prices include GST. Shipping is complimentary on orders of ₹599 or
               more.
             </p>

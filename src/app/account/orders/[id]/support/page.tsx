@@ -31,7 +31,7 @@ export default async function OrderSupportPage({
   );
 
   return (
-    <main className="account-shell">
+    <main data-surface="commerce" className="account-shell">
       <div className="mx-auto max-w-5xl px-5 pt-16 pb-24 sm:px-8">
         <Link
           href={`/account/orders/${order.id}`}
@@ -45,7 +45,7 @@ export default async function OrderSupportPage({
           <h1 className="display-title mt-4 text-5xl sm:text-6xl">
             Cancellation, returns & replacements.
           </h1>
-          <p className="mt-5 max-w-2xl leading-7 text-white/50">
+          <p className="text-subtle mt-5 max-w-2xl leading-7">
             Review the requirements below before choosing the right action for
             your order.
           </p>
@@ -63,14 +63,14 @@ export default async function OrderSupportPage({
               </h2>
               {canCancel ? (
                 <>
-                  <p className="mt-4 text-sm leading-6 text-white/50">
+                  <p className="text-subtle mt-4 text-sm leading-6">
                     This order can still be cancelled. Paid orders receive a
                     full refund through the original Razorpay payment method.
                   </p>
                   <OrderCancelForm orderId={order.id} />
                 </>
               ) : (
-                <p className="mt-4 text-sm leading-6 text-white/50">
+                <p className="text-subtle mt-4 text-sm leading-6">
                   Online cancellation is no longer available because this order
                   has reached {order.status.replaceAll("_", " ").toLowerCase()}.
                   Contact support if you still need help.
@@ -84,7 +84,7 @@ export default async function OrderSupportPage({
               <h2 className="display-title mt-3 text-3xl">
                 Send us the order details.
               </h2>
-              <p className="mt-4 text-sm leading-6 text-white/50">
+              <p className="text-subtle mt-4 text-sm leading-6">
                 If the parcel contains a wrong product or a broken/damaged
                 bottle, email us the order number and the continuous unboxing
                 video described above. Our team will review the request and

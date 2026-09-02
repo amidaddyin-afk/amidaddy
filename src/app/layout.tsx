@@ -7,6 +7,7 @@ import CartSidebar from "@/components/CartSidebar";
 import AnnouncementBar from "@/components/AnnouncementBar";
 import PerfumeSprayCursor from "@/components/PerfumeSprayCursor";
 import Footer from "@/components/Footer";
+import { getSiteTheme } from "@/lib/theme";
 
 const display = Cormorant_Garamond({
   subsets: ["latin"],
@@ -41,21 +42,26 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const theme = await getSiteTheme();
   return (
-    <html lang="en">
+    <html lang="en" data-theme={theme}>
       <body className={`${display.variable} ${sans.variable}`}>
         <PerfumeSprayCursor />
         <CartProvider>
-          <AnnouncementBar />
-          <Navbar />
-          <CartSidebar />
+          <div data-surface="chrome">
+            <AnnouncementBar />
+            <Navbar />
+            <CartSidebar />
+          </div>
           {children}
-          <Footer />
+          <div data-surface="chrome">
+            <Footer />
+          </div>
         </CartProvider>
       </body>
     </html>
