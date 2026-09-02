@@ -1,13 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, ViewTransition } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, ShoppingBag } from "lucide-react";
 import type { Product } from "@/lib/data";
 import { useCart } from "@/context/CartContext";
 import { formatInr } from "@/lib/money";
+import Photo from "@/components/Photo";
+import { EASE, DURATION, staggerDelay, revealViewport } from "@/lib/motion";
 
 export default function ProductCard({
   product,
@@ -45,14 +46,14 @@ export default function ProductCard({
     <motion.article
       initial={reduceMotion ? false : { opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-40px" }}
+      viewport={revealViewport}
       transition={
         reduceMotion
           ? { duration: 0 }
           : {
-              duration: 0.55,
-              delay: Math.min(index, 3) * 0.06,
-              ease: [0.16, 1, 0.3, 1],
+              duration: DURATION.slow,
+              delay: staggerDelay(index),
+              ease: EASE.premium,
             }
       }
       className="product-card"
@@ -63,18 +64,30 @@ export default function ProductCard({
           aria-label={`View ${product.name} ${size}`}
           className="absolute inset-0 z-10"
         />
-        <Image
-          key={cardImage}
-          src={cardImage}
-          alt={`${product.name} — ${product.profile} ${product.concentration}${
-            product.packSize && product.packSize > 1
-              ? `, pack of ${product.packSize}`
-              : ""
-          }, ${size} bottle`}
-          fill
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-          className="object-cover object-center transition-transform duration-700 group-hover:scale-[1.025]"
-        />
+        {/* Paired with the hero on the product page: the browser morphs this
+            image into that one during navigation. default="none" stops it
+            animating during unrelated transitions.
+            The size is part of the name because /shop and the homepage both
+            render every product twice - once per size - and two live
+            ViewTransitions sharing a name break the transition outright. */}
+        <ViewTransition
+          name={`product-${product.slug}-${size}`}
+          share="morph"
+          default="none"
+        >
+          <Photo
+            key={cardImage}
+            src={cardImage}
+            alt={`${product.name} — ${product.profile} ${product.concentration}${
+              product.packSize && product.packSize > 1
+                ? `, pack of ${product.packSize}`
+                : ""
+            }, ${size} bottle`}
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+            className="object-cover object-center transition-transform duration-700 group-hover:scale-[1.025]"
+          />
+        </ViewTransition>
         <div className="product-glow" />
         {(product.badge || product.isNew) && (
           <span className="product-badge">

@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, RotateCcw } from "lucide-react";
 import type { FragranceFamily, Product } from "@/lib/data";
+import Reveal from "@/components/Reveal";
 
 const questions: Array<{
   title: string;
@@ -57,7 +58,7 @@ export default function ScentFinder({ products }: { products: Product[] }) {
     <section className="finder-section" id="scent-finder">
       <div className="finder-orbit" />
       <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[.75fr_1.25fr]">
-        <div data-reveal="left">
+        <Reveal from="left">
           <p className="eyebrow">Scent finder · 60 seconds</p>
           <h2 className="display-title mt-5 text-5xl">
             Which version of you is here today?
@@ -66,8 +67,8 @@ export default function ScentFinder({ products }: { products: Product[] }) {
             Fragrance is difficult to describe and easy to feel. Three choices
             will bring you closer to yours.
           </p>
-        </div>
-        <div className="finder-card" data-reveal>
+        </Reveal>
+        <Reveal className="finder-card" delay={0.08}>
           {!result ? (
             <>
               <div className="finder-progress">
@@ -127,7 +128,7 @@ export default function ScentFinder({ products }: { products: Product[] }) {
               </div>
             </div>
           )}
-        </div>
+        </Reveal>
       </div>
     </section>
   );

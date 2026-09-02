@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useRef, useState, ViewTransition } from "react";
 import {
   ArrowLeft,
   Check,
@@ -17,6 +17,8 @@ import {
 import type { Product } from "@/lib/data";
 import { useCart } from "@/context/CartContext";
 import { formatInr } from "@/lib/money";
+import Photo from "@/components/Photo";
+import Reveal from "@/components/Reveal";
 
 const ingredientVisuals: Partial<
   Record<string, { src: string; width: number; height: number }>
@@ -105,7 +107,7 @@ export default function ProductDetail({
           <ArrowLeft size={14} /> All fragrances
         </Link>
         <div className="mt-8 grid gap-10 lg:grid-cols-[1.15fr_.85fr] lg:gap-16">
-          <section className="product-gallery" data-reveal="left">
+          <Reveal as="section" from="left" className="product-gallery">
             <div
               className="product-hero-image"
               onTouchStart={(event) => {
@@ -120,19 +122,34 @@ export default function ProductDetail({
                 touchStart.current = null;
               }}
             >
-              <Image
-                key={selectedImage}
-                src={selectedImage}
-                alt={`${product.name} — ${product.genderPositioning} ${product.profile} ${product.concentration}${
-                  product.packSize && product.packSize > 1
-                    ? `, pack of ${product.packSize}`
-                    : ""
-                }, ${size} bottle (photo ${selectedImageIndex + 1} of ${activeImages.length})`}
-                fill
-                priority
-                sizes="(max-width:1024px) 100vw, 58vw"
-                className="product-gallery-active-image object-contain"
-              />
+              {/* Other half of the card -> hero morph. Only the first gallery
+                  image carries the name: once the visitor browses the gallery
+                  the pairing is no longer meaningful, and a name that moves
+                  between elements would confuse the next transition. */}
+              <ViewTransition
+                name={
+                  selectedImageIndex === 0
+                    ? `product-${product.slug}-${size}`
+                    : undefined
+                }
+                share="morph"
+                default="none"
+              >
+                <Photo
+                  key={selectedImage}
+                  src={selectedImage}
+                  alt={`${product.name} — ${product.genderPositioning} ${product.profile} ${product.concentration}${
+                    product.packSize && product.packSize > 1
+                      ? `, pack of ${product.packSize}`
+                      : ""
+                  }, ${size} bottle (photo ${selectedImageIndex + 1} of ${activeImages.length})`}
+                  fill
+                  priority
+                  fadeIn={false}
+                  sizes="(max-width:1024px) 100vw, 58vw"
+                  className="product-gallery-active-image object-contain"
+                />
+              </ViewTransition>
               {nextImage && nextImage !== selectedImage && (
                 <Image
                   key={`preload-${nextImage}`}
@@ -191,10 +208,11 @@ export default function ProductDetail({
                 </button>
               ))}
             </div>
-          </section>
-          <section
+          </Reveal>
+          <Reveal
+            as="section"
+            delay={0.08}
             className="flex flex-col justify-center lg:sticky lg:top-28 lg:h-fit lg:py-8"
-            data-reveal
           >
             <p className="eyebrow">
               {product.genderPositioning} · {product.profile}
@@ -322,7 +340,7 @@ export default function ProductDetail({
                 <Truck size={15} /> Live order tracking
               </span>
             </div>
-          </section>
+          </Reveal>
         </div>
       </div>
       <section className="product-offers" aria-label="Current offers">

@@ -3,7 +3,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useReducedMotion } from "framer-motion";
+
+/** Slide dwell time. Kept in sync with the Ken Burns transform in CSS. */
+const HERO_SLIDE_MS = 6500;
 
 const slides = [
   {
@@ -71,19 +75,33 @@ export default function CuratedHero({ slideOrder }: { slideOrder: number[] }) {
   const slideCount = carouselSlides.length;
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
+  const reduceMotion = useReducedMotion();
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
 
   useEffect(() => {
-    if (paused || window.matchMedia("(prefers-reduced-motion: reduce)").matches)
-      return;
+    if (paused || reduceMotion) return;
+    // Matches the Ken Burns duration in CSS. The old 5.5s interval cut a 6.5s
+    // transform short, so the push-in never actually landed.
     const timer = window.setInterval(
       () => setActive((current) => (current + 1) % slideCount),
-      5500,
+      HERO_SLIDE_MS,
     );
     return () => window.clearInterval(timer);
-  }, [paused, slideCount]);
+  }, [paused, slideCount, reduceMotion]);
 
   const show = (index: number) => {
     setActive((index + carouselSlides.length) % carouselSlides.length);
+  };
+
+  const finishSwipe = (x: number, y: number) => {
+    const start = touchStart.current;
+    touchStart.current = null;
+    if (!start) return;
+    const dx = x - start.x;
+    const dy = y - start.y;
+    // Ignore mostly-vertical drags so the carousel never fights page scroll.
+    if (Math.abs(dx) < 44 || Math.abs(dx) <= Math.abs(dy)) return;
+    show(active + (dx < 0 ? 1 : -1));
   };
 
   return (
@@ -91,6 +109,22 @@ export default function CuratedHero({ slideOrder }: { slideOrder: number[] }) {
       className="cinematic-hero hero-carousel"
       aria-label="Amidaddy fragrance campaigns"
       aria-roledescription="carousel"
+      tabIndex={0}
+      onKeyDown={(event) => {
+        if (event.key === "ArrowRight") show(active + 1);
+        if (event.key === "ArrowLeft") show(active - 1);
+      }}
+      onTouchStart={(event) => {
+        const touch = event.changedTouches[0];
+        touchStart.current = { x: touch.clientX, y: touch.clientY };
+      }}
+      onTouchEnd={(event) => {
+        const touch = event.changedTouches[0];
+        finishSwipe(touch.clientX, touch.clientY);
+      }}
+      onTouchCancel={() => {
+        touchStart.current = null;
+      }}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}

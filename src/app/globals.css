@@ -2959,34 +2959,44 @@ main {
   transform: translate3d(4px, 0, 0);
 }
 
-@keyframes reveal-up {
-  from {
-    opacity: 0;
-    transform: translate3d(0, 28px, 0);
-  }
-  to {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
+/* Scroll reveals are handled by <Reveal> (src/components/Reveal.tsx).
+   The previous implementation lived behind @supports (animation-timeline:
+   view()) with no fallback branch, so it did nothing at all in Safari and
+   Firefox. */
+
+/* Blur-up fade for <Photo>. The blurred placeholder is painted by next/image;
+   this only cross-fades the decoded image over it. */
+.photo-fade {
+  opacity: 0;
+  transition: opacity var(--dur-slow) var(--ease-premium);
+}
+.photo-fade.is-loaded {
+  opacity: 1;
+}
+
+/* Shared-element morph between a product card and the product page hero.
+   The blur hides pixel interpolation while the image is resized mid-flight. */
+::view-transition-group(.morph) {
+  animation-duration: 420ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+::view-transition-image-pair(.morph) {
+  animation-name: morph-blur;
+}
+@keyframes morph-blur {
+  30% {
+    filter: blur(4px);
   }
 }
-@keyframes reveal-left {
-  from {
-    opacity: 0;
-    transform: translate3d(-28px, 0, 0);
-  }
-  to {
+
+@media (prefers-reduced-motion: reduce) {
+  .photo-fade {
     opacity: 1;
-    transform: translate3d(0, 0, 0);
+    transition: none;
   }
-}
-@supports (animation-timeline: view()) {
-  [data-reveal] {
-    animation: reveal-up both;
-    animation-timeline: view();
-    animation-range: entry 8% cover 32%;
-  }
-  [data-reveal="left"] {
-    animation-name: reveal-left;
+  ::view-transition-group(*),
+  ::view-transition-image-pair(*) {
+    animation: none !important;
   }
 }
 
@@ -3528,8 +3538,7 @@ main {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-  main,
-  [data-reveal] {
+  main {
     animation: none !important;
     transform: none !important;
   }
