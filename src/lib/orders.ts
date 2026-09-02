@@ -810,6 +810,112 @@ export async function sendOrderEmail(orderId: string, template: string) {
   if (!order) return;
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "";
   const orderNotificationEmail = process.env.ORDER_NOTIFICATION_EMAIL;
+
+  const itemsHtml = order.lines
+    .map(
+      (line) =>
+        `<tr style="border-bottom:1px solid #e0d9ce">
+          <td style="padding:12px;text-align:left">${line.name}<br/><span style="font-size:12px;color:#999">${line.size}</span></td>
+          <td style="padding:12px;text-align:center">${line.qty}</td>
+          <td style="padding:12px;text-align:right">₹${(line.unitPricePaise / 100).toLocaleString("en-IN")}</td>
+          <td style="padding:12px;text-align:right"><strong>₹${(line.lineTotalPaise / 100).toLocaleString("en-IN")}</strong></td>
+        </tr>`,
+    )
+    .join("");
+
+  const html = `
+    <div style="background:#f5f1e8;padding:20px">
+      <div style="max-width:600px;margin:0 auto;background:#fff;padding:30px;border-radius:4px">
+        <div style="text-align:center;margin-bottom:30px">
+          <p style="color:#d8b77a;letter-spacing:.3em;font-size:14px;margin:0">AMIDADDY</p>
+        </div>
+
+        <h1 style="font-size:24px;margin:20px 0;text-align:center">${emailSubject(template, order.id)}</h1>
+        <p style="text-align:center;color:#666;margin-bottom:30px">Order #${order.id}</p>
+
+        <div style="background:#f9f7f3;padding:15px;margin-bottom:30px;border-radius:4px">
+          <p style="margin:0;color:#333"><strong>Status:</strong> ${order.status.replaceAll("_", " ")}</p>
+          <p style="margin:8px 0 0;color:#333"><strong>Date:</strong> ${new Date(order.createdAt).toLocaleDateString("en-IN")}</p>
+        </div>
+
+        <h3 style="font-size:16px;margin:20px 0 15px;color:#333">Order Items</h3>
+        <table style="width:100%;border-collapse:collapse;margin-bottom:20px">
+          <thead>
+            <tr style="border-bottom:2px solid #d8b77a">
+              <th style="padding:12px;text-align:left;color:#333">Product</th>
+              <th style="padding:12px;text-align:center;color:#333">Qty</th>
+              <th style="padding:12px;text-align:right;color:#333">Price</th>
+              <th style="padding:12px;text-align:right;color:#333">Total</th>
+            </tr>
+          </thead>
+          <tbody>${itemsHtml}</tbody>
+        </table>
+
+        <div style="border-top:1px solid #e0d9ce;padding-top:15px;margin-bottom:20px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+            <span>Subtotal:</span>
+            <strong>₹${(order.subtotalPaise / 100).toLocaleString("en-IN")}</strong>
+          </div>
+          ${
+            order.discountPaise > 0
+              ? `<div style="display:flex;justify-content:space-between;margin-bottom:8px;color:#d8b77a">
+            <span>Discount:</span>
+            <strong>-₹${(order.discountPaise / 100).toLocaleString("en-IN")}</strong>
+          </div>`
+              : ""
+          }
+          ${
+            order.shippingPaise > 0
+              ? `<div style="display:flex;justify-content:space-between;margin-bottom:8px">
+            <span>Shipping:</span>
+            <strong>₹${(order.shippingPaise / 100).toLocaleString("en-IN")}</strong>
+          </div>`
+              : ""
+          }
+          ${
+            order.taxPaise > 0
+              ? `<div style="display:flex;justify-content:space-between;margin-bottom:8px">
+            <span>Tax:</span>
+            <strong>₹${(order.taxPaise / 100).toLocaleString("en-IN")}</strong>
+          </div>`
+              : ""
+          }
+          <div style="display:flex;justify-content:space-between;font-size:18px;border-top:1px solid #e0d9ce;padding-top:12px;margin-top:12px">
+            <span><strong>Total:</strong></span>
+            <strong style="color:#d8b77a">₹${(order.totalPaise / 100).toLocaleString("en-IN")}</strong>
+          </div>
+        </div>
+
+        <div style="background:#f9f7f3;padding:15px;margin-bottom:20px;border-radius:4px">
+          <h4 style="margin:0 0 10px;font-size:14px">Shipping Address</h4>
+          <p style="margin:0;font-size:13px;line-height:1.6">
+            ${order.customerName}<br/>
+            ${order.address}<br/>
+            ${order.city}${order.state ? ", " + order.state : ""} ${order.postalCode ?? ""}<br/>
+            ${order.country}
+          </p>
+        </div>
+
+        ${
+          order.trackingUrl
+            ? `<div style="text-align:center;margin-bottom:20px">
+          <a href="${order.trackingUrl}" style="background:#d8b77a;color:#fff;padding:12px 30px;text-decoration:none;border-radius:4px;display:inline-block">Track Your Order</a>
+        </div>`
+            : ""
+        }
+
+        <div style="text-align:center;margin-top:30px;padding-top:20px;border-top:1px solid #e0d9ce">
+          <a href="${appUrl}/account/orders/${order.id}" style="color:#d8b77a;text-decoration:none;font-size:14px">View full order details</a>
+        </div>
+
+        <div style="text-align:center;margin-top:30px;padding-top:20px;border-top:1px solid #e0d9ce;font-size:12px;color:#999">
+          <p style="margin:0">Questions? Reply to this email or visit our store at ${appUrl}</p>
+          <p style="margin:8px 0 0">Thank you for your purchase!</p>
+        </div>
+      </div>
+    </div>
+  `;
+
   await sendMail({
     to: order.email,
     template,
@@ -820,9 +926,7 @@ export async function sendOrderEmail(orderId: string, template: string) {
         ? orderNotificationEmail
         : undefined,
     subject: emailSubject(template, order.id),
-    html: brandedEmailHtml(
-      `<h1>${emailSubject(template, order.id)}</h1><p>Your order status is now <strong>${order.status.replaceAll("_", " ")}</strong>.</p><p>Order total: ₹${(order.totalPaise / 100).toLocaleString("en-IN")}</p>${order.trackingUrl ? `<p><a style="color:#d8b77a" href="${order.trackingUrl}">Track your shipment</a></p>` : ""}<p><a style="color:#d8b77a" href="${appUrl}/account/orders/${order.id}">View order details</a></p>`,
-    ),
+    html,
   });
 }
 
