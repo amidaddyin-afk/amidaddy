@@ -20,7 +20,40 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm audit --audit-level=high
+      - name: npm audit (high/critical, excluding accepted-risk advisories)
+        run: |
+          set -euo pipefail
+          # GHSA-3f6p-5ww8-9rcr, GHSA-rgwj-5xj2-c3m3: mysql2 via prisma.
+          #   App only uses Prisma's PostgreSQL driver; mysql2 is an unused
+          #   transitive dependency Prisma bundles for multi-db support.
+          # GHSA-9wv6-86v2-598j: path-to-regexp via @vercel/config (build-time only,
+          #   no user input reaches its route matching).
+          # No upstream fix exists yet without a downgrade; re-check on future runs.
+          ACCEPTED_ADVISORIES="GHSA-3f6p-5ww8-9rcr GHSA-rgwj-5xj2-c3m3 GHSA-9wv6-86v2-598j"
+          AUDIT_JSON=$(npm audit --audit-level=high --json || true)
+          FAILING=$(echo "$AUDIT_JSON" | node -e '
+            const accepted = process.argv.slice(1);
+            let data = "";
+            process.stdin.on("data", (c) => (data += c));
+            process.stdin.on("end", () => {
+              const report = JSON.parse(data);
+              const ids = Object.values(report.vulnerabilities || {})
+                .filter((v) => v.severity === "high" || v.severity === "critical")
+                .flatMap((v) => v.via)
+                .filter((v) => typeof v === "object" && v.url)
+                .map((v) => v.url.split("/").pop());
+              const unaccepted = [...new Set(ids)].filter((id) => !accepted.includes(id));
+              if (unaccepted.length) {
+                console.log(unaccepted.join(" "));
+              }
+            });
+          ' $ACCEPTED_ADVISORIES)
+          if [ -n "$FAILING" ]; then
+            echo "New high/critical advisories not in the accepted-risk list: $FAILING"
+            npm audit --audit-level=high
+            exit 1
+          fi
+          echo "Only accepted-risk advisories present (or none). OK."
 
   secrets:
     runs-on: ubuntu-latest
