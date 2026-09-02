@@ -76,3 +76,56 @@ test("reduced motion is honoured by the new motion primitives", () => {
   const css = read("src/app/globals.css");
   assert.match(css, /prefers-reduced-motion[\s\S]*?photo-fade/);
 });
+
+test("the PDP carousel is gone and the vertical story replaces it", () => {
+  const detail = read("src/components/ProductDetail.tsx");
+  for (const gone of [
+    "ChevronLeft",
+    "ChevronRight",
+    "gallery-controls",
+    "product-thumbnail-rail",
+    "finishSwipe",
+    "selectedImageIndex",
+  ]) {
+    assert.ok(
+      !detail.includes(gone),
+      `${gone} is carousel machinery and should be removed`,
+    );
+  }
+  assert.match(detail, /<ProductStory tiles=\{storyTiles\} \/>/);
+  // Four images per product, not the ten to fifteen the catalogue holds.
+  assert.match(
+    detail,
+    /STORY_COPY\.slice\(0, Math\.min\(4, images\.length\)\)/,
+  );
+});
+
+test("story tiles reserve space and never alternate on mobile", () => {
+  const css = read("src/app/globals.css");
+  // aspect-ratio holds the box before the image decodes, so no layout shift.
+  assert.match(css, /\.story-media \{[^}]*aspect-ratio: 4 \/ 5/);
+  // The flip only exists inside the >=768px block.
+  const tabletBlock = css.slice(css.indexOf("@media (min-width: 768px)"));
+  assert.ok(
+    tabletBlock.includes("is-flipped"),
+    "alternation must be defined inside a min-width query, never on mobile",
+  );
+});
+
+test("page-enter leaves no transform that would trap fixed children", () => {
+  const css = read("src/app/globals.css");
+  // With fill-mode: both the final transform keeps applying, making <main> a
+  // containing block and pinning the floating buy bar into the page flow.
+  assert.match(
+    css,
+    /animation: page-enter [^;]*backwards;/,
+    "page-enter must not use fill-mode both",
+  );
+});
+
+test("the floating buy bar meets the touch target minimum", () => {
+  const css = read("src/app/globals.css");
+  assert.match(css, /\.sticky-buy-add \{[^}]*min-height: 2\.75rem/); // 44px
+  assert.match(css, /\.sticky-buy-checkout \{[^}]*min-height: 2\.75rem/);
+  assert.match(read("src/components/StickyBuyBar.tsx"), /IntersectionObserver/);
+});

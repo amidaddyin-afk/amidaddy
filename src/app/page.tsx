@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import CuratedHero from "@/components/CuratedHero";
 import ProductCard from "@/components/ProductCard";
+import SignaturePanels from "@/components/SignaturePanels";
 import { listCatalogProducts } from "@/lib/catalog";
 
 const reviews = [
@@ -95,6 +96,9 @@ export default async function Home() {
           </div>
         </article>
       </section>
+
+      {/* Each signature gets a full screen before any pricing appears. */}
+      <SignaturePanels products={signatures} />
 
       <section className="home-collection" id="shop-100ml">
         <div className="commerce-heading">

@@ -6,9 +6,6 @@ import { useRef, useState, ViewTransition } from "react";
 import {
   ArrowLeft,
   Check,
-  ChevronLeft,
-  ChevronRight,
-  Images,
   ShoppingBag,
   ShieldCheck,
   Sparkles,
@@ -19,6 +16,8 @@ import { useCart } from "@/context/CartContext";
 import { formatInr } from "@/lib/money";
 import Photo from "@/components/Photo";
 import Reveal from "@/components/Reveal";
+import ProductStory, { type StoryTile } from "@/components/ProductStory";
+import StickyBuyBar from "@/components/StickyBuyBar";
 
 const ingredientVisuals: Partial<
   Record<string, { src: string; width: number; height: number }>
@@ -45,6 +44,44 @@ const ingredientVisuals: Partial<
   },
 };
 
+/** Copy for the vertical gallery, derived from the product's own note
+ *  pyramid so the tiles say something specific rather than generic filler.
+ *  Capped at four images: the catalogue holds ten to fifteen per product,
+ *  which is a scroll nobody finishes. */
+const STORY_COPY = [
+  { heading: "The bottle", from: (p: Product) => p.description },
+  {
+    heading: "The opening",
+    from: (p: Product) =>
+      `Top notes of ${p.topNotes.join(", ")}. The first impression, and the one that draws someone closer.`,
+  },
+  {
+    heading: "The heart",
+    from: (p: Product) =>
+      `${p.heartNotes.join(", ")} settle into the skin as the opening softens.`,
+  },
+  {
+    heading: "The trail",
+    from: (p: Product) =>
+      `${p.baseNotes.slice(0, 4).join(", ")} in the dry-down. ${p.longevity} of wear.`,
+  },
+] as const;
+
+function buildStoryTiles(
+  product: Product,
+  images: string[],
+  size: "20ml" | "100ml",
+): StoryTile[] {
+  return STORY_COPY.slice(0, Math.min(4, images.length)).map(
+    (entry, index) => ({
+      image: images[index],
+      heading: entry.heading,
+      copy: entry.from(product),
+      alt: `${product.name} ${product.concentration}, ${size} — ${entry.heading.toLowerCase()}`,
+    }),
+  );
+}
+
 export default function ProductDetail({
   product,
   initialSize,
@@ -61,9 +98,7 @@ export default function ProductDetail({
       available[0]?.name ??
       "100ml",
   );
-  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [added, setAdded] = useState(false);
-  const touchStart = useRef<{ x: number; y: number } | null>(null);
   const { addItem } = useCart();
   const variant = product.variants.find((item) => item.name === size);
   const isCombo = product.collection === "combos";
@@ -73,28 +108,9 @@ export default function ProductDetail({
     product.variantImages?.[size]?.length && product.variantImages[size]
       ? product.variantImages[size]!
       : product.images;
-  const selectedImage = activeImages[selectedImageIndex] ?? activeImages[0];
-  const nextImage =
-    activeImages.length > 1
-      ? activeImages[(selectedImageIndex + 1) % activeImages.length]
-      : undefined;
-  const showImage = (index: number) => {
-    const nextIndex = (index + activeImages.length) % activeImages.length;
-    setSelectedImageIndex(nextIndex);
-  };
-  const finishSwipe = (x: number, y: number) => {
-    const start = touchStart.current;
-    touchStart.current = null;
-    if (!start || activeImages.length < 2) return;
-    const horizontalDistance = x - start.x;
-    const verticalDistance = y - start.y;
-    if (
-      Math.abs(horizontalDistance) < 42 ||
-      Math.abs(horizontalDistance) <= Math.abs(verticalDistance)
-    )
-      return;
-    showImage(selectedImageIndex + (horizontalDistance < 0 ? 1 : -1));
-  };
+  const addButtonRef = useRef<HTMLButtonElement>(null);
+  const heroImage = activeImages[0];
+  const storyTiles = buildStoryTiles(product, activeImages, size);
   const add = () => {
     addItem(product, size);
     setAdded(true);
@@ -108,105 +124,29 @@ export default function ProductDetail({
         </Link>
         <div className="mt-8 grid gap-10 lg:grid-cols-[1.15fr_.85fr] lg:gap-16">
           <Reveal as="section" from="left" className="product-gallery">
-            <div
-              className="product-hero-image"
-              onTouchStart={(event) => {
-                const touch = event.changedTouches[0];
-                touchStart.current = { x: touch.clientX, y: touch.clientY };
-              }}
-              onTouchEnd={(event) => {
-                const touch = event.changedTouches[0];
-                finishSwipe(touch.clientX, touch.clientY);
-              }}
-              onTouchCancel={() => {
-                touchStart.current = null;
-              }}
-            >
-              {/* Other half of the card -> hero morph. Only the first gallery
-                  image carries the name: once the visitor browses the gallery
-                  the pairing is no longer meaningful, and a name that moves
-                  between elements would confuse the next transition. */}
+            {/* Single primary frame. The carousel that used to live here is
+                replaced by the vertical <ProductStory> sequence further down
+                the page, so there is one way to browse the photography. */}
+            <div className="product-hero-image">
               <ViewTransition
-                name={
-                  selectedImageIndex === 0
-                    ? `product-${product.slug}-${size}`
-                    : undefined
-                }
+                name={`product-${product.slug}-${size}`}
                 share="morph"
                 default="none"
               >
                 <Photo
-                  key={selectedImage}
-                  src={selectedImage}
+                  src={heroImage}
                   alt={`${product.name} — ${product.genderPositioning} ${product.profile} ${product.concentration}${
                     product.packSize && product.packSize > 1
                       ? `, pack of ${product.packSize}`
                       : ""
-                  }, ${size} bottle (photo ${selectedImageIndex + 1} of ${activeImages.length})`}
+                  }, ${size} bottle`}
                   fill
                   priority
                   fadeIn={false}
                   sizes="(max-width:1024px) 100vw, 58vw"
-                  className="product-gallery-active-image object-contain"
+                  className="object-cover"
                 />
               </ViewTransition>
-              {nextImage && nextImage !== selectedImage && (
-                <Image
-                  key={`preload-${nextImage}`}
-                  src={nextImage}
-                  alt=""
-                  fill
-                  loading="eager"
-                  sizes="(max-width:1024px) 100vw, 58vw"
-                  className="product-image-preload object-contain"
-                  aria-hidden="true"
-                />
-              )}
-              <div className="product-glow" />
-              {activeImages.length > 1 && (
-                <div className="gallery-controls">
-                  <button
-                    type="button"
-                    onClick={() => showImage(selectedImageIndex - 1)}
-                    aria-label="Show previous product photo"
-                  >
-                    <ChevronLeft size={18} />
-                  </button>
-                  <span>
-                    <Images size={14} />
-                    {selectedImageIndex + 1} / {activeImages.length}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => showImage(selectedImageIndex + 1)}
-                    aria-label="Show next product photo"
-                  >
-                    <ChevronRight size={18} />
-                  </button>
-                </div>
-              )}
-            </div>
-            <div
-              className="product-thumbnail-rail"
-              aria-label={`${product.name} photo gallery`}
-            >
-              {activeImages.map((image, index) => (
-                <button
-                  key={image}
-                  onClick={() => setSelectedImageIndex(index)}
-                  className={`thumbnail ${selectedImageIndex === index ? "active" : ""}`}
-                  aria-label={`Show ${product.name} image ${index + 1} of ${activeImages.length}`}
-                  aria-pressed={selectedImageIndex === index}
-                >
-                  <Image
-                    src={image}
-                    alt={`${product.name} ${product.profile} ${product.concentration} thumbnail ${index + 1}`}
-                    fill
-                    className="object-contain"
-                    sizes="68px"
-                  />
-                </button>
-              ))}
             </div>
           </Reveal>
           <Reveal
@@ -315,6 +255,7 @@ export default function ProductDetail({
               </p>
             </div>
             <button
+              ref={addButtonRef}
               onClick={add}
               disabled={!variant || variant.stock <= variant.reserved}
               className="lux-button mt-6 w-full"
@@ -343,6 +284,20 @@ export default function ProductDetail({
           </Reveal>
         </div>
       </div>
+      <ProductStory tiles={storyTiles} />
+      <StickyBuyBar
+        name={product.name}
+        size={
+          product.packSize && product.packSize > 1
+            ? `${product.packSize} × ${size}`
+            : size
+        }
+        pricePaise={variant?.pricePaise}
+        disabled={!variant || variant.stock <= variant.reserved}
+        onAdd={add}
+        added={added}
+        anchorRef={addButtonRef}
+      />
       <section className="product-offers" aria-label="Current offers">
         <article>
           <span>DELIVERY · SAVE</span>

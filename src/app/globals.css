@@ -478,8 +478,7 @@ body .product-page .purchase-assurance p,
 body .product-page .purchase-assurance small {
   color: var(--fg-muted);
 }
-body .product-page .product-hero-image,
-body .product-page .thumbnail {
+body .product-page .product-hero-image {
   background: var(--bg-raised);
 }
 .product-offers {
@@ -1068,7 +1067,12 @@ textarea:focus-visible {
   outline: 0;
 }
 main {
-  animation: page-enter 0.55s var(--ease-premium) both;
+  /* backwards, not both: with  the final transform keeps applying after
+     the animation ends - even an identity matrix - which makes <main> a
+     containing block and pins position: fixed children inside the page flow.
+      still applies the from-state before it starts, so there is no
+     flash, but leaves no transform behind. */
+  animation: page-enter 0.55s var(--ease-premium) backwards;
 }
 @keyframes page-enter {
   from {
@@ -1077,7 +1081,11 @@ main {
   }
   to {
     opacity: 1;
-    transform: translate3d(0, 0, 0);
+    /* Must end on `none`, not translate3d(0,0,0). The animation uses
+       fill-mode: both, so a lingering transform would make <main> a containing
+       block for position: fixed and pin the floating buy bar inside the page
+       flow instead of the viewport. */
+    transform: none;
   }
 }
 .display-title,
@@ -2068,73 +2076,12 @@ main {
 }
 .product-hero-image {
   position: relative;
-  min-height: 720px;
   overflow: hidden;
+  aspect-ratio: 4 / 5;
   background: var(--bg-raised);
 }
 .product-gallery {
   min-width: 0;
-}
-.thumbnail {
-  position: relative;
-  width: 68px;
-  min-width: 68px;
-  aspect-ratio: 1;
-  overflow: hidden;
-  border: 1px solid transparent;
-  background: var(--bg-raised);
-  opacity: 0.5;
-}
-.thumbnail.active {
-  border-color: var(--champagne);
-  opacity: 1;
-}
-.product-thumbnail-rail {
-  display: flex;
-  gap: 0.55rem;
-  margin-top: 0.75rem;
-  overflow-x: auto;
-  padding: 0 0 0.45rem;
-  scroll-snap-type: x proximity;
-  scrollbar-color: var(--champagne-deep) transparent;
-  scrollbar-width: thin;
-}
-.product-thumbnail-rail .thumbnail {
-  scroll-snap-align: start;
-}
-.gallery-controls {
-  position: absolute;
-  right: 1rem;
-  bottom: 1rem;
-  z-index: 12;
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-  border: 1px solid var(--line);
-  background: rgba(8, 9, 9, 0.72);
-  backdrop-filter: blur(12px);
-}
-.gallery-controls button {
-  display: grid;
-  width: 2.75rem;
-  height: 2.75rem;
-  place-items: center;
-  color: var(--paper);
-  transition: background 180ms ease;
-}
-.gallery-controls button:hover {
-  background: rgba(213, 184, 123, 0.18);
-}
-.gallery-controls span {
-  display: flex;
-  min-width: 5rem;
-  align-items: center;
-  justify-content: center;
-  gap: 0.45rem;
-  border-inline: 1px solid rgba(255, 255, 255, 0.14);
-  color: var(--fg-muted);
-  font-size: 0.67rem;
-  letter-spacing: 0.08em;
 }
 .note-pyramid {
   display: grid;
@@ -2824,26 +2771,6 @@ main {
 .product-hero-image img {
   transition: transform 0.8s var(--ease-premium);
 }
-.product-gallery-active-image {
-  animation: product-gallery-image-in 0.42s var(--ease-premium) both;
-  backface-visibility: hidden;
-  will-change: opacity, transform;
-}
-.product-image-preload {
-  z-index: -1;
-  opacity: 0;
-  pointer-events: none;
-}
-@keyframes product-gallery-image-in {
-  from {
-    opacity: 0.38;
-    transform: scale(1.012);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
 .product-card:hover .product-visual img {
   transform: scale(1.035);
 }
@@ -2937,16 +2864,6 @@ main {
 }
 .coupon-apply-button {
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-}
-.thumbnail {
-  border-radius: var(--radius-sm);
-  transition:
-    border-color 0.25s ease,
-    transform 0.3s var(--ease-premium);
-}
-.thumbnail:hover {
-  transform: scale(1.025);
-  border-color: rgba(213, 184, 123, 0.5);
 }
 .admin-shell aside,
 .admin-cards article,
@@ -3188,9 +3105,6 @@ main {
   }
   .product-page {
     padding: 8.5rem 1rem 5rem;
-  }
-  .product-hero-image {
-    min-height: 120vw;
   }
   .note-pyramid {
     grid-template-columns: 1fr;
@@ -5081,4 +4995,313 @@ body .catalog-editor > button {
     margin-inline: 0;
     max-width: 30rem;
   }
+}
+
+/* ==========================================================================
+   Product story: vertical, alternating image + copy sequence.
+   Replaces the old PDP carousel. Mobile-first; alternation is desktop-only.
+   ========================================================================== */
+.product-story {
+  display: grid;
+  gap: 3.25rem; /* ~52px, tighter than desktop */
+  padding-block: clamp(4rem, 9vw, 7rem);
+}
+.story-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  align-items: center;
+}
+/* aspect-ratio reserves the box before the image decodes, so the sequence
+   never shifts while loading. */
+.story-media {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  background: var(--bg-raised);
+}
+.story-media img {
+  /* Driven by the parallax effect on desktop; 0 everywhere else. */
+  transform: translate3d(0, var(--parallax, 0%), 0) scale(1.08);
+  will-change: transform;
+}
+.story-copy {
+  padding-inline: 1.375rem; /* 22px, inside the 20-24px band */
+  text-align: left;
+}
+.story-copy h3 {
+  font-family: var(--font-display), serif;
+  font-size: 1.75rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+.story-copy p {
+  max-width: 46ch;
+  margin-top: 0.85rem;
+  color: var(--fg-muted);
+  font-size: 0.95rem;
+  line-height: 1.75;
+}
+
+/* Reveal: fade and rise. Image and copy are offset by the inline
+   transition-delay set in the component so they do not land together. */
+.story-row .story-media,
+.story-row .story-copy {
+  opacity: 0;
+  transform: translate3d(0, 24px, 0);
+  transition:
+    opacity 560ms var(--ease-premium),
+    transform 560ms var(--ease-premium);
+}
+.story-row.is-visible .story-media,
+.story-row.is-visible .story-copy {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+/* Tablet: two columns, tightened. Below this the text column would fall
+   under ~200px of usable width, so it stays single-column. */
+@media (min-width: 768px) {
+  .product-story {
+    gap: clamp(4rem, 7vw, 6rem);
+    padding-inline: clamp(1.5rem, 4vw, 3rem);
+  }
+  .story-row {
+    grid-template-columns: 50% 1fr;
+    gap: 2rem; /* 32px */
+    align-items: center;
+  }
+  .story-copy {
+    padding-inline: 0;
+  }
+  .story-copy h3 {
+    font-size: 2rem;
+  }
+  /* Flip by reordering the same markup rather than duplicating it. */
+  .story-row.is-flipped .story-media {
+    order: 2;
+  }
+  .story-row.is-flipped .story-copy {
+    order: 1;
+  }
+}
+
+@media (min-width: 1024px) {
+  .product-story {
+    max-width: 1440px;
+    margin-inline: auto;
+    gap: clamp(6rem, 9vw, 9rem);
+    padding-inline: clamp(2.5rem, 5vw, 5rem);
+  }
+  .story-row {
+    grid-template-columns: 58% 1fr;
+    gap: 4rem; /* 64px */
+    /* One comfortable viewport per pair, never two stacked into a screen. */
+    min-height: min(78vh, 46rem);
+  }
+  .story-copy h3 {
+    font-size: 2.6rem;
+  }
+  .story-copy p {
+    font-size: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .story-row .story-media,
+  .story-row .story-copy {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .story-media img {
+    transform: none;
+  }
+}
+
+/* ==========================================================================
+   Floating purchase bar on the product page.
+   Fixed, so it can never shift the layout. Hidden until the primary Add to
+   bag button has scrolled past.
+   ========================================================================== */
+.sticky-buy {
+  position: fixed;
+  z-index: 60;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border-top: 1px solid var(--line);
+  background: var(--bg-raised);
+  padding: 0.75rem 1.25rem;
+  box-shadow: 0 -12px 40px rgb(0 0 0 / 0.18);
+  /* Keep clear of the iOS home indicator. */
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+  transform: translate3d(0, 120%, 0);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    transform var(--dur-slow) var(--ease-premium),
+    opacity var(--dur-base) ease,
+    visibility var(--dur-base);
+}
+.sticky-buy.is-shown {
+  transform: translate3d(0, 0, 0);
+  opacity: 1;
+  visibility: visible;
+}
+.sticky-buy-meta {
+  display: grid;
+  min-width: 0;
+  gap: 0.15rem;
+}
+.sticky-buy-meta strong {
+  overflow: hidden;
+  font-family: var(--font-display), serif;
+  font-size: 1.05rem;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sticky-buy-meta span {
+  color: var(--fg-muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.sticky-buy-actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.6rem;
+}
+/* 44px minimum touch target. */
+.sticky-buy-add {
+  min-height: 2.75rem;
+  padding-inline: 1.1rem;
+  font-size: 0.66rem;
+}
+.sticky-buy-checkout {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  padding-inline: 0.95rem;
+  color: var(--fg);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition:
+    border-color var(--dur-base) ease,
+    color var(--dur-base) ease;
+}
+.sticky-buy-checkout:hover,
+.sticky-buy-checkout:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Desktop: a card in the bottom-right rather than a full-width bar, so it
+   does not sit across the photography. */
+@media (min-width: 768px) {
+  .sticky-buy {
+    right: clamp(1.5rem, 3vw, 2.5rem);
+    bottom: clamp(1.5rem, 3vw, 2.5rem);
+    left: auto;
+    max-width: 30rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: 0.9rem 1rem 0.9rem 1.5rem;
+    box-shadow: var(--shadow-lift);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sticky-buy {
+    transition:
+      opacity var(--dur-fast) ease,
+      visibility var(--dur-fast);
+    transform: none;
+  }
+  .sticky-buy.is-shown {
+    transform: none;
+  }
+}
+
+/* ==========================================================================
+   Full-bleed signature panels on the homepage.
+   One screen per fragrance before any pricing appears.
+   ========================================================================== */
+.signature-panels {
+  display: grid;
+}
+.signature-panel {
+  position: relative;
+  display: grid;
+  align-items: end;
+  min-height: min(88svh, 52rem);
+  isolation: isolate;
+  overflow: hidden;
+}
+.signature-panel-media {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+}
+/* Bottom-weighted so the name keeps contrast without flattening the whole
+   photograph. */
+.signature-panel-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgb(8 9 10 / 0.86) 0%,
+    rgb(8 9 10 / 0.45) 34%,
+    rgb(8 9 10 / 0.05) 68%,
+    transparent 100%
+  );
+}
+.signature-panel-copy {
+  padding: 0 1.5rem clamp(3rem, 8vw, 6rem);
+  color: var(--on-image);
+  text-align: center;
+}
+.signature-panel-copy h2 {
+  font-family: var(--font-display), serif;
+  font-size: clamp(2.6rem, 9vw, 5rem);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+.signature-panel-character {
+  margin-top: 0.9rem;
+  color: rgb(247 242 232 / 0.82);
+  font-size: 0.72rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+.signature-panel-copy a {
+  display: inline-block;
+  min-height: 2.75rem;
+  margin-top: 1.75rem;
+  border-bottom: 1px solid rgb(247 242 232 / 0.5);
+  padding-bottom: 0.3rem;
+  color: var(--on-image);
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  transition:
+    border-color var(--dur-base) ease,
+    color var(--dur-base) ease;
+}
+.signature-panel-copy a:hover,
+.signature-panel-copy a:focus-visible {
+  border-color: var(--gold-300);
+  color: var(--gold-300);
 }
