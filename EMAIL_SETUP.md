@@ -57,7 +57,7 @@ Signup is confirmed with a 6-digit code the customer types into the app, not a "
 
 ## 5. Lead tracking and nurture emails
 
-Every signup and checkout is recorded in `public.leads` regardless of whether it becomes an order (`src/lib/leads.ts`). A cron job at `/api/maintenance` (scheduled by `vercel.ts` every 15 minutes on Vercel) sends two one-time nurture emails through the same Resend account, logged in `notification_logs.campaign`:
+Every signup and checkout is recorded in `public.leads` regardless of whether it becomes an order (`src/lib/leads.ts`). A cron job at `/api/maintenance` (scheduled by `vercel.ts` once daily at 03:00 UTC — Vercel's Hobby plan only allows daily cron schedules) sends two one-time nurture emails through the same Resend account, logged in `notification_logs.campaign`:
 
 - **signup-no-order**: to leads who verified signup but had no order after 48 hours.
 - **abandoned-checkout**: to leads who started checkout but never paid, 3 hours later.
