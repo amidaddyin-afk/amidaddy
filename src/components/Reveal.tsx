@@ -5,6 +5,7 @@ import type { ElementType, ReactNode } from "react";
 import {
   EASE,
   DURATION,
+  revealClipVariants,
   revealLeftVariants,
   revealVariants,
   revealViewport,
@@ -24,6 +25,7 @@ import {
 export default function Reveal({
   children,
   from = "up",
+  variant = "rise",
   index = 0,
   delay = 0,
   as = "div",
@@ -31,8 +33,15 @@ export default function Reveal({
   id,
 }: {
   children: ReactNode;
-  /** Direction the element travels in from. */
+  /** Direction the element travels in from. Ignored unless variant is "rise". */
   from?: "up" | "left";
+  /**
+   * How the element uncovers.
+   * - "rise": short opacity + offset move (the default, uses `from`).
+   * - "clip": stays in place and unwraps from a clip-path inset, for media
+   *   that should reveal rather than drift.
+   */
+  variant?: "rise" | "clip";
   /** Position in a group, used to stagger siblings. */
   index?: number;
   /** Extra delay in seconds, added on top of the stagger. */
@@ -53,11 +62,18 @@ export default function Reveal({
     );
   }
 
+  const variants =
+    variant === "clip"
+      ? revealClipVariants
+      : from === "left"
+        ? revealLeftVariants
+        : revealVariants;
+
   return (
     <MotionTag
       id={id}
       className={className}
-      variants={from === "left" ? revealLeftVariants : revealVariants}
+      variants={variants}
       initial="hidden"
       whileInView="visible"
       viewport={revealViewport}

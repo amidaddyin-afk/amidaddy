@@ -25,10 +25,19 @@ export default async function OrderPage({
         </Link>
         <div className="mt-6 flex flex-wrap items-end justify-between gap-5">
           <div>
-            <p className="eyebrow">Order {order.id}</p>
+            <p className="eyebrow">
+              Order {order.id} ·{" "}
+              {new Date(order.createdAt).toLocaleDateString("en-IN")}
+            </p>
             <h1 className="display-title mt-3 text-5xl">
               {order.status.replaceAll("_", " ")}
             </h1>
+            <p className="text-subtle mt-2 text-sm">
+              {new Date(order.createdAt).toLocaleTimeString("en-IN", {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </p>
           </div>
           <a href={`/account/orders/${order.id}/receipt`} className="btn-ghost">
             Download receipt
@@ -81,6 +90,16 @@ export default async function OrderPage({
             </dl>
           </section>
           <aside className="space-y-5">
+            <section className="lux-panel p-6">
+              <p className="eyebrow">Payment</p>
+              <p className="mt-4 text-sm">
+                <strong>Method:</strong> Razorpay{" "}
+                {order.paymentStatus === "PAID" ? "✓" : ""}
+              </p>
+              <p className="text-subtle mt-2 text-sm">
+                Status: {order.paymentStatus.replaceAll("_", " ")}
+              </p>
+            </section>
             <section className="lux-panel p-6">
               <p className="eyebrow">Delivery</p>
               <p className="mt-4 leading-7">

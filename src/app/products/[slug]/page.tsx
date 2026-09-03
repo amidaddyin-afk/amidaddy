@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { ViewTransition } from "react";
 import type { Metadata } from "next";
 import ProductDetail from "@/components/ProductDetail";
 import { getCatalogProductBySlug } from "@/lib/catalog";
@@ -119,7 +120,25 @@ export default async function ProductPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLd }}
       />
-      <ProductDetail product={product} initialSize={initialSize} />
+      {/* Pairs with the wrapper on /shop: shop -> product slides forward,
+          the "All fragrances" link back slides in reverse. Untyped arrivals
+          (home, a shared link) fall through to default="none" and just get
+          the shared-element image morph. */}
+      <ViewTransition
+        enter={{
+          "nav-forward": "nav-forward",
+          "nav-back": "nav-back",
+          default: "none",
+        }}
+        exit={{
+          "nav-forward": "nav-forward",
+          "nav-back": "nav-back",
+          default: "none",
+        }}
+        default="none"
+      >
+        <ProductDetail product={product} initialSize={initialSize} />
+      </ViewTransition>
     </>
   );
 }

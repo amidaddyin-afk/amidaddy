@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { formatInr } from "@/lib/money";
 import { DEFAULT_FREE_SHIPPING_PAISE } from "@/lib/commerce";
 import { PRODUCTS } from "@/lib/data";
+import { DURATION, EASE, SPRING } from "@/lib/motion";
 
 export default function CartSidebar() {
   const {
@@ -115,11 +116,15 @@ export default function CartSidebar() {
 
             {/* Items */}
             <div className="flex-1 space-y-4 overflow-y-auto px-4 py-4">
-              <AnimatePresence>
+              {/* popLayout so a removed line does not shove the rest down during
+                  its own exit - the remaining items spring up to close the gap. */}
+              <AnimatePresence mode="popLayout" initial={false}>
                 {items.length === 0 ? (
                   <motion.div
+                    key="cart-empty"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
                     className="text-subtle flex h-60 flex-col items-center justify-center"
                   >
                     <ShoppingBag size={40} className="mb-4" />
@@ -131,10 +136,17 @@ export default function CartSidebar() {
                   items.map((item) => (
                     <motion.div
                       key={`${item.product.id}-${item.size}`}
-                      initial={{ opacity: 0, x: 20 }}
+                      initial={reduceMotion ? false : { opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: 20 }}
+                      exit={
+                        reduceMotion ? { opacity: 0 } : { opacity: 0, x: 24 }
+                      }
                       layout
+                      transition={{
+                        layout: reduceMotion ? { duration: 0 } : SPRING.soft,
+                        duration: reduceMotion ? 0 : DURATION.base,
+                        ease: EASE.premium,
+                      }}
                       className="cart-item border-line bg-raised flex gap-4 border p-3"
                     >
                       <div className="bg-raised h-24 w-20 flex-shrink-0 overflow-hidden">

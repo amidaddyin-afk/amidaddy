@@ -19,6 +19,12 @@
       "skillPath": "skills/ci-security-scanning-with-strix/SKILL.md",
       "computedHash": "cdf25767cbacdd0fea9badce7da3d31f763e2233b65672a1fec8e1064bbdbf20"
     },
+    "design-taste-frontend": {
+      "source": "Leonxlnx/taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/taste-skill/SKILL.md",
+      "computedHash": "899b84384f74f540ea5284d9b2e9234e050998b42eacc805410b518d4226c0b3"
+    },
     "find-security-vulnerabilities-in-code": {
       "source": "usestrix/strix",
       "sourceType": "github",

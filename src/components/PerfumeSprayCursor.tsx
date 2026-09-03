@@ -10,7 +10,15 @@ import { useEffect, useRef } from "react";
  * a game effect rather than a house. This is the breath instead of the object:
  * a hairline ring, a soft champagne haze, and a few fine particles drifting
  * off. Nothing is illustrated, so nothing can look cartoonish.
+ *
+ * It now fires only on the primary actions - the gold CTAs and the add-to-bag
+ * controls - rather than on every click anywhere on the page. A mist that
+ * answered an idle click on empty background was decoration; tied to "add to
+ * bag" it reads as the product being applied.
  */
+const TRIGGER_SELECTOR =
+  ".lux-button, .btn-gold, .sticky-buy-add, .icon-add:not(:disabled)";
+
 const MIST_DROPS = Array.from({ length: 6 });
 
 /** Total life of one burst; kept just above the longest animation. */
@@ -30,6 +38,9 @@ export default function PerfumeSprayCursor() {
         !templateRef.current
       )
         return;
+
+      const target = event.target as Element | null;
+      if (!target?.closest(TRIGGER_SELECTOR)) return;
 
       const burst = templateRef.current.cloneNode(true) as HTMLDivElement;
       burst.removeAttribute("id");

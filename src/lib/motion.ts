@@ -59,3 +59,41 @@ export const staggerDelay = (index: number, step = 0.06, cap = 5) =>
 
 /** Viewport config shared by every scroll reveal, so thresholds do not drift. */
 export const revealViewport = { once: true, margin: "-60px" } as const;
+
+/**
+ * Spring presets, for things the user pushes rather than things that arrive on
+ * their own - card lift, size toggles, cart rows. Still no overshoot worth
+ * noticing: damping is high so the spring reads as weight settling, not bounce.
+ */
+export const SPRING = {
+  /** Large surfaces and layout shifts. Slow to start, slow to stop. */
+  soft: { type: "spring", stiffness: 120, damping: 22, mass: 1 },
+  /** Buttons, chips, hover lift. Quick to answer the pointer. */
+  snappy: { type: "spring", stiffness: 320, damping: 30, mass: 0.7 },
+} as const satisfies Record<string, Transition>;
+
+/**
+ * Clip-path wipe. For media that should uncover rather than fade up - product
+ * imagery, full-bleed bands. Reads as a curtain, not a webpage element.
+ */
+export const revealClipVariants: Variants = {
+  hidden: { opacity: 0, clipPath: "inset(0 0 22% 0)" },
+  visible: { opacity: 1, clipPath: "inset(0 0 0% 0)" },
+};
+
+/** whileHover for cards. Lift is small; the tilt lives in the card. */
+export const hoverLift = { y: -6 } as const;
+
+/**
+ * Pointer-tilt bounds for cards. Rotation stays under 5deg so the card reads as
+ * catching the light, not as a 3D toy. Consumers convert pointer offset to
+ * these ranges with useTransform and smooth them through SPRING.snappy.
+ */
+export const POINTER_TILT = {
+  /** Max rotation on each axis, degrees. */
+  max: 4,
+  /** Perspective applied on the tilting element. */
+  perspective: 900,
+  /** Extra lift while the pointer is over the card, px. */
+  lift: 6,
+} as const;

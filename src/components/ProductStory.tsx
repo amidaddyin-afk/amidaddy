@@ -35,24 +35,28 @@ export default function ProductStory({ tiles }: { tiles: StoryTile[] }) {
 function StoryRow({ tile, index }: { tile: StoryTile; index: number }) {
   const rowRef = useRef<HTMLDivElement>(null);
   const mediaRef = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
+  // Default: shown. The effect only *hides* a below-the-fold row to animate it
+  // in, and a failsafe timer un-hides it no matter what - the content must
+  // never stay hidden because an observer did not fire.
+  const [hidden, setHidden] = useState(false);
 
-  // Reveal: one-shot IntersectionObserver rather than a scroll listener, so
-  // there is no work on the main thread once a tile has appeared.
   useEffect(() => {
     const node = rowRef.current;
     if (!node) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      // Settle asynchronously so this is not a synchronous setState in an
-      // effect body, which triggers a cascading render.
-      queueMicrotask(() => setVisible(true));
-      return;
-    }
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const rect = node.getBoundingClientRect();
+    const alreadyInView = rect.top < window.innerHeight * 0.85;
+    if (alreadyInView) return;
+
+    // Deferred so this is not a synchronous setState in the effect body.
+    queueMicrotask(() => setHidden(true));
+    const failsafe = window.setTimeout(() => setHidden(false), 1400);
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
           if (entry.isIntersecting) {
-            setVisible(true);
+            setHidden(false);
             observer.disconnect();
           }
         }
@@ -60,7 +64,10 @@ function StoryRow({ tile, index }: { tile: StoryTile; index: number }) {
       { rootMargin: "0px 0px -12% 0px", threshold: 0.15 },
     );
     observer.observe(node);
-    return () => observer.disconnect();
+    return () => {
+      window.clearTimeout(failsafe);
+      observer.disconnect();
+    };
   }, []);
 
   // Parallax: desktop only, and skipped entirely under reduced motion. Below
@@ -117,7 +124,7 @@ function StoryRow({ tile, index }: { tile: StoryTile; index: number }) {
     <div
       ref={rowRef}
       className={`story-row ${index % 2 === 1 ? "is-flipped" : ""} ${
-        visible ? "is-visible" : ""
+        hidden ? "is-hidden" : ""
       }`}
     >
       <div className="story-media" ref={mediaRef}>
@@ -135,7 +142,7 @@ function StoryRow({ tile, index }: { tile: StoryTile; index: number }) {
       </div>
       <div
         className="story-copy"
-        style={{ transitionDelay: visible ? `${TEXT_OFFSET_MS}ms` : "0ms" }}
+        style={{ transitionDelay: hidden ? "0ms" : `${TEXT_OFFSET_MS}ms` }}
       >
         <h3>{tile.heading}</h3>
         <p>{tile.copy}</p>

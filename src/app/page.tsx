@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { randomInt } from "node:crypto";
 import {
   ArrowUpRight,
   Gift,
@@ -10,9 +9,11 @@ import {
   Star,
   Truck,
 } from "lucide-react";
-import CuratedHero from "@/components/CuratedHero";
+import Photo from "@/components/Photo";
 import ProductCard from "@/components/ProductCard";
-import SignaturePanels from "@/components/SignaturePanels";
+import CinematicSequence, {
+  type CinePanel,
+} from "@/components/CinematicSequence";
 import ScentFinder from "@/components/ScentFinder";
 import { listCatalogProducts } from "@/lib/catalog";
 
@@ -40,15 +41,63 @@ const reviews = [
   },
 ];
 
+/**
+ * Cinematic script for the pinned signature sequence. Fixed order and the
+ * campaign line per fragrance (the lines already run on the storefront, so the
+ * voice matches). `objectPosition` / `spot` bias each frame so the bottle is
+ * the lit subject and the campaign faces sit back as atmosphere.
+ */
+const SCRIPT: Record<
+  string,
+  Pick<
+    CinePanel,
+    | "line"
+    | "notes"
+    | "image"
+    | "objectPosition"
+    | "objectPositionMobile"
+    | "spot"
+  >
+> = {
+  "old-love": {
+    line: "Stay unforgettable.",
+    notes: ["Saffron", "Amber", "Resin"],
+    // Red-lit silhouette, the bottle glowing between the two figures.
+    image: "/gallery/old-love/01.webp",
+    objectPosition: "50% 46%",
+    objectPositionMobile: "50% 46%",
+    spot: "50% 52%",
+  },
+  coldwar: {
+    line: "Make your move.",
+    notes: ["Bright fruit", "Herbs", "Woods"],
+    // Bottle held forward, filling the frame, the face behind it.
+    image: "/gallery/coldwar/02.webp",
+    objectPosition: "42% 40%",
+    objectPositionMobile: "44% 40%",
+    spot: "40% 42%",
+  },
+  heavenly: {
+    line: "Leave a softer trace.",
+    notes: ["White floral", "Vanilla", "Musk"],
+    image: "/gallery/heavenly/02.webp",
+    objectPosition: "46% 44%",
+    objectPositionMobile: "48% 44%",
+    spot: "44% 46%",
+  },
+  billionaire: {
+    line: "Own the room.",
+    notes: ["Whiskey", "Spice", "Dark woods"],
+    // The pair, a black bottle held between them.
+    image: "/gallery/billionaire/04.webp",
+    objectPosition: "50% 56%",
+    objectPositionMobile: "50% 62%",
+    spot: "50% 66%",
+  },
+};
+const SEQUENCE_ORDER = ["old-love", "coldwar", "heavenly", "billionaire"];
+
 export default async function Home() {
-  const heroSlideOrder = Array.from({ length: 6 }, (_, index) => index);
-  for (let index = heroSlideOrder.length - 1; index > 0; index -= 1) {
-    const swapIndex = randomInt(index + 1);
-    [heroSlideOrder[index], heroSlideOrder[swapIndex]] = [
-      heroSlideOrder[swapIndex],
-      heroSlideOrder[index],
-    ];
-  }
   const { products } = await listCatalogProducts({
     page: 1,
     pageSize: 24,
@@ -61,6 +110,20 @@ export default async function Home() {
   const combo = products.find(
     (product) => product.slug === "signature-combo-20ml",
   );
+  const bySlug = new Map(signatures.map((product) => [product.slug, product]));
+  const cinePanels: CinePanel[] = SEQUENCE_ORDER.filter((slug) =>
+    bySlug.has(slug),
+  ).map((slug) => {
+    const product = bySlug.get(slug)!;
+    const script = SCRIPT[slug];
+    return {
+      slug,
+      name: product.name,
+      alt: `${product.name}, ${product.profile} ${product.concentration}, photographed for Amidaddy Perfumes`,
+      ...script,
+    };
+  });
+
   const siteUrl =
     process.env.NEXT_PUBLIC_APP_URL ??
     process.env.NEXT_PUBLIC_SITE_URL ??
@@ -74,12 +137,46 @@ export default async function Home() {
   }).replace(/</g, "\\u003c");
 
   return (
-    <main data-surface="story" className="storefront-home">
+    <main data-surface="story" className="storefront-home cinematic-home">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: organizationJsonLd }}
       />
-      <CuratedHero slideOrder={heroSlideOrder} />
+
+      {/* Film stage: the letterbox bars are sticky here, so they frame the
+          title card and the sequence and then scroll away above the shop. */}
+      <div className="cine-stage">
+        <span className="cine-bar cine-bar-top" aria-hidden="true" />
+
+        <section className="cine-hero">
+          <div className="cine-hero-media">
+            <Photo
+              src="/curated/hero-models.webp"
+              alt="Amidaddy Perfumes campaign portrait"
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover"
+            />
+          </div>
+          <div className="cine-hero-veil" />
+          <p className="cine-wordmark">Amidaddy</p>
+          <div className="cine-hero-copy">
+            <h1 className="cine-hero-title">
+              Presence,
+              <br />
+              before words.
+            </h1>
+            <p className="cine-hero-sub">
+              Four unisex signatures, composed around mood, memory and presence.
+            </p>
+          </div>
+        </section>
+
+        <CinematicSequence panels={cinePanels} />
+
+        <span className="cine-bar cine-bar-bottom" aria-hidden="true" />
+      </div>
 
       <section className="home-trust-strip" aria-label="Shopping benefits">
         <article>
@@ -104,9 +201,6 @@ export default async function Home() {
           </div>
         </article>
       </section>
-
-      {/* Each signature gets a full screen before any pricing appears. */}
-      <SignaturePanels products={signatures} />
 
       <section className="home-collection" id="shop-100ml">
         <div className="commerce-heading">
@@ -146,7 +240,6 @@ export default async function Home() {
             />
           </div>
           <div className="home-combo-copy">
-            <p className="eyebrow">The complete discovery wardrobe</p>
             <h2 className="display-title">Four signatures. One set.</h2>
             <p className="combo-lead">
               Old Love, Heavenly, Billionaire and Cold War together in four
@@ -167,7 +260,6 @@ export default async function Home() {
       <section className="home-collection home-collection-20" id="shop-20ml">
         <div className="commerce-heading">
           <div>
-            <p className="eyebrow">Begin with discovery</p>
             <h2 className="display-title">The 20ml collection.</h2>
           </div>
           <p>Same composition. A considered format for travel and discovery.</p>
@@ -217,7 +309,6 @@ export default async function Home() {
       <section className="home-reviews">
         <div className="commerce-heading">
           <div>
-            <p className="eyebrow">Worn and remembered</p>
             <h2 className="display-title">What customers are saying.</h2>
           </div>
         </div>
@@ -256,7 +347,6 @@ export default async function Home() {
 
       <section className="home-faq">
         <div>
-          <p className="eyebrow">A little clarity</p>
           <h2 className="display-title">Before it becomes yours.</h2>
         </div>
         <div>

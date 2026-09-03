@@ -9,6 +9,7 @@ import {
   getLessonNeighbours,
 } from "@/lib/scent-school";
 import LessonBlocks from "@/components/LessonBlocks";
+import ReadingProgress from "@/components/ReadingProgress";
 import Reveal from "@/components/Reveal";
 
 export function generateStaticParams() {
@@ -41,14 +42,11 @@ export default async function ChapterPage({
 
   const { previous, next } = getLessonNeighbours(lesson.slug);
   const position = LESSONS_WITH_NUMBERS.indexOf(lesson) + 1;
-  const progress = Math.round((position / LESSONS_WITH_NUMBERS.length) * 100);
 
   return (
-    <main data-surface="story" className="lesson-page">
-      {/* Where you are in the course, kept visible the whole way down. */}
-      <div className="lesson-progress" aria-hidden="true">
-        <span style={{ width: `${progress}%` }} />
-      </div>
+    <main data-surface="story" className="lesson-page cinematic">
+      {/* Reading progress for this chapter, kept visible the whole way down. */}
+      <ReadingProgress />
 
       <header className="lesson-hero">
         <div className="lesson-hero-media">

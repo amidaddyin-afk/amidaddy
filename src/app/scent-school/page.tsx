@@ -24,7 +24,7 @@ export default function ScentSchoolPage() {
   const first = LESSONS_WITH_NUMBERS[0];
 
   return (
-    <main data-surface="story" className="school-hub">
+    <main data-surface="story" className="school-hub cinematic">
       <section className="school-hero">
         <Image
           src="/curated/hero-models-3.webp"

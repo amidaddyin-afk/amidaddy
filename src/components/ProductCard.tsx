@@ -1,25 +1,44 @@
 "use client";
 
-import { useState, ViewTransition } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { useEffect, useRef, useState, ViewTransition } from "react";
+import {
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  useSpring,
+  useTransform,
+} from "framer-motion";
 import Link from "next/link";
 import { ArrowUpRight, ShoppingBag } from "lucide-react";
 import type { Product } from "@/lib/data";
 import { useCart } from "@/context/CartContext";
 import { formatInr } from "@/lib/money";
 import Photo from "@/components/Photo";
-import { EASE, DURATION, staggerDelay, revealViewport } from "@/lib/motion";
+import {
+  EASE,
+  DURATION,
+  POINTER_TILT,
+  SPRING,
+  hoverLift,
+  staggerDelay,
+  revealViewport,
+} from "@/lib/motion";
 
 export default function ProductCard({
   product,
   index = 0,
   initialSize,
   lockSize = false,
+  navType,
 }: {
   product: Product;
   index?: number;
   initialSize?: "20ml" | "100ml";
   lockSize?: boolean;
+  /** View-transition type carried on the card's links, e.g. ["nav-forward"].
+   *  Set by /shop so shop -> product slides; unset elsewhere (home) so those
+   *  navigations keep only the shared-element morph. */
+  navType?: string[];
 }) {
   const available = product.variants.filter(
     (variant) => variant.active && variant.stock > variant.reserved,
@@ -33,6 +52,42 @@ export default function ProductCard({
   const [added, setAdded] = useState(false);
   const reduceMotion = useReducedMotion();
   const { addItem } = useCart();
+
+  // Pointer tilt. Only on a fine pointer (mouse/trackpad) and only when the
+  // user has not asked for less motion - on touch there is no hover to track
+  // and pointermove would fire mid-scroll.
+  const cardRef = useRef<HTMLElement>(null);
+  const [finePointer, setFinePointer] = useState(false);
+  useEffect(() => {
+    const query = window.matchMedia("(pointer: fine)");
+    const sync = () => setFinePointer(query.matches);
+    sync();
+    query.addEventListener("change", sync);
+    return () => query.removeEventListener("change", sync);
+  }, []);
+  const tiltEnabled = finePointer && !reduceMotion;
+
+  // Raw pointer offset from card centre, -0.5..0.5 on each axis.
+  const offsetX = useMotionValue(0);
+  const offsetY = useMotionValue(0);
+  const rotateX = useSpring(
+    useTransform(offsetY, [-0.5, 0.5], [POINTER_TILT.max, -POINTER_TILT.max]),
+    SPRING.snappy,
+  );
+  const rotateY = useSpring(
+    useTransform(offsetX, [-0.5, 0.5], [-POINTER_TILT.max, POINTER_TILT.max]),
+    SPRING.snappy,
+  );
+  const handlePointerMove = (event: React.PointerEvent<HTMLElement>) => {
+    if (!tiltEnabled || !cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    offsetX.set((event.clientX - rect.left) / rect.width - 0.5);
+    offsetY.set((event.clientY - rect.top) / rect.height - 0.5);
+  };
+  const resetTilt = () => {
+    offsetX.set(0);
+    offsetY.set(0);
+  };
   const variant =
     product.variants.find((item) => item.name === size) ?? product.variants[0];
   const cardImage = product.variantImages?.[size]?.[0] ?? product.image;
@@ -44,8 +99,12 @@ export default function ProductCard({
   };
   return (
     <motion.article
+      ref={cardRef}
       initial={reduceMotion ? false : { opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
+      whileHover={
+        tiltEnabled ? { ...hoverLift, transition: SPRING.snappy } : undefined
+      }
       viewport={revealViewport}
       transition={
         reduceMotion
@@ -56,12 +115,20 @@ export default function ProductCard({
               ease: EASE.premium,
             }
       }
+      style={
+        tiltEnabled
+          ? { rotateX, rotateY, transformPerspective: POINTER_TILT.perspective }
+          : undefined
+      }
+      onPointerMove={handlePointerMove}
+      onPointerLeave={resetTilt}
       className="product-card"
     >
       <div className="product-visual">
         <Link
           href={productHref}
           aria-label={`View ${product.name} ${size}`}
+          transitionTypes={navType}
           className="absolute inset-0 z-10"
         />
         {/* Paired with the hero on the product page: the browser morphs this
@@ -94,7 +161,11 @@ export default function ProductCard({
             {product.isNew ? "New composition" : product.badge}
           </span>
         )}
-        <Link href={productHref} className="product-view">
+        <Link
+          href={productHref}
+          transitionTypes={navType}
+          className="product-view"
+        >
           Discover <ArrowUpRight size={14} />
         </Link>
       </div>

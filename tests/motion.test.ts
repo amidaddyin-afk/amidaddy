@@ -55,27 +55,17 @@ test("shared-element morph names cannot collide across sizes", () => {
   assert.match(detail, /`product-\$\{product\.slug\}-\$\{size\}`/);
 });
 
-test("hero dwell time matches its Ken Burns transform", () => {
-  const hero = read("src/components/CuratedHero.tsx");
-  const css = read("src/app/globals.css");
-  const dwell = hero.match(/HERO_SLIDE_MS = (\d+)/);
-  assert.ok(dwell, "hero must declare its dwell time");
-  const seconds = Number(dwell[1]) / 1000;
-  // The slide advanced at 5.5s while the transform ran 6.5s, so the push-in
-  // never completed. They must agree.
-  assert.match(
-    css,
-    new RegExp(`transform ${seconds}s`),
-    `hero transform should run ${seconds}s to match the dwell time`,
-  );
-});
-
-test("reduced motion is honoured by the new motion primitives", () => {
+test("reduced motion is honoured by the motion primitives", () => {
   assert.match(read("src/components/Reveal.tsx"), /useReducedMotion/);
-  assert.match(read("src/components/CuratedHero.tsx"), /useReducedMotion/);
+  assert.match(
+    read("src/components/CinematicSequence.tsx"),
+    /useReducedMotion/,
+  );
   const css = read("src/app/globals.css");
   // The story reveal and its parallax are the motion that has to stand down.
   assert.match(css, /prefers-reduced-motion[\s\S]*?\.story-media/);
+  // The cinematic sequence unpins under reduced motion.
+  assert.match(css, /prefers-reduced-motion[\s\S]*?\.cine-frame/);
 });
 
 test("Photo holds no state, so a cached image cannot update it before mount", () => {

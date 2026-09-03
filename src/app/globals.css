@@ -22,131 +22,6 @@ body .wordmark-title {
   background: var(--bg);
   color: var(--fg);
 }
-.storefront-home .cinematic-hero {
-  width: 100%;
-  max-width: none;
-  min-height: 0;
-  aspect-ratio: 3 / 2;
-  margin: 0;
-  border: 0;
-  background: var(--bg-band);
-}
-.storefront-home .hero-picture {
-  position: absolute;
-  inset: 0;
-  display: block;
-  overflow: hidden;
-}
-.storefront-home .hero-picture img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-}
-.storefront-home .hero-slide {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  visibility: hidden;
-  transform: scale(1.012);
-  transition:
-    opacity 0.9s ease,
-    visibility 0.9s ease,
-    transform 6.5s ease;
-}
-.storefront-home .hero-slide.is-active {
-  opacity: 1;
-  visibility: visible;
-  transform: scale(1);
-}
-.hero-carousel-controls {
-  position: absolute;
-  bottom: clamp(1rem, 2.5vw, 2rem);
-  left: 50%;
-  z-index: 4;
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
-  transform: translateX(-50%);
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: rgba(10, 10, 10, 0.56);
-  padding: 0.45rem 0.65rem;
-  backdrop-filter: blur(14px);
-}
-.hero-carousel-controls > button {
-  display: grid;
-  width: 2.2rem;
-  height: 2.2rem;
-  cursor: pointer;
-  place-items: center;
-  border: 0;
-  border-radius: 50%;
-  background: transparent;
-  color: var(--fg);
-  transition: background 0.25s ease;
-}
-.hero-carousel-controls > button:hover,
-.hero-carousel-controls > button:focus-visible {
-  background: rgba(255, 255, 255, 0.14);
-  outline: none;
-}
-.hero-carousel-dots {
-  display: flex;
-  align-items: center;
-  gap: 0.42rem;
-}
-.hero-carousel-dots button {
-  width: 0.42rem;
-  height: 0.42rem;
-  cursor: pointer;
-  border: 0;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.46);
-  transition:
-    width 0.3s ease,
-    border-radius 0.3s ease,
-    background 0.3s ease;
-}
-.hero-carousel-dots button.is-active {
-  width: 1.5rem;
-  border-radius: 999px;
-  background: #d5b87b;
-}
-.hero-carousel-count {
-  position: absolute;
-  right: clamp(1rem, 2.5vw, 2rem);
-  bottom: clamp(1.35rem, 2.8vw, 2.35rem);
-  z-index: 4;
-  border-radius: 999px;
-  background: rgba(10, 10, 10, 0.5);
-  padding: 0.6rem 0.8rem;
-  color: var(--fg);
-  font-size: 0.62rem;
-  letter-spacing: 0.15em;
-  backdrop-filter: blur(12px);
-}
-@media (prefers-reduced-motion: reduce) {
-  .storefront-home .hero-slide {
-    transform: none;
-    transition: opacity 0.2s ease;
-  }
-}
-.storefront-home .hero-wash {
-  background: linear-gradient(
-    90deg,
-    rgba(0, 0, 0, 0.66) 0%,
-    rgba(0, 0, 0, 0.18) 55%,
-    rgba(0, 0, 0, 0.08)
-  );
-}
-.storefront-home .hero-copy {
-  max-width: 46rem;
-}
-.storefront-home .hero-copy h1 {
-  font-size: clamp(4.5rem, 8vw, 8.5rem);
-  line-height: 0.86;
-}
 .home-trust-strip {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -440,157 +315,6 @@ body .product-page .text-white\/40 {
 body .product-page .text-champagne\/85 {
   color: var(--accent);
 }
-body .product-page .note-pyramid {
-  border-color: var(--line);
-}
-body .product-page .note-pyramid div {
-  border-color: var(--line);
-}
-body .product-page .note-pyramid p {
-  color: var(--fg-muted);
-}
-body .product-page .product-guidance-grid {
-  border-color: var(--line);
-}
-body .product-page .variant-card {
-  border-color: var(--line);
-  color: var(--fg);
-}
-body .product-page .variant-card.active {
-  border-color: var(--accent);
-  background: rgba(159, 125, 69, 0.08);
-}
-body .product-page .purchase-assurance {
-  border-color: var(--line);
-}
-body .product-page .purchase-assurance p,
-body .product-page .purchase-assurance small {
-  color: var(--fg-muted);
-}
-body .product-page .product-hero-image {
-  background: var(--bg-raised);
-}
-.product-offers {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  max-width: 1436px;
-  margin: 7rem auto 0;
-  border: 1px solid var(--line);
-  background: var(--bg-raised);
-}
-.product-offers article {
-  min-height: 190px;
-  padding: 2rem;
-  border-right: 1px solid #d2c9bb;
-}
-.product-offers article:last-child {
-  border: 0;
-}
-.product-offers span,
-.product-note-columns span,
-.application-steps span {
-  color: var(--accent);
-  font-size: 0.6rem;
-  letter-spacing: 0.16em;
-}
-.product-offers h2 {
-  margin: 1.5rem 0 0.5rem;
-  font: 500 2rem var(--font-display);
-}
-.product-offers p {
-  color: var(--fg-muted);
-  font-size: 0.78rem;
-  line-height: 1.7;
-}
-.product-description-block,
-.product-notes-block,
-.product-application,
-.product-faq-block {
-  padding: 8rem max(2rem, calc((100vw - 1436px) / 2));
-}
-.product-description-block {
-  background: var(--bg-band);
-  color: var(--fg);
-}
-.product-description-block h2 {
-  max-width: 65rem;
-  margin: 1rem 0 2.5rem;
-  font-size: clamp(4rem, 7vw, 7rem);
-  line-height: 0.92;
-}
-.product-description-block > p:not(.eyebrow) {
-  max-width: 50rem;
-  margin-top: 1rem;
-  color: var(--fg-muted);
-  line-height: 1.85;
-}
-.product-notes-block {
-  background: var(--bg-band);
-  color: var(--fg);
-}
-.product-notes-intro h2,
-.product-application h2,
-.product-faq-block h2 {
-  margin-top: 0.8rem;
-  font-size: clamp(3.5rem, 6vw, 6rem);
-}
-.product-note-columns,
-.application-steps {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  margin-top: 4rem;
-  border: 1px solid var(--line);
-}
-.product-note-columns article,
-.application-steps article {
-  min-height: 260px;
-  padding: 2rem;
-  border-right: 1px solid #cfc5b5;
-}
-.product-note-columns article:last-child,
-.application-steps article:last-child {
-  border: 0;
-}
-.product-note-columns h3,
-.application-steps h3 {
-  margin: 2rem 0 1rem;
-  font: 500 1.9rem/1.2 var(--font-display);
-}
-.product-note-columns p,
-.application-steps p {
-  color: var(--fg-muted);
-  font-size: 0.78rem;
-  line-height: 1.7;
-}
-.product-application {
-  background: var(--bg-raised);
-  color: var(--fg);
-}
-.product-faq-block {
-  display: grid;
-  grid-template-columns: 0.8fr 1.2fr;
-  gap: 6rem;
-  background: var(--bg);
-  color: var(--fg);
-}
-.product-faq-block details {
-  padding: 1.5rem 0;
-  border-top: 1px solid #ccc2b3;
-}
-.product-faq-block summary {
-  display: flex;
-  justify-content: space-between;
-  cursor: pointer;
-  font: 500 1.35rem var(--font-display);
-}
-.product-faq-block summary::-webkit-details-marker {
-  display: none;
-}
-.product-faq-block details p {
-  padding-top: 1rem;
-  color: var(--fg-muted);
-  line-height: 1.75;
-}
 
 body .checkout-shell,
 body .account-shell,
@@ -786,47 +510,6 @@ body .admin-shell .status-pill {
 }
 
 @media (max-width: 900px) {
-  .storefront-home .cinematic-hero {
-    width: 100%;
-    min-height: 0;
-    aspect-ratio: 4 / 3;
-  }
-  .storefront-home .hero-picture img {
-    object-position: 48% center;
-  }
-  .product-offers,
-  .product-note-columns,
-  .application-steps {
-    grid-template-columns: 1fr;
-  }
-  .product-offers article,
-  .product-note-columns article,
-  .application-steps article {
-    min-height: auto;
-    border-right: 0;
-    border-bottom: 1px solid #cfc5b5;
-  }
-  .product-faq-block {
-    grid-template-columns: 1fr;
-    gap: 3rem;
-  }
-}
-@media (max-width: 600px) {
-  .product-offers {
-    margin-top: 4rem;
-  }
-  .product-description-block,
-  .product-notes-block,
-  .product-application,
-  .product-faq-block {
-    padding: 5rem 1rem;
-  }
-  .product-description-block h2 {
-    font-size: 4rem;
-  }
-}
-
-@media (max-width: 900px) {
   .home-trust-strip {
     grid-template-columns: 1fr;
   }
@@ -886,34 +569,6 @@ body .admin-shell .status-pill {
   }
 }
 @media (max-width: 600px) {
-  .storefront-home .cinematic-hero {
-    width: 100%;
-    min-height: 0;
-    aspect-ratio: 3 / 4;
-  }
-  .storefront-home .hero-picture img {
-    object-fit: cover;
-    object-position: 52% 14%;
-  }
-  .hero-carousel-controls {
-    bottom: 0.9rem;
-    gap: 0.45rem;
-    padding: 0.35rem 0.45rem;
-  }
-  .hero-carousel-controls > button {
-    width: 2rem;
-    height: 2rem;
-  }
-  .hero-carousel-count {
-    display: none;
-  }
-  .storefront-home .hero-copy {
-    padding-inline: 1.25rem;
-    padding-bottom: 5.5rem;
-  }
-  .storefront-home .hero-copy h1 {
-    font-size: clamp(4rem, 19vw, 5.5rem);
-  }
   .home-collection,
   .home-reviews,
   .home-faq {
@@ -1461,213 +1116,6 @@ main {
     margin-top: 0.55rem;
   }
 }
-.cinematic-hero {
-  position: relative;
-  min-height: 100svh;
-  overflow: hidden;
-  background: #0b0c0c url("/curated/billionaire.JPG") center 42% / cover
-    no-repeat;
-}
-.hero-media,
-.hero-media img,
-.hero-wash {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-.hero-media img {
-  object-fit: cover;
-  opacity: 0;
-  transform: scale(1.045);
-  transition:
-    opacity 1.1s ease,
-    transform 7s linear;
-}
-.hero-media img.active {
-  opacity: 1;
-  transform: scale(1);
-}
-.hero-wash {
-  background:
-    linear-gradient(
-      90deg,
-      rgba(4, 5, 5, 0.88) 0%,
-      rgba(5, 6, 6, 0.4) 47%,
-      rgba(4, 5, 5, 0.14) 70%
-    ),
-    linear-gradient(0deg, rgba(4, 5, 5, 0.65), transparent 48%);
-}
-.hero-copy {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  min-height: 100svh;
-  max-width: 900px;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding: 10rem max(5vw, 2rem) 9vh;
-}
-.hero-copy h1 {
-  max-width: 820px;
-  margin: 0.9rem 0 1.2rem;
-  font-family: var(--font-display);
-  font-size: clamp(4rem, 9vw, 8rem);
-  font-weight: 500;
-  letter-spacing: -0.055em;
-  line-height: 0.82;
-  text-wrap: balance;
-}
-.hero-description {
-  max-width: 460px;
-  color: var(--fg-muted);
-  line-height: 1.75;
-}
-.hero-copy .lux-button {
-  margin-top: 2rem;
-}
-.hero-controls {
-  position: absolute;
-  right: max(5vw, 2rem);
-  bottom: 8vh;
-  z-index: 3;
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-}
-.hero-controls > button {
-  display: grid;
-  width: 2.5rem;
-  height: 2.5rem;
-  place-items: center;
-  border: 1px solid var(--line);
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.3);
-  color: white;
-}
-.hero-controls > div {
-  display: flex;
-  gap: 0.85rem;
-}
-.hero-controls > div button {
-  border: 0;
-  border-bottom: 1px solid var(--line);
-  background: transparent;
-  padding: 0.5rem 0.2rem;
-  color: var(--fg-subtle);
-  font-size: 0.65rem;
-}
-.hero-controls > div button[aria-current="true"] {
-  border-color: var(--champagne);
-  color: var(--champagne);
-}
-.hero-index {
-  position: absolute;
-  top: 50%;
-  right: 2rem;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  transform: rotate(90deg);
-  color: var(--fg-subtle);
-  font-size: 0.6rem;
-  letter-spacing: 0.15em;
-}
-.hero-index span {
-  width: 4rem;
-  height: 1px;
-  background: rgba(255, 255, 255, 0.35);
-}
-@media (min-width: 1100px) {
-  .cinematic-hero {
-    width: calc(100% - clamp(2rem, 8vw, 10rem));
-    max-width: 1800px;
-    min-height: clamp(680px, 82svh, 900px);
-    margin-inline: auto;
-    border-inline: 1px solid var(--line);
-  }
-  .hero-media img {
-    object-position: center 42%;
-  }
-  .hero-copy {
-    min-height: clamp(680px, 82svh, 900px);
-    max-width: 760px;
-    padding-right: clamp(2rem, 4vw, 5rem);
-    padding-bottom: clamp(4rem, 8vh, 7rem);
-    padding-left: clamp(3rem, 6vw, 7rem);
-  }
-  .hero-copy h1 {
-    max-width: 700px;
-    font-size: clamp(4.25rem, 6vw, 7rem);
-  }
-  .hero-controls {
-    right: clamp(2rem, 4vw, 5rem);
-    bottom: clamp(3rem, 7vh, 6rem);
-  }
-}
-.preorder-heading {
-  display: flex;
-  align-items: end;
-  justify-content: space-between;
-  gap: 3rem;
-  margin-bottom: 4rem;
-}
-.preorder-heading h2 {
-  margin-top: 1.1rem;
-  font-size: clamp(3.4rem, 7vw, 7rem);
-}
-.preorder-heading > p {
-  max-width: 440px;
-  color: var(--fg-subtle);
-  line-height: 1.8;
-}
-.preorder-visual {
-  position: relative;
-  height: 380px;
-  overflow: hidden;
-  background: var(--bg-raised);
-}
-.preorder-visual::after {
-  position: absolute;
-  inset: 45% 0 0;
-  content: "";
-  background: linear-gradient(transparent, rgba(8, 9, 9, 0.72));
-  pointer-events: none;
-}
-.preorder-visual img {
-  transition: transform 700ms var(--ease-premium);
-}
-.preorder-pill,
-.preorder-discover {
-  position: absolute;
-  z-index: 12;
-  font-size: 0.58rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-}
-.preorder-pill {
-  top: 1rem;
-  left: 1rem;
-  border: 1px solid rgba(213, 184, 123, 0.6);
-  background: rgba(8, 9, 9, 0.72);
-  padding: 0.5rem 0.7rem;
-  color: var(--champagne);
-  backdrop-filter: blur(10px);
-}
-.preorder-discover {
-  right: 1rem;
-  bottom: 1rem;
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-}
-.preorder-notes {
-  margin-top: 0.8rem;
-  color: var(--fg-subtle);
-  font-size: 0.78rem;
-  line-height: 1.7;
-}
 .replacement-notice {
   display: grid;
   max-width: 1500px;
@@ -2018,85 +1466,6 @@ without dimming the whole photograph. */
 .product-page {
   --page-pad: 2rem;
   padding: 10rem var(--page-pad) 7rem;
-}
-.product-hero-image {
-  position: relative;
-  overflow: hidden;
-  aspect-ratio: 4 / 5;
-  background: var(--bg-raised);
-}
-.product-gallery {
-  min-width: 0;
-}
-.note-pyramid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  border-block: 1px solid rgba(255, 255, 255, 0.07);
-}
-.note-pyramid div {
-  min-height: 5.75rem;
-  padding: 1.1rem 1.2rem;
-  border-right: 1px solid var(--line);
-}
-.note-pyramid div:last-child {
-  border: 0;
-}
-.note-pyramid span {
-  color: rgba(213, 184, 123, 0.68);
-  font-size: 0.56rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-.note-pyramid p {
-  margin-top: 0.55rem;
-  color: var(--fg-subtle);
-  font-size: 0.74rem;
-  line-height: 1.6;
-}
-.ingredient-notes-visual {
-  margin-top: 0.85rem;
-  overflow: hidden;
-  border: 1px solid var(--line);
-  background: var(--bg-raised);
-}
-.ingredient-notes-visual img {
-  display: block;
-  width: 100%;
-  height: auto;
-  opacity: 0.86;
-  filter: saturate(0.78) contrast(0.95);
-}
-.ingredient-notes-visual figcaption {
-  padding: 0.5rem 0.75rem;
-  background: #0c0d0d;
-  color: var(--fg-subtle);
-  font-size: 0.58rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-.variant-card {
-  display: flex;
-  min-height: 6.8rem;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  border: 1px solid var(--line);
-  background: transparent;
-  padding: 1rem 1.2rem;
-  color: white;
-  text-align: left;
-}
-.variant-card.active {
-  border-color: var(--champagne);
-  background: rgba(213, 184, 123, 0.07);
-}
-.variant-card strong {
-  margin-top: 0.35rem;
-  font-size: 1.2rem;
-}
-.variant-card small {
-  margin-top: 0.35rem;
-  color: var(--fg-subtle);
 }
 .checkout-shell {
   padding: 11rem 1.5rem 6rem;
@@ -2672,29 +2041,11 @@ without dimming the whole photograph. */
 .search-overlay form div:focus-within {
   border-color: var(--champagne);
 }
-.cinematic-hero,
 .product-card,
-.product-hero-image,
 .finder-card,
 .shop-filters,
 .catalog-editor {
   border-radius: var(--radius-lg);
-}
-.cinematic-hero {
-  box-shadow: var(--shadow-soft);
-}
-.hero-controls > button,
-.hero-controls > div button {
-  transition:
-    color 0.25s ease,
-    border-color 0.25s ease,
-    background 0.25s ease,
-    transform 0.3s var(--ease-premium);
-}
-.hero-controls > button:hover {
-  transform: scale(1.06);
-  border-color: rgba(213, 184, 123, 0.55);
-  color: var(--champagne);
 }
 .finder-section,
 .shop-hero {
@@ -2712,8 +2063,7 @@ without dimming the whole photograph. */
   transform: translate3d(0, -6px, 0);
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.28);
 }
-.product-visual img,
-.product-hero-image img {
+.product-visual img {
   transition: transform 0.8s var(--ease-premium);
 }
 .product-card:hover .product-visual img {
@@ -2733,7 +2083,6 @@ without dimming the whole photograph. */
 }
 .size-chip,
 .icon-add,
-.variant-card,
 .finder-option {
   border-radius: var(--radius-sm);
   transition:
@@ -2742,8 +2091,7 @@ without dimming the whole photograph. */
     color 0.25s ease,
     transform 0.3s var(--ease-premium);
 }
-.size-chip:hover:not(:disabled),
-.variant-card:hover:not(:disabled) {
+.size-chip:hover:not(:disabled) {
   transform: translate3d(0, -2px, 0);
   border-color: rgba(213, 184, 123, 0.55);
 }
@@ -2751,6 +2099,14 @@ without dimming the whole photograph. */
   transform: translate3d(0, -2px, 0);
   background: var(--champagne);
   color: #090909;
+}
+/* Press feedback: the primary buttons already push in on :active, the
+   secondary controls did not. A small scale-down reads as the control
+   taking the tap rather than only the pointer-up doing something. */
+.size-chip:active:not(:disabled),
+.icon-add:active:not(:disabled),
+.finder-option:active {
+  transform: translate3d(0, 0, 0) scale(0.97);
 }
 .finder-card {
   border-color: var(--fg-subtle);
@@ -2873,9 +2229,86 @@ so it did nothing at all in Safari and
   }
 }
 
+/* Directional page slides between /shop and a product page. The named morph
+   element above carries the bottle image across; everything else in the frame
+   slides in the direction of travel. 60px is enough to read as motion without
+   the eye having to chase it across the viewport. Forward: new content enters
+   from the right, old leaves to the left. Back: mirrored. */
+::view-transition-old(.nav-forward) {
+  --vt-slide: -60px;
+  animation:
+    150ms ease-in both vt-fade reverse,
+    400ms var(--ease-premium) both vt-slide reverse;
+}
+::view-transition-new(.nav-forward) {
+  --vt-slide: 60px;
+  animation:
+    210ms ease-out 150ms both vt-fade,
+    400ms var(--ease-premium) both vt-slide;
+}
+::view-transition-old(.nav-back) {
+  --vt-slide: 60px;
+  animation:
+    150ms ease-in both vt-fade reverse,
+    400ms var(--ease-premium) both vt-slide reverse;
+}
+::view-transition-new(.nav-back) {
+  --vt-slide: -60px;
+  animation:
+    210ms ease-out 150ms both vt-fade,
+    400ms var(--ease-premium) both vt-slide;
+}
+@keyframes vt-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes vt-slide {
+  from {
+    translate: var(--vt-slide, 0) 0;
+  }
+  to {
+    translate: 0 0;
+  }
+}
+
+/* The top chrome is the fixed reference point during a slide - naming it keeps
+   it still while the content moves under it. display:none on the old snapshot
+   avoids a flash of two stacked headers mid-transition. */
+body .announcement-bar {
+  view-transition-name: site-announcement;
+}
+body .site-header {
+  view-transition-name: site-header;
+}
+::view-transition-group(site-announcement),
+::view-transition-group(site-header) {
+  animation: none;
+  z-index: 100;
+}
+::view-transition-old(site-announcement),
+::view-transition-old(site-header) {
+  display: none;
+}
+::view-transition-new(site-announcement),
+::view-transition-new(site-header) {
+  animation: none;
+}
+
+/* The transition overlay swallows pointer events by default, so taps during a
+   slide are lost. Let them through to the live page underneath. */
+::view-transition {
+  pointer-events: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-group(*),
-  ::view-transition-image-pair(*) {
+  ::view-transition-image-pair(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
     animation: none !important;
   }
 }
@@ -2989,32 +2422,6 @@ so it did nothing at all in Safari and
   .shop-size-sections {
     gap: 5rem;
   }
-  .hero-copy {
-    padding: 9rem 1.25rem 8rem;
-  }
-  .cinematic-hero {
-    border-radius: 0;
-  }
-  .hero-copy h1 {
-    font-size: clamp(3.8rem, 17vw, 6rem);
-  }
-  .hero-controls {
-    right: 1.25rem;
-    bottom: 2rem;
-  }
-  .hero-controls > div,
-  .hero-index {
-    display: none;
-  }
-  .preorder-heading {
-    display: block;
-  }
-  .preorder-heading > p {
-    margin-top: 2rem;
-  }
-  .preorder-visual {
-    height: clamp(360px, 112vw, 460px);
-  }
   .replacement-notice,
   .replacement-notice--compact {
     grid-template-columns: 1fr;
@@ -3038,14 +2445,6 @@ so it did nothing at all in Safari and
   .product-page {
     --page-pad: 1rem;
     padding: 8.5rem var(--page-pad) 5rem;
-  }
-  .note-pyramid {
-    grid-template-columns: 1fr;
-  }
-  .note-pyramid div {
-    min-height: auto;
-    border-right: 0;
-    border-bottom: 1px solid var(--line);
   }
   .footer-top {
     grid-template-columns: 1fr 1fr;
@@ -3215,11 +2614,6 @@ so it did nothing at all in Safari and
   flex: 0 0 auto;
 }
 
-.cinematic-hero,
-.product-hero-image {
-  touch-action: pan-y;
-}
-
 .perfume-spray-template {
   display: none;
 }
@@ -3372,50 +2766,6 @@ few and dim — suggestion rather than confetti. */
   position: relative;
   min-height: 34rem;
 }
-.product-guidance-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  border: 1px solid var(--line);
-  margin-top: 2rem;
-}
-.product-guidance-grid > div {
-  padding: 1rem;
-  border: 1px solid var(--line);
-}
-.product-guidance-grid span {
-  display: block;
-  margin-bottom: 0.45rem;
-  font-size: 0.62rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--fg-subtle);
-}
-.product-guidance-grid p {
-  font-size: 0.8rem;
-  line-height: 1.55;
-  color: var(--fg-muted);
-}
-.product-guidance-grid small {
-  font-size: 0.65rem;
-  color: var(--fg-subtle);
-}
-.purchase-assurance {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.6rem;
-  margin-top: 1.1rem;
-}
-.purchase-assurance span {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.4rem;
-  padding: 0.75rem 0.35rem;
-  border: 1px solid var(--line);
-  font-size: 0.62rem;
-  text-align: center;
-  color: var(--fg-subtle);
-}
 
 .scent-school {
   background: #0c0c0b;
@@ -3471,11 +2821,6 @@ few and dim — suggestion rather than confetti. */
   gap: 2rem;
 }
 
-@media (max-width: 900px) {
-  .purchase-assurance {
-    grid-template-columns: 1fr;
-  }
-}
 @media (max-width: 600px) {
   .school-hero {
     min-height: 82vh;
@@ -3485,9 +2830,6 @@ few and dim — suggestion rather than confetti. */
   }
   .school-hero h1 {
     font-size: 4rem;
-  }
-  .product-guidance-grid {
-    grid-template-columns: 1fr;
   }
   .school-final > div {
     flex-direction: column;
@@ -3631,19 +2973,6 @@ body .checkout-shell .error-banner {
 body .checkout-shell .coupon-apply-button:hover:not(:disabled) {
   background: var(--bg-band);
   color: var(--fg);
-}
-
-body .product-page .variant-card small,
-body .product-page .purchase-assurance span {
-  color: var(--fg-muted);
-}
-body .product-page .purchase-assurance span,
-body .product-page .ingredient-notes-visual {
-  border-color: var(--line);
-}
-body .product-page .ingredient-notes-visual figcaption {
-  background: var(--bg-band);
-  color: var(--fg-muted);
 }
 
 body .policy-document section {
@@ -4163,14 +3492,6 @@ body .catalog-editor > button {
   max-width: 100%;
   overflow-x: clip;
 }
-.storefront-home .cinematic-hero,
-.storefront-home .hero-slide,
-.storefront-home .hero-picture {
-  max-width: 100%;
-}
-.mobile-hero-copy {
-  display: none;
-}
 .home-trust-strip article {
   display: flex;
   min-width: 0;
@@ -4214,80 +3535,6 @@ body .catalog-editor > button {
 }
 
 @media (max-width: 600px) {
-  .storefront-home .cinematic-hero {
-    isolation: isolate;
-    width: 100%;
-    height: calc(100svh - 7.25rem);
-    min-height: 42rem;
-    aspect-ratio: auto;
-  }
-  .storefront-home .cinematic-hero::after {
-    content: "";
-    position: absolute;
-    z-index: 2;
-    inset: 35% 0 0;
-    pointer-events: none;
-    background: linear-gradient(
-      180deg,
-      transparent,
-      rgba(13, 12, 10, 0.42) 42%,
-      rgba(13, 12, 10, 0.88)
-    );
-  }
-  .storefront-home .hero-picture img {
-    object-position: 50% 12%;
-  }
-  .mobile-hero-copy {
-    position: absolute;
-    right: 1.15rem;
-    bottom: 5rem;
-    left: 1.15rem;
-    z-index: 3;
-    display: block;
-    max-width: 22rem;
-    color: var(--fg);
-    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.3);
-  }
-  .mobile-hero-copy > p {
-    color: var(--accent);
-    font-size: 0.62rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-  }
-  .mobile-hero-copy h1 {
-    max-width: 9ch;
-    margin-top: 0.65rem;
-    font-family: var(--font-display);
-    font-size: clamp(2.75rem, 13vw, 4.25rem);
-    font-weight: 500;
-    line-height: 0.94;
-    text-wrap: balance;
-  }
-  .mobile-hero-copy > span {
-    display: block;
-    max-width: 31ch;
-    margin-top: 0.85rem;
-    color: var(--fg);
-    font-size: 0.76rem;
-    line-height: 1.55;
-  }
-  .mobile-hero-copy > a {
-    display: inline-flex;
-    margin-top: 1rem;
-    border-bottom: 1px solid rgba(225, 199, 137, 0.75);
-    padding-bottom: 0.3rem;
-    color: var(--fg);
-    font-size: 0.62rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-  }
-  .hero-carousel-controls {
-    right: 1rem;
-    bottom: 1rem;
-    left: auto;
-    z-index: 4;
-    transform: none;
-  }
   .home-trust-strip {
     grid-template-columns: 1fr;
     gap: 0.65rem;
@@ -4540,7 +3787,6 @@ so the sequence
 .story-media img {
   /* Driven by the parallax effect on desktop; 0 everywhere else. */
   transform: translate3d(0, var(--parallax, 0%), 0) scale(1.08);
-  will-change: transform;
 }
 .story-copy {
   padding-inline: 1.375rem; /* 22px, inside the 20-24px band */
@@ -4561,20 +3807,22 @@ so the sequence
   line-height: 1.75;
 }
 
-/* Reveal: fade and rise. Image and copy are offset by the inline
-   transition-delay set in the component so they do not land together. */
+/* Reveal: fade and rise, offset by the inline transition-delay in the
+   component. The base state is fully visible so the content never depends on
+   the reveal observer firing; only when JS marks a row hidden does it start
+   below and fade up. */
 .story-row .story-media,
 .story-row .story-copy {
-  opacity: 0;
-  transform: translate3d(0, 24px, 0);
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
   transition:
     opacity 560ms var(--ease-premium),
     transform 560ms var(--ease-premium);
 }
-.story-row.is-visible .story-media,
-.story-row.is-visible .story-copy {
-  opacity: 1;
-  transform: translate3d(0, 0, 0);
+.story-row.is-hidden .story-media,
+.story-row.is-hidden .story-copy {
+  opacity: 0;
+  transform: translate3d(0, 24px, 0);
 }
 
 /* Tablet: two columns,
@@ -4754,363 +4002,6 @@ so it
   }
 }
 
-/* ==========================================================================
-   Full-bleed signature panels on the homepage.
-   One screen per fragrance before any pricing appears.
-   ========================================================================== */
-.signature-panels {
-  display: grid;
-}
-.signature-panel {
-  position: relative;
-  display: grid;
-  align-items: end;
-  min-height: min(88svh, 52rem);
-  isolation: isolate;
-  overflow: hidden;
-}
-.signature-panel-media {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-}
-/* Bottom-weighted so the name keeps contrast without flattening the whole
-   photograph. */
-.signature-panel-scrim {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to top,
-    rgb(8 9 10 / 0.86) 0%,
-    rgb(8 9 10 / 0.45) 34%,
-    rgb(8 9 10 / 0.05) 68%,
-    transparent 100%
-  );
-}
-.signature-panel-copy {
-  padding: 0 1.5rem clamp(3rem, 8vw, 6rem);
-  color: var(--on-image);
-  text-align: center;
-}
-.signature-panel-copy h2 {
-  font-family: var(--font-display), serif;
-  font-size: clamp(2.6rem, 9vw, 5rem);
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  line-height: 1;
-}
-.signature-panel-character {
-  margin-top: 0.9rem;
-  color: rgb(247 242 232 / 0.82);
-  font-size: 0.72rem;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-}
-.signature-panel-copy a {
-  display: inline-block;
-  min-height: 2.75rem;
-  margin-top: 1.75rem;
-  border-bottom: 1px solid rgb(247 242 232 / 0.5);
-  padding-bottom: 0.3rem;
-  color: var(--on-image);
-  font-size: 0.68rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  transition:
-    border-color var(--dur-base) ease,
-    color var(--dur-base) ease;
-}
-.signature-panel-copy a:hover,
-.signature-panel-copy a:focus-visible {
-  border-color: var(--gold-300);
-  color: var(--gold-300);
-}
-
-/* =========================================================================
-   Hero — desktop editorial spread
-   -------------------------------------------------------------------------
-   Below 901px the hero stays the full-bleed campaign photograph with the
-   overlaid mobile copy. From 901px up it becomes a two-column spread: a dark
-   type column on the left,
-the campaign image framed on the right,
-with a
-   thumbnail rail so the other signatures are visible rather than implied.
-   ========================================================================= */
-.hero-stage {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-}
-.hero-stage-veil {
-  display: none;
-}
-.hero-editorial {
-  display: none;
-}
-
-@media (min-width: 901px) {
-  .storefront-home .cinematic-hero {
-    display: grid;
-    height: min(calc(100svh - 8.5rem), 50rem);
-    min-height: 36rem;
-    align-items: stretch;
-    grid-template-columns: minmax(24rem, 43fr) 57fr;
-    aspect-ratio: auto;
-    background:
-      radial-gradient(
-        120% 90% at 0% 0%,
-        rgba(213, 184, 123, 0.09),
-        transparent 62%
-      ),
-      var(--ink-950, #08090a);
-  }
-
-  /* Column two: the photograph,
-inset so it reads as a plate,
-not a banner. */
-  .hero-stage {
-    position: relative;
-    inset: auto;
-    grid-column: 2;
-    margin: clamp(1.25rem, 2vw, 2rem);
-    margin-left: 0;
-    border-radius: calc(var(--radius-lg, 18px) - 4px);
-  }
-  .storefront-home .hero-picture img {
-    object-position: center;
-  }
-  /* Feathers the plate into the type column so the seam is not a hard edge. */
-  .hero-stage-veil {
-    position: absolute;
-    z-index: 2;
-    display: block;
-    inset: 0;
-    pointer-events: none;
-    border-radius: inherit;
-    box-shadow: inset 0 0 0 1px rgba(233, 219, 190, 0.14);
-    background: linear-gradient(
-      90deg,
-      rgba(8, 9, 10, 0.55) 0%,
-      rgba(8, 9, 10, 0.12) 22%,
-      transparent 48%
-    );
-  }
-
-  /* Column one: the type. */
-  .hero-editorial {
-    display: flex;
-    position: relative;
-    z-index: 3;
-    grid-column: 1;
-    grid-row: 1;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: 2rem;
-    padding: clamp(2.25rem, 3.4vw, 3.5rem) clamp(1.75rem, 3vw, 3.25rem)
-      clamp(1.75rem, 2.6vw, 2.75rem) clamp(2.25rem, 4.5vw, 4.75rem);
-    color: var(--bone-50, #f7f2e8);
-  }
-  .hero-editorial-house {
-    color: rgba(247, 242, 232, 0.5);
-    font-size: 0.6rem;
-    font-weight: 600;
-    letter-spacing: 0.28em;
-    text-transform: uppercase;
-  }
-  .hero-editorial-house span {
-    margin: 0 0.4rem;
-    color: var(--gold-400, #d5b87b);
-  }
-  .hero-editorial-body {
-    display: flex;
-    min-height: 0;
-    flex: 1 1 auto;
-    align-items: center;
-  }
-  .hero-editorial-kicker {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.7rem;
-    color: var(--gold-300, #e2c78d);
-    font-size: 0.64rem;
-    font-weight: 600;
-    letter-spacing: 0.24em;
-    text-transform: uppercase;
-  }
-  .hero-editorial-kicker::before {
-    content: "";
-    width: 2.25rem;
-    height: 1px;
-    background: linear-gradient(90deg, var(--gold-500, #b8965a), transparent);
-  }
-  .hero-editorial-title {
-    max-width: 13ch;
-    margin-top: 1rem;
-    font-family: var(--font-display), serif;
-    font-size: clamp(2.9rem, 4.4vw, 4.75rem);
-    font-weight: 500;
-    letter-spacing: -0.035em;
-    line-height: 0.94;
-    text-wrap: balance;
-  }
-  .hero-editorial-copy {
-    max-width: 36ch;
-    margin-top: 1.15rem;
-    color: rgba(247, 242, 232, 0.68);
-    font-size: 0.95rem;
-    line-height: 1.65;
-  }
-  .hero-editorial-notes {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.45rem;
-    margin-top: 1.4rem;
-  }
-  .hero-editorial-notes li {
-    border: 1px solid rgba(233, 219, 190, 0.18);
-    border-radius: 999px;
-    padding: 0.4rem 0.8rem;
-    color: rgba(247, 242, 232, 0.72);
-    font-size: 0.6rem;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-  }
-  .hero-editorial-actions {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 1.5rem;
-    margin-top: 2rem;
-  }
-  .hero-editorial-link {
-    border-bottom: 1px solid rgba(213, 184, 123, 0.45);
-    padding-bottom: 0.3rem;
-    color: rgba(247, 242, 232, 0.82);
-    font-size: 0.66rem;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    transition:
-      color 0.25s ease,
-      border-color 0.25s ease;
-  }
-  .hero-editorial-link:hover {
-    border-color: var(--gold-300, #e2c78d);
-    color: var(--gold-300, #e2c78d);
-  }
-
-  /* The rail: counter,
-arrows and the other campaigns as real thumbnails. */
-  .hero-editorial-rail {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1.5rem;
-    border-top: 1px solid rgba(233, 219, 190, 0.13);
-    padding-top: 1.25rem;
-  }
-  .hero-editorial-nav {
-    display: flex;
-    align-items: center;
-    gap: 0.55rem;
-  }
-  .hero-editorial-nav button {
-    display: grid;
-    width: 2.3rem;
-    height: 2.3rem;
-    cursor: pointer;
-    place-items: center;
-    border: 1px solid rgba(233, 219, 190, 0.2);
-    border-radius: 50%;
-    background: transparent;
-    color: rgba(247, 242, 232, 0.8);
-    transition:
-      background 0.25s ease,
-      border-color 0.25s ease,
-      color 0.25s ease;
-  }
-  .hero-editorial-nav button:hover,
-  .hero-editorial-nav button:focus-visible {
-    border-color: var(--gold-400, #d5b87b);
-    background: rgba(213, 184, 123, 0.12);
-    color: var(--gold-300, #e2c78d);
-    outline: none;
-  }
-  .hero-editorial-count {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: rgba(247, 242, 232, 0.6);
-    font-size: 0.62rem;
-    font-variant-numeric: tabular-nums;
-    letter-spacing: 0.16em;
-  }
-  .hero-editorial-count i {
-    width: 1.5rem;
-    height: 1px;
-    background: rgba(233, 219, 190, 0.28);
-  }
-  .hero-editorial-thumbs {
-    display: flex;
-    gap: 0.5rem;
-  }
-  .hero-editorial-thumbs button {
-    position: relative;
-    width: 3.1rem;
-    height: 3.9rem;
-    cursor: pointer;
-    overflow: hidden;
-    border: 1px solid transparent;
-    border-radius: 4px;
-    padding: 0;
-    opacity: 0.42;
-    filter: grayscale(0.55);
-    transition:
-      opacity 0.35s var(--ease-premium, ease),
-      filter 0.35s ease,
-      transform 0.35s var(--ease-premium, ease),
-      border-color 0.35s ease;
-  }
-  .hero-editorial-thumbs button img {
-    object-fit: cover;
-  }
-  .hero-editorial-thumbs button:hover,
-  .hero-editorial-thumbs button:focus-visible {
-    opacity: 0.85;
-    filter: none;
-    outline: none;
-    transform: translateY(-2px);
-  }
-  .hero-editorial-thumbs button.is-active {
-    border-color: var(--gold-400, #d5b87b);
-    opacity: 1;
-    filter: none;
-  }
-
-  /* Superseded on desktop by the editorial rail. */
-  .storefront-home .hero-carousel-controls,
-  .storefront-home .hero-carousel-count {
-    display: none;
-  }
-}
-
-/* Narrow desktops and portrait tablets: keep the spread but stack the rail. */
-@media (min-width: 901px) and (max-width: 1120px) {
-  .storefront-home .cinematic-hero {
-    grid-template-columns: minmax(20rem, 47fr) 53fr;
-  }
-  .hero-editorial-thumbs button {
-    width: 2.6rem;
-    height: 3.3rem;
-  }
-}
-
-@media (min-width: 901px) and (max-height: 720px) {
-  .storefront-home .cinematic-hero {
-    height: auto;
-    min-height: 34rem;
-  }
-}
-
 /* Collapse the fixed chrome while the cart is open.
    The announcement bar (z-index 80) and header (z-index 70) both sit above the
    cart panel,
@@ -5128,214 +4019,6 @@ body[data-overlay="cart"] .site-header {
   body[data-overlay="cart"] .announcement-bar,
   body[data-overlay="cart"] .site-header {
     transition: none;
-  }
-}
-
-/* =========================================================================
-   Signature panels — desktop spread
-   -------------------------------------------------------------------------
-   Every gallery frame is a 4:5 portrait. Full-bleeding one across a wide
-   desktop panel scales it up and crops vertically through the middle,
-which
-   is what removed the bottle and left a torso. From 901px up the photograph
-   gets its own 4:5 plate beside the type,
-so the frame is shown whole,
-and
-   the plate alternates sides down the stack.
-   ========================================================================= */
-@media (min-width: 901px) {
-  .signature-panel {
-    align-items: center;
-    min-height: min(90svh, 54rem);
-    grid-template-columns: 1fr 1fr;
-    background:
-      radial-gradient(
-        90% 70% at 50% 0%,
-        rgba(213, 184, 123, 0.07),
-        transparent 60%
-      ),
-      var(--ink-950, #08090a);
-    column-gap: clamp(2rem, 5vw, 6rem);
-    padding: clamp(3rem, 5vw, 5.5rem) clamp(2rem, 6vw, 7rem);
-  }
-  .signature-panel-media {
-    position: relative;
-    z-index: 0;
-    inset: auto;
-    width: min(100%, 34rem);
-    aspect-ratio: 4 / 5;
-    max-height: min(72svh, 42rem);
-    overflow: hidden;
-    border-radius: var(--radius-lg, 1.25rem);
-    box-shadow:
-      0 40px 90px rgba(0, 0, 0, 0.45),
-      inset 0 0 0 1px rgba(233, 219, 190, 0.12);
-  }
-  .signature-panel[data-side="right"] .signature-panel-media {
-    grid-column: 2;
-    grid-row: 1;
-    justify-self: start;
-  }
-  .signature-panel[data-side="right"] .signature-panel-copy {
-    grid-column: 1;
-    grid-row: 1;
-  }
-  .signature-panel[data-side="left"] .signature-panel-media {
-    grid-column: 1;
-    grid-row: 1;
-    justify-self: end;
-  }
-  .signature-panel[data-side="left"] .signature-panel-copy {
-    grid-column: 2;
-    grid-row: 1;
-  }
-  /* The scrim existed to hold the overlaid name legible. The type has left the
-     photograph, so it becomes a light vignette instead of a black wash. */
-  .signature-panel-scrim {
-    border-radius: inherit;
-    background: linear-gradient(
-      to top,
-      rgb(8 9 10 / 0.34) 0%,
-      rgb(8 9 10 / 0.06) 38%,
-      transparent 70%
-    );
-  }
-  .signature-panel-copy {
-    max-width: 30rem;
-    padding: 0;
-    text-align: left;
-  }
-  .signature-panel[data-side="left"] .signature-panel-copy {
-    justify-self: end;
-  }
-  .signature-panel-copy h2 {
-    font-size: clamp(3rem, 5vw, 5.25rem);
-    letter-spacing: -0.02em;
-  }
-  .signature-panel-character {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.8rem;
-    margin-top: 1.15rem;
-  }
-  .signature-panel-character::before {
-    content: "";
-    width: 2.25rem;
-    height: 1px;
-    background: linear-gradient(90deg, var(--gold-500, #b8965a), transparent);
-    flex: 0 0 auto;
-  }
-  .signature-panel-copy a {
-    margin-top: 2rem;
-  }
-}
-
-/* =========================================================================
-   Signature panels — editorial copy and second frame
-   -------------------------------------------------------------------------
-   The tagline,
-the fact list and the inset photograph are desktop-only: the
-   phone panel is a portrait photo with the name over it and has no room for
-   any of them.
-   ========================================================================= */
-.signature-panel-story,
-.signature-panel-facts,
-.signature-panel-inset {
-  display: none;
-}
-/* Positioned in every state,
-so the fill image inside always has a
-   containing block even before the desktop rules apply. */
-.signature-panel-inset {
-  position: relative;
-}
-
-@media (min-width: 901px) {
-  /* Was inline-flex,
-which let the Explore link flow onto the same line as
-     the character list. Block-level flex keeps the rule-and-traits row on its
-     own line while the ::before hairline still centres against the text. */
-  .signature-panel-character {
-    display: flex;
-    align-items: center;
-    margin-top: 1rem;
-  }
-  .signature-panel-story {
-    display: block;
-    max-width: 24ch;
-    color: var(--gold-300, #e2c78d);
-    font-family: var(--font-display), serif;
-    font-size: clamp(1.1rem, 1.5vw, 1.45rem);
-    font-style: italic;
-    font-weight: 400;
-    letter-spacing: 0;
-    line-height: 1.4;
-    text-wrap: balance;
-  }
-  .signature-panel-copy h2 {
-    margin-top: 0.85rem;
-  }
-  .signature-panel-facts {
-    display: grid;
-    gap: 0.7rem;
-    margin-top: 1.9rem;
-    border-top: 1px solid rgba(233, 219, 190, 0.13);
-    padding-top: 1.4rem;
-  }
-  .signature-panel-facts > div {
-    display: grid;
-    align-items: baseline;
-    gap: 1rem;
-    grid-template-columns: 5.5rem 1fr;
-  }
-  .signature-panel-facts dt {
-    color: rgba(247, 242, 232, 0.42);
-    font-size: 0.58rem;
-    font-weight: 600;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-  }
-  .signature-panel-facts dd {
-    color: rgba(247, 242, 232, 0.82);
-    font-size: 0.86rem;
-    line-height: 1.5;
-  }
-
-  /* The second frame,
-hung off the inner edge of the main plate so it fills
-     the gap the two columns leave down the middle of the panel. */
-  .signature-panel-inset {
-    position: relative;
-    z-index: 2;
-    display: block;
-    grid-row: 1;
-    width: clamp(7.5rem, 11vw, 11.5rem);
-    aspect-ratio: 4 / 5;
-    align-self: end;
-    overflow: hidden;
-    border-radius: calc(var(--radius-lg, 1.25rem) - 0.5rem);
-    box-shadow:
-      0 0 0 6px var(--ink-950, #08090a),
-      0 30px 60px rgba(0, 0, 0, 0.55);
-  }
-  .signature-panel[data-side="right"] .signature-panel-inset {
-    grid-column: 2;
-    justify-self: start;
-    transform: translate(-46%, 14%);
-  }
-  .signature-panel[data-side="left"] .signature-panel-inset {
-    grid-column: 1;
-    justify-self: end;
-    transform: translate(46%, 14%);
-  }
-}
-
-/* Below this the copy column is too narrow to carry the fact list beside an
-   inset,
-so the second frame steps aside and the type keeps the width. */
-@media (min-width: 901px) and (max-width: 1180px) {
-  .signature-panel-inset {
-    display: none;
   }
 }
 
@@ -5515,6 +4198,11 @@ so these styles cover a course index and a repeatable lesson
 .lesson-progress span {
   display: block;
   height: 100%;
+  /* scaleX driven (0..1) from ReadingProgress; origin left so it grows from the
+     start of the line. width stays 100% so the transform maps to the full bar. */
+  width: 100%;
+  transform: scaleX(0);
+  transform-origin: 0 50%;
   background: linear-gradient(90deg, var(--gold-500), var(--gold-300));
 }
 .lesson-hero {
@@ -6029,5 +4717,987 @@ so it carries
 @media (max-width: 767px) {
   .product-story {
     margin-inline: calc(-1 * var(--page-pad, 1rem));
+  }
+}
+
+/* ==========================================================================
+   CINEMATIC TREATMENT
+
+   Shared by the home page (main.cinematic-home) and the standalone preview
+   (main.cine-root). A near-black film language: letterbox stage, a title
+   card, and a scroll-pinned sequence that gives every signature one screen
+   with the bottle lit as the subject and the campaign frame behind it as
+   atmosphere. Delete src/app/preview to drop the preview; revert page.tsx to
+   drop it from the home.
+   ========================================================================== */
+.cine-root,
+.cinematic-home,
+.cinematic {
+  --cine-ink: #060608;
+  --cine-paper: #f3ede1;
+  --cine-paper-dim: rgba(243, 237, 225, 0.62);
+  --cine-paper-faint: rgba(243, 237, 225, 0.4);
+  --cine-line: rgba(243, 237, 225, 0.14);
+  --cine-gold: #d9b979;
+  --cine-pad: max(6vw, 1.4rem);
+  position: relative;
+  background: var(--cine-ink);
+  color: var(--cine-paper);
+  font-family: var(--font-sans), "Manrope", system-ui, sans-serif;
+}
+
+/* ==========================================================================
+   The rest of the storefront in cinematic dress. `.cinematic` is added to the
+   shop, product and Scent School page roots so they sit on the same near-black
+   ground with the same display type and hairlines as the home. `/shop` keeps
+   its commerce surface for the test contract, so the dark semantic tokens are
+   re-pointed here directly (mirroring the noir block in tokens.css) rather
+   than through the theme.
+   ========================================================================== */
+.cinematic {
+  --bg: var(--ink-950);
+  --bg-raised: var(--ink-900);
+  --bg-band: var(--ink-850);
+  --fg: var(--bone-50);
+  --fg-muted: var(--bone-300);
+  --fg-subtle: var(--bone-400);
+  --line: rgba(247, 242, 232, 0.12);
+  --line-strong: rgba(247, 242, 232, 0.2);
+  --accent: var(--gold-400);
+  --accent-fg: var(--ink-950);
+  --accent-quiet: rgba(213, 184, 123, 0.16);
+  --shadow-soft: 0 24px 80px rgb(0 0 0 / 0.35);
+  --shadow-lift: 0 34px 100px rgb(0 0 0 / 0.45);
+}
+.cinematic .display-title,
+.cinematic .shop-hero-copy h1,
+.cinematic .school-hero h1,
+.cinematic .lesson-hero h1,
+.cinematic .school-final h2 {
+  font-family: var(--font-display), "Cormorant Garamond", serif;
+  letter-spacing: -0.03em;
+}
+.cinematic .commerce-heading .display-title,
+.cinematic .school-curriculum .display-title,
+.cinematic .school-final h2 {
+  font-size: clamp(2.6rem, 6.5vw, 5.4rem);
+  line-height: 0.98;
+}
+/* Hairlines: the site paints several of these as fixed bone/stone hex. */
+.cinematic .shop-filters,
+.cinematic .shop-size-heading,
+.cinematic .shop-size-section,
+.cinematic .lesson-nav a,
+.cinematic .lesson-index,
+.cinematic .school-chapter-card,
+.cinematic .school-promise article,
+.cinematic .lesson-body :where(hr) {
+  border-color: var(--cine-line) !important;
+}
+.cinematic .shop-filters {
+  background: rgba(255, 255, 255, 0.03);
+}
+.cinematic .shop-filters input,
+.cinematic .shop-filters select {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--cine-line);
+  color: var(--cine-paper);
+}
+.cinematic .shop-filters input::placeholder {
+  color: var(--cine-paper-faint);
+}
+.cinematic .shop-size-section {
+  padding-block: clamp(3.5rem, 9vh, 6rem);
+}
+/* The chapter-card thumbnails on the Scent School hub are lit on near-white;
+   a soft inset vignette settles them into the dark grid. The full-bleed heroes
+   already carry their own scrim, so they are left alone. */
+.cinematic .school-chapter-image {
+  position: relative;
+}
+.cinematic .school-chapter-image::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow:
+    inset 0 0 90px 28px rgba(6, 6, 8, 0.45),
+    inset 0 0 0 1px var(--cine-line);
+}
+
+/* The preview is pure cinema, so its nav / footer are hidden. The home keeps
+   them - you can still shop - so this only targets the preview. */
+:root:has(.cine-root) [data-surface="chrome"] {
+  display: none;
+}
+body:has(.cine-root) {
+  background: #060608;
+}
+
+/* ---- letterbox stage ----
+   The bars are sticky inside .cine-stage, so they frame the title card and the
+   sequence and then scroll away once the shopping sections begin. */
+.cine-stage {
+  position: relative;
+}
+.cine-bar {
+  display: block;
+  position: sticky;
+  z-index: 20;
+  height: clamp(20px, 5.5vh, 68px);
+  background: #000;
+  pointer-events: none;
+}
+.cine-bar-top {
+  top: 0;
+  box-shadow:
+    0 14px 34px rgba(0, 0, 0, 0.5),
+    inset 0 -1px 0 rgba(243, 237, 225, 0.08);
+}
+.cine-bar-bottom {
+  bottom: 0;
+  margin-top: -1px;
+  box-shadow:
+    0 -14px 34px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(243, 237, 225, 0.08);
+}
+
+/* ---- title card ---- */
+.cine-hero {
+  position: relative;
+  min-height: 100dvh;
+  margin-top: calc(-1 * clamp(20px, 5.5vh, 68px));
+  display: grid;
+  align-items: end;
+  overflow: hidden;
+}
+.cine-hero-media {
+  position: absolute;
+  inset: 0;
+  animation: cine-kenburns 22s ease-out both;
+}
+.cine-hero-media :where(img) {
+  object-position: center 40%;
+}
+.cine-hero-veil {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(120% 80% at 50% 12%, transparent, rgba(6, 6, 8, 0.5) 100%),
+    linear-gradient(
+      to top,
+      rgba(6, 6, 8, 0.94) 0%,
+      rgba(6, 6, 8, 0.5) 40%,
+      rgba(6, 6, 8, 0.16) 70%,
+      rgba(6, 6, 8, 0.5) 100%
+    );
+}
+.cine-wordmark {
+  position: absolute;
+  top: clamp(4rem, 12vh, 7rem);
+  left: var(--cine-pad);
+  z-index: 2;
+  font-family: var(--font-display), "Cormorant Garamond", serif;
+  font-size: clamp(0.95rem, 2vw, 1.35rem);
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: var(--cine-paper-dim);
+  animation: cine-fade 1.4s ease 0.2s both;
+}
+.cine-hero-copy {
+  position: relative;
+  z-index: 2;
+  padding: 0 var(--cine-pad) clamp(4rem, 13vh, 9rem);
+  max-width: 60rem;
+}
+.cine-hero-title {
+  font-family: var(--font-display), "Cormorant Garamond", serif;
+  font-weight: 500;
+  font-size: clamp(2.9rem, 10.5vw, 8.5rem);
+  line-height: 0.94;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  animation: cine-rise 1.7s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both;
+}
+.cine-hero-sub {
+  margin-top: clamp(1rem, 2.5vh, 1.9rem);
+  max-width: 32ch;
+  font-size: clamp(0.92rem, 1.5vw, 1.12rem);
+  line-height: 1.6;
+  color: var(--cine-paper-dim);
+  animation: cine-rise 1.7s cubic-bezier(0.16, 1, 0.3, 1) 0.6s both;
+}
+
+/* ---- pinned signature sequence ---- */
+.cine-frame-track {
+  position: relative;
+  height: 165vh;
+}
+.cine-frame {
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  overflow: hidden;
+  display: grid;
+  align-items: end;
+  transform-origin: 50% 60%;
+  box-shadow: 0 40px 130px rgba(0, 0, 0, 0.7);
+}
+/* Campaign frame behind - dimmed and slightly cooled so it reads as the room,
+   not the subject. */
+.cine-frame-media {
+  position: absolute;
+  inset: -8% 0;
+}
+.cine-frame-media :where(img) {
+  filter: brightness(0.64) saturate(0.82) contrast(1.06);
+  object-position: var(--cine-obj, 50% 52%);
+  animation: cine-drift 26s ease-in-out infinite alternate;
+}
+/* Spotlight on the bottle zone, everything else falls into shadow. */
+.cine-frame-spot {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    44% 38% at var(--cine-spot, 60% 62%),
+    rgba(255, 246, 224, 0.13) 0%,
+    transparent 58%
+  );
+  mix-blend-mode: screen;
+}
+.cine-frame-veil {
+  position: absolute;
+  inset: 0;
+  background:
+    /* pull the top of frame (usually a lit face) down into shadow */
+    linear-gradient(to bottom, rgba(6, 6, 8, 0.62) 0%, transparent 30%),
+    /* vignette everything outside the bottle */
+    radial-gradient(
+        115% 92% at var(--cine-spot, 60% 62%),
+        transparent 24%,
+        rgba(6, 6, 8, 0.82) 100%
+      ),
+    /* copy legibility at the base */
+    linear-gradient(
+        to top,
+        rgba(6, 6, 8, 0.95) 0%,
+        rgba(6, 6, 8, 0.5) 36%,
+        rgba(6, 6, 8, 0.08) 64%,
+        rgba(6, 6, 8, 0.5) 100%
+      );
+}
+.cine-frame-copy {
+  position: relative;
+  z-index: 2;
+  padding: 0 var(--cine-pad) clamp(4.5rem, 15vh, 10rem);
+  max-width: 46rem;
+}
+.cine-frame-name {
+  font-family: var(--font-display), "Cormorant Garamond", serif;
+  font-weight: 500;
+  font-size: clamp(2.8rem, 9.5vw, 7.5rem);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+}
+.cine-frame-line {
+  margin-top: clamp(0.5rem, 1.5vh, 1rem);
+  font-family: var(--font-display), "Cormorant Garamond", serif;
+  font-style: italic;
+  font-size: clamp(1.2rem, 3vw, 2rem);
+  line-height: 1.2;
+  padding-bottom: 0.15em;
+  color: var(--cine-paper);
+}
+.cine-frame-notes {
+  margin-top: clamp(0.9rem, 2.5vh, 1.5rem);
+  font-size: clamp(0.62rem, 1.4vw, 0.72rem);
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--cine-paper-dim);
+}
+.cine-frame-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: clamp(1.3rem, 3vh, 2.1rem);
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--cine-paper-faint);
+  font-size: 0.7rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--cine-paper);
+  transition:
+    border-color 0.3s ease,
+    color 0.3s ease,
+    gap 0.3s var(--ease-premium);
+}
+.cine-frame-link:hover,
+.cine-frame-link:focus-visible {
+  border-color: var(--cine-gold);
+  color: var(--cine-gold);
+  gap: 0.85rem;
+  outline: none;
+}
+.cine-frame-rule {
+  position: absolute;
+  left: var(--cine-pad);
+  right: var(--cine-pad);
+  bottom: clamp(2rem, 7vh, 4.5rem);
+  height: 1px;
+  background: linear-gradient(90deg, var(--cine-line), transparent 60%);
+}
+
+/* ---- end card ---- */
+.cine-end {
+  min-height: 92dvh;
+  display: grid;
+  place-content: center;
+  gap: clamp(1.6rem, 5vh, 2.8rem);
+  text-align: center;
+  padding: clamp(5rem, 14vh, 9rem) var(--cine-pad);
+  background: var(--cine-ink);
+}
+.cine-end-line {
+  font-family: var(--font-display), "Cormorant Garamond", serif;
+  font-size: clamp(2.2rem, 7vw, 4.8rem);
+  line-height: 1;
+  letter-spacing: -0.015em;
+}
+.cine-end-cta {
+  justify-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  border: 1px solid var(--cine-gold);
+  border-radius: 999px;
+  padding: 1rem 1.9rem;
+  background: var(--cine-gold);
+  color: #14100a;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  transition:
+    transform 0.35s var(--ease-premium),
+    box-shadow 0.35s var(--ease-premium);
+}
+.cine-end-cta:hover,
+.cine-end-cta:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 55px rgba(217, 185, 121, 0.28);
+  outline: none;
+}
+.cine-end-cta:active {
+  transform: scale(0.985);
+}
+
+/* ==========================================================================
+   Home page in cinematic dress - the shopping sections below the film stage.
+   The storefront is already dark under the duality theme; this only fixes the
+   few hard-coded light hairlines, opens the rhythm, and scales the headings so
+   they belong with the sequence above.
+   ========================================================================== */
+.cinematic-home .home-trust-strip {
+  border-color: var(--cine-line);
+  background: rgba(255, 255, 255, 0.02);
+}
+.cinematic-home .home-trust-strip span,
+.cinematic-home .home-trust-strip article {
+  border-color: var(--cine-line);
+}
+.cinematic-home .home-faq details {
+  border-color: var(--cine-line);
+}
+.cinematic-home .home-collection,
+.cinematic-home .home-reviews,
+.cinematic-home .home-faq,
+.cinematic-home .home-services {
+  padding-block: clamp(6rem, 15vh, 11rem);
+}
+.cinematic-home .commerce-heading .display-title,
+.cinematic-home .home-faq h2,
+.cinematic-home .home-story-copy .display-title {
+  font-size: clamp(2.6rem, 6.5vw, 5.5rem);
+  letter-spacing: -0.025em;
+}
+.cinematic-home .home-story,
+.cinematic-home .home-combo {
+  min-height: min(88dvh, 52rem);
+}
+/* The pack shot and the story image are lit on near-white. Left raw they read
+   as bright rectangles punched into the dark page; an inset vignette and a
+   hairline settle them into the frame. */
+.cinematic-home .home-combo-media,
+.cinematic-home .home-story-media {
+  position: relative;
+}
+.cinematic-home .home-combo-media::after,
+.cinematic-home .home-story-media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow:
+    inset 0 0 140px 44px rgba(6, 6, 8, 0.6),
+    inset 0 0 0 1px var(--cine-line);
+}
+
+@keyframes cine-kenburns {
+  from {
+    transform: scale(1.06);
+  }
+  to {
+    transform: scale(1.16);
+  }
+}
+@keyframes cine-drift {
+  from {
+    transform: scale(1.06) translate3d(0, -1.4%, 0);
+  }
+  to {
+    transform: scale(1.13) translate3d(0, 1.4%, 0);
+  }
+}
+@keyframes cine-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes cine-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 26px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---- mobile ---- */
+@media (max-width: 767px) {
+  .cine-root,
+  .cinematic-home,
+  .cinematic {
+    --cine-pad: 1.25rem;
+  }
+  /* The stacked veil + a 0.62 brightness filter buried the photo on a phone.
+     Lighter darkening here so the bottle actually reads. */
+  .cinematic-home .home-combo-media::after,
+  .cinematic-home .home-story-media::after,
+  .cinematic .school-chapter-image::after {
+    box-shadow:
+      inset 0 0 60px 14px rgba(6, 6, 8, 0.42),
+      inset 0 0 0 1px var(--cine-line);
+  }
+  .cine-bar {
+    height: clamp(14px, 3.5vh, 26px);
+  }
+  .cine-hero {
+    margin-top: calc(-1 * clamp(14px, 3.5vh, 26px));
+  }
+  /* The nav already carries the wordmark on a phone. */
+  .cine-wordmark {
+    display: none;
+  }
+  .cine-hero-media :where(img) {
+    object-position: center 42%;
+  }
+  .cine-hero-veil {
+    background:
+      linear-gradient(to bottom, rgba(6, 6, 8, 0.7) 0%, transparent 32%),
+      linear-gradient(
+        to top,
+        rgba(6, 6, 8, 0.96) 0%,
+        rgba(6, 6, 8, 0.5) 44%,
+        rgba(6, 6, 8, 0.14) 74%,
+        rgba(6, 6, 8, 0.5) 100%
+      );
+  }
+  .cine-hero-copy {
+    padding-bottom: clamp(3.5rem, 12vh, 5.5rem);
+  }
+  .cine-hero-title {
+    font-size: clamp(2.6rem, 13vw, 3.9rem);
+  }
+  .cine-hero-sub {
+    max-width: 30ch;
+  }
+  .cine-frame-track {
+    /* Shorter pin on a phone - a long hijack fights the reader's thumb. */
+    height: 148vh;
+  }
+  .cine-frame-media :where(img) {
+    /* 4:5 source into a tall phone frame barely crops vertically, so a scale
+       and a downward origin are what actually push the face off the top and
+       bring the held bottle up. Drift is dropped here (perf + it would fight
+       this transform). */
+    object-position: var(--cine-obj-m, 50% 76%);
+    transform: scale(1.2);
+    transform-origin: 50% 92%;
+    filter: brightness(0.82) saturate(0.9) contrast(1.03);
+    animation: none;
+  }
+  .cine-frame-spot,
+  .cine-frame-veil {
+    --cine-spot: 50% 60%;
+  }
+  /* Lighter on a phone: enough shadow to hold the copy and pull the face
+     back, but the photograph must still read. */
+  .cine-frame-veil {
+    background:
+      linear-gradient(
+        to bottom,
+        rgba(6, 6, 8, 0.62) 0%,
+        rgba(6, 6, 8, 0.22) 26%,
+        transparent 52%
+      ),
+      radial-gradient(
+        135% 82% at 50% 60%,
+        transparent 32%,
+        rgba(6, 6, 8, 0.5) 100%
+      ),
+      linear-gradient(
+        to top,
+        rgba(6, 6, 8, 0.92) 0%,
+        rgba(6, 6, 8, 0.42) 32%,
+        transparent 58%,
+        rgba(6, 6, 8, 0.32) 100%
+      );
+  }
+  .cine-frame-copy {
+    max-width: none;
+    padding-bottom: clamp(3.75rem, 13vh, 5.5rem);
+  }
+  .cine-frame-name {
+    font-size: clamp(2.6rem, 14vw, 4.1rem);
+  }
+  .cine-frame-line {
+    font-size: clamp(1.15rem, 5.5vw, 1.5rem);
+  }
+  .cinematic-home .home-trust-strip {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cine-hero-media,
+  .cine-wordmark,
+  .cine-hero-title,
+  .cine-hero-sub,
+  .cine-frame-media :where(img) {
+    animation: none;
+  }
+  .cine-frame-track {
+    height: auto;
+  }
+  .cine-frame {
+    position: static;
+    height: auto;
+    min-height: 100dvh;
+  }
+}
+
+/* ==========================================================================
+   PRODUCT PAGE, cinematic.
+
+   A campaign-frame title card with the first CTA in the hero, a studio
+   close-up beside a sticky buy rail, the note journey told over three macro
+   frames, then ingredients, how-to-wear and objection handling. Scoped to
+   .product-page.cinematic. Old .product-* section classes are unused now.
+   ========================================================================== */
+.product-page.cinematic {
+  padding: 0;
+}
+
+/* ---- hero ---- */
+.pdp-hero {
+  position: relative;
+  min-height: 100dvh;
+  display: grid;
+  align-items: end;
+  overflow: hidden;
+}
+.pdp-hero-media {
+  position: absolute;
+  inset: 0;
+  animation: cine-kenburns 24s ease-out both;
+}
+.pdp-hero-media :where(img) {
+  object-position: center 42%;
+}
+.pdp-hero-veil {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to bottom, rgba(6, 6, 8, 0.66) 0%, transparent 30%),
+    radial-gradient(
+      120% 90% at 25% 90%,
+      transparent 20%,
+      rgba(6, 6, 8, 0.7) 100%
+    ),
+    linear-gradient(
+      to top,
+      rgba(6, 6, 8, 0.95) 0%,
+      rgba(6, 6, 8, 0.55) 40%,
+      rgba(6, 6, 8, 0.12) 70%,
+      rgba(6, 6, 8, 0.45) 100%
+    );
+}
+.pdp-hero-copy {
+  position: relative;
+  z-index: 2;
+  padding: 0 var(--cine-pad) clamp(3.5rem, 12vh, 8rem);
+  max-width: 44rem;
+}
+.pdp-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: clamp(1.5rem, 5vh, 3rem);
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--cine-paper-dim);
+  transition: color 0.25s ease;
+}
+.pdp-back:hover,
+.pdp-back:focus-visible {
+  color: var(--cine-gold);
+  outline: none;
+}
+.pdp-kicker {
+  font-size: 0.7rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--cine-gold);
+}
+.pdp-name {
+  margin-top: clamp(0.6rem, 2vh, 1.1rem);
+  font-family: var(--font-display), "Cormorant Garamond", serif;
+  font-weight: 500;
+  font-size: clamp(3rem, 10vw, 7.5rem);
+  line-height: 0.94;
+  letter-spacing: -0.02em;
+  animation: cine-rise 1.4s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+}
+.pdp-story {
+  margin-top: clamp(0.8rem, 2vh, 1.4rem);
+  font-family: var(--font-display), "Cormorant Garamond", serif;
+  font-style: italic;
+  font-size: clamp(1.15rem, 2.6vw, 1.9rem);
+  line-height: 1.25;
+  padding-bottom: 0.15em;
+  color: var(--cine-paper);
+  max-width: 34ch;
+}
+.pdp-hero-buy {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: clamp(1rem, 3vw, 1.75rem);
+  margin-top: clamp(1.6rem, 4vh, 2.6rem);
+}
+.pdp-hero-price {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  font-size: clamp(1.4rem, 3vw, 1.9rem);
+  color: var(--cine-paper);
+}
+.pdp-hero-price s {
+  font-size: 0.62em;
+  color: var(--cine-paper-faint);
+}
+.pdp-hero-add {
+  min-height: 3.2rem;
+}
+
+/* ---- the object + buy rail ---- */
+.pdp-object {
+  display: grid;
+  gap: clamp(2rem, 5vw, 4.5rem);
+  align-items: start;
+  max-width: 1500px;
+  margin-inline: auto;
+  padding: clamp(4rem, 12vh, 9rem) var(--cine-pad);
+}
+.pdp-object-media {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border: 1px solid var(--cine-line);
+}
+.pdp-object-media :where(img) {
+  transition: transform 0.9s var(--ease-premium);
+}
+.pdp-object-media:hover :where(img) {
+  transform: scale(1.03);
+}
+.pdp-buy-notes {
+  font-size: 0.7rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--cine-gold);
+}
+.pdp-buy-name {
+  margin-top: 0.6rem;
+  font-family: var(--font-display), "Cormorant Garamond", serif;
+  font-weight: 500;
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.pdp-buy-desc {
+  margin-top: 1.1rem;
+  max-width: 44ch;
+  color: var(--cine-paper-dim);
+  line-height: 1.75;
+  font-size: 0.95rem;
+}
+.pdp-price-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.7rem 1rem;
+  margin-top: clamp(1.6rem, 4vh, 2.4rem);
+}
+.pdp-price-row strong {
+  font-size: clamp(1.8rem, 4vw, 2.4rem);
+  font-weight: 500;
+  color: var(--cine-paper);
+}
+.pdp-price-row s {
+  color: var(--cine-paper-faint);
+}
+.pdp-price-row span {
+  width: 100%;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--cine-paper-faint);
+}
+.pdp-add {
+  width: 100%;
+  min-height: 3.5rem;
+  margin-top: 1.4rem;
+}
+.pdp-oos {
+  margin-top: 0.8rem;
+  font-size: 0.8rem;
+  color: #d98a8a;
+  text-align: center;
+}
+.pdp-assure {
+  display: grid;
+  gap: 0.6rem;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--cine-line);
+  list-style: none;
+}
+.pdp-assure li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.8rem;
+  color: var(--cine-paper-dim);
+}
+.pdp-assure svg {
+  color: var(--cine-gold);
+  flex-shrink: 0;
+}
+.pdp-facts {
+  display: grid;
+  gap: 1px;
+  margin-top: 1.5rem;
+  background: var(--cine-line);
+  border: 1px solid var(--cine-line);
+}
+.pdp-facts > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 0.9rem 1rem;
+  background: var(--cine-ink);
+}
+.pdp-facts dt {
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--cine-paper-faint);
+}
+.pdp-facts dd {
+  text-align: right;
+  font-size: 0.86rem;
+  color: var(--cine-paper);
+}
+
+/* ---- the note journey ---- */
+.pdp-unfolds {
+  padding: clamp(4rem, 12vh, 9rem) 0 0;
+}
+.pdp-section-head {
+  max-width: 1500px;
+  margin-inline: auto;
+  padding: 0 var(--cine-pad) clamp(2rem, 6vh, 4rem);
+}
+.pdp-section-head .display-title {
+  font-family: var(--font-display), "Cormorant Garamond", serif;
+  font-size: clamp(2.6rem, 6.5vw, 5rem);
+  letter-spacing: -0.03em;
+}
+.pdp-section-head p {
+  margin-top: 0.9rem;
+  max-width: 42ch;
+  color: var(--cine-paper-dim);
+}
+.product-page.cinematic .story-copy h3 {
+  font-family: var(--font-display), "Cormorant Garamond", serif;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  letter-spacing: -0.02em;
+}
+
+/* ---- ingredients + how to wear ---- */
+.pdp-detail {
+  display: grid;
+  gap: clamp(2.5rem, 6vw, 5rem);
+  align-items: center;
+  max-width: 1400px;
+  margin-inline: auto;
+  padding: clamp(5rem, 13vh, 10rem) var(--cine-pad);
+}
+.pdp-ingredients {
+  margin: 0;
+  border: 1px solid var(--cine-line);
+  background: rgba(255, 255, 255, 0.03);
+  padding: clamp(1rem, 3vw, 2rem);
+}
+.pdp-ingredients img {
+  width: 100%;
+  height: auto;
+  filter: brightness(0.94) saturate(0.94);
+  mix-blend-mode: screen;
+}
+.pdp-ingredients figcaption {
+  margin-top: 0.9rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--cine-paper-faint);
+}
+.pdp-wear .display-title {
+  font-family: var(--font-display), "Cormorant Garamond", serif;
+  font-size: clamp(2.2rem, 5vw, 3.6rem);
+  letter-spacing: -0.03em;
+}
+.pdp-wear ol {
+  margin-top: clamp(1.5rem, 4vh, 2.5rem);
+  display: grid;
+  gap: 1.4rem;
+  padding: 0;
+  list-style: none;
+  counter-reset: wear;
+}
+.pdp-wear li {
+  counter-increment: wear;
+  padding-left: 2.6rem;
+  position: relative;
+  color: var(--cine-paper-dim);
+  line-height: 1.7;
+  font-size: 0.92rem;
+}
+.pdp-wear li::before {
+  content: counter(wear, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  top: 0.1em;
+  font-family: var(--font-display), "Cormorant Garamond", serif;
+  font-size: 1.2rem;
+  color: var(--cine-gold);
+}
+.pdp-wear strong {
+  color: var(--cine-paper);
+  font-weight: 500;
+}
+
+/* ---- faq ---- */
+.pdp-faq {
+  max-width: 1000px;
+  margin-inline: auto;
+  padding: clamp(4rem, 11vh, 8rem) var(--cine-pad);
+}
+.pdp-faq .display-title {
+  font-family: var(--font-display), "Cormorant Garamond", serif;
+  font-size: clamp(2.4rem, 6vw, 4.4rem);
+  letter-spacing: -0.03em;
+  margin-bottom: clamp(1.5rem, 4vh, 2.5rem);
+}
+.pdp-faq-list details {
+  border-top: 1px solid var(--cine-line);
+  padding: 1.4rem 0;
+}
+.pdp-faq-list details:last-child {
+  border-bottom: 1px solid var(--cine-line);
+}
+.pdp-faq-list summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  cursor: pointer;
+  font-size: 1rem;
+  color: var(--cine-paper);
+  list-style: none;
+}
+.pdp-faq-list summary::-webkit-details-marker {
+  display: none;
+}
+.pdp-faq-list summary span {
+  color: var(--cine-gold);
+  transition: transform 0.25s var(--ease-premium);
+}
+.pdp-faq-list details[open] summary span {
+  transform: rotate(45deg);
+}
+.pdp-faq-list details p {
+  max-width: 60ch;
+  padding-top: 1rem;
+  color: var(--cine-paper-dim);
+  line-height: 1.75;
+}
+
+/* ---- close ---- */
+.pdp-close {
+  display: grid;
+  place-content: center;
+  gap: clamp(1.6rem, 4vh, 2.6rem);
+  text-align: center;
+  padding: clamp(5rem, 13vh, 9rem) var(--cine-pad);
+  background: var(--cine-ink);
+  border-top: 1px solid var(--cine-line);
+}
+.pdp-close-line {
+  font-family: var(--font-display), "Cormorant Garamond", serif;
+  font-size: clamp(2rem, 5.5vw, 4rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+@media (min-width: 900px) {
+  .pdp-object {
+    grid-template-columns: 1.1fr 0.9fr;
+  }
+  .pdp-detail {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pdp-hero-media,
+  .pdp-name {
+    animation: none;
   }
 }

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRef, useState, ViewTransition } from "react";
 import {
   ArrowLeft,
+  ArrowUpRight,
   Check,
   ShoppingBag,
   ShieldCheck,
@@ -15,10 +16,10 @@ import type { Product } from "@/lib/data";
 import { useCart } from "@/context/CartContext";
 import { formatInr } from "@/lib/money";
 import Photo from "@/components/Photo";
-import Reveal from "@/components/Reveal";
 import ProductStory, { type StoryTile } from "@/components/ProductStory";
 import StickyBuyBar from "@/components/StickyBuyBar";
 
+/** The horizontal note-ingredient strips that exist for the four singles. */
 const ingredientVisuals: Partial<
   Record<string, { src: string; width: number; height: number }>
 > = {
@@ -27,11 +28,7 @@ const ingredientVisuals: Partial<
     width: 915,
     height: 223,
   },
-  coldwar: {
-    src: "/ingredients/coldwar-notes.webp",
-    width: 915,
-    height: 223,
-  },
+  coldwar: { src: "/ingredients/coldwar-notes.webp", width: 915, height: 223 },
   heavenly: {
     src: "/ingredients/heavenly-notes.webp",
     width: 915,
@@ -44,10 +41,13 @@ const ingredientVisuals: Partial<
   },
 };
 
-/** Copy for the vertical gallery, derived from the product's own note
- *  pyramid so the tiles say something specific rather than generic filler.
- *  Capped at four images: the catalogue holds ten to fifteen per product,
- *  which is a scroll nobody finishes. */
+/** Studio close-ups live at /products/detail/<slug>/ for these four. */
+const DETAIL_SLUGS = ["coldwar", "old-love", "heavenly", "billionaire"];
+
+/**
+ * Fallback copy for the vertical story when a product has no dedicated studio
+ * close-ups (the combos). Kept so the gallery still says something specific.
+ */
 const STORY_COPY = [
   { heading: "The bottle", from: (p: Product) => p.description },
   {
@@ -67,11 +67,39 @@ const STORY_COPY = [
   },
 ] as const;
 
+/**
+ * The note journey. When studio close-ups exist it is three beats over three
+ * macro frames of the bottle in its own world; otherwise it falls back to four
+ * frames of the campaign photography with the copy above.
+ */
 function buildStoryTiles(
   product: Product,
   images: string[],
   size: "20ml" | "100ml",
 ): StoryTile[] {
+  if (DETAIL_SLUGS.includes(product.slug)) {
+    const base = `/products/detail/${product.slug}`;
+    return [
+      {
+        image: `${base}/01.webp`,
+        heading: "The opening",
+        copy: `${product.topNotes.join(", ")}. Bright and immediate, the note you meet first.`,
+        alt: `${product.name} ${product.concentration}, the opening notes`,
+      },
+      {
+        image: `${base}/02.webp`,
+        heading: "The heart",
+        copy: `${product.heartNotes.join(", ")}. The character of the scent as it settles on skin.`,
+        alt: `${product.name} ${product.concentration}, the heart notes`,
+      },
+      {
+        image: `${base}/03.webp`,
+        heading: "The trail",
+        copy: `${product.baseNotes.slice(0, 4).join(", ")} in the dry-down. ${product.longevity} of wear, remembered after you leave.`,
+        alt: `${product.name} ${product.concentration}, the base notes`,
+      },
+    ];
+  }
   return STORY_COPY.slice(0, Math.min(4, images.length)).map(
     (entry, index) => ({
       image: images[index],
@@ -110,289 +138,204 @@ export default function ProductDetail({
       : product.images;
   const addButtonRef = useRef<HTMLButtonElement>(null);
   const heroImage = activeImages[0];
+  const hasDetail = DETAIL_SLUGS.includes(product.slug);
+  const objectImage = hasDetail
+    ? `/products/detail/${product.slug}/hero.webp`
+    : (activeImages[1] ?? activeImages[0]);
   const storyTiles = buildStoryTiles(product, activeImages, size);
+  const sizeLabel =
+    product.packSize && product.packSize > 1
+      ? `${product.packSize} × ${size}`
+      : size;
+  const inStock = !!variant && variant.stock > variant.reserved;
+  const onSale = !!variant && variant.mrpPaise > variant.pricePaise;
+
   const add = () => {
     addItem(product, size);
     setAdded(true);
     window.setTimeout(() => setAdded(false), 1800);
   };
+
   return (
-    <main data-surface="story" className="product-page">
-      <div className="mx-auto max-w-[1500px]">
-        <Link href="/shop" className="eyebrow inline-flex items-center gap-2">
-          <ArrowLeft size={14} /> All fragrances
-        </Link>
-        <div className="mt-8 grid gap-10 lg:grid-cols-[1.15fr_.85fr] lg:gap-16">
-          <Reveal as="section" from="left" className="product-gallery">
-            {/* Single primary frame. The carousel that used to live here is
-                replaced by the vertical <ProductStory> sequence further down
-                the page, so there is one way to browse the photography. */}
-            <div className="product-hero-image">
-              <ViewTransition
-                name={`product-${product.slug}-${size}`}
-                share="morph"
-                default="none"
-              >
-                <Photo
-                  src={heroImage}
-                  alt={`${product.name} — ${product.genderPositioning} ${product.profile} ${product.concentration}${
-                    product.packSize && product.packSize > 1
-                      ? `, pack of ${product.packSize}`
-                      : ""
-                  }, ${size} bottle`}
-                  fill
-                  priority
-                  fadeIn={false}
-                  sizes="(max-width:1024px) 100vw, 58vw"
-                  className="object-cover"
-                />
-              </ViewTransition>
-            </div>
-          </Reveal>
-          <Reveal
-            as="section"
-            delay={0.08}
-            className="flex flex-col justify-center lg:sticky lg:top-28 lg:h-fit lg:py-8"
+    <main data-surface="story" className="product-page cinematic">
+      {/* ---- cinematic hero: the campaign frame, the name, the first CTA ---- */}
+      <section className="pdp-hero">
+        <div className="pdp-hero-media">
+          <ViewTransition
+            name={`product-${product.slug}-${size}`}
+            share="morph"
+            default="none"
           >
-            <p className="eyebrow">
-              {product.genderPositioning} · {product.profile}
-            </p>
-            <h1 className="display-title mt-4 text-5xl sm:text-6xl">
-              {product.name}
-            </h1>
-            <p className="text-muted mt-6 max-w-xl text-base leading-8">
-              {product.description}
-            </p>
-            <p className="text-champagne/85 mt-6 font-serif text-xl leading-8 italic">
-              “{product.story}”
-            </p>
-            <div className="note-pyramid mt-9">
-              <div>
-                <span>Top</span>
-                <p>{product.topNotes.join(" · ")}</p>
-              </div>
-              <div>
-                <span>Heart</span>
-                <p>{product.heartNotes.join(" · ")}</p>
-              </div>
-              <div>
-                <span>Base</span>
-                <p>{product.baseNotes.join(" · ")}</p>
-              </div>
-            </div>
-            {ingredientVisual && (
-              <figure className="ingredient-notes-visual">
-                <Image
-                  src={ingredientVisual.src}
-                  alt={`${product.name} top, heart and base note ingredients`}
-                  width={ingredientVisual.width}
-                  height={ingredientVisual.height}
-                  sizes="(max-width: 1024px) 100vw, 40vw"
-                />
-                <figcaption>Ingredients shown for visual reference</figcaption>
-              </figure>
-            )}
-            <div className="product-guidance-grid">
-              <div>
-                <span>Character</span>
-                <p>{character.join(" · ")}</p>
-              </div>
-              <div>
-                <span>Best for</span>
-                <p>{product.occasion}</p>
-              </div>
-              <div>
-                <span>Performance</span>
-                <p>{product.longevity}</p>
-                <small>Varies by skin, weather and application.</small>
-              </div>
-              <div>
-                <span>Intensity</span>
-                <p aria-label="Four out of five intensity">● ● ● ● ○</p>
-              </div>
-            </div>
-            <div className="mt-8">
-              <p className="eyebrow mb-3">Selected format</p>
-              <div className="grid grid-cols-1 gap-3">
-                {product.variants
-                  .filter((item) => item.name === size)
-                  .map((item) => (
-                    <button
-                      key={item.id}
-                      disabled={!item.active || item.stock <= item.reserved}
-                      className={`variant-card ${size === item.name ? "active" : ""}`}
-                    >
-                      <span>
-                        {product.packSize && product.packSize > 1
-                          ? `${product.packSize} × ${item.name}`
-                          : item.name}
-                      </span>
-                      <strong>{formatInr(item.pricePaise)}</strong>
-                      <small>
-                        {item.stock > item.reserved
-                          ? item.name === "20ml" && !isCombo
-                            ? "Discover it"
-                            : item.name === "100ml" && !isCombo
-                              ? "Make it yours"
-                              : "Ready to dispatch"
-                          : "Out of stock"}
-                      </small>
-                    </button>
-                  ))}
-              </div>
-            </div>
-            <div className="mt-6 flex items-end justify-between">
-              <div>
-                <p className="text-3xl">
-                  {variant ? formatInr(variant.pricePaise) : "Unavailable"}
-                </p>
-                <p className="text-subtle mt-1 text-xs">Inclusive of GST</p>
-              </div>
-              <p className="text-subtle text-right text-xs leading-5">
-                {product.longevity}
-                <br />
-                {product.occasion}
-              </p>
-            </div>
+            <Photo
+              src={heroImage}
+              alt={`${product.name} — ${product.genderPositioning} ${product.profile} ${product.concentration}${
+                product.packSize && product.packSize > 1
+                  ? `, pack of ${product.packSize}`
+                  : ""
+              }, ${size} bottle`}
+              fill
+              priority
+              fadeIn={false}
+              sizes="100vw"
+              className="object-cover"
+            />
+          </ViewTransition>
+        </div>
+        <div className="pdp-hero-veil" />
+        <div className="pdp-hero-copy">
+          <Link
+            href="/shop"
+            transitionTypes={["nav-back"]}
+            className="pdp-back"
+          >
+            <ArrowLeft size={14} /> All fragrances
+          </Link>
+          <p className="pdp-kicker">
+            {product.genderPositioning} · {product.profile}{" "}
+            {product.concentration}
+          </p>
+          <h1 className="pdp-name">{product.name}</h1>
+          <p className="pdp-story">&ldquo;{product.story}&rdquo;</p>
+          <div className="pdp-hero-buy">
+            <span className="pdp-hero-price">
+              {variant ? formatInr(variant.pricePaise) : "Unavailable"}
+              {onSale && variant && <s>{formatInr(variant.mrpPaise)}</s>}
+            </span>
             <button
-              ref={addButtonRef}
               onClick={add}
-              disabled={!variant || variant.stock <= variant.reserved}
-              className="lux-button mt-6 w-full"
+              disabled={!inStock}
+              className="lux-button pdp-hero-add"
             >
-              {added ? <Check size={17} /> : <ShoppingBag size={17} />}{" "}
+              {added ? <Check size={16} /> : <ShoppingBag size={16} />}
               {added ? "Added to your bag" : "Add to bag"}
             </button>
-            <div className="text-subtle mt-5 flex items-center justify-center gap-2 text-xs">
-              <Truck size={15} />
-              <span>₹99 delivery · Complimentary on ₹599 or more</span>
-            </div>
-            <div
-              className="purchase-assurance"
-              aria-label="Purchase reassurance"
-            >
-              <span>
-                <ShieldCheck size={15} /> Secure Razorpay payment
-              </span>
-              <span>
-                <Sparkles size={15} /> Authentic Eau de Parfum
-              </span>
-              <span>
-                <Truck size={15} /> Live order tracking
-              </span>
-            </div>
-          </Reveal>
+          </div>
         </div>
-      </div>
-      <ProductStory tiles={storyTiles} />
-      <StickyBuyBar
-        name={product.name}
-        size={
-          product.packSize && product.packSize > 1
-            ? `${product.packSize} × ${size}`
-            : size
-        }
-        pricePaise={variant?.pricePaise}
-        disabled={!variant || variant.stock <= variant.reserved}
-        onAdd={add}
-        added={added}
-        anchorRef={addButtonRef}
-      />
-      <section className="product-offers" aria-label="Current offers">
-        <article>
-          <span>DELIVERY · SAVE</span>
-          <h2>Complimentary shipping</h2>
-          <p>
-            Free delivery is applied automatically when your order reaches ₹599.
-          </p>
-        </article>
-        <article>
-          <span>DISCOVERY · CHOOSE</span>
-          <h2>Start with 20ml</h2>
-          <p>
-            Experience the same Eau de Parfum composition in a travel-ready
-            format.
-          </p>
-        </article>
       </section>
-      <section className="product-description-block">
-        <p className="eyebrow">Product description</p>
-        <h2 className="display-title">
-          {product.name}, made for {product.mood.toLowerCase()}.
-        </h2>
-        <p>{product.description}</p>
-        <p>{product.story}</p>
+
+      {/* ---- the object: a studio close-up beside the buy rail ----
+          Static, never revealed on scroll: the buy rail must not depend on a
+          motion trigger firing. */}
+      <section className="pdp-object">
+        <div className="pdp-object-media">
+          <Photo
+            src={objectImage}
+            alt={`${product.name} ${product.concentration}, studio detail`}
+            fill
+            sizes="(max-width: 900px) 100vw, 52vw"
+            className="object-cover"
+          />
+        </div>
+        <div className="pdp-buy lg:sticky lg:top-28 lg:h-fit">
+          <p className="pdp-buy-notes">
+            {product.topNotes.slice(0, 3).join(" · ")}
+          </p>
+          <h2 className="pdp-buy-name">{product.name}</h2>
+          <p className="pdp-buy-desc">{product.description}</p>
+
+          <div className="pdp-price-row">
+            <strong>
+              {variant ? formatInr(variant.pricePaise) : "Unavailable"}
+            </strong>
+            {onSale && variant && <s>{formatInr(variant.mrpPaise)}</s>}
+            <span>{sizeLabel} · Inclusive of GST</span>
+          </div>
+
+          <button
+            ref={addButtonRef}
+            onClick={add}
+            disabled={!inStock}
+            className="lux-button pdp-add"
+          >
+            {added ? <Check size={17} /> : <ShoppingBag size={17} />}
+            {added ? "Added to your bag" : "Add to bag"}
+          </button>
+          {!inStock && (
+            <p className="pdp-oos">Currently out of stock. Check back soon.</p>
+          )}
+
+          <ul className="pdp-assure">
+            <li>
+              <Truck size={14} /> ₹99 delivery, free over ₹599
+            </li>
+            <li>
+              <ShieldCheck size={14} /> Secure Razorpay payment
+            </li>
+            <li>
+              <Sparkles size={14} /> Authentic Eau de Parfum
+            </li>
+          </ul>
+
+          <dl className="pdp-facts">
+            <div>
+              <dt>Wears</dt>
+              <dd>{product.longevity}</dd>
+            </div>
+            <div>
+              <dt>Best for</dt>
+              <dd>{product.occasion}</dd>
+            </div>
+            <div>
+              <dt>Character</dt>
+              <dd>{character.join(" · ")}</dd>
+            </div>
+          </dl>
+        </div>
       </section>
-      <section className="product-notes-block">
-        <div className="product-notes-intro">
-          <p className="eyebrow">The composition</p>
+
+      {/* ---- the note journey, told over the close-ups ---- */}
+      <section className="pdp-unfolds">
+        <div className="pdp-section-head">
           <h2 className="display-title">How it unfolds.</h2>
+          <p>Three moments, from the first spray to the trail it leaves.</p>
         </div>
-        <div className="product-note-columns">
-          <article>
-            <span>01 · Top notes</span>
-            <h3>{product.topNotes.join(", ")}</h3>
-            <p>
-              The first impression: immediate, expressive and designed to draw
-              you closer.
-            </p>
-          </article>
-          <article>
-            <span>02 · Heart notes</span>
-            <h3>{product.heartNotes.join(", ")}</h3>
-            <p>
-              The character of the fragrance appears as it settles into the
-              skin.
-            </p>
-          </article>
-          <article>
-            <span>03 · Base notes</span>
-            <h3>{product.baseNotes.join(", ")}</h3>
-            <p>
-              The lasting trail: warm, grounded and remembered after you leave.
-            </p>
-          </article>
-        </div>
+        <ProductStory tiles={storyTiles} />
       </section>
-      <section className="product-application">
-        <div>
-          <p className="eyebrow">How to apply</p>
-          <h2 className="display-title">Make the trail last.</h2>
-        </div>
-        <div className="application-steps">
-          <article>
-            <span>01</span>
-            <h3>Spray pulse points</h3>
-            <p>Apply to wrists, neck and behind the ears from 15–20 cm away.</p>
-          </article>
-          <article>
-            <span>02</span>
-            <h3>Do not rub</h3>
-            <p>
-              Let the perfume settle naturally so the composition develops
-              properly.
-            </p>
-          </article>
-          <article>
-            <span>03</span>
-            <h3>Store with care</h3>
-            <p>Keep away from direct sunlight, moisture and excessive heat.</p>
-          </article>
-        </div>
-      </section>
-      <section className="product-faq-block">
-        <div>
-          <p className="eyebrow">Frequently asked</p>
-          <h2 className="display-title">A little clarity.</h2>
-        </div>
-        <div>
+
+      {/* ---- ingredients + how to wear ---- */}
+      {ingredientVisual && (
+        <section className="pdp-detail">
+          <figure className="pdp-ingredients">
+            <Image
+              src={ingredientVisual.src}
+              alt={`${product.name} top, heart and base note ingredients`}
+              width={ingredientVisual.width}
+              height={ingredientVisual.height}
+              sizes="(max-width: 1024px) 100vw, 44vw"
+            />
+            <figcaption>Top, heart and base, shown for reference.</figcaption>
+          </figure>
+          <div className="pdp-wear">
+            <h2 className="display-title">Make the trail last.</h2>
+            <ol>
+              <li>
+                <strong>Spray the pulse points.</strong> Wrists, neck and behind
+                the ears, from 15 to 20 cm away.
+              </li>
+              <li>
+                <strong>Do not rub.</strong> Let it settle so the composition
+                develops as it should.
+              </li>
+              <li>
+                <strong>Store it cool.</strong> Away from direct sunlight,
+                moisture and heat.
+              </li>
+            </ol>
+          </div>
+        </section>
+      )}
+
+      {/* ---- objection handling ---- */}
+      <section className="pdp-faq">
+        <h2 className="display-title">Before it becomes yours.</h2>
+        <div className="pdp-faq-list">
           <details>
             <summary>
               How long does {product.name} last?<span>+</span>
             </summary>
             <p>
-              {product.longevity}. Performance varies with skin, climate and
-              application.
+              {product.longevity}. Performance varies with skin, climate and how
+              much you apply.
             </p>
           </details>
           <details>
@@ -410,14 +353,39 @@ export default function ProductDetail({
               mood rather than gender.
             </p>
           </details>
-          <details>
-            <summary>
-              Is the 20ml fragrance different?<span>+</span>
-            </summary>
-            <p>No. Both formats contain the same Eau de Parfum composition.</p>
-          </details>
+          {!isCombo && (
+            <details>
+              <summary>
+                Is the 20ml different from the 100ml?<span>+</span>
+              </summary>
+              <p>
+                No. Both formats carry the same Eau de Parfum composition. The
+                20ml is for discovery and travel.
+              </p>
+            </details>
+          )}
         </div>
       </section>
+
+      {/* ---- close ---- */}
+      <section className="pdp-close">
+        <p className="pdp-close-line">
+          Four signatures. Yours is one click away.
+        </p>
+        <Link href="/shop" className="cine-end-cta">
+          Explore the collection <ArrowUpRight size={16} />
+        </Link>
+      </section>
+
+      <StickyBuyBar
+        name={product.name}
+        size={sizeLabel}
+        pricePaise={variant?.pricePaise}
+        disabled={!inStock}
+        onAdd={add}
+        added={added}
+        anchorRef={addButtonRef}
+      />
     </main>
   );
 }
