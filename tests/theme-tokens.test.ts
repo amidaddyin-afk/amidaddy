@@ -3,12 +3,6 @@ import test from "node:test";
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
-import {
-  SITE_THEMES,
-  DEFAULT_THEME,
-  THEME_LABELS,
-} from "../src/lib/theme-config.ts";
-
 const read = (path: string) => readFileSync(path, "utf8");
 const walk = (dir: string): string[] =>
   readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
@@ -16,40 +10,41 @@ const walk = (dir: string): string[] =>
     return entry.isDirectory() ? walk(path) : [path];
   });
 
-test("every theme has a label and the default is a real theme", () => {
-  assert.ok(SITE_THEMES.includes(DEFAULT_THEME));
-  for (const theme of SITE_THEMES) {
-    assert.ok(THEME_LABELS[theme]?.name, `${theme} needs a name`);
-    assert.ok(THEME_LABELS[theme]?.blurb, `${theme} needs a blurb`);
-  }
-});
-
-test("each theme resolves both a dark and a light surface rule", () => {
-  const tokens = read("src/styles/tokens.css");
-  for (const theme of SITE_THEMES) {
+test("the design system is a single fixed palette - no theme switching left behind", () => {
+  // Site went from a 3-theme (noir/atelier/duality) admin-switchable system to
+  // one fixed monochrome look. Nothing should still reference the old
+  // data-theme mechanism.
+  for (const file of walk("src")) {
+    if (!file.endsWith(".ts") && !file.endsWith(".tsx")) continue;
+    const source = read(file);
     assert.ok(
-      tokens.includes(`data-theme="${theme}"`),
-      `${theme} is never referenced in tokens.css`,
+      !/getSiteTheme|SITE_THEMES|SiteTheme\b/.test(source),
+      `${file} still references the removed theme-switching system`,
     );
   }
-  // The two palette blocks must each define the full semantic set, otherwise a
-  // surface can inherit a half-applied palette.
-  for (const token of [
-    "--bg:",
-    "--fg:",
-    "--line:",
-    "--accent:",
-    "--bg-band:",
-  ]) {
-    const count = tokens.split(token).length - 1;
-    assert.ok(count >= 3, `${token} should be declared in every palette block`);
-  }
+  assert.ok(
+    !/data-theme=\{/.test(read("src/app/layout.tsx")),
+    "layout.tsx should no longer set a dynamic data-theme attribute",
+  );
+});
+
+test("tokens.css has no per-theme selector blocks left over", () => {
+  const tokens = read("src/styles/tokens.css");
+  // The old system keyed whole palette blocks off data-theme="noir" /
+  // "atelier" / "duality". A fixed single-look system should have no such
+  // attribute-selector left (chrome/image-surface overrides key off
+  // data-surface instead, which is fine and expected).
+  assert.ok(
+    !/\[data-theme=/.test(tokens),
+    "tokens.css still contains a data-theme attribute selector",
+  );
 });
 
 test("legacy aliases are re-declared per surface, not only on :root", () => {
   const tokens = read("src/styles/tokens.css");
   // A `--paper: var(--fg)` declared only at :root resolves against root's --fg
-  // and inherits that resolved value, so dark surfaces would keep light text.
+  // and inherits that resolved value, so a differently-scoped surface (e.g.
+  // the always-dark chrome) would keep the wrong text color.
   assert.match(
     tokens,
     /:root,\s*\n\[data-surface\]\s*\{[^}]*--paper:\s*var\(--fg\)/,
@@ -66,7 +61,7 @@ test("JSX no longer hard-codes theme-blind white utilities", () => {
   assert.deepEqual(
     offenders,
     [],
-    `these files still use white utilities that break under the light theme:\n${offenders.join("\n")}`,
+    `these files still use white utilities that bypass the token system:\n${offenders.join("\n")}`,
   );
 });
 
@@ -126,9 +121,9 @@ test("footer offers an admin sign-in without advertising the admin route", () =>
 });
 
 test("JSX carries no hard-coded hex colours", () => {
-  // Arbitrary Tailwind values like bg-[#0e0e0e] and text-[#D4AF37] are
-  // theme-blind: they looked right on the old dark-only design and become
-  // invisible under the light theme.
+  // Arbitrary Tailwind values like bg-[#0e0e0e] and text-[#D4AF37] bypass the
+  // token system - keep every color decision in tokens.css/globals.css so a
+  // future palette change doesn't require hunting through components.
   const offenders: string[] = [];
   for (const file of walk("src").filter((f) => f.endsWith(".tsx"))) {
     if (/\[#[0-9a-fA-F]{3,8}\]/.test(read(file))) offenders.push(file);
@@ -148,29 +143,11 @@ test("fill images always have a positioned parent", () => {
   );
 });
 
-test("the SITE_THEME override is read outside the cache", () => {
-  const theme = read("src/lib/theme.ts");
-  // Checked inside the cached function, an entry written before the variable
-  // was set keeps being served, so the escape hatch does nothing until the tag
-  // expires - which defeats the point of an emergency override.
-  const overrideAt = theme.indexOf("process.env.SITE_THEME");
-  const cacheAt = theme.indexOf("unstable_cache");
-  assert.ok(overrideAt > -1, "SITE_THEME override must exist");
-  assert.ok(
-    overrideAt > theme.indexOf("export async function getSiteTheme"),
-    "the override must live in the exported wrapper, not the cached reader",
-  );
-  assert.ok(
-    cacheAt < overrideAt,
-    "cached reader is declared before the wrapper",
-  );
-});
-
-test("text on photography does not follow the theme", () => {
+test("text on photography stays legible regardless of the surrounding page", () => {
   const tokens = read("src/styles/tokens.css");
-  // A photograph looks the same in every theme, so overlay text coloured from
-  // --fg goes invisible the moment the palette flips - dark ink on a dark
-  // campaign frame under atelier. These contexts re-point the tokens instead.
+  // A photograph is the same file everywhere, so overlay text colored from
+  // --fg (near-black on the paper surface) would go invisible on a dark
+  // campaign frame. These contexts re-point the tokens to light-on-photo.
   const block = tokens.slice(tokens.indexOf('[data-surface="image"]'));
   for (const sel of [
     ".school-hero",
@@ -204,4 +181,19 @@ test("the fixed chrome collapses while the cart is open", () => {
     read("src/components/CartSidebar.tsx"),
     /delete document\.body\.dataset\.overlay/,
   );
+});
+
+test("border-radius is zero everywhere - the sharp-edged system constraint", () => {
+  const tokens = read("src/styles/tokens.css");
+  for (const token of [
+    "--radius-sm: 0px",
+    "--radius-md: 0px",
+    "--radius-lg: 0px",
+    "--radius-pill: 0px",
+  ]) {
+    assert.ok(
+      tokens.includes(token),
+      `${token} must be declared in tokens.css`,
+    );
+  }
 });

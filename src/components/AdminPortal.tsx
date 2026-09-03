@@ -11,7 +11,6 @@ import {
   MapPin,
   Package,
   Phone,
-  Palette,
   Settings,
   ShoppingBag,
   TrendingUp,
@@ -23,12 +22,10 @@ import {
   adjustVariantStockAction,
   createCouponAction,
   toggleCouponAction,
-  updateSiteThemeAction,
   updateStoreSettingsAction,
   updateUserRoleAction,
   type AdminActionState,
 } from "@/features/admin/actions";
-import { SITE_THEMES, THEME_LABELS } from "@/lib/theme-config";
 import {
   cancelAdminOrderAction,
   refundOrderAction,
@@ -46,7 +43,6 @@ const sections = [
   ["Leads", TrendingUp],
   ["Coupons", BadgePercent],
   ["Activity", Activity],
-  ["Appearance", Palette],
   ["Settings", Settings],
 ] as const;
 function Status({ state }: { state: AdminActionState }) {
@@ -266,10 +262,6 @@ export default function AdminPortal({ overview }: { overview: AdminOverview }) {
   );
   const [settings, settingsAction, settingsPending] = useActionState(
     updateStoreSettingsAction,
-    initial,
-  );
-  const [theme, themeAction, themePending] = useActionState(
-    updateSiteThemeAction,
     initial,
   );
   const [orderSearch, setOrderSearch] = useState("");
@@ -602,38 +594,6 @@ export default function AdminPortal({ overview }: { overview: AdminOverview }) {
                 </div>
               ))}
             </div>
-          </section>
-          <section id="appearance">
-            <p className="eyebrow">Appearance</p>
-            <h2>Storefront theme</h2>
-            <p className="theme-picker-note">
-              Changes the art direction for every visitor immediately.
-            </p>
-            <form action={themeAction} className="theme-picker">
-              {SITE_THEMES.map((option) => {
-                const active = overview.settings.theme === option;
-                return (
-                  <button
-                    key={option}
-                    name="theme"
-                    value={option}
-                    disabled={themePending || active}
-                    className={`theme-card ${active ? "active" : ""}`}
-                    aria-pressed={active}
-                  >
-                    <span className={`theme-swatch theme-swatch-${option}`}>
-                      <i />
-                      <i />
-                      <i />
-                    </span>
-                    <strong>{THEME_LABELS[option].name}</strong>
-                    <small>{THEME_LABELS[option].blurb}</small>
-                    <em>{active ? "Active" : "Apply"}</em>
-                  </button>
-                );
-              })}
-            </form>
-            <Status state={theme} />
           </section>
           <section id="settings">
             <p className="eyebrow">Configuration</p>

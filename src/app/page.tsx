@@ -15,6 +15,7 @@ import CinematicSequence, {
   type CinePanel,
 } from "@/components/CinematicSequence";
 import ScentFinder from "@/components/ScentFinder";
+import WearGuide from "@/components/WearGuide";
 import { listCatalogProducts } from "@/lib/catalog";
 
 export const metadata: Metadata = {
@@ -42,25 +43,20 @@ const reviews = [
 ];
 
 /**
- * Cinematic script for the pinned signature sequence. Fixed order and the
- * campaign line per fragrance (the lines already run on the storefront, so the
- * voice matches). `objectPosition` / `spot` bias each frame so the bottle is
- * the lit subject and the campaign faces sit back as atmosphere.
+ * Cinematic script for the pinned signature sequence. Fixed order per
+ * fragrance. The mood line is not set here — it is read from `product.story`
+ * when the panels are built, so the homepage sequence and the product page
+ * hero always say the same thing. `objectPosition` / `spot` bias each frame so
+ * the bottle is the lit subject and the campaign faces sit back as atmosphere.
  */
 const SCRIPT: Record<
   string,
   Pick<
     CinePanel,
-    | "line"
-    | "notes"
-    | "image"
-    | "objectPosition"
-    | "objectPositionMobile"
-    | "spot"
+    "notes" | "image" | "objectPosition" | "objectPositionMobile" | "spot"
   >
 > = {
   "old-love": {
-    line: "Stay unforgettable.",
     notes: ["Saffron", "Amber", "Resin"],
     // Red-lit silhouette, the bottle glowing between the two figures.
     image: "/gallery/old-love/01.webp",
@@ -69,7 +65,6 @@ const SCRIPT: Record<
     spot: "50% 52%",
   },
   coldwar: {
-    line: "Make your move.",
     notes: ["Bright fruit", "Herbs", "Woods"],
     // Bottle held forward, filling the frame, the face behind it.
     image: "/gallery/coldwar/02.webp",
@@ -78,7 +73,6 @@ const SCRIPT: Record<
     spot: "40% 42%",
   },
   heavenly: {
-    line: "Leave a softer trace.",
     notes: ["White floral", "Vanilla", "Musk"],
     image: "/gallery/heavenly/02.webp",
     objectPosition: "46% 44%",
@@ -86,7 +80,6 @@ const SCRIPT: Record<
     spot: "44% 46%",
   },
   billionaire: {
-    line: "Own the room.",
     notes: ["Whiskey", "Spice", "Dark woods"],
     // The pair, a black bottle held between them.
     image: "/gallery/billionaire/04.webp",
@@ -119,6 +112,8 @@ export default async function Home() {
     return {
       slug,
       name: product.name,
+      // Same mood line the product page hero shows, so the two never disagree.
+      line: product.story,
       alt: `${product.name}, ${product.profile} ${product.concentration}, photographed for Amidaddy Perfumes`,
       ...script,
     };
@@ -151,8 +146,8 @@ export default async function Home() {
         <section className="cine-hero">
           <div className="cine-hero-media">
             <Photo
-              src="/curated/hero-models.webp"
-              alt="Amidaddy Perfumes campaign portrait"
+              src="/products/detail/billionaire/hero.webp"
+              alt="Amidaddy Perfumes Billionaire, a black Eau de Parfum bottle on a glossy black surface"
               fill
               priority
               sizes="100vw"
@@ -162,14 +157,13 @@ export default async function Home() {
           <div className="cine-hero-veil" />
           <p className="cine-wordmark">Amidaddy</p>
           <div className="cine-hero-copy">
-            <h1 className="cine-hero-title">
-              Presence,
-              <br />
-              before words.
-            </h1>
+            <h1 className="cine-hero-title chrome-text">Amidaddy</h1>
             <p className="cine-hero-sub">
               Four unisex signatures, composed around mood, memory and presence.
             </p>
+            <Link href="/#shop-100ml" className="cine-hero-cta">
+              Explore the four signatures <ArrowUpRight size={15} />
+            </Link>
           </div>
         </section>
 
@@ -277,6 +271,8 @@ export default async function Home() {
         </div>
       </section>
 
+      <WearGuide />
+
       <section className="home-story" id="story">
         <div className="home-story-media">
           <Image
@@ -367,6 +363,22 @@ export default async function Home() {
               "How can I track my order?",
               "Sign in to your account to view live order status and order history.",
             ],
+            [
+              "What does Eau de Parfum mean?",
+              "It is a concentration level, richer and longer-lasting than Eau de Toilette. Every Amidaddy signature is Eau de Parfum.",
+            ],
+            [
+              "How do I apply it so it lasts?",
+              "Spray onto pulse points, the wrists, neck and behind the ears, from 15 to 20 cm. Do not rub. Reapply lightly after a few hours if you want the trail back.",
+            ],
+            [
+              "How should I store it?",
+              "Upright, somewhere cool and dark. Keep it away from direct sun, radiators and bathroom humidity, which wear a fragrance down over time.",
+            ],
+            [
+              "Can I return a fragrance?",
+              "Sealed, unused bottles can be raised for a return or replacement from your account within the window in our shipping and returns policy. Damage or wrong-item claims are settled fastest with an unboxing video.",
+            ],
           ].map(([question, answer]) => (
             <details key={question}>
               <summary>
@@ -376,6 +388,18 @@ export default async function Home() {
               <p>{answer}</p>
             </details>
           ))}
+        </div>
+      </section>
+
+      <section className="home-final-cta">
+        <h2 className="display-title">Which feeling will you wear today?</h2>
+        <div className="home-final-cta-actions">
+          <Link href="/#scent-finder" className="lux-button">
+            Take the scent finder
+          </Link>
+          <Link href="/shop" className="text-link">
+            Shop all fragrances <ArrowUpRight size={15} />
+          </Link>
         </div>
       </section>
     </main>

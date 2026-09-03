@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Manrope } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
 import Navbar from "@/components/Navbar";
@@ -7,14 +7,20 @@ import CartSidebar from "@/components/CartSidebar";
 import AnnouncementBar from "@/components/AnnouncementBar";
 import PerfumeSprayCursor from "@/components/PerfumeSprayCursor";
 import Footer from "@/components/Footer";
-import { getSiteTheme } from "@/lib/theme";
 
-const display = Cormorant_Garamond({
+// Single family for the whole system (the reference's Aeonik substitute).
+// Both CSS vars point at the same font so every existing
+// var(--font-display)/var(--font-sans) reference keeps working unchanged.
+const display = Inter({
   subsets: ["latin"],
   variable: "--font-display",
-  weight: ["400", "500", "600"],
+  weight: ["300", "400", "500"],
 });
-const sans = Manrope({ subsets: ["latin"], variable: "--font-sans" });
+const sans = Inter({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  weight: ["300", "400", "500"],
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -42,14 +48,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const theme = await getSiteTheme();
   return (
-    <html lang="en" data-theme={theme}>
+    <html lang="en">
       <body className={`${display.variable} ${sans.variable}`}>
         <PerfumeSprayCursor />
         <CartProvider>

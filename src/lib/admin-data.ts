@@ -3,7 +3,6 @@ import { db } from "@/lib/db";
 import { listAdminProducts } from "@/lib/catalog";
 import { listOrders, type OrderRecord } from "@/lib/orders";
 import type { Product } from "@/lib/data";
-import { DEFAULT_THEME, SITE_THEMES, type SiteTheme } from "@/lib/theme-config";
 import {
   getLeadFunnel,
   listLeads,
@@ -44,7 +43,6 @@ export type AdminOverview = {
     shippingFeePaise: number;
     freeShippingAbovePaise: number;
     cancellationMessage: string;
-    theme: SiteTheme;
   };
   inventory: Array<{
     id: string;
@@ -179,9 +177,6 @@ export async function getAdminOverview(): Promise<AdminOverview> {
         setting.cancellation_message ??
           "Orders can be cancelled before processing begins.",
       ),
-      theme: (SITE_THEMES as readonly string[]).includes(String(setting.theme))
-        ? (String(setting.theme) as SiteTheme)
-        : DEFAULT_THEME,
     },
     inventory: inventoryRows,
     leadFunnel,

@@ -25,7 +25,7 @@ body .wordmark-title {
 .home-trust-strip {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  border-bottom: 1px solid #d8d0c2;
+  border-bottom: 1px solid var(--line);
   background: var(--bg-raised);
 }
 .home-trust-strip span {
@@ -34,38 +34,39 @@ body .wordmark-title {
   align-items: center;
   justify-content: center;
   gap: 0.6rem;
-  border-right: 1px solid #d8d0c2;
-  font-size: 0.65rem;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
+  border-right: 1px solid var(--line);
+  font-size: var(--text-caption);
+  letter-spacing: 0.02em;
+  text-transform: none;
 }
 .home-collection,
 .home-reviews,
 .home-faq {
   max-width: 1500px;
   margin-inline: auto;
-  padding: 8rem 2rem;
+  padding: var(--space-section) 2rem;
 }
 .commerce-heading {
   display: flex;
   align-items: end;
   justify-content: space-between;
   gap: 3rem;
-  margin-bottom: 3rem;
+  margin-bottom: var(--space-section);
 }
 .commerce-heading h2 {
-  margin-top: 0.7rem;
-  font-size: clamp(3.5rem, 6vw, 6rem);
+  margin-top: var(--spacing-20, 20px);
+  font-size: var(--text-display);
+  font-weight: 300;
 }
 .commerce-heading > div:last-child,
 .commerce-heading > p {
   max-width: 26rem;
   color: var(--fg-muted);
-  line-height: 1.75;
+  line-height: 1.7;
 }
 .commerce-heading .text-link {
   margin-top: 1rem;
-  color: var(--fg);
+  color: var(--color-signal-blue);
 }
 .home-product-grid {
   gap: 1.15rem;
@@ -78,8 +79,8 @@ body .wordmark-title {
 }
 .storefront-home .product-card:hover,
 .shop-page .product-card:hover {
-  border-color: var(--accent);
-  box-shadow: 0 18px 50px rgba(55, 42, 22, 0.08);
+  border-color: var(--color-signal-blue);
+  box-shadow: none;
 }
 .storefront-home .product-visual,
 .shop-page .product-visual {
@@ -88,7 +89,7 @@ body .wordmark-title {
 }
 .storefront-home .product-card .eyebrow,
 .shop-page .product-card .eyebrow {
-  color: var(--accent);
+  color: var(--color-ember-red);
 }
 .storefront-home .product-card .text-white\/45,
 .storefront-home .product-card .text-white\/52,
@@ -118,14 +119,16 @@ body .wordmark-title {
 }
 .home-combo-copy h2 {
   max-width: 36rem;
-  margin: 1rem 0 1.5rem;
-  font-size: clamp(4rem, 6vw, 7rem);
-  line-height: 0.9;
+  margin: var(--spacing-20, 20px) 0 1.5rem;
+  font-size: var(--text-display);
+  font-weight: 300;
+  letter-spacing: var(--tracking-display);
+  line-height: var(--leading-display);
 }
 .combo-lead {
   max-width: 31rem;
   color: var(--fg-muted);
-  line-height: 1.8;
+  line-height: 1.7;
 }
 .combo-price {
   display: flex;
@@ -134,7 +137,7 @@ body .wordmark-title {
   margin-top: 2.5rem;
 }
 .combo-price strong {
-  font: 500 2.4rem var(--font-display);
+  font: 300 2.4rem var(--font-display);
 }
 .combo-price span {
   color: var(--fg-subtle);
@@ -143,7 +146,7 @@ body .wordmark-title {
 .tax-copy {
   margin: 0.35rem 0 1.6rem;
   color: var(--fg-subtle);
-  font-size: 0.68rem;
+  font-size: var(--text-caption);
 }
 .home-collection-20 {
   background: var(--bg-band);
@@ -167,18 +170,20 @@ body .wordmark-title {
   padding: clamp(3rem, 8vw, 9rem);
 }
 .home-story-copy h2 {
-  margin: 1rem 0 2rem;
-  font-size: clamp(3.8rem, 6vw, 7rem);
-  line-height: 0.92;
+  margin: var(--spacing-20, 20px) 0 2rem;
+  font-size: var(--text-display);
+  font-weight: 300;
+  letter-spacing: var(--tracking-display);
+  line-height: var(--leading-display);
 }
 .home-story-copy > p:not(.eyebrow) {
   max-width: 35rem;
   color: var(--fg-muted);
-  line-height: 1.9;
+  line-height: 1.8;
 }
 .home-story-copy .text-link {
   margin-top: 2rem;
-  color: var(--fg);
+  color: var(--color-signal-blue);
 }
 .review-grid {
   display: grid;
@@ -188,7 +193,7 @@ body .wordmark-title {
 .review-grid article {
   min-height: 290px;
   padding: 2.2rem;
-  border-right: 1px solid #d8d0c2;
+  border-right: 1px solid var(--line);
 }
 .review-grid article:last-child {
   border: 0;
@@ -280,7 +285,7 @@ body .shop-page .text-champagne {
 body .shop-page .shop-filters {
   border-color: var(--line);
   background: var(--bg-raised);
-  box-shadow: 0 18px 55px rgba(55, 42, 22, 0.08);
+  box-shadow: none;
 }
 body .shop-page .shop-filters label span {
   color: var(--fg-muted);
@@ -324,9 +329,9 @@ body .policy-shell {
   color: var(--fg);
 }
 body .auth-panel {
-  border-color: #d2c9bb !important;
-  background: #fbf9f5 !important;
-  box-shadow: 0 24px 80px rgba(55, 42, 22, 0.08);
+  border-color: var(--line) !important;
+  background: var(--color-paper) !important;
+  box-shadow: none;
 }
 body .auth-panel .text-white,
 body .auth-panel .text-white\/60 {
@@ -515,7 +520,7 @@ body .admin-shell .status-pill {
   }
   .home-trust-strip span {
     border-right: 0;
-    border-bottom: 1px solid #d8d0c2;
+    border-bottom: 1px solid var(--line);
   }
   .commerce-heading {
     align-items: start;
@@ -555,7 +560,7 @@ body .admin-shell .status-pill {
   }
   .review-grid article {
     border-right: 0;
-    border-bottom: 1px solid #d8d0c2;
+    border-bottom: 1px solid var(--line);
   }
   .home-services {
     grid-template-columns: 1fr;
@@ -645,8 +650,8 @@ a {
   background: var(--bg-raised);
 }
 ::-webkit-scrollbar-thumb {
-  background: #6f5a34;
-  border-radius: 999px;
+  background: var(--color-graphite);
+  border-radius: 0;
 }
 :focus-visible {
   outline: 2px solid var(--champagne);
@@ -699,20 +704,45 @@ main.cinematic-home {
 .display-title,
 .font-cinzel,
 .font-playfair {
-  font-family: var(--font-display), serif;
-  font-weight: 500;
-  letter-spacing: -0.035em;
-  line-height: 0.98;
+  font-family: var(--font-display), sans-serif;
+  font-weight: 300;
+  letter-spacing: var(--tracking-display);
+  line-height: var(--leading-display);
 }
 .text-champagne {
   color: var(--champagne);
 }
 .eyebrow {
-  color: var(--champagne);
-  font-size: 0.68rem;
-  font-weight: 600;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
+  color: var(--color-ember-red);
+  font-size: var(--text-subheading);
+  font-weight: 400;
+  letter-spacing: var(--tracking-subheading);
+  text-transform: none;
+}
+/* Chrome/3D-metallic text treatment for the hero wordmark - a CSS-only
+   simulation using a light-source gradient plus stacked text-shadow "steps"
+   to fake a reflective bevel, no WebGL required. */
+.chrome-text {
+  background: linear-gradient(
+    180deg,
+    #fff 0%,
+    #cfd3d6 22%,
+    #8b9096 45%,
+    #f4f6f7 58%,
+    #6d7176 72%,
+    #e9ebec 88%,
+    #b3b7ba 100%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.5),
+    0 -1px 0 rgba(0, 0, 0, 0.6),
+    0 4px 12px rgba(0, 0, 0, 0.55),
+    0 12px 40px rgba(0, 0, 0, 0.65);
+  filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.4));
 }
 .lux-button,
 .btn-gold {
@@ -723,36 +753,32 @@ main.cinematic-home {
   align-items: center;
   justify-content: center;
   gap: 0.65rem;
-  border: 1px solid var(--champagne);
-  border-radius: 999px;
-  background: var(--champagne);
+  border: 1px solid var(--color-signal-blue);
+  border-radius: 0;
+  background: transparent;
   padding: 0.9rem 1.35rem;
-  color: #090909;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
+  color: var(--color-signal-blue);
+  font-size: var(--text-caption);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: none;
   transition:
-    transform 0.35s var(--ease-premium),
     background 0.25s ease,
-    box-shadow 0.35s var(--ease-premium);
-  will-change: transform;
+    color 0.25s ease;
 }
 .lux-button:hover,
 .btn-gold:hover {
-  transform: translate3d(0, -3px, 0) scale(1.01);
-  background: #ead3a2;
-  box-shadow: 0 16px 45px rgba(191, 153, 86, 0.16);
+  background: var(--color-signal-blue);
+  color: var(--color-paper);
 }
 .lux-button:active,
 .btn-gold:active {
-  transform: scale(0.985);
+  opacity: 0.85;
 }
 .lux-button:disabled,
 .btn-gold:disabled {
   cursor: not-allowed;
-  opacity: 0.42;
-  transform: none;
+  opacity: 0.4;
 }
 .btn-ghost {
   display: inline-flex;
@@ -760,35 +786,31 @@ main.cinematic-home {
   align-items: center;
   justify-content: center;
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: 0;
   padding: 0.8rem 1.25rem;
-  color: var(--paper);
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  color: var(--fg);
+  font-size: var(--text-caption);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: none;
   transition:
     border-color 0.25s ease,
-    background 0.25s ease,
-    color 0.25s ease,
-    transform 0.25s var(--ease-premium);
+    color 0.25s ease;
 }
 .btn-ghost:hover {
-  transform: translate3d(0, -2px, 0);
-  border-color: rgba(213, 184, 123, 0.45);
-  background: rgba(213, 184, 123, 0.06);
-  color: var(--champagne);
+  border-color: var(--color-ember-red);
+  color: var(--color-ember-red);
 }
 .text-link {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  border-bottom: 1px solid rgba(213, 184, 123, 0.5);
+  border-bottom: 1px solid var(--color-signal-blue);
   padding-bottom: 0.3rem;
-  color: var(--champagne);
-  font-size: 0.72rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  color: var(--color-signal-blue);
+  font-size: var(--text-caption);
+  letter-spacing: 0.02em;
+  text-transform: none;
 }
 .text-link svg {
   transition: transform 0.3s var(--ease-premium);
@@ -797,11 +819,10 @@ main.cinematic-home {
   transform: translate3d(3px, -3px, 0);
 }
 .lux-panel {
-  border-radius: var(--radius-lg);
+  border-radius: 0;
   border: 1px solid var(--line);
   background: var(--surface);
-  box-shadow: var(--shadow-soft);
-  backdrop-filter: blur(18px);
+  box-shadow: none;
 }
 .announcement-bar {
   position: fixed;
@@ -812,27 +833,24 @@ main.cinematic-home {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background: #d5b87b;
+  background: var(--color-ember-red);
   padding: 0 1rem;
-  color: #090909;
-  font-size: 0.62rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
+  color: var(--color-paper);
+  font-size: var(--text-caption);
+  font-weight: 400;
+  letter-spacing: 0.02em;
   text-align: center;
-  text-transform: uppercase;
+  text-transform: none;
 }
 .site-header {
   position: fixed;
   inset: 2rem 0 auto;
   z-index: 70;
-  transition:
-    background 0.35s ease,
-    border 0.35s ease;
+  background: var(--color-obsidian);
+  transition: border 0.35s ease;
 }
 .site-header.scrolled {
-  border-bottom: 1px solid var(--line);
-  background: var(--chrome-bg);
-  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
 }
 .nav-inner {
   display: grid;
@@ -848,34 +866,34 @@ main.cinematic-home {
   gap: 1.7rem;
 }
 .desktop-nav a {
-  font-size: 0.65rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--fg-muted);
+  font-size: var(--text-caption);
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: var(--color-paper);
   transition: color 0.2s;
 }
 .desktop-nav a:hover {
-  color: var(--champagne);
+  color: var(--color-ember-red);
 }
 .wordmark {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: var(--paper);
+  color: var(--color-ember-red);
 }
 .wordmark img {
   width: 4.25rem;
   height: auto;
 }
 .wordmark-title {
-  font-family: var(--font-display), serif;
+  font-family: var(--font-display), sans-serif;
   font-size: 2.15rem;
-  font-weight: 600;
-  letter-spacing: -0.045em;
+  font-weight: 400;
+  letter-spacing: -0.01em;
   line-height: 1;
 }
 .wordmark-title > span {
-  color: #ef3340;
+  color: var(--color-ember-red);
 }
 .nav-actions {
   display: flex;
@@ -893,7 +911,7 @@ main.cinematic-home {
   height: 2.6rem;
   border: 0;
   background: transparent;
-  color: var(--paper);
+  color: var(--color-paper);
 }
 .nav-actions svg,
 .mobile-only svg {
@@ -907,11 +925,11 @@ main.cinematic-home {
   width: 1.1rem;
   height: 1.1rem;
   place-items: center;
-  border-radius: 50%;
-  background: var(--champagne);
-  color: #090909;
+  border-radius: 0;
+  background: var(--color-ember-red);
+  color: var(--color-paper);
   font-size: 0.55rem;
-  font-weight: 800;
+  font-weight: 500;
 }
 .mobile-only {
   display: none;
@@ -1202,7 +1220,7 @@ main.cinematic-home {
   background: var(--bg-raised);
 }
 .product-card:hover {
-  border-color: rgba(213, 184, 123, 0.35);
+  border-color: var(--color-signal-blue);
 }
 .product-visual {
   position: relative;
@@ -1211,26 +1229,19 @@ main.cinematic-home {
   background: var(--bg-raised);
 }
 .product-glow {
-  position: absolute;
-  inset: auto 10% -30% 10%;
-  height: 55%;
-  border-radius: 50%;
-  background: rgba(213, 184, 123, 0.13);
-  filter: blur(55px);
-  pointer-events: none;
+  display: none;
 }
 .product-badge {
   position: absolute;
   top: 1rem;
   left: 1rem;
   z-index: 12;
-  border: 1px solid var(--line);
-  background: rgba(8, 9, 9, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: rgba(0, 0, 0, 0.6);
   padding: 0.45rem 0.65rem;
-  backdrop-filter: blur(10px);
-  font-size: 0.58rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  font-size: var(--text-caption);
+  letter-spacing: 0.02em;
+  text-transform: none;
 }
 .product-view {
   position: absolute;
@@ -1241,9 +1252,9 @@ main.cinematic-home {
   align-items: center;
   gap: 0.4rem;
   color: white;
-  font-size: 0.62rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font-size: var(--text-caption);
+  letter-spacing: 0.02em;
+  text-transform: none;
 }
 .size-chip {
   min-width: 3.7rem;
@@ -1251,12 +1262,12 @@ main.cinematic-home {
   background: transparent;
   padding: 0.55rem 0.7rem;
   color: var(--fg-subtle);
-  font-size: 0.65rem;
+  font-size: var(--text-caption);
 }
 .size-chip.active {
-  border-color: var(--champagne);
-  background: rgba(213, 184, 123, 0.08);
-  color: var(--champagne);
+  border-color: var(--color-signal-blue);
+  background: transparent;
+  color: var(--color-signal-blue);
 }
 .size-chip:disabled {
   opacity: 0.25;
@@ -1267,13 +1278,13 @@ main.cinematic-home {
   min-height: 2.8rem;
   align-items: center;
   gap: 0.5rem;
-  border: 1px solid var(--champagne);
+  border: 1px solid var(--color-signal-blue);
   background: transparent;
   padding: 0.7rem 0.9rem;
-  color: var(--champagne);
-  font-size: 0.65rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  color: var(--color-signal-blue);
+  font-size: var(--text-caption);
+  letter-spacing: 0.02em;
+  text-transform: none;
 }
 .finder-section {
   position: relative;
@@ -1287,10 +1298,10 @@ main.cinematic-home {
   left: 20%;
   width: 480px;
   height: 480px;
-  border: 1px solid var(--accent-quiet);
-  border-radius: 50%;
+  border: 1px solid var(--line);
+  border-radius: 0;
   transform: translate(-50%, -50%);
-  box-shadow: 0 0 120px rgba(213, 184, 123, 0.05) inset;
+  box-shadow: none;
 }
 .finder-card {
   position: relative;
@@ -1372,7 +1383,7 @@ without dimming the whole photograph. */
   color: var(--on-image);
 }
 .shop-hero-copy .eyebrow {
-  color: var(--gold-300);
+  color: var(--color-ember-red);
 }
 .shop-hero h1 {
   margin: 1.25rem 0;
@@ -1727,7 +1738,7 @@ without dimming the whole photograph. */
   place-items: center;
   margin: auto;
   border: 1px solid var(--line);
-  border-radius: 50%;
+  border-radius: 0;
   background: var(--bg-raised);
   font-size: 0.7rem;
 }
@@ -1977,7 +1988,7 @@ without dimming the whole photograph. */
 
 /* Refined interaction and surface layer */
 .site-header.scrolled {
-  box-shadow: 0 16px 50px rgba(0, 0, 0, 0.18);
+  box-shadow: none;
 }
 .desktop-nav a {
   position: relative;
@@ -1990,7 +2001,7 @@ without dimming the whole photograph. */
   bottom: 0.15rem;
   left: 0;
   height: 1px;
-  background: var(--champagne);
+  background: var(--color-ember-red);
   transform: scaleX(0);
   transform-origin: right;
   transition: transform 0.35s var(--ease-premium);
@@ -2003,18 +2014,16 @@ without dimming the whole photograph. */
 .nav-actions button,
 .nav-actions a,
 .mobile-only {
-  border-radius: 50%;
+  border-radius: 0;
   transition:
     background 0.25s ease,
-    color 0.25s ease,
-    transform 0.3s var(--ease-premium);
+    color 0.25s ease;
 }
 .nav-actions button:hover,
 .nav-actions a:hover,
 .mobile-only:hover {
-  transform: translate3d(0, -2px, 0);
   background: rgba(255, 255, 255, 0.07);
-  color: var(--champagne);
+  color: var(--color-ember-red);
 }
 .mobile-menu,
 .search-overlay {
@@ -2036,7 +2045,8 @@ without dimming the whole photograph. */
   backdrop-filter: blur(5px);
 }
 .cart-panel {
-  box-shadow: -28px 0 90px rgba(0, 0, 0, 0.38);
+  box-shadow: none;
+  border-left: 1px solid var(--line);
 }
 .cart-item {
   border-radius: var(--radius-md);
@@ -2056,13 +2066,13 @@ without dimming the whole photograph. */
   transition: border-color 0.25s ease;
 }
 .search-overlay form div:focus-within {
-  border-color: var(--champagne);
+  border-color: var(--color-signal-blue);
 }
 .product-card,
 .finder-card,
 .shop-filters,
 .catalog-editor {
-  border-radius: var(--radius-lg);
+  border-radius: 0;
 }
 .finder-section,
 .shop-hero {
@@ -2070,15 +2080,8 @@ without dimming the whole photograph. */
   contain-intrinsic-size: auto 800px;
 }
 .product-card {
-  box-shadow: 0 18px 55px rgba(0, 0, 0, 0.16);
-  transition:
-    border-color 0.3s ease,
-    box-shadow 0.4s var(--ease-premium),
-    transform 0.4s var(--ease-premium);
-}
-.product-card:hover {
-  transform: translate3d(0, -6px, 0);
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.28);
+  box-shadow: none;
+  transition: border-color 0.3s ease;
 }
 .product-visual img {
   transition: transform 0.8s var(--ease-premium);
@@ -2088,7 +2091,7 @@ without dimming the whole photograph. */
 }
 .product-badge,
 .status-pill {
-  border-radius: 999px;
+  border-radius: 0;
 }
 .product-view svg,
 .finder-option svg {
@@ -2101,42 +2104,36 @@ without dimming the whole photograph. */
 .size-chip,
 .icon-add,
 .finder-option {
-  border-radius: var(--radius-sm);
+  border-radius: 0;
   transition:
     border-color 0.25s ease,
     background 0.25s ease,
-    color 0.25s ease,
-    transform 0.3s var(--ease-premium);
+    color 0.25s ease;
 }
 .size-chip:hover:not(:disabled) {
-  transform: translate3d(0, -2px, 0);
-  border-color: rgba(213, 184, 123, 0.55);
+  border-color: var(--color-signal-blue);
 }
 .icon-add:hover:not(:disabled) {
-  transform: translate3d(0, -2px, 0);
-  background: var(--champagne);
-  color: #090909;
+  background: var(--color-signal-blue);
+  color: var(--color-paper);
 }
-/* Press feedback: the primary buttons already push in on :active, the
-   secondary controls did not. A small scale-down reads as the control
-   taking the tap rather than only the pointer-up doing something. */
 .size-chip:active:not(:disabled),
 .icon-add:active:not(:disabled),
 .finder-option:active {
-  transform: translate3d(0, 0, 0) scale(0.97);
+  opacity: 0.85;
 }
 .finder-card {
-  border-color: var(--fg-subtle);
+  border-color: var(--line);
   background: var(--surface-raised);
-  box-shadow: var(--shadow-soft);
+  box-shadow: none;
 }
 .finder-option:hover {
-  transform: translate3d(0, -3px, 0);
-  background: rgba(213, 184, 123, 0.055);
+  border-color: var(--color-signal-blue);
 }
 .shop-filters {
   background: var(--surface);
-  box-shadow: 0 18px 55px rgba(0, 0, 0, 0.15);
+  box-shadow: none;
+  border: 1px solid var(--line);
 }
 .shop-filters input,
 .shop-filters select,
@@ -2174,8 +2171,8 @@ without dimming the whole photograph. */
 .admin-form select:focus,
 .inventory-row input:focus,
 .catalog-editor textarea:focus {
-  border-color: var(--champagne);
-  box-shadow: 0 0 0 3px rgba(213, 184, 123, 0.1);
+  border-color: var(--color-signal-blue);
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
 }
 .coupon-control input {
   border-radius: var(--radius-sm) 0 0 var(--radius-sm);
@@ -2509,10 +2506,10 @@ body .site-header {
   inset: 2rem;
   z-index: 120;
   overflow: auto;
-  border: 1px solid rgba(213, 184, 123, 0.35);
+  border: 1px solid var(--line);
   background: var(--bg-raised);
   padding: clamp(1.5rem, 4vw, 3rem);
-  box-shadow: 0 40px 120px #000;
+  box-shadow: none;
 }
 .catalog-editor > button {
   position: absolute;
@@ -2923,7 +2920,7 @@ body .system-state > div {
   border-color: var(--line);
   background: var(--bg-raised);
   color: var(--fg);
-  box-shadow: 0 24px 80px rgba(55, 42, 22, 0.08);
+  box-shadow: none;
 }
 
 body .account-shell .order-list {
@@ -2951,7 +2948,7 @@ body .account-shell .order-totals div:last-child {
   color: var(--fg);
 }
 body .account-shell .order-timeline li::before {
-  background: #d8d0c2;
+  background: var(--line);
 }
 body .account-shell .order-timeline li span {
   border-color: var(--line);
@@ -2963,15 +2960,15 @@ body .account-shell .order-list span {
   color: var(--accent);
 }
 body .account-shell .order-timeline li.active::before {
-  background: #9f7d45;
+  background: var(--accent);
 }
 body .account-shell .order-timeline li.active span {
   border-color: var(--accent);
   color: var(--accent);
 }
 body .account-shell .order-terminal {
-  border-color: rgba(159, 125, 69, 0.38);
-  background: rgba(159, 125, 69, 0.06);
+  border-color: var(--line);
+  background: var(--accent-quiet);
   color: var(--accent);
 }
 
@@ -2981,11 +2978,11 @@ body .checkout-shell .coupon-feedback {
 body .checkout-shell .coupon-feedback .coupon-error,
 body .checkout-shell .error-banner,
 body .auth-shell [role="alert"] {
-  color: #a33434;
+  color: var(--danger);
 }
 body .checkout-shell .error-banner {
-  border-color: rgba(163, 52, 52, 0.28);
-  background: rgba(163, 52, 52, 0.06);
+  border-color: var(--danger);
+  background: var(--accent-quiet);
 }
 body .checkout-shell .coupon-apply-button:hover:not(:disabled) {
   background: var(--bg-band);
@@ -3063,11 +3060,11 @@ body .admin-sidebar {
   border-color: var(--line);
   border-radius: var(--radius-md);
   background: var(--bg-raised);
-  box-shadow: 0 18px 50px rgba(55, 42, 22, 0.06);
+  box-shadow: none;
 }
 body .admin-sidebar nav a {
   min-height: 2.75rem;
-  border-radius: 0.45rem;
+  border-radius: 0;
   color: var(--fg-muted);
   white-space: nowrap;
 }
@@ -3092,7 +3089,7 @@ body .admin-cards article {
   border-color: var(--line);
   border-radius: var(--radius-md);
   background: var(--bg-raised);
-  box-shadow: 0 14px 42px rgba(55, 42, 22, 0.055);
+  box-shadow: none;
 }
 body .admin-cards strong {
   overflow-wrap: anywhere;
@@ -3119,7 +3116,7 @@ body .admin-order-card {
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
   background: var(--bg-raised);
-  box-shadow: 0 16px 50px rgba(55, 42, 22, 0.06);
+  box-shadow: none;
 }
 body .admin-order-card > header,
 body .admin-order-card > footer {
@@ -3250,8 +3247,8 @@ body .admin-order-card .admin-details[open] {
 body .admin-order-card .admin-details summary {
   width: max-content;
   margin-left: auto;
-  border: 1px solid #b99a62;
-  border-radius: 999px;
+  border: 1px solid var(--line);
+  border-radius: 0;
   padding: 0.65rem 1rem;
   color: var(--accent);
   list-style: none;
@@ -3272,7 +3269,7 @@ body .admin-shell .admin-form input,
 body .admin-shell .admin-form select,
 body .admin-shell .admin-form textarea {
   border-color: var(--line);
-  border-radius: 0.4rem;
+  border-radius: 0;
   background: var(--bg-raised);
   color: var(--fg);
 }
@@ -3289,11 +3286,11 @@ body .admin-empty {
   text-align: center;
 }
 body .catalog-editor {
-  border-color: #c8b68f;
-  border-radius: var(--radius-lg);
+  border-color: var(--line);
+  border-radius: 0;
   background: var(--bg-raised);
   color: var(--fg);
-  box-shadow: 0 35px 100px rgba(23, 21, 18, 0.28);
+  box-shadow: none;
 }
 body .catalog-editor > button {
   color: var(--fg);
@@ -3447,7 +3444,7 @@ body .catalog-editor > button {
     border: 1px solid var(--line);
     border-radius: var(--radius-md);
     background: var(--bg-raised);
-    box-shadow: 0 12px 35px rgba(55, 42, 22, 0.05);
+    box-shadow: none;
   }
   body #customers .admin-table td {
     display: grid;
@@ -3489,7 +3486,7 @@ body .catalog-editor > button {
     height: 2.75rem;
     place-items: center;
     border: 1px solid var(--line);
-    border-radius: 50%;
+    border-radius: 0;
   }
 }
 
@@ -3516,7 +3513,7 @@ body .catalog-editor > button {
   align-items: center;
   justify-content: center;
   gap: 0.9rem;
-  border-right: 1px solid #d8d0c2;
+  border-right: 1px solid var(--line);
   padding: 1.25rem clamp(1rem, 3vw, 2rem);
 }
 .home-trust-strip article:last-child {
@@ -3565,10 +3562,10 @@ body .catalog-editor > button {
     border-radius: var(--radius-md);
     background: var(--bg-raised);
     padding: 1rem;
-    box-shadow: 0 10px 30px rgba(55, 42, 22, 0.045);
+    box-shadow: none;
   }
   .home-trust-strip article:last-child {
-    border-right: 1px solid #d8d0c2;
+    border-right: 1px solid var(--line);
   }
   .home-product-grid {
     width: 100%;
@@ -3590,96 +3587,6 @@ body .catalog-editor > button {
     scroll-snap-align: start;
     scroll-snap-stop: always;
   }
-}
-
-/* Storefront theme picker (admin > Appearance) */
-.theme-picker-note {
-  margin-top: 0.4rem;
-  color: var(--fg-muted);
-  font-size: 0.85rem;
-}
-.theme-picker {
-  display: grid;
-  gap: 1rem;
-  margin-top: 1.5rem;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-}
-.theme-card {
-  display: grid;
-  gap: 0.5rem;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-md);
-  background: var(--bg-raised);
-  padding: 1.1rem;
-  text-align: left;
-  transition:
-    border-color var(--dur-base) ease,
-    transform var(--dur-base) var(--ease-premium);
-}
-.theme-card:hover:not(:disabled) {
-  transform: translate3d(0, -3px, 0);
-  border-color: var(--accent);
-}
-.theme-card.active {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 1px var(--accent) inset;
-}
-.theme-card:disabled {
-  cursor: default;
-}
-.theme-card strong {
-  font-family: var(--font-display), serif;
-  font-size: 1.3rem;
-}
-.theme-card small {
-  color: var(--fg-muted);
-  font-size: 0.78rem;
-  line-height: 1.5;
-}
-.theme-card em {
-  color: var(--accent);
-  font-size: 0.62rem;
-  font-style: normal;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-.theme-swatch {
-  display: flex;
-  overflow: hidden;
-  height: 2.6rem;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-}
-.theme-swatch i {
-  flex: 1;
-}
-.theme-swatch-noir i:nth-child(1) {
-  background: #08090a;
-}
-.theme-swatch-noir i:nth-child(2) {
-  background: #14161700;
-  background: var(--bg-raised);
-}
-.theme-swatch-noir i:nth-child(3) {
-  background: #d5b87b;
-}
-.theme-swatch-atelier i:nth-child(1) {
-  background: var(--bg-raised);
-}
-.theme-swatch-atelier i:nth-child(2) {
-  background: #fdfbf7;
-}
-.theme-swatch-atelier i:nth-child(3) {
-  background: #8a6a35;
-}
-.theme-swatch-duality i:nth-child(1) {
-  background: #08090a;
-}
-.theme-swatch-duality i:nth-child(2) {
-  background: var(--bg-raised);
-}
-.theme-swatch-duality i:nth-child(3) {
-  background: #d5b87b;
 }
 
 /* Overlays that sit on top of product photography keep a fixed light ink in
@@ -3923,7 +3830,7 @@ so it can never shift the layout. Hidden until the primary Add to
   border-top: 1px solid var(--line);
   background: var(--bg-raised);
   padding: 0.75rem 1.25rem;
-  box-shadow: 0 -12px 40px rgb(0 0 0 / 0.18);
+  box-shadow: none;
   /* Keep clear of the iOS home indicator. */
   padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
   transform: translate3d(0, 120%, 0);
@@ -4125,10 +4032,9 @@ so these styles cover a course index and a repeatable lesson
 }
 .school-chapter-card a:hover,
 .school-chapter-card a:focus-visible {
-  border-color: rgba(213, 184, 123, 0.5);
+  border-color: var(--color-signal-blue);
   outline: none;
-  transform: translateY(-4px);
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.32);
+  box-shadow: none;
 }
 .school-chapter-image {
   position: relative;
@@ -4157,8 +4063,9 @@ so these styles cover a course index and a repeatable lesson
   bottom: 0.9rem;
   left: 1.1rem;
   z-index: 2;
-  color: var(--gold-300);
-  font-family: var(--font-display), serif;
+  color: var(--color-ember-red);
+  font-family: var(--font-display), sans-serif;
+  font-weight: 300;
   font-size: 2.1rem;
   line-height: 1;
 }
@@ -4220,7 +4127,7 @@ so these styles cover a course index and a repeatable lesson
   width: 100%;
   transform: scaleX(0);
   transform-origin: 0 50%;
-  background: linear-gradient(90deg, var(--gold-500), var(--gold-300));
+  background: var(--color-ember-red);
 }
 .lesson-hero {
   display: grid;
@@ -4334,7 +4241,7 @@ so these styles cover a course index and a repeatable lesson
   height: 1.9rem;
   place-items: center;
   border: 1px solid var(--line-strong);
-  border-radius: 50%;
+  border-radius: 0;
   background: var(--bg);
   color: var(--accent);
   font-size: 0.6rem;
@@ -4395,7 +4302,7 @@ so these styles cover a course index and a repeatable lesson
   height: 2.4rem;
   place-items: center;
   border: 1px solid var(--line-strong);
-  border-radius: 50%;
+  border-radius: 0;
   color: var(--accent);
   font-size: 0.66rem;
   letter-spacing: 0.08em;
@@ -4460,23 +4367,23 @@ so the shape carries the idea. */
   align-items: center;
   justify-content: center;
   gap: 1rem;
-  border-radius: var(--radius-lg);
-  background: radial-gradient(circle at 50% 80%, #9d673b, #2d2119 65%);
+  border-radius: 0;
+  background: radial-gradient(circle at 50% 80%, #1a1a1a, #000 65%);
 }
 .lesson-deg-visual span {
   display: grid;
   width: 7.5rem;
   height: 10rem;
   place-items: center;
-  border: 1px solid #e3b66d;
-  border-radius: 1rem 1rem 3rem 3rem;
-  color: #f4e3c4;
-  font: 500 1.25rem var(--font-display);
+  border: 1px solid var(--color-signal-blue);
+  border-radius: 0;
+  color: var(--color-signal-blue);
+  font: 300 1.25rem var(--font-display);
 }
 .lesson-deg-visual i {
   width: 18%;
   height: 1px;
-  background: #e3b66d;
+  background: var(--color-signal-blue);
 }
 .lesson-deg figcaption {
   margin-top: 0.9rem;
@@ -4692,39 +4599,36 @@ always reachable ---- */
 but it read as fine print rather than the next step. Given weight,
 size and a full-strength rule so it holds its own as a call to action. */
 .text-link {
-  border-bottom-color: rgba(213, 184, 123, 0.85);
+  border-bottom-color: var(--color-signal-blue);
   padding-bottom: 0.4rem;
-  font-size: 0.82rem;
-  font-weight: 600;
-  letter-spacing: 0.16em;
+  font-size: var(--text-caption);
+  font-weight: 500;
+  letter-spacing: 0.02em;
   transition:
     color 0.25s ease,
     border-color 0.25s ease;
 }
 .text-link:hover,
 .text-link:focus-visible {
-  border-bottom-color: var(--gold-200);
-  color: var(--gold-200);
+  border-bottom-color: var(--color-signal-blue);
+  color: var(--color-signal-blue);
 }
 /* The scent-philosophy link closes a full-height story panel,
 so it carries
    more presence than an inline text link elsewhere on the page. */
 .home-story-copy .text-link {
   margin-top: 2rem;
-  border: 1px solid rgba(213, 184, 123, 0.55);
-  border-radius: 999px;
+  border: 1px solid var(--color-signal-blue);
+  border-radius: 0;
   padding: 0.85rem 1.4rem;
   transition:
-    background 0.3s var(--ease-premium),
-    border-color 0.3s ease,
-    color 0.3s ease,
-    transform 0.3s var(--ease-premium);
+    background 0.3s ease,
+    color 0.3s ease;
 }
 .home-story-copy .text-link:hover,
 .home-story-copy .text-link:focus-visible {
-  border-color: var(--gold-300);
-  background: rgba(213, 184, 123, 0.14);
-  transform: translateY(-2px);
+  background: var(--color-signal-blue);
+  color: var(--color-paper);
 }
 
 /* Mobile: the story images run to the screen edges.
@@ -4750,17 +4654,17 @@ so it carries
 .cine-root,
 .cinematic-home,
 .cinematic {
-  --cine-ink: #060608;
-  --cine-paper: #f3ede1;
-  --cine-paper-dim: rgba(243, 237, 225, 0.62);
-  --cine-paper-faint: rgba(243, 237, 225, 0.4);
-  --cine-line: rgba(243, 237, 225, 0.14);
-  --cine-gold: #d9b979;
+  --cine-ink: #000000;
+  --cine-paper: #ffffff;
+  --cine-paper-dim: rgba(255, 255, 255, 0.62);
+  --cine-paper-faint: rgba(255, 255, 255, 0.4);
+  --cine-line: rgba(255, 255, 255, 0.14);
+  --cine-gold: var(--color-ember-red);
   --cine-pad: max(6vw, 1.4rem);
   position: relative;
   background: var(--cine-ink);
   color: var(--cine-paper);
-  font-family: var(--font-sans), "Manrope", system-ui, sans-serif;
+  font-family: var(--font-sans), "Inter", system-ui, sans-serif;
 }
 
 /* ==========================================================================
@@ -4772,26 +4676,27 @@ so it carries
    than through the theme.
    ========================================================================== */
 .cinematic {
-  --bg: var(--ink-950);
-  --bg-raised: var(--ink-900);
-  --bg-band: var(--ink-850);
-  --fg: var(--bone-50);
-  --fg-muted: var(--bone-300);
-  --fg-subtle: var(--bone-400);
-  --line: rgba(247, 242, 232, 0.12);
-  --line-strong: rgba(247, 242, 232, 0.2);
-  --accent: var(--gold-400);
-  --accent-fg: var(--ink-950);
-  --accent-quiet: rgba(213, 184, 123, 0.16);
-  --shadow-soft: 0 24px 80px rgb(0 0 0 / 0.35);
-  --shadow-lift: 0 34px 100px rgb(0 0 0 / 0.45);
+  --bg: var(--color-obsidian);
+  --bg-raised: #0d0d0d;
+  --bg-band: #0d0d0d;
+  --fg: var(--color-paper);
+  --fg-muted: rgba(255, 255, 255, 0.7);
+  --fg-subtle: rgba(255, 255, 255, 0.5);
+  --line: rgba(255, 255, 255, 0.14);
+  --line-strong: rgba(255, 255, 255, 0.24);
+  --accent: var(--color-ember-red);
+  --accent-fg: var(--color-obsidian);
+  --accent-quiet: rgba(238, 58, 73, 0.14);
+  --shadow-soft: none;
+  --shadow-lift: none;
 }
 .cinematic .display-title,
 .cinematic .shop-hero-copy h1,
 .cinematic .school-hero h1,
 .cinematic .lesson-hero h1,
 .cinematic .school-final h2 {
-  font-family: var(--font-display), "Cormorant Garamond", serif;
+  font-family: var(--font-display), "Inter", sans-serif;
+  font-weight: 300;
   letter-spacing: -0.03em;
 }
 .cinematic .commerce-heading .display-title,
@@ -4867,16 +4772,14 @@ body:has(.cine-root) {
 }
 .cine-bar-top {
   top: 0;
-  box-shadow:
-    0 14px 34px rgba(0, 0, 0, 0.5),
-    inset 0 -1px 0 rgba(243, 237, 225, 0.08);
+  box-shadow: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 .cine-bar-bottom {
   bottom: 0;
   margin-top: -1px;
-  box-shadow:
-    0 -14px 34px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(243, 237, 225, 0.08);
+  box-shadow: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 /* ---- title card ---- */
@@ -4914,7 +4817,8 @@ body:has(.cine-root) {
   top: clamp(4rem, 12vh, 7rem);
   left: var(--cine-pad);
   z-index: 2;
-  font-family: var(--font-display), "Cormorant Garamond", serif;
+  font-family: var(--font-display), "Inter", sans-serif;
+  font-weight: 400;
   font-size: clamp(0.95rem, 2vw, 1.35rem);
   letter-spacing: 0.42em;
   text-transform: uppercase;
@@ -4928,11 +4832,11 @@ body:has(.cine-root) {
   max-width: 60rem;
 }
 .cine-hero-title {
-  font-family: var(--font-display), "Cormorant Garamond", serif;
-  font-weight: 500;
-  font-size: clamp(2.9rem, 10.5vw, 8.5rem);
-  line-height: 0.94;
-  letter-spacing: -0.02em;
+  font-family: var(--font-display), "Inter", sans-serif;
+  font-weight: 300;
+  font-size: var(--text-display-xl);
+  line-height: var(--leading-display-xl);
+  letter-spacing: var(--tracking-display-xl);
   text-wrap: balance;
   animation: cine-rise 1.7s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both;
 }
@@ -4949,11 +4853,6 @@ body:has(.cine-root) {
 .cine-frame-track {
   position: relative;
   height: 165vh;
-  /* Shadow lives here (static, painted once) instead of on .cine-frame,
-     which framer-motion scales/fades every scroll tick - a shadow this soft
-     on the animated element forced a repaint per frame instead of a pure
-     compositor re-composite. */
-  box-shadow: 0 40px 130px rgba(0, 0, 0, 0.7);
 }
 .cine-frame {
   position: sticky;
@@ -5015,16 +4914,18 @@ body:has(.cine-root) {
   max-width: 46rem;
 }
 .cine-frame-name {
-  font-family: var(--font-display), "Cormorant Garamond", serif;
-  font-weight: 500;
+  font-family: var(--font-display), "Inter", sans-serif;
+  font-weight: 300;
   font-size: clamp(2.8rem, 9.5vw, 7.5rem);
   line-height: 0.95;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.04em;
+  color: var(--cine-paper);
 }
 .cine-frame-line {
   margin-top: clamp(0.5rem, 1.5vh, 1rem);
-  font-family: var(--font-display), "Cormorant Garamond", serif;
-  font-style: italic;
+  font-family: var(--font-display), "Inter", sans-serif;
+  font-style: normal;
+  font-weight: 300;
   font-size: clamp(1.2rem, 3vw, 2rem);
   line-height: 1.2;
   padding-bottom: 0.15em;
@@ -5080,37 +4981,39 @@ body:has(.cine-root) {
   background: var(--cine-ink);
 }
 .cine-end-line {
-  font-family: var(--font-display), "Cormorant Garamond", serif;
+  font-family: var(--font-display), "Inter", sans-serif;
+  font-weight: 300;
   font-size: clamp(2.2rem, 7vw, 4.8rem);
   line-height: 1;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.04em;
+  color: var(--cine-paper);
 }
 .cine-end-cta {
   justify-self: center;
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
-  border: 1px solid var(--cine-gold);
-  border-radius: 999px;
+  border: 1px solid var(--color-signal-blue);
+  border-radius: 0;
   padding: 1rem 1.9rem;
-  background: var(--cine-gold);
-  color: #14100a;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
+  background: transparent;
+  color: var(--color-signal-blue);
+  font-size: var(--text-caption);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: none;
   transition:
-    transform 0.35s var(--ease-premium),
-    box-shadow 0.35s var(--ease-premium);
+    background 0.25s ease,
+    color 0.25s ease;
 }
 .cine-end-cta:hover,
 .cine-end-cta:focus-visible {
-  transform: translateY(-2px);
-  box-shadow: 0 20px 55px rgba(217, 185, 121, 0.28);
+  background: var(--color-signal-blue);
+  color: var(--color-paper);
   outline: none;
 }
 .cine-end-cta:active {
-  transform: scale(0.985);
+  opacity: 0.85;
 }
 
 /* ==========================================================================
@@ -5399,17 +5302,19 @@ body:has(.cine-root) {
 }
 .pdp-name {
   margin-top: clamp(0.6rem, 2vh, 1.1rem);
-  font-family: var(--font-display), "Cormorant Garamond", serif;
-  font-weight: 500;
+  font-family: var(--font-display), "Inter", sans-serif;
+  font-weight: 300;
   font-size: clamp(3rem, 10vw, 7.5rem);
   line-height: 0.94;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.04em;
+  color: var(--cine-paper);
   animation: cine-rise 1.4s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
 }
 .pdp-story {
   margin-top: clamp(0.8rem, 2vh, 1.4rem);
-  font-family: var(--font-display), "Cormorant Garamond", serif;
-  font-style: italic;
+  font-family: var(--font-display), "Inter", sans-serif;
+  font-style: normal;
+  font-weight: 300;
   font-size: clamp(1.15rem, 2.6vw, 1.9rem);
   line-height: 1.25;
   padding-bottom: 0.15em;
@@ -5467,11 +5372,12 @@ body:has(.cine-root) {
 }
 .pdp-buy-name {
   margin-top: 0.6rem;
-  font-family: var(--font-display), "Cormorant Garamond", serif;
-  font-weight: 500;
+  font-family: var(--font-display), "Inter", sans-serif;
+  font-weight: 300;
   font-size: clamp(2rem, 4vw, 3rem);
   line-height: 1;
   letter-spacing: -0.02em;
+  color: var(--cine-paper);
 }
 .pdp-buy-desc {
   margin-top: 1.1rem;
@@ -5568,7 +5474,7 @@ body:has(.cine-root) {
   padding: 0 var(--cine-pad) clamp(2rem, 6vh, 4rem);
 }
 .pdp-section-head .display-title {
-  font-family: var(--font-display), "Cormorant Garamond", serif;
+  font-family: var(--font-display), "Inter", sans-serif;
   font-size: clamp(2.6rem, 6.5vw, 5rem);
   letter-spacing: -0.03em;
 }
@@ -5578,7 +5484,7 @@ body:has(.cine-root) {
   color: var(--cine-paper-dim);
 }
 .product-page.cinematic .story-copy h3 {
-  font-family: var(--font-display), "Cormorant Garamond", serif;
+  font-family: var(--font-display), "Inter", sans-serif;
   font-size: clamp(1.8rem, 4vw, 2.8rem);
   letter-spacing: -0.02em;
 }
@@ -5612,7 +5518,7 @@ body:has(.cine-root) {
   color: var(--cine-paper-faint);
 }
 .pdp-wear .display-title {
-  font-family: var(--font-display), "Cormorant Garamond", serif;
+  font-family: var(--font-display), "Inter", sans-serif;
   font-size: clamp(2.2rem, 5vw, 3.6rem);
   letter-spacing: -0.03em;
 }
@@ -5637,7 +5543,7 @@ body:has(.cine-root) {
   position: absolute;
   left: 0;
   top: 0.1em;
-  font-family: var(--font-display), "Cormorant Garamond", serif;
+  font-family: var(--font-display), "Inter", sans-serif;
   font-size: 1.2rem;
   color: var(--cine-gold);
 }
@@ -5653,7 +5559,7 @@ body:has(.cine-root) {
   padding: clamp(4rem, 11vh, 8rem) var(--cine-pad);
 }
 .pdp-faq .display-title {
-  font-family: var(--font-display), "Cormorant Garamond", serif;
+  font-family: var(--font-display), "Inter", sans-serif;
   font-size: clamp(2.4rem, 6vw, 4.4rem);
   letter-spacing: -0.03em;
   margin-bottom: clamp(1.5rem, 4vh, 2.5rem);
@@ -5702,10 +5608,12 @@ body:has(.cine-root) {
   border-top: 1px solid var(--cine-line);
 }
 .pdp-close-line {
-  font-family: var(--font-display), "Cormorant Garamond", serif;
+  font-family: var(--font-display), "Inter", sans-serif;
+  font-weight: 300;
   font-size: clamp(2rem, 5.5vw, 4rem);
   line-height: 1.05;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.04em;
+  color: var(--cine-paper);
 }
 
 @media (min-width: 900px) {
@@ -5722,4 +5630,133 @@ body:has(.cine-root) {
   .pdp-name {
     animation: none;
   }
+}
+
+/* ---- redesign-blueprint additions: hero CTA, when-to-wear grid, PDP size
+   selector, closing CTA ---- */
+.cine-hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-top: clamp(1.6rem, 4vh, 2.5rem);
+  border: 1px solid var(--color-signal-blue);
+  padding: 0.95rem 1.7rem;
+  color: var(--color-signal-blue);
+  font-size: var(--text-caption);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  transition:
+    background 0.25s ease,
+    color 0.25s ease;
+}
+.cine-hero-cta:hover,
+.cine-hero-cta:focus-visible {
+  background: var(--color-signal-blue);
+  color: var(--color-paper);
+  outline: none;
+}
+
+.wear-guide {
+  max-width: 1500px;
+  margin-inline: auto;
+  padding: var(--space-section) 2rem;
+}
+.wear-guide-head {
+  margin-bottom: 3rem;
+}
+.wear-guide-head h2 {
+  margin-top: 1rem;
+  font-size: var(--text-display);
+  font-weight: 300;
+}
+.wear-guide-head p:not(.eyebrow) {
+  margin-top: 1rem;
+  max-width: 40rem;
+  color: var(--fg-muted);
+  line-height: 1.7;
+}
+.wear-guide-scroll {
+  overflow-x: auto;
+}
+.wear-guide table {
+  width: 100%;
+  min-width: 640px;
+  border-collapse: collapse;
+}
+.wear-guide th,
+.wear-guide td {
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--line);
+  text-align: center;
+}
+.wear-guide thead th {
+  font-size: var(--text-caption);
+  letter-spacing: 0.02em;
+  font-weight: 500;
+}
+.wear-guide tbody th {
+  text-align: left;
+  color: var(--fg-muted);
+  font-weight: 400;
+}
+.wear-guide td span {
+  color: var(--accent);
+  letter-spacing: 0.15em;
+}
+.wear-guide thead a:hover {
+  color: var(--color-signal-blue);
+}
+
+.pdp-sizes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 0.6rem;
+  margin-top: clamp(1.6rem, 4vh, 2.4rem);
+}
+.pdp-size {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  border: 1px solid var(--cine-line);
+  background: transparent;
+  padding: 0.85rem 1rem;
+  color: var(--cine-paper-dim);
+  text-align: left;
+}
+.pdp-size.active {
+  border-color: var(--color-signal-blue);
+  color: var(--cine-paper);
+}
+.pdp-size span {
+  font-size: 0.95rem;
+}
+.pdp-size small {
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--cine-paper-faint);
+}
+.pdp-size:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.home-final-cta {
+  max-width: 1500px;
+  margin-inline: auto;
+  padding: var(--space-section) 2rem;
+  text-align: center;
+  border-top: 1px solid var(--line);
+}
+.home-final-cta h2 {
+  font-size: var(--text-display);
+  font-weight: 300;
+}
+.home-final-cta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2.5rem;
 }
