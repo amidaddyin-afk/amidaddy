@@ -10,9 +10,16 @@ import {
 import { includedGstPaise } from "../src/lib/money.ts";
 import { isMatchingCapturedPayment } from "../src/lib/razorpay.ts";
 
-test("shipping is charged below the post-discount threshold", () => {
+test("shipping is charged below the pre-coupon subtotal threshold", () => {
   assert.equal(shippingPaise(59_899), 9_900);
   assert.equal(shippingPaise(59_900), 0);
+});
+
+test("a coupon discount cannot cost an order its free shipping", () => {
+  // Pre-coupon subtotal clears the threshold; a coupon that drops the paid
+  // merchandise total below it must not bring shipping back.
+  const subtotalPaise = 60_000;
+  assert.equal(shippingPaise(subtotalPaise), 0);
 });
 
 test("coupon calculations enforce maximum discount and subtotal", () => {

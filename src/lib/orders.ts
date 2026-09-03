@@ -337,8 +337,10 @@ async function calculateCheckoutPricing(
     free_shipping_above_paise: DEFAULT_FREE_SHIPPING_PAISE,
   };
   const discountedMerchandise = subtotalPaise - discountPaise;
+  // Free-shipping eligibility uses the pre-coupon subtotal: a coupon should
+  // never cost the customer their already-earned free shipping.
   const orderShippingPaise = shippingPaise(
-    discountedMerchandise,
+    subtotalPaise,
     Number(settings.shipping_fee_paise),
     Math.min(
       Number(settings.free_shipping_above_paise),

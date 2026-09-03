@@ -2,11 +2,14 @@ export const DEFAULT_SHIPPING_FEE_PAISE = 9_900;
 export const DEFAULT_FREE_SHIPPING_PAISE = 59_900;
 
 export function shippingPaise(
-  discountedMerchandisePaise: number,
+  // Eligibility is checked against the cart's value before any coupon
+  // discount, so applying a coupon can never push an order that qualified
+  // for free shipping back into a delivery charge.
+  subtotalPaise: number,
   feePaise = DEFAULT_SHIPPING_FEE_PAISE,
   freeAbovePaise = DEFAULT_FREE_SHIPPING_PAISE,
 ) {
-  return discountedMerchandisePaise >= freeAbovePaise ? 0 : feePaise;
+  return subtotalPaise >= freeAbovePaise ? 0 : feePaise;
 }
 
 export function couponDiscountPaise(
