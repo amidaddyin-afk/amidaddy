@@ -665,6 +665,15 @@ main {
      flash, but leaves no transform behind. */
   animation: page-enter 0.55s var(--ease-premium) backwards;
 }
+/* The cinematic homepage mounts framer-motion useScroll() targets (one per
+   CinematicSequence panel) as children of this <main> on first paint. A
+   transform on an ancestor at that moment throws off useScroll's initial
+   getBoundingClientRect offset math (framer-motion warns about this in the
+   console). Fade this page in with opacity only, so no ancestor transform is
+   ever active while those targets mount. */
+main.cinematic-home {
+  animation: page-fade 0.55s var(--ease-premium) backwards;
+}
 @keyframes page-enter {
   from {
     opacity: 0;
@@ -677,6 +686,14 @@ main {
        block for position: fixed and pin the floating buy bar inside the page
        flow instead of the viewport. */
     transform: none;
+  }
+}
+@keyframes page-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 .display-title,
@@ -4932,6 +4949,11 @@ body:has(.cine-root) {
 .cine-frame-track {
   position: relative;
   height: 165vh;
+  /* Shadow lives here (static, painted once) instead of on .cine-frame,
+     which framer-motion scales/fades every scroll tick - a shadow this soft
+     on the animated element forced a repaint per frame instead of a pure
+     compositor re-composite. */
+  box-shadow: 0 40px 130px rgba(0, 0, 0, 0.7);
 }
 .cine-frame {
   position: sticky;
@@ -4941,7 +4963,7 @@ body:has(.cine-root) {
   display: grid;
   align-items: end;
   transform-origin: 50% 60%;
-  box-shadow: 0 40px 130px rgba(0, 0, 0, 0.7);
+  will-change: transform, opacity;
 }
 /* Campaign frame behind - dimmed and slightly cooled so it reads as the room,
    not the subject. */
