@@ -173,7 +173,7 @@ const policies: Record<PolicySlug, Policy> = {
       {
         heading: "Products",
         bullets: [
-          "We sell Amidaddy fragrance products, including Old Love, Billionaire, Coldwar and Heavenly, in available formats and sets.",
+          "We sell Amidaddy fragrance products, including Old Love, Billionaire, Cold War and Heavenly, in available formats and sets.",
           "Images are representative. Packaging or liquid shade may vary slightly because of screens, lighting or batches without affecting authenticity or quality.",
           "Country of origin: India. Products, formulations, packaging and prices may be updated or discontinued.",
         ],

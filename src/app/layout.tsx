@@ -5,7 +5,7 @@ import { CartProvider } from "@/context/CartContext";
 import Navbar from "@/components/Navbar";
 import CartSidebar from "@/components/CartSidebar";
 import AnnouncementBar from "@/components/AnnouncementBar";
-import PerfumeSprayCursor from "@/components/PerfumeSprayCursor";
+
 import Footer from "@/components/Footer";
 
 // Single family for the whole system (the reference's Aeonik substitute).
@@ -56,7 +56,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${display.variable} ${sans.variable}`}>
-        <PerfumeSprayCursor />
         <CartProvider>
           <div data-surface="chrome">
             <AnnouncementBar />

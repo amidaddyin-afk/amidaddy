@@ -131,6 +131,13 @@ export default function CartSidebar() {
                     <p className="text-sm tracking-widest uppercase">
                       Your cart is empty
                     </p>
+                    <a
+                      href="/shop"
+                      onClick={closeCart}
+                      className="text-subtle mt-3 text-xs underline underline-offset-4"
+                    >
+                      Browse the four signatures
+                    </a>
                   </motion.div>
                 ) : (
                   items.map((item) => (
@@ -236,7 +243,9 @@ export default function CartSidebar() {
                         ? `Add ${formatInr(freeShippingRemainingPaise)} more for free delivery`
                         : "You unlocked free delivery"}
                     </span>
-                    <span className="text-accent">₹599</span>
+                    <span className="text-accent">
+                      {formatInr(DEFAULT_FREE_SHIPPING_PAISE)}
+                    </span>
                   </div>
                   <div className="bg-raised mt-2 h-1 overflow-hidden rounded-full">
                     <div

@@ -1,94 +1,57 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
-import {
-  ArrowUpRight,
-  Gift,
-  ShieldCheck,
-  Sparkles,
-  Star,
-  Truck,
-} from "lucide-react";
+import { ArrowUpRight, Truck, ShieldCheck } from "lucide-react";
 import Photo from "@/components/Photo";
 import ProductCard from "@/components/ProductCard";
-import CinematicSequence, {
-  type CinePanel,
-} from "@/components/CinematicSequence";
 import ScentFinder from "@/components/ScentFinder";
-import WearGuide from "@/components/WearGuide";
+import Reveal from "@/components/Reveal";
 import { listCatalogProducts } from "@/lib/catalog";
+import {
+  DEFAULT_FREE_SHIPPING_PAISE,
+  DEFAULT_SHIPPING_FEE_PAISE,
+} from "@/lib/commerce";
 
 export const metadata: Metadata = {
   description:
-    "Amidaddy Perfumes: four unisex Eau de Parfum signatures in 20ml and 100ml, plus a complete discovery pack. Shop fragrances built around mood, memory and presence.",
+    "Make it personal. Find a fragrance that feels like you: four Amidaddy signatures in 20ml and 100ml.",
   alternates: { canonical: "/" },
 };
 
-const reviews = [
-  {
-    quote:
-      "The presentation feels premium, and Old Love stays warm and memorable for hours.",
-    name: "Verified customer",
-  },
-  {
-    quote:
-      "The 20ml set made it easy to try every fragrance before choosing my full bottle.",
-    name: "Verified customer",
-  },
-  {
-    quote:
-      "Billionaire has become my evening fragrance. The bottle also looks beautiful on my shelf.",
-    name: "Verified customer",
-  },
-];
-
 /**
- * Cinematic script for the pinned signature sequence. Fixed order per
- * fragrance. The mood line is not set here — it is read from `product.story`
- * when the panels are built, so the homepage sequence and the product page
- * hero always say the same thing. `objectPosition` / `spot` bias each frame so
- * the bottle is the lit subject and the campaign faces sit back as atmosphere.
+ * Per-fragrance mood line and hero story image for the homepage editorial rail.
+ * Billionaire, Cold War and Old Love use the launch campaign artwork. Heavenly
+ * has no campaign art yet, so it stays on its own product photograph rather than
+ * a recoloured stand-in.
  */
-const SCRIPT: Record<
+const STORY: Record<
   string,
-  Pick<
-    CinePanel,
-    "notes" | "image" | "objectPosition" | "objectPositionMobile" | "spot"
-  >
+  { mood: string; desktop: string; mobile: string; art: boolean }
 > = {
-  "old-love": {
-    notes: ["Saffron", "Amber", "Resin"],
-    // Red-lit silhouette, the bottle glowing between the two figures.
-    image: "/gallery/old-love/01.webp",
-    objectPosition: "50% 46%",
-    objectPositionMobile: "50% 46%",
-    spot: "50% 52%",
+  billionaire: {
+    mood: "Quiet confidence.",
+    desktop: "/campaign/billionaire-story-desktop.png",
+    mobile: "/campaign/billionaire-story-mobile.webp",
+    art: true,
   },
   coldwar: {
-    notes: ["Bright fruit", "Herbs", "Woods"],
-    // Bottle held forward, filling the frame, the face behind it.
-    image: "/gallery/coldwar/02.webp",
-    objectPosition: "42% 40%",
-    objectPositionMobile: "44% 40%",
-    spot: "40% 42%",
+    mood: "Keep your cool.",
+    desktop: "/campaign/cold-war-story-desktop.png",
+    mobile: "/campaign/cold-war-story-mobile.webp",
+    art: true,
+  },
+  "old-love": {
+    mood: "Stay a little closer.",
+    desktop: "/campaign/old-love-story-desktop.webp",
+    mobile: "/campaign/old-love-story-desktop.webp",
+    art: true,
   },
   heavenly: {
-    notes: ["White floral", "Vanilla", "Musk"],
-    image: "/gallery/heavenly/02.webp",
-    objectPosition: "46% 44%",
-    objectPositionMobile: "48% 44%",
-    spot: "44% 46%",
-  },
-  billionaire: {
-    notes: ["Whiskey", "Spice", "Dark woods"],
-    // The pair, a black bottle held between them.
-    image: "/gallery/billionaire/04.webp",
-    objectPosition: "50% 56%",
-    objectPositionMobile: "50% 62%",
-    spot: "50% 66%",
+    mood: "Leave a softer impression.",
+    desktop: "/products/detail/heavenly/hero.webp",
+    mobile: "/products/detail/heavenly/hero.webp",
+    art: false,
   },
 };
-const SEQUENCE_ORDER = ["old-love", "coldwar", "heavenly", "billionaire"];
 
 export default async function Home() {
   const { products } = await listCatalogProducts({
@@ -97,308 +60,311 @@ export default async function Home() {
     sort: "newest",
     inStock: "true",
   });
-  const signatures = products.filter(
-    (product) => product.collection === "unisex",
-  );
-  const combo = products.find(
-    (product) => product.slug === "signature-combo-20ml",
-  );
-  const bySlug = new Map(signatures.map((product) => [product.slug, product]));
-  const cinePanels: CinePanel[] = SEQUENCE_ORDER.filter((slug) =>
-    bySlug.has(slug),
-  ).map((slug) => {
-    const product = bySlug.get(slug)!;
-    const script = SCRIPT[slug];
-    return {
-      slug,
-      name: product.name,
-      // Same mood line the product page hero shows, so the two never disagree.
-      line: product.story,
-      alt: `${product.name}, ${product.profile} ${product.concentration}, photographed for Amidaddy Perfumes`,
-      ...script,
-    };
-  });
-
+  const signatures = products.filter((p) => p.collection === "unisex");
+  const combo = products.find((p) => p.slug === "signature-combo-20ml");
   const siteUrl =
     process.env.NEXT_PUBLIC_APP_URL ??
     process.env.NEXT_PUBLIC_SITE_URL ??
     "https://amidaddy.in";
-  const organizationJsonLd = JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    name: "Amidaddy Perfumes",
-    url: siteUrl,
-    logo: `${siteUrl}/og.png`,
-  }).replace(/</g, "\\u003c");
-
+  const shippingFee = Math.round(DEFAULT_SHIPPING_FEE_PAISE / 100);
+  const freeShippingThreshold = Math.round(DEFAULT_FREE_SHIPPING_PAISE / 100);
   return (
-    <main data-surface="story" className="storefront-home cinematic-home">
+    <main data-surface="story" className="storefront-home house-home">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: organizationJsonLd }}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            name: "Amidaddy Perfumes",
+            url: siteUrl,
+            logo: `${siteUrl}/og.png`,
+          }).replace(/</g, "\\u003c"),
+        }}
       />
 
-      {/* Film stage: the letterbox bars are sticky here, so they frame the
-          title card and the sequence and then scroll away above the shop. */}
-      <div className="cine-stage">
-        <span className="cine-bar cine-bar-top" aria-hidden="true" />
-
-        <section className="cine-hero">
-          <div className="cine-hero-media">
-            <Photo
-              src="/products/detail/billionaire/hero.webp"
-              alt="Amidaddy Perfumes Billionaire, a black Eau de Parfum bottle on a glossy black surface"
-              fill
-              priority
-              sizes="100vw"
-              className="object-cover"
-            />
-          </div>
-          <div className="cine-hero-veil" />
-          <p className="cine-wordmark">Amidaddy</p>
-          <div className="cine-hero-copy">
-            <h1 className="cine-hero-title chrome-text">Amidaddy</h1>
-            <p className="cine-hero-sub">
-              Four unisex signatures, composed around mood, memory and presence.
-            </p>
-            <Link href="/#shop-100ml" className="cine-hero-cta">
-              Explore the four signatures <ArrowUpRight size={15} />
+      {/* Hero: full campaign poster, shown whole, with the live CTA bar below. */}
+      <section className="house-hero">
+        <div className="house-hero-image">
+          <Photo
+            src="/campaign/hero-desktop.png"
+            alt="Amidaddy campaign: Old Love and Heavenly held by the models"
+            width={1672}
+            height={941}
+            priority
+            sizes="100vw"
+            className="house-hero-photo house-hero-photo--desktop"
+          />
+          <Photo
+            src="/campaign/hero-mobile.png"
+            alt="Amidaddy campaign: Old Love and Heavenly held by the models"
+            width={941}
+            height={1672}
+            priority
+            sizes="100vw"
+            className="house-hero-photo house-hero-photo--mobile"
+          />
+        </div>
+        <div className="house-hero-copy">
+          <h1>Make it personal.</h1>
+          <p>Find a fragrance that feels like you.</p>
+          <div className="house-hero-actions">
+            <Link href="#shop-100ml" className="lux-button">
+              Shop fragrances <ArrowUpRight size={18} />
+            </Link>
+            <Link
+              href="#scent-finder"
+              className="text-link house-hero-secondary"
+            >
+              Not sure yet? Take the scent finder <ArrowUpRight size={16} />
             </Link>
           </div>
-        </section>
-
-        <CinematicSequence panels={cinePanels} />
-
-        <span className="cine-bar cine-bar-bottom" aria-hidden="true" />
-      </div>
-
-      <section className="home-trust-strip" aria-label="Shopping benefits">
-        <article>
-          <Truck size={18} />
-          <div>
-            <h2>Complimentary delivery</h2>
-            <p>Free shipping on orders of &#8377;599 or more.</p>
-          </div>
-        </article>
-        <article>
-          <Sparkles size={18} />
-          <div>
-            <h2>Four unisex signatures</h2>
-            <p>Composed around mood, memory and presence.</p>
-          </div>
-        </article>
-        <article>
-          <ShieldCheck size={18} />
-          <div>
-            <h2>Secure Razorpay checkout</h2>
-            <p>Protected payments with GST-inclusive pricing.</p>
-          </div>
-        </article>
+        </div>
       </section>
 
+      <div className="house-benefits">
+        <span>Four unisex signatures</span>
+        <span>
+          <Truck size={16} /> Free delivery from ₹{freeShippingThreshold}
+        </span>
+        <span>
+          <ShieldCheck size={16} /> Secure payments
+        </span>
+      </div>
+
+      {/* Shop grid: purchasable choices immediately after the hero. */}
       <section className="home-collection" id="shop-100ml">
-        <div className="commerce-heading">
-          <div>
-            <p className="eyebrow">The signature collection</p>
-            <h2 className="display-title">Find your signature.</h2>
-          </div>
-          <div>
-            <p>Four moods composed for every side of your presence.</p>
-            <Link href="/shop" className="text-link">
-              Shop all fragrances <ArrowUpRight size={15} />
-            </Link>
-          </div>
+        <div className="house-heading">
+          <h2>Four signatures. Find yours.</h2>
+          <p>
+            Every one is unisex. Pick the mood that fits, choose 20ml or 100ml,
+            and add it here.
+          </p>
         </div>
         <div className="product-grid home-product-grid">
           {signatures.map((product, index) => (
             <ProductCard
-              key={`100ml-${product.id}`}
+              key={product.id}
               product={product}
               index={index}
               initialSize="100ml"
-              lockSize
             />
           ))}
         </div>
+        {!signatures.length && (
+          <p>Our collection is being refreshed. Please check back shortly.</p>
+        )}
       </section>
 
-      {combo && (
-        <section className="home-combo" id="discovery-set">
-          <div className="home-combo-media">
-            <Image
-              src="/products/combos/20ml/01.webp"
-              alt="Amidaddy Perfumes Pack of 4 gift set with four 20 ml Eau de Parfum bottles"
-              fill
-              sizes="(max-width: 900px) 100vw, 58vw"
-              className="object-contain"
-            />
-          </div>
-          <div className="home-combo-copy">
-            <h2 className="display-title">Four signatures. One set.</h2>
-            <p className="combo-lead">
-              Old Love, Heavenly, Billionaire and Cold War together in four
-              travel-ready 20ml bottles.
-            </p>
-            <div className="combo-price">
-              <strong>&#8377;699</strong>
-              <span>MRP &#8377;996</span>
-            </div>
-            <p className="tax-copy">Inclusive of all taxes</p>
-            <Link href={`/products/${combo.slug}`} className="lux-button">
-              Shop the Pack of 4 <ArrowUpRight size={16} />
-            </Link>
-          </div>
-        </section>
-      )}
-
-      <section className="home-collection home-collection-20" id="shop-20ml">
-        <div className="commerce-heading">
-          <div>
-            <h2 className="display-title">The 20ml collection.</h2>
-          </div>
-          <p>Same composition. A considered format for travel and discovery.</p>
-        </div>
-        <div className="product-grid home-product-grid">
-          {signatures.map((product, index) => (
-            <ProductCard
-              key={`20ml-${product.id}`}
-              product={product}
-              index={index}
-              initialSize="20ml"
-              lockSize
-            />
-          ))}
+      {/* Four signature stories: mood, notes and a route back to the SKU. */}
+      <section className="house-stories" aria-labelledby="house-stories-title">
+        <h2 id="house-stories-title" className="house-stories-title">
+          A closer look at each one.
+        </h2>
+        <div className="house-stories-rail">
+          {signatures.map((product, index) => {
+            const story = STORY[product.slug];
+            if (!story) return null;
+            return (
+              <Reveal
+                key={product.id}
+                as="article"
+                index={index}
+                className="house-story"
+              >
+                <div className="house-story-media">
+                  <Photo
+                    src={story.desktop}
+                    alt={`${product.name} ${product.concentration}`}
+                    fill
+                    sizes="(max-width: 900px) 92vw, 46vw"
+                    className="house-story-photo house-story-photo--desktop object-cover"
+                  />
+                  <Photo
+                    src={story.mobile}
+                    alt={`${product.name} ${product.concentration}`}
+                    fill
+                    sizes="(max-width: 900px) 92vw, 46vw"
+                    className="house-story-photo house-story-photo--mobile object-cover"
+                  />
+                </div>
+                <div className="house-story-copy">
+                  <p className="house-story-mood">{story.mood}</p>
+                  <h3>{product.name}</h3>
+                  <p className="house-story-notes">{product.notes}</p>
+                  <p className="house-story-line">
+                    Best for {product.occasion.toLowerCase()}.
+                  </p>
+                  <Link
+                    href={`/products/${product.slug}?size=100ml`}
+                    className="text-link"
+                  >
+                    Explore {product.name} <ArrowUpRight size={16} />
+                  </Link>
+                  {!story.art && (
+                    <p className="house-story-pending">
+                      Campaign photography for Heavenly is in production.
+                    </p>
+                  )}
+                </div>
+              </Reveal>
+            );
+          })}
         </div>
       </section>
 
-      <WearGuide />
-
-      <section className="home-story" id="story">
-        <div className="home-story-media">
-          <Image
-            src="/curated/product-detail-1.webp"
-            alt="Amidaddy Perfumes fragrance bottles arranged in warm studio light"
+      {/* Composition: intent, not a purity claim. */}
+      <section className="house-composition" id="story">
+        <div className="house-composition-media">
+          <Photo
+            src="/campaign/composition-desktop.webp"
+            alt=""
             fill
             sizes="(max-width: 900px) 100vw, 50vw"
-            className="object-cover"
+            className="house-composition-photo house-composition-photo--desktop object-cover"
+          />
+          <Photo
+            src="/campaign/composition-mobile.webp"
+            alt=""
+            fill
+            sizes="100vw"
+            className="house-composition-photo house-composition-photo--mobile object-cover"
           />
         </div>
-        <div className="home-story-copy">
-          <p className="eyebrow">The house of Amidaddy</p>
-          <h2 className="display-title">
-            Perfume should reveal you, not introduce you.
-          </h2>
+        <div className="house-composition-copy">
+          <h2>Every detail, considered.</h2>
           <p>
-            We compose familiar woods, florals, amber and clean musks into
-            signatures shaped around mood, memory and presence.
+            Our attention goes to what is in the bottle and how it develops on
+            skin, from the first spray to the trail it leaves.
           </p>
-          <Link href="/scent-school" className="text-link">
-            Discover our scent philosophy <ArrowUpRight size={15} />
+          <p>
+            Amidaddy is built around original scent identities. Explore the
+            notes, wear them, and decide what feels like you.
+          </p>
+          <Link className="text-link" href="/our-approach">
+            Inside the composition <ArrowUpRight size={16} />
           </Link>
         </div>
       </section>
 
-      {/* Scent School already links to #scent-finder; the quiz existed but was
-          never mounted, so that link went nowhere. */}
+      {/* Size story: real Billionaire sizes, not a bundle claim. */}
+      <section className="house-format" id="shop-20ml">
+        <div className="house-format-media">
+          <Photo
+            src="/campaign/billionaire-duo-desktop.webp"
+            alt="Billionaire 100ml and 20ml side by side"
+            fill
+            sizes="(max-width: 760px) 100vw, 52vw"
+            className="house-format-photo house-format-photo--desktop object-cover"
+          />
+          <Photo
+            src="/campaign/billionaire-duo-mobile.png"
+            alt="Billionaire 100ml and 20ml side by side"
+            fill
+            sizes="100vw"
+            className="house-format-photo house-format-photo--mobile object-cover"
+          />
+        </div>
+        <div className="house-format-copy">
+          <h2>At home. On the move.</h2>
+          <p>
+            The same composition in two sizes. Keep 20ml close when you travel;
+            make 100ml part of the everyday.
+          </p>
+          <Link href="/shop#20ml" className="lux-button">
+            Shop travel sizes <ArrowUpRight size={16} />
+          </Link>
+        </div>
+      </section>
+
+      {combo && (
+        <section className="house-discovery" id="discovery-set">
+          <div className="house-discovery-copy">
+            <h2>
+              Meet all four.
+              <br />
+              Let your skin decide.
+            </h2>
+            <p>
+              Billionaire, Cold War, Heavenly and Old Love. Four 20ml
+              fragrances, ready to discover at your own pace.
+            </p>
+            <Link href={`/products/${combo.slug}`} className="text-link">
+              See what is included <ArrowUpRight size={16} />
+            </Link>
+          </div>
+          <ProductCard product={combo} initialSize="20ml" />
+        </section>
+      )}
+
       <ScentFinder products={signatures} />
 
-      <section className="home-reviews">
-        <div className="commerce-heading">
-          <div>
-            <h2 className="display-title">What customers are saying.</h2>
-          </div>
-        </div>
-        <div className="review-grid">
-          {reviews.map((review) => (
-            <article key={review.quote}>
-              <div className="review-stars" aria-label="Five stars">
-                {Array.from({ length: 5 }, (_, index) => (
-                  <Star key={index} />
-                ))}
-              </div>
-              <blockquote>&ldquo;{review.quote}&rdquo;</blockquote>
-              <p>{review.name}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="home-services">
-        <article>
-          <Gift />
-          <h3>Made to gift</h3>
-          <p>Premium presentation for moments worth remembering.</p>
-        </article>
-        <article>
-          <Truck />
-          <h3>India-wide delivery</h3>
-          <p>&#8377;99 delivery, complimentary above &#8377;599.</p>
-        </article>
-        <article>
-          <ShieldCheck />
-          <h3>Purchase securely</h3>
-          <p>GST-inclusive prices and protected Razorpay payments.</p>
-        </article>
-      </section>
-
-      <section className="home-faq">
-        <div>
-          <h2 className="display-title">Before it becomes yours.</h2>
-        </div>
+      <section className="home-faq house-faq">
+        <h2>Before it becomes yours.</h2>
         <div>
           {[
             [
-              "Are all fragrances unisex?",
-              "Yes. Every composition is presented by character and mood rather than gender.",
+              "Are these original fragrances?",
+              "Amidaddy creates its own scent identities. Explore each composition's notes to find the one that feels right for you.",
             ],
             [
-              "What is the difference between 20ml and 100ml?",
-              "The fragrance is the same. Choose 20ml for discovery and travel, or 100ml for everyday wear.",
+              "Are they unisex?",
+              "Yes. Choose by the notes and mood you enjoy.",
             ],
             [
-              "When is delivery free?",
-              "Delivery is complimentary when your cart reaches ₹599. Orders below that include a ₹99 delivery charge.",
+              "Is 20ml the same fragrance as 100ml?",
+              "Yes. Both sizes carry the same composition; choose the format that fits your routine.",
             ],
             [
-              "How can I track my order?",
-              "Sign in to your account to view live order status and order history.",
+              "How long will it last?",
+              "Wear varies with skin, weather and application. Check the individual fragrance page for its verified wear information.",
             ],
             [
-              "What does Eau de Parfum mean?",
-              "It is a concentration level, richer and longer-lasting than Eau de Toilette. Every Amidaddy signature is Eau de Parfum.",
+              "What comes in a set?",
+              "The discovery set contains four 20ml fragrances. The full collection contains four 100ml fragrances. Each includes Billionaire, Cold War, Heavenly and Old Love.",
             ],
             [
-              "How do I apply it so it lasts?",
-              "Spray onto pulse points, the wrists, neck and behind the ears, from 15 to 20 cm. Do not rub. Reapply lightly after a few hours if you want the trail back.",
+              "What does delivery cost?",
+              `Delivery is ₹${shippingFee}, with complimentary delivery on orders of ₹${freeShippingThreshold} or more. See our shipping policy for details.`,
             ],
             [
-              "How should I store it?",
-              "Upright, somewhere cool and dark. Keep it away from direct sun, radiators and bathroom humidity, which wear a fragrance down over time.",
+              "Can I return it?",
+              "Read our returns policy for eligibility, time limits and how to request help.",
             ],
-            [
-              "Can I return a fragrance?",
-              "Sealed, unused bottles can be raised for a return or replacement from your account within the window in our shipping and returns policy. Damage or wrong-item claims are settled fastest with an unboxing video.",
-            ],
-          ].map(([question, answer]) => (
-            <details key={question}>
+          ].map(([q, a]) => (
+            <details key={q}>
               <summary>
-                {question}
+                {q}
                 <span>+</span>
               </summary>
-              <p>{answer}</p>
+              <p>{a}</p>
             </details>
           ))}
         </div>
       </section>
 
-      <section className="home-final-cta">
-        <h2 className="display-title">Which feeling will you wear today?</h2>
-        <div className="home-final-cta-actions">
-          <Link href="/#scent-finder" className="lux-button">
-            Take the scent finder
-          </Link>
-          <Link href="/shop" className="text-link">
-            Shop all fragrances <ArrowUpRight size={15} />
+      {/* Closing CTA: back to the purchasable grid, cart intact. */}
+      <section className="house-close">
+        <div className="house-close-media">
+          <Photo
+            src="/campaign/cta-desktop.webp"
+            alt=""
+            fill
+            sizes="(max-width: 900px) 100vw, 50vw"
+            className="house-close-photo house-close-photo--desktop object-cover"
+          />
+          <Photo
+            src="/campaign/cta-mobile.webp"
+            alt=""
+            fill
+            sizes="100vw"
+            className="house-close-photo house-close-photo--mobile object-cover"
+          />
+        </div>
+        <div className="house-close-copy">
+          <h2>Your next signature starts here.</h2>
+          <Link href="#shop-100ml" className="lux-button">
+            Choose your fragrance <ArrowUpRight size={18} />
           </Link>
         </div>
       </section>

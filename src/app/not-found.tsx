@@ -1,18 +1,23 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
+import Photo from "@/components/Photo";
 
 export default function NotFound() {
   return (
-    <main data-surface="commerce" className="system-state">
+    <main data-surface="commerce" className="system-state not-found cinematic">
       <div>
-        <p className="eyebrow">404 · Scent not found</p>
-        <h1>This trail has faded.</h1>
-        <p>
-          The page you followed is no longer here. The signature collection is
-          still waiting.
-        </p>
+        <div className="not-found-media">
+          <Photo
+            src="/gallery/coldwar/06.webp"
+            alt="Amidaddy Cold War fragrance photographed for a campaign"
+            fill
+            sizes="(max-width: 640px) 100vw, 620px"
+            className="object-cover"
+          />
+        </div>
+        <h1>This page has moved on.</h1>
         <Link href="/shop" className="lux-button">
-          Return to the collection <ArrowUpRight size={15} />
+          Back to the collection <ArrowUpRight size={15} />
         </Link>
       </div>
     </main>

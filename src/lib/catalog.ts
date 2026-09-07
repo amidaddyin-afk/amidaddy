@@ -55,8 +55,11 @@ function mapProduct(product: Record<string, unknown>): Product {
   const slug = String(product.slug);
   const fallback = PRODUCTS.find((item) => item.slug === slug);
   // The approved signature compositions in the catalog are authoritative.
-  // This also prevents stale deployed database rows from reaching product pages.
+  // This also prevents stale deployed database rows from reaching product pages
+  // - including the vetted name, mood, story and occasion copy, which a stale
+  // row (e.g. one still calling Billionaire "Billionaire Noir") could override.
   const useApprovedSignatureNotes = fallback?.collection === "unisex";
+  const approved = useApprovedSignatureNotes ? fallback : undefined;
   const topNotes = useApprovedSignatureNotes
     ? fallback.topNotes
     : ((product.top_notes as string[] | null) ?? fallback?.topNotes ?? []);
@@ -104,7 +107,7 @@ function mapProduct(product: Record<string, unknown>): Product {
   return {
     id: String(product.id),
     slug,
-    name: String(product.name),
+    name: approved?.name ?? String(product.name),
     image: defaultImages[0] ?? fallback?.image ?? "/curated/billionaire.webp",
     images: productImages,
     variantImages,
@@ -121,11 +124,12 @@ function mapProduct(product: Record<string, unknown>): Product {
     notes: useApprovedSignatureNotes
       ? deriveNotes(topNotes, heartNotes, baseNotes)
       : (fallback?.notes ?? deriveNotes(topNotes, heartNotes, baseNotes)),
-    longevity: String(product.longevity ?? ""),
-    mood: String(product.mood ?? ""),
-    occasion: String(product.occasion ?? ""),
+    longevity: approved?.longevity ?? String(product.longevity ?? ""),
+    mood: approved?.mood ?? String(product.mood ?? ""),
+    occasion: approved?.occasion ?? String(product.occasion ?? ""),
+    intensity: approved?.intensity ?? undefined,
     description: String(product.description),
-    story: String(product.story ?? product.description),
+    story: approved?.story ?? String(product.story ?? product.description),
     badge: Boolean(product.best_seller) ? "Bestseller" : undefined,
     isNew: Boolean(product.is_new),
     featured: Boolean(product.featured),

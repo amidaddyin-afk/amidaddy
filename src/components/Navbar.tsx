@@ -48,10 +48,9 @@ export default function Navbar() {
             <Menu />
           </button>
           <nav className="desktop-nav">
-            <Link href="/shop">Shop all</Link>
-            <Link href="/#shop-100ml">100ml</Link>
-            <Link href="/#shop-20ml">20ml</Link>
-            <Link href="/#discovery-set">Pack of 4</Link>
+            <Link href="/shop">Fragrances</Link>
+            <Link href="/#discovery-set">Discovery sets</Link>
+            <Link href="/our-approach">Our approach</Link>
             <Link href="/scent-school">Scent School</Link>
           </nav>
           <Link
@@ -113,10 +112,9 @@ export default function Navbar() {
             </button>
             <nav>
               {[
-                ["Shop all", "/shop"],
-                ["100ml fragrances", "/#shop-100ml"],
-                ["20ml fragrances", "/#shop-20ml"],
-                ["Pack of 4", "/#discovery-set"],
+                ["Fragrances", "/shop"],
+                ["Discovery sets", "/#discovery-set"],
+                ["Our approach", "/our-approach"],
                 ["Scent School", "/scent-school"],
                 ["My account", "/account"],
               ].map(([label, href]) => (

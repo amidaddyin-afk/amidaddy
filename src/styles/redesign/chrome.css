@@ -1,0 +1,129 @@
+/* === Redesign partial: chrome ===
+   Owned by the chrome redesign agent. Rules: zero border-radius, honour
+   prefers-reduced-motion, no data-reveal. Monochrome/zero-radius system,
+   Cormorant display. Do NOT add the deferred "Future Heirloom" palette. */
+
+/* ---- 404 / not-found (§14.7) ---- */
+.not-found-media {
+  position: relative;
+  aspect-ratio: 3 / 2;
+  margin-bottom: 2rem;
+  overflow: hidden;
+}
+
+/* ---- /our-approach (§14.1) ---- */
+.approach-page {
+  padding-top: 104px;
+}
+.approach-hero {
+  display: grid;
+  gap: clamp(2.5rem, 6vw, 4.5rem);
+  padding: clamp(3rem, 6vw, 4.5rem) max(6vw, 1.4rem) clamp(3rem, 7vw, 5rem);
+  max-width: 78rem;
+  margin: 0 auto;
+}
+.approach-hero-copy {
+  max-width: 40rem;
+}
+.approach-hero .display-title {
+  margin: 0 0 1.25rem;
+}
+.approach-lead {
+  color: var(--fg-muted);
+  font-size: 1.05rem;
+  line-height: 1.8;
+  max-width: 36rem;
+}
+.approach-hero-media {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border: 1px solid var(--line);
+}
+
+.approach-blocks {
+  display: grid;
+  gap: clamp(4rem, 10vw, 8rem);
+  max-width: 78rem;
+  margin: 0 auto;
+  padding: clamp(2rem, 5vw, 3.5rem) max(6vw, 1.4rem);
+}
+.approach-block {
+  display: grid;
+  gap: 1.75rem;
+}
+.approach-block-media {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border: 1px solid var(--line);
+}
+.approach-block-copy h2 {
+  font-family: var(--font-display), serif;
+  font-weight: 400;
+  font-size: clamp(1.6rem, 4vw, 2.3rem);
+  letter-spacing: -0.02em;
+}
+.approach-block-copy p {
+  margin-top: 0.9rem;
+  color: var(--fg-muted);
+  line-height: 1.8;
+  max-width: 34rem;
+}
+
+.approach-quote {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: clamp(3.5rem, 9vw, 7rem) max(6vw, 1.4rem);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.approach-quote p {
+  font-family: var(--font-display), serif;
+  font-weight: 400;
+  font-size: clamp(1.5rem, 3.6vw, 2.4rem);
+  line-height: 1.35;
+  letter-spacing: -0.02em;
+  color: var(--fg);
+  max-width: 30ch;
+}
+
+.approach-final {
+  text-align: center;
+  padding: clamp(3.5rem, 9vw, 6rem) max(6vw, 1.4rem);
+}
+.approach-founder {
+  font-family: var(--font-display), serif;
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  letter-spacing: -0.02em;
+  margin-bottom: 2rem;
+}
+
+@media (min-width: 860px) {
+  .approach-hero {
+    grid-template-columns: 1fr;
+    justify-items: start;
+  }
+  .approach-hero-media {
+    width: 100%;
+    aspect-ratio: 21 / 9;
+  }
+  .approach-block {
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(2.5rem, 6vw, 5rem);
+    align-items: center;
+  }
+  /* Alternate the media side so the three rows have rhythm. */
+  .approach-block:nth-child(even) .approach-block-media {
+    order: 2;
+  }
+  .approach-block--lead {
+    grid-template-columns: 1.25fr 1fr;
+  }
+  .approach-block--lead .approach-block-media {
+    aspect-ratio: 3 / 2;
+  }
+  .approach-block--lead .approach-block-copy h2 {
+    font-size: clamp(2rem, 4.5vw, 2.8rem);
+  }
+}

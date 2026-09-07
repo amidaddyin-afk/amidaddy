@@ -12,6 +12,30 @@ export const IMAGE_BLUR: Record<string, string> = {
     "data:image/webp;base64,UklGRpQAAABXRUJQVlA4IIgAAABQBACdASoUABQAPt1irU6opaSiKAqpEBuJZwDH5YukcLUuxYJjEp5zkhoAAP72gv4FGhtFMRI8PERqMHDaVmHreayc7DmbTgTbLrU5rcwfiDlBdOzmMNKAiw8068jLaEpJvQzfG+TwHBML2Aa2gwHJSpyxbc1XIesz0/Fq6rpmc4fxcFlcAAAA",
   "/brand/amidaddy-mark.png":
     "data:image/webp;base64,UklGRn4AAABXRUJQVlA4IHIAAABQBACdASoUABQAPt1cqE6opKOiMBgIARAbiWIAyNQQ78fNSXcklfnJsJaAAP72iI+7I5/q57sOz2kyl6B5CPoDfj7yHv3mUPKCiverlpIdSCUUJ4GfyKFrukvGcyR4kaoa5TumAfWrFxJMD+gZwAAAAAA=",
+  "/campaign/billionaire-duo-desktop.webp":
+    "data:image/webp;base64,UklGRnwAAABXRUJQVlA4IHAAAAAQBACdASoUAAsAPt1apkyopSOiMAgBEBuJYgC06CHhjIawbY/IwSo5gAD+6+xgnOGu0qbRSL/4/9CbONJv2SbWEd70Tva1M4Auw4490E1GgXhyYZr/Kfl+QBRay8+j2eU1Dpc27NbNLTMkYjdyX+QA",
+  "/campaign/billionaire-duo-mobile.png":
+    "data:image/webp;base64,UklGRngAAABXRUJQVlA4IGwAAAAQBQCdASoUABkAPt1YpU0opKMiMBgMARAbiWkAzNAQ8KyioDafI6L1f4+yb4Qpw2YAAP7ujZsD9R0upWunE5loHil0/G7ETVdyS1pEDY2pFphHtXCEHoZgEhLu734SnDGW1pNVYO9D2eFAAAA=",
+  "/campaign/billionaire-story-desktop.png":
+    "data:image/webp;base64,UklGRlIAAABXRUJQVlA4IEYAAACQAwCdASoUAAsAPt1cpkyopSOiMAgBEBuJaQAAWp6meLJ0SbAAAP7Q3Vzy4TZUQZa977WO9J8rFFz4o+PAgmt87KPM1jgA",
+  "/campaign/billionaire-story-mobile.webp":
+    "data:image/webp;base64,UklGRoQAAABXRUJQVlA4IHgAAAAQBQCdASoUABkAPt1WpU0opCOiMBgMARAbiWkAACXC9Q9rl3WpIafVrNgIaGhUzOIAAP50tw7aohNHcP+sJGN+BbbIz8QMXdTgxkBzBrsHcvDpRomzxvZmWSdYT8p07IZP6Lg7Xpdgf7pyKsaM6ZlneFUvF1ngAAA=",
+  "/campaign/cold-war-story-desktop.png":
+    "data:image/webp;base64,UklGRngAAABXRUJQVlA4IGwAAABwAwCdASoUAAsALqVut1ujKKioiICkSgC+SEN/AGkeN0ybFcwA/vFfA5rcF/4OBAExdmmZw+XUThEN50cqy6GBlpyI76opZW7LFsu/BFichvjnjXu8Vr5vO6fhoqhjTu9WceUwgNgmaowAAAA=",
+  "/campaign/cold-war-story-mobile.webp":
+    "data:image/webp;base64,UklGRuwAAABXRUJQVlA4IOAAAACQBQCdASoUABkAPt1cqU6opKOiMBgIARAbiWYAsSVAJSFD8j+Jga48/GsKqZb/vPtL6BnUAAD+402lLGC4cGuJk5uX1dRuzaGUix5xKWOXcOFXf8JpZ8jyNPc04LZm3CWfJ6MjyHBVPsbJ0LdCcV86n7zWNBmtKzvDq/nGc/Y3op6y1bT2wHSD7gu+U8Szha9LyLjdQoLbYXaA9yqXOOo5lpIb1dqr/0qlugp9abYk+PJRVW8pvlXaAI446kZB95B+idVMNFrqa7x4jqYCrs1NrX1EHGvdWHqu4mKv9QAAAA==",
+  "/campaign/composition-desktop.webp":
+    "data:image/webp;base64,UklGRlIAAABXRUJQVlA4IEYAAACwAwCdASoUAAsAPt1apkyopSOiMAgBEBuJaQAAWp7w54U1IiN4AAD+0N1c8uE2VEGWvePkHZ2dnG5W8bz+h/GSyn2hQAAA",
+  "/campaign/composition-mobile.webp":
+    "data:image/webp;base64,UklGRoQAAABXRUJQVlA4IHgAAAAQBQCdASoUABkAPt1WpU0opCOiMBgMARAbiWkAACXC9Q9rl3WpIafVrNgIaGhUzOIAAP50tw7aohNHcP+sJGN+BbbIz8QMXdTgxkBzBrsHcvDpRomzxvZmWSdYT8p07IZP6Lg7Xpdgf7pyKsaM6ZlneFUvF1ngAAA=",
+  "/campaign/cta-desktop.webp":
+    "data:image/webp;base64,UklGRlIAAABXRUJQVlA4IEYAAACwAwCdASoUAAsAPt1apkyopSOiMAgBEBuJaQAAWp7w54U1IiN4AAD+0N1c8uE2VEGWvePkHZ2dnG5W8bz+h/GSyn2hQAAA",
+  "/campaign/cta-mobile.webp":
+    "data:image/webp;base64,UklGRoQAAABXRUJQVlA4IHgAAAAQBQCdASoUABkAPt1WpU0opCOiMBgMARAbiWkAACXC9Q9rl3WpIafVrNgIaGhUzOIAAP50tw7aohNHcP+sJGN+BbbIz8QMXdTgxkBzBrsHcvDpRomzxvZmWSdYT8p07IZP6Lg7Xpdgf7pyKsaM6ZlneFUvF1ngAAA=",
+  "/campaign/hero-desktop.png":
+    "data:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAABwAwCdASoUAAsAPt1ep00opSOiMAgBEBuJQAqP0vcpFDrv3OgA/v2byw06fdH5w8WHLknD275W7eHcT9U2r8mflmLvw2BF99SVjWjxUuxJdU9PGXg4DBy8Db0AAA==",
+  "/campaign/hero-mobile.png":
+    "data:image/webp;base64,UklGRpQAAABXRUJQVlA4IIgAAABQBACdASoUACQAPt1ip06opaMmKqoBEBuJQBnOiAojOzfZA/8i8spzDG0QAP7zc39KbI/t4A6E76KBnV/rGpAEe5rK3slzFvA1MnNePS/WfqUwJcvhzaGK+Ns4ROtfWXAmZfMmayrcFV3Os+ebizcmDbi6sSU5EzYpd+nZ1nDqzNUsWcpe+AAA",
   "/curated/billionaire.webp":
     "data:image/webp;base64,UklGRsAAAABXRUJQVlA4ILQAAACwBQCdASoUABkAPt1WpU0opCMiMBgMARAbiUAYyDF8CYhl0/jEfJ3mWpzOaDQtorkCt55I/AAA7opt95+gVKL0kaHb79GYVqY/H57BkZfxpE3LX6Ad5h4X0V/ifNzV4xxbBiaZGJ0OkAvhCfx1t8lN7opaclPSSSv7zkm1ClghFaUvf1rEiicjDbqPKZ0xX/NYRjeSc440EYvvunYTptyu5ctvl7PG60rEGntBsNtdiCJScAA=",
   "/curated/cold-war.webp":
@@ -152,6 +176,26 @@ export const IMAGE_BLUR: Record<string, string> = {
     "data:image/webp;base64,UklGRswAAABXRUJQVlA4IMAAAABwBQCdASoUABkAPt1iqk+opSOiKAqpEBuJZgC7Ms2v/gHaFSrx77R/aHvNvPFW5M2/i/igAP0SvBuljbfxXDRto+9yyUmm50/54jq1dIUFQTRQUXTbVBjQc2o6YEcKs7uuE7Jkwnvx0FsLVcF3PsCR6wFAOlJCMPotg5+CviKTMBSoKq01GRDljTPlvq5T92N4CqvAIIwIzJyuQ+4q1vqw+XAyahOn9wfIIDhmEAd6YFnKCoI/PGxshFpsOgevkAA=",
   "/og.png":
     "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAADQAwCdASoUAA0APt1apkyopSOiMAgBEBuJZQAAW4TOLhy1RWwOGyAA/vVuNJ3RFal2lNCuEPPjUWOff8grujeXhXS4V9tP2mwl73QgALnW4m+mNI7fdttM/wRvFAxNJ3mLOAAA",
+  "/originals/Ami Daddy3348.webp":
+    "data:image/webp;base64,UklGRogAAABXRUJQVlA4IHwAAACwBACdASoUABkAPtFWpUyoJKOiMAwBABoJQBgBoJBgaq4ao10WRECUbDmlYZ4AAP7r1OvUcBNHOZChPOJWD+4MGD3MCqpCMj1uBIDfTV27BKjL5paxHWnHRucPFvdRcTOnooFv77m5EJKQnOOSiJ8rD3tvHrD0sA6b6AAA",
+  "/originals/Ami Daddy3357.webp":
+    "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAADwAwCdASoUAA0APt1cpkyopSOiMAgBEBuJYwC7ACHpTFfS7Jujdh4AAP7r38HewNVwY4jEhf/SWVJ0ICN6+V7HXIgoY26dq/btmGDDPmUthalezIGvodkdp3/cFxeM1gi2eU1necAAAA==",
+  "/originals/Ami Daddy3359.webp":
+    "data:image/webp;base64,UklGRqYAAABXRUJQVlA4IJoAAAAQBQCdASoUABkAPt1apUyopSOiMAgBEBuJZQC7Ef/gPMzO0zTSGoZI58fmEwXVHZgAAP7LNkF0Clsp3bpXkbHNuTRoLKpWKof7TdNgY9IY8THBobSG3a23GTtS3n51PUeWbEHQw/BJ7LzJp9CHrTRL1aWnf9zWzID/7SpuOyKuNvO1bXnZOcJxVGHNfNILDMLuMbhIMbeAgAAA",
+  "/originals/Ami Daddy3400.webp":
+    "data:image/webp;base64,UklGRpYAAABXRUJQVlA4IIoAAADwBACdASoUABkAPtFWpUyoJKOiMAwBABoJQBjPsYnb7dcpx5rX7DycKlyAVpgk7JAA/vKdOQ9LhA0Lq/tOi9G8e9jiTWR/Cm0OeFfCBUQZKkOgLPPCS2cj21tOezyfeW+g6Wszt3fFQ4xnru5lTpxkSQ3f9N7vCY8Eurh7paJaPI1Iq2YaV9crwAA=",
+  "/originals/Ami Daddy3426.webp":
+    "data:image/webp;base64,UklGRmwAAABXRUJQVlA4IGAAAADQAwCdASoUAA0APt1cp0yopSOiMAgBEBuJYwC+SCHf4/8qwCW26gAA/vDIiEt6cdBTOyrpLzPxG1MzoLwuvTH65uvqaEfHpUwXoVefkSltnZRnMIFGzU4r9wyJI+XQAAA=",
+  "/originals/Ami Daddy3487.webp":
+    "data:image/webp;base64,UklGRuYAAABXRUJQVlA4INoAAAAQBQCdASoUABkAPt1cqU6opKOiMBgIARAbiWYAsSVAAFLWtT1i1NjUBYk2g+wZVy0AAP7jTaUsYLhwa4mTm5fV1G7NoZSLHqJ3cuVMEAsWNGX+ZeG+AQJy+pm3CXWL3ZHmOwYD6YmsK80KQwuf7XHC3TP3RM/7zh3ntx//sevQJp2uSuVRw3C9Ef7qKONFb7XIbX6x7D6Kh2MZdXCIZ5CekreWPY7U6Z0IjBpxqjfKu4D/qvwbBHidpbNOqmGi11JisG+qi6cw04vgQKPwa83vOfcjt+yC14AAAA==",
+  "/originals/Ami Daddy3533.webp":
+    "data:image/webp;base64,UklGRs4AAABXRUJQVlA4IMIAAADQBQCdASoUABkAPt1gp04opaMiKA1REBuJYgC0NYyKcY4vySmhiNx1kJh8X62gTbSjf4HH5/AAAP7ZP7gx4ltaUqntcO3cQMUoPIewMcFViHN3DSbmJ664DV/VdafXhM2GHNxhARbUuRNShe3I6ab43VjxNd/w5XQn6EkDpsfZ8FczraH8JkHu7dU2mxYqMrAQILs3K1onIj+1ru4PONtEGFdMLVMdyf/T7cAsPCO9Kr4ziGIqHvJQKZV37Dl4YwAAAA==",
+  "/originals/Ami Daddy3791.webp":
+    "data:image/webp;base64,UklGRtIAAABXRUJQVlA4IMYAAABwBQCdASoUABkAPt1mq1CopSOiqAgBEBuJYgAD5mEbn1OnCwNpzdMne26mEqLP/ASXfmgAAP4zpGra5SF3LkvF5g+NeLohqkCRqudVDhpRHfUyQ+W3xkVJXrDNUuk4uHHKOLyntMwQn+gYO4u3i9UdmtitL0lZtlIMJRMGeA4VBJ1K+9Fle1l2FMkEfgZzNOSX3Zb/W49z4Iigb8LjAq4J35ddXaCrWF11Aq2/cHMfc2J6CImJVrSxlVe0i/S6HreRpUgMgAA=",
+  "/originals/Ami Daddy3903.webp":
+    "data:image/webp;base64,UklGRgABAABXRUJQVlA4IPQAAACQBQCdASoUABkAPt1kqU+opaOiKAqpEBuJaACdAYu4cZOu7LZvI4/4BbZqLGHB8LtNdSQJ4AD9qUKgLTI2YlUBWCkfomntvC64MHPjdz/cEfGUecRQYs+FFiymsB7Hvfh5G86msbfHKb1AL7xHCTedlak9FqfiNibKCIDQhF1BKUIYg2ZsYqWzmjAY0VxqLFC+TtEEVIafb+Gj02b50mTE5TqdpwLk5Yrh7fYYlb0zojmhRRDnpc6tCVXYv8uOZqoviWenz9q02g49JFz9QMtdjctWmxtQw/Jj9zCD5mMFH1vW64JMsKanuuQlQiGtpqECAAAA",
+  "/originals/Ami Daddy3926.webp":
+    "data:image/webp;base64,UklGRtoAAABXRUJQVlA4IM4AAAAwBQCdASoUABkAPt1eqU6opKOiMBgIARAbiWIAvdGL/m1S30tuFdmZ7+w+M6Amd6W7gAD3n8YUwxpZFpQSDn6nrR9lyIT76TunSrj5ULSRscPINfDT2nDHiE6kE6vQtjHksGMlF294lgJxkqBk8ZCXlQeWbyw0qetTLNKuJTI9H6uPbyGAt9eDMjaIrEvKXmjUiVpXYeaYIwn5SCVdrffB5N9XdO+lrD1awX22tROrQOUiaa+pEzrctgUj75c9PW9PIdsGdHrshwfUWcwAAA==",
   "/products/20ml/billionaire.webp":
     "data:image/webp;base64,UklGRoIAAABXRUJQVlA4IHYAAADwAwCdASoUABkAPt1apkyopSOiMAgBEBuJaQAAUbOuWIjFptM9UAWAAO866NzEhTyD6cOBOm+77AsrAF/X/zWkBA5IFjw4C0xVlMuphU4m5eN0QLiuSXi9m0+zk5IsjCkVR/JzQdWvw7y8PNNMPpulfF2ZeAAA",
   "/products/20ml/billionaire/01.webp":
@@ -262,6 +306,10 @@ export const IMAGE_BLUR: Record<string, string> = {
     "data:image/webp;base64,UklGRsgAAABXRUJQVlA4ILwAAAAQBQCdASoUABkAPt1gp04opaOiKA1REBuJbACdL9XWAiwABQ7fbpbghnbUhaIiz97gAP7ytJMTOm6mhNzpgOBwEUJeag2vQ6xcjsfUMIMQXe+rpW9YCVPvYee53gnoVdRgOMG9y5rJw3sGe9THB5JSVfrrvGpXk9sOLjLHd9aIhP6pNy/H/AxkMIkbsV3fSgsxOtRSoPIDPp7CK1oPFPnMLrlHJrwiTw/i53FihajgORwFgA2B45S9L5gAAA==",
   "/products/detail/old-love/hero.webp":
     "data:image/webp;base64,UklGRn4AAABXRUJQVlA4IHIAAADQAwCdASoUAA8APt1apkyopSOiMAgBEBuJbAAAW+i+QN7PdQAg+UAA/vDFDle39kgV+ku4ijBkG2gdikDIUcN5BLHhdl4jQJ1s0et9Dpa2o/23LWPgHucjktpIXFHsTyrusojcwSL6mPrBukQ2Nc3QqAA=",
+  "/products/landing/hero-desktop.png":
+    "data:image/webp;base64,UklGRqAAAABXRUJQVlA4IJQAAABQBACdASoUAAsAPt1cpkyopSOiMAgBEBuJZACdAYwSzyiJ/5sAAdhdeIQAAP7lCn/yxPZI4H3sVUgmStNyeJXWjXn0eolkOSSPq5PeXngHyTr+SlVwTHh1IkHGjMOZlOy0Qb66yJxZxytPwfcSzOn1M6b3KSa+XRHfPgzLxDPKbVX/+qsIBIX9dMpWH+kdA3C0eYAA",
+  "/products/landing/hero-mobile.png":
+    "data:image/webp;base64,UklGRlwBAABXRUJQVlA4IFABAACwBgCdASoUACQAPt1mq0+opaQiKqgBEBuJZACxHvvOZzR8hocKiUbm+iqel8V2wJvFZpKu+tv2Tj8+54W8AAD+wc0d8YzFZ6+SwcKr6skOtII17BbVn96zsUaC3vaOwZsvzvZwFvX9D8ygTOr1n6jiMvYIacBhDWdcQRn3q6D3MOApW2Iq/uEq3yXL2Ds02F3qWF78qEzqcTjQs4zKdHdQ28tUloYIz0L4/3aghkMi9aTQVvjQtYRkjolg8f8X3+IjYD2Im6Oob2hWW7lTX/3y0mXdBvOZIugnWQN541QDqdzb+6oeKuXAIICjW1tGOtB2rnfsFEezl0hiANVeMqkmVAVBaBWs+Lem5CghRrk783oSFKP2sSjGdHaULV6v7mMLKvsQ8ykXA0fzXan/nqPJVfktjx4FAZeaQaiD4DVutmpRzPj4T89e3Z+BDAAAAAA=",
 };
 
 export const blurFor = (src: string) => IMAGE_BLUR[src];

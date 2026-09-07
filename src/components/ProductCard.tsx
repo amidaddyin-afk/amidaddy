@@ -51,7 +51,7 @@ export default function ProductCard({
   );
   const [added, setAdded] = useState(false);
   const reduceMotion = useReducedMotion();
-  const { addItem } = useCart();
+  const { addItem, openCart } = useCart();
 
   // Pointer tilt. Only on a fine pointer (mouse/trackpad) and only when the
   // user has not asked for less motion - on touch there is no hover to track
@@ -94,6 +94,7 @@ export default function ProductCard({
   const productHref = `/products/${product.slug}?size=${size}`;
   const add = () => {
     addItem(product, size);
+    openCart();
     setAdded(true);
     window.setTimeout(() => setAdded(false), 1600);
   };
@@ -186,6 +187,7 @@ export default function ProductCard({
               <button
                 key={item.id}
                 disabled={!item.active || item.stock <= item.reserved}
+                aria-pressed={size === item.name}
                 onClick={() => setSize(item.name)}
                 className={`size-chip ${size === item.name ? "active" : ""}`}
               >
@@ -216,12 +218,14 @@ export default function ProductCard({
           </div>
           <button
             onClick={add}
-            disabled={!variant || variant.stock <= variant.reserved}
+            disabled={
+              !variant || !variant.active || variant.stock <= variant.reserved
+            }
             className="icon-add"
             aria-label={`Add ${product.name} ${size} to bag`}
           >
             <ShoppingBag size={17} />
-            <span>{added ? "Added" : "Add"}</span>
+            <span>{added ? "Added" : "Add to bag"}</span>
           </button>
         </div>
       </div>

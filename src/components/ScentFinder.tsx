@@ -12,30 +12,29 @@ const questions: Array<{
   options: Array<{ label: string; family: FragranceFamily }>;
 }> = [
   {
-    title: "Tonight, you are...",
+    title: "Which notes draw you in?",
     options: [
-      { label: "The one everyone notices", family: "Woody" },
-      { label: "The one nobody can read", family: "Fresh" },
-      { label: "The one someone wants closer", family: "Floral" },
-      { label: "The one someone remembers", family: "Amber" },
+      { label: "Woods and spice", family: "Woody" },
+      { label: "Fresh fruit and herbs", family: "Fresh" },
+      { label: "Vanilla and florals", family: "Floral" },
+      { label: "Amber and resin", family: "Amber" },
     ],
   },
   {
-    title: "Your energy is...",
+    title: "When will you wear it most?",
     options: [
-      { label: "Powerful", family: "Woody" },
-      { label: "Sharp", family: "Fresh" },
+      { label: "Daytime", family: "Fresh" },
+      { label: "Evenings", family: "Amber" },
+      { label: "A little of both", family: "Floral" },
+    ],
+  },
+  {
+    title: "How would you describe your mood?",
+    options: [
+      { label: "Bold", family: "Woody" },
+      { label: "Composed", family: "Fresh" },
       { label: "Soft", family: "Floral" },
-      { label: "Romantic", family: "Amber" },
-    ],
-  },
-  {
-    title: "Where are you going?",
-    options: [
-      { label: "A night out", family: "Woody" },
-      { label: "The office", family: "Fresh" },
-      { label: "Everyday", family: "Floral" },
-      { label: "A date", family: "Amber" },
+      { label: "Warm", family: "Amber" },
     ],
   },
 ];
@@ -59,13 +58,12 @@ export default function ScentFinder({ products }: { products: Product[] }) {
       <div className="finder-orbit" />
       <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[.75fr_1.25fr]">
         <Reveal from="left">
-          <p className="eyebrow">Scent finder · 60 seconds</p>
+          <p className="eyebrow">Scent finder</p>
           <h2 className="display-title mt-5 text-5xl">
-            Which version of you is here today?
+            What do you want to feel?
           </h2>
           <p className="text-subtle mt-6 max-w-sm leading-7">
-            Fragrance is difficult to describe and easy to feel. Three choices
-            will bring you closer to yours.
+            Three questions. A place to start.
           </p>
         </Reveal>
         <Reveal className="finder-card" delay={0.08}>

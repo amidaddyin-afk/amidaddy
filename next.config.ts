@@ -18,6 +18,11 @@ const contentSecurityPolicy = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // Local browser tooling (Playwright) hits the dev server on 127.0.0.1, which
+  // Next treats as a cross-origin dev request and blocks by default - that
+  // block also wedges the HMR client, which then stops flushing client effects
+  // (framer-motion mount animations never run). Dev-only allowlist.
+  allowedDevOrigins: ["127.0.0.1", "localhost"],
   experimental: { serverActions: { bodySizeLimit: "1mb" } },
   images: {
     // AVIF first: roughly 20-30% smaller than WebP on this photography, with

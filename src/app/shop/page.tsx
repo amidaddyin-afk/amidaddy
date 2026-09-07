@@ -109,8 +109,8 @@ export default async function ShopPage({
         <section className="shop-hero" data-surface="story">
           <div className="shop-hero-media">
             <Photo
-              src="/curated/hero-models.webp"
-              alt="Amidaddy Perfumes campaign portrait of models wearing the signature fragrances"
+              src="/products/combos/100ml/02.webp"
+              alt="All four Amidaddy fragrances — Billionaire, Cold War, Heavenly and Old Love — in 100ml bottles"
               fill
               priority
               sizes="100vw"
@@ -182,7 +182,11 @@ export default async function ShopPage({
               {sections.map(
                 (section) =>
                   section.products.length > 0 && (
-                    <section key={section.id} className="shop-size-section">
+                    <section
+                      key={section.id}
+                      id={section.id}
+                      className="shop-size-section"
+                    >
                       <div className="shop-size-heading">
                         <p className="eyebrow">{section.eyebrow}</p>
                         <h2 className="display-title">
@@ -202,7 +206,7 @@ export default async function ShopPage({
                             product={product}
                             index={index}
                             initialSize={section.size}
-                            lockSize
+                            lockSize={section.id === "pack-of-4"}
                             navType={["nav-forward"]}
                           />
                         ))}

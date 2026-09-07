@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ShieldCheck } from "lucide-react";
 import FooterAccountLinks from "@/components/FooterAccountLinks";
+import { policyLinks } from "@/lib/policies";
 
 export default function Footer() {
   return (
@@ -11,34 +12,30 @@ export default function Footer() {
             <Link href="/" className="footer-mark">
               AMIDADDY
             </Link>
-            <p>Presence, before words.</p>
+            <p>Original compositions. Personal signatures.</p>
           </div>
           <div>
             <h3>Fragrances</h3>
-            <Link href="/shop">Shop all</Link>
-            <Link href="/#shop-100ml">100ml collection</Link>
-            <Link href="/#shop-20ml">20ml collection</Link>
-            <Link href="/#discovery-set">Pack of 4</Link>
+            <Link href="/shop">Shop</Link>
+            <Link href="/shop#20ml">20ml</Link>
+            <Link href="/shop#100ml">100ml</Link>
+            <Link href="/products/signature-combo-20ml">Discovery set</Link>
+            <Link href="/products/signature-combo-100ml">Full collection</Link>
+          </div>
+          <div>
+            <h3>Amidaddy</h3>
+            <Link href="/our-approach">Our approach</Link>
+            <Link href="/scent-school">Scent School</Link>
           </div>
           <div>
             <h3>Client care</h3>
             <a href="mailto:support@amidaddy.in">support@amidaddy.in</a>
-            <Link href="/policies/shipping-delivery">
-              Shipping &amp; delivery
-            </Link>
-            <Link href="/policies/returns-refunds-replacements">
-              Returns &amp; refunds
-            </Link>
             <Link href="/account/orders">Track an order</Link>
-          </div>
-          <div>
-            <h3>Company</h3>
-            <Link href="/#story">Our story</Link>
-            <Link href="/scent-school">Scent school</Link>
-            <Link href="/policies/terms-conditions">
-              Terms &amp; conditions
-            </Link>
-            <Link href="/policies/privacy-policy">Privacy policy</Link>
+            {policyLinks.map((policy) => (
+              <Link key={policy.slug} href={`/policies/${policy.slug}`}>
+                {policy.label}
+              </Link>
+            ))}
           </div>
           <div>
             <h3>Your account</h3>

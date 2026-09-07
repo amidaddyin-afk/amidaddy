@@ -1,6 +1,14 @@
 @import "tailwindcss";
 @import "../styles/tokens.css";
 
+/* Redesign partials — one file per surface so the plan can be built in
+   parallel without contending on this file. Each stays inside the fixed
+   monochrome / zero-radius / Cormorant system. */
+@import "../styles/redesign/home.css";
+@import "../styles/redesign/shop.css";
+@import "../styles/redesign/pdp.css";
+@import "../styles/redesign/chrome.css";
+
 /* 2026 commerce storefront redesign */
 body .site-header {
   background: var(--chrome-bg);
@@ -411,11 +419,26 @@ body .cart-panel .text-white\/20 {
   color: var(--fg-muted);
 }
 body .cart-panel .cart-item {
-  border-color: var(--line);
-  background: var(--bg-raised);
+  border-color: #e2dacb;
+  background: #ffffff;
+}
+body .cart-panel .cart-item:hover {
+  background: #fdfcf9;
 }
 body .cart-panel .cart-item > div:first-child {
-  background: var(--bg-raised);
+  background: #f4f1ea;
+}
+/* The panel is forced to a cream light surface; keep every text token inside it
+   readable regardless of the ambient (dark) palette the utilities resolve. */
+body .cart-panel .text-fg {
+  color: #1b1b1b;
+}
+body .cart-panel .text-subtle,
+body .cart-panel .text-muted {
+  color: #6b6b64;
+}
+body .cart-panel .text-accent {
+  color: #8a6d3b;
 }
 body .checkout-shell .text-white\/40,
 body .checkout-shell .text-white\/45,
@@ -676,7 +699,13 @@ main {
    getBoundingClientRect offset math (framer-motion warns about this in the
    console). Fade this page in with opacity only, so no ancestor transform is
    ever active while those targets mount. */
-main.cinematic-home {
+main.cinematic-home,
+/* The house homepage renders framer-motion whileInView children (the H03
+   product grid, the Reveal story block) directly under this <main>. The
+   page-enter transform on an ancestor during first paint throws off their
+   IntersectionObserver root math, so with viewport={{ once: true }} the
+   reveal never fires and the grid stays invisible. Fade with opacity only. */
+main.house-home {
   animation: page-fade 0.55s var(--ease-premium) backwards;
 }
 @keyframes page-enter {
@@ -879,7 +908,7 @@ main.cinematic-home {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: var(--color-ember-red);
+  color: #fff;
 }
 .wordmark img {
   width: 4.25rem;
@@ -951,18 +980,26 @@ main.cinematic-home {
   background: transparent;
   color: white;
 }
+.mobile-menu {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
 .mobile-menu nav {
   display: flex;
-  height: 80%;
+  flex: 1;
   flex-direction: column;
   justify-content: center;
-  gap: 1.5rem;
+  gap: 1.1rem;
+  padding: 4.5rem 0 2rem;
 }
 .mobile-menu nav a {
   font-family: var(--font-display);
-  font-size: clamp(2.5rem, 10vw, 5rem);
+  font-size: clamp(2rem, 8vw, 3.25rem);
+  line-height: 1.1;
 }
 .mobile-menu p {
+  margin-top: auto;
   color: var(--champagne);
   font-size: 0.7rem;
   letter-spacing: 0.2em;
@@ -2027,7 +2064,7 @@ without dimming the whole photograph. */
 }
 .mobile-menu,
 .search-overlay {
-  background: rgba(7, 8, 8, 0.96);
+  background: #070808;
   backdrop-filter: blur(24px);
 }
 .mobile-menu nav a {
@@ -5450,7 +5487,7 @@ body:has(.cine-root) {
   justify-content: space-between;
   gap: 1.5rem;
   padding: 0.9rem 1rem;
-  background: var(--cine-ink);
+  background: var(--bg);
 }
 .pdp-facts dt {
   font-size: 0.68rem;
@@ -5501,14 +5538,12 @@ body:has(.cine-root) {
 .pdp-ingredients {
   margin: 0;
   border: 1px solid var(--cine-line);
-  background: rgba(255, 255, 255, 0.03);
+  background: #fff;
   padding: clamp(1rem, 3vw, 2rem);
 }
 .pdp-ingredients img {
   width: 100%;
   height: auto;
-  filter: brightness(0.94) saturate(0.94);
-  mix-blend-mode: screen;
 }
 .pdp-ingredients figcaption {
   margin-top: 0.9rem;
@@ -5759,4 +5794,466 @@ body:has(.cine-root) {
   justify-content: center;
   align-items: center;
   margin-top: 2.5rem;
+}
+/* Shared house direction: silver, charcoal and original product photography. */
+:root {
+  --color-ember-red: #353c39;
+  --color-signal-blue: #353c39;
+  --color-hyper-green: #353c39;
+  --color-paper: #f4f4f0;
+  --color-obsidian: #171b19;
+  --color-graphite: #636965;
+  --line: #d4d7d1;
+  --line-strong: #969e96;
+  --accent: #353c39;
+  --accent-secondary: #353c39;
+  --accent-quiet: #e6e9e3;
+  --space-section: 88px;
+}
+body .nav-inner {
+  min-height: 72px;
+}
+body .wordmark-title,
+body .desktop-nav a {
+  color: var(--on-image);
+}
+body .wordmark-title {
+  text-transform: lowercase;
+}
+/* The house palette neutralises --color-ember-red site-wide; the wordmark "i"
+   keeps a literal red regardless. */
+body .wordmark-title > span {
+  color: #ee3a49;
+}
+body .lux-button {
+  background: var(--fg);
+  color: var(--bg);
+  border: 1px solid var(--fg);
+  min-height: 50px;
+  text-transform: none;
+  letter-spacing: 0.02em;
+}
+body .lux-button:hover {
+  opacity: 0.85;
+}
+body .display-title {
+  letter-spacing: -0.055em;
+}
+.house-home h1,
+.house-home h2 {
+  font-weight: 400;
+  letter-spacing: -0.065em;
+  line-height: 1.03;
+}
+.house-home h2 {
+  font-size: clamp(2.4rem, 4.8vw, 4.6rem);
+}
+.house-hero {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+}
+.house-hero-image {
+  position: relative;
+  width: 100%;
+}
+.house-hero-photo {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.house-hero-photo--mobile {
+  display: none;
+}
+.house-hero-copy {
+  padding: 40px 4vw 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  border-bottom: 1px solid var(--line);
+}
+.house-hero-copy h1 {
+  font-size: clamp(2.4rem, 4vw, 4rem);
+  margin: 0;
+}
+.house-hero-copy > p:not(.eyebrow) {
+  max-width: 340px;
+  line-height: 1.7;
+  color: var(--fg-muted);
+  font-size: 17px;
+  margin: 0;
+}
+.house-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 18px 28px;
+  margin-top: 14px;
+}
+.house-hero-actions .lux-button {
+  margin-top: 0;
+}
+.house-benefits {
+  display: flex;
+  justify-content: space-between;
+  padding: 22px 4vw;
+  border-bottom: 1px solid var(--line);
+  gap: 20px;
+  font-size: 13px;
+}
+.house-benefits span {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.house-heading {
+  margin-bottom: 36px;
+}
+.house-heading p {
+  margin-top: 18px;
+  color: var(--fg-muted);
+}
+body .product-card {
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+}
+body .product-card:hover {
+  box-shadow: none;
+}
+body .product-visual,
+.storefront-home .product-visual,
+.shop-page .product-visual {
+  height: auto;
+  aspect-ratio: 4/5;
+  overflow: hidden;
+}
+body .product-badge,
+body .product-glow {
+  display: none;
+}
+body .product-card > div:last-child {
+  padding: 22px 0;
+}
+body .product-card .eyebrow {
+  color: var(--fg-muted);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+}
+body .icon-add {
+  background: var(--fg);
+  color: var(--bg);
+  border-color: var(--fg);
+  padding: 12px 17px;
+  min-height: 46px;
+}
+body .size-chip {
+  min-height: 42px;
+  border: 1px solid var(--line-strong);
+  color: var(--fg);
+}
+body .size-chip.active {
+  background: var(--fg);
+  color: var(--bg);
+  border-color: var(--fg);
+}
+.house-manifesto {
+  padding: 88px 8vw 100px;
+  border-block: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 26px 9vw;
+}
+.house-manifesto > .eyebrow {
+  grid-column: 1/-1;
+}
+.house-manifesto-body {
+  padding-top: 4px;
+  max-width: 430px;
+}
+.house-manifesto-body p {
+  font-size: 17px;
+  line-height: 1.8;
+  margin-bottom: 22px;
+  color: var(--fg-muted);
+}
+.house-discovery {
+  max-width: 1200px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 9vw;
+  padding: 90px 32px;
+}
+.house-discovery-copy p,
+.house-format p {
+  max-width: 380px;
+  margin: 24px 0;
+  line-height: 1.8;
+  color: var(--fg-muted);
+}
+.house-discovery .product-visual {
+  aspect-ratio: 1.2;
+}
+.house-format {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 8vw;
+  padding: 50px 7vw 80px;
+  border-block: 1px solid var(--line);
+}
+.house-format img {
+  width: 100%;
+  height: auto;
+}
+.house-faq {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 8vw;
+}
+body .pdp-hero {
+  min-height: 600px;
+}
+body .pdp-hero-copy {
+  padding-top: 45px;
+}
+.pdp-hero-sizes {
+  display: flex;
+  gap: 10px;
+  margin: 24px 0 6px;
+}
+.pdp-hero-sizes button {
+  border: 1px solid #ffffff80;
+  padding: 12px 20px;
+  color: white;
+}
+.pdp-hero-sizes button[aria-pressed="true"] {
+  background: #f4f4f0;
+  color: #171b19;
+}
+.pdp-hero-sizes button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+body .shop-hero {
+  min-height: 360px;
+}
+body .shop-hero h1 {
+  font-size: clamp(2.5rem, 4.5vw, 4.5rem);
+}
+:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 5px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .house-hero-copy > * {
+    animation: house-enter 0.8s both;
+  }
+  .house-hero-copy > h1 {
+    animation-delay: 0.08s;
+  }
+  .house-hero-copy > .lux-button {
+    animation-delay: 0.18s;
+  }
+  .house-hero-image img {
+    animation: house-enter 0.9s ease both;
+  }
+}
+@keyframes house-enter {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes house-image {
+  from {
+    transform: scale(1.055);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-paper: #1b201d;
+    --color-obsidian: #eeefea;
+    --color-graphite: #b0b8b1;
+    --bg: #1b201d;
+    --bg-raised: #222823;
+    --fg: #eeefea;
+    --fg-muted: #b0b8b1;
+    --fg-subtle: #b0b8b1;
+    --line: #3c453e;
+    --line-strong: #778277;
+    --accent: #d9e1d6;
+    --color-ember-red: #d9e1d6;
+    --color-signal-blue: #d9e1d6;
+    --chrome-bg: #151916;
+  }
+  [data-surface="chrome"] {
+    --bg: #151916;
+    --bg-raised: #202621;
+    --fg: #eeefea;
+    --fg-muted: #b0b8b1;
+  }
+}
+@media (max-width: 760px) {
+  .house-hero-copy {
+    padding: 32px 24px 36px;
+  }
+  .house-hero-copy h1 {
+    font-size: clamp(2.4rem, 9vw, 3.4rem);
+  }
+  .house-hero-photo--desktop {
+    display: none;
+  }
+  .house-hero-photo--mobile {
+    display: block;
+  }
+  .house-benefits {
+    flex-wrap: wrap;
+    justify-content: center;
+    font-size: 11px;
+    gap: 12px;
+    padding: 18px;
+  }
+  .house-benefits > span:first-child {
+    display: none;
+  }
+  .house-manifesto,
+  .house-discovery,
+  .house-format,
+  .house-faq {
+    grid-template-columns: 1fr;
+    padding: 55px 24px;
+    gap: 30px;
+  }
+  .house-manifesto > .eyebrow {
+    grid-column: auto;
+  }
+  .home-collection {
+    padding: 55px 20px;
+  }
+  .house-home h2 {
+    font-size: 2.8rem;
+  }
+  .house-format {
+    gap: 20px;
+  }
+  body .pdp-hero {
+    min-height: 650px;
+  }
+  .house-discovery .product-visual {
+    aspect-ratio: 1.1;
+  }
+}
+/* Neutralize the previous cinematic palette so inner pages share the house. */
+.house-home {
+  padding-top: 104px;
+}
+body .cinematic {
+  --bg: #f4f4f0;
+  --bg-raised: #f4f4f0;
+  --bg-band: #e9ebe5;
+  --fg: #171b19;
+  --fg-muted: #636965;
+  --fg-subtle: #636965;
+  --line: #d4d7d1;
+  --line-strong: #969e96;
+  --accent: #353c39;
+  --accent-fg: #f4f4f0;
+  /* Light house surface: --cine-paper is the *text* colour in the PDP rules,
+     so it must be the dark ink here, not the page background. Dim/faint are
+     readable greys (WCAG AA on #f4f4f0), gold is the real accent. --cine-ink
+     stays dark because it backs the inverted fact chips. */
+  --cine-ink: #171b19;
+  --cine-paper: #171b19;
+  --cine-paper-dim: #4a504b;
+  --cine-paper-faint: #6b716c;
+  --cine-gold: #353c39;
+  --cine-line: #d4d7d1;
+  background: var(--bg);
+  color: var(--fg);
+}
+body .product-page {
+  padding-top: 104px;
+}
+body .pdp-hero-copy {
+  padding-bottom: 42px;
+}
+body .pdp-name {
+  font-size: clamp(3rem, 7vw, 6rem);
+}
+body .pdp-hero .lux-button {
+  background: #f4f4f0;
+  color: #171b19;
+  border-color: #f4f4f0;
+}
+/* The hero sits over a dark image + veil, so its copy stays light even though
+   the rest of the light PDP re-points --cine-paper to dark ink. */
+body .pdp-hero-copy .pdp-kicker,
+body .pdp-hero-copy .pdp-back {
+  color: rgba(244, 244, 240, 0.72);
+}
+body .pdp-hero-copy .pdp-name,
+body .pdp-hero-copy .pdp-story,
+body .pdp-hero-copy .pdp-hero-price {
+  color: #f7f7f3;
+}
+body .pdp-hero-copy .pdp-hero-price s {
+  color: rgba(244, 244, 240, 0.55);
+}
+body .pdp-hero-copy .pdp-back:hover,
+body .pdp-hero-copy .pdp-back:focus-visible {
+  color: #fff;
+}
+body .shop-size-heading .eyebrow {
+  color: var(--fg-muted);
+}
+body .announcement-bar {
+  background: #353c39;
+  color: #f4f4f0;
+}
+body .shop-hero-copy .eyebrow {
+  color: #e4e8df;
+}
+@media (prefers-color-scheme: dark) {
+  body .cinematic {
+    --bg: #1b201d;
+    --bg-raised: #222823;
+    --bg-band: #222823;
+    --fg: #eeefea;
+    --fg-muted: #b0b8b1;
+    --fg-subtle: #b0b8b1;
+    --line: #3c453e;
+    --line-strong: #778277;
+    --accent: #d9e1d6;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .house-home *,
+  .product-page *,
+  .shop-page * {
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+[data-surface="chrome"] {
+  --accent: #d0d8ce;
+  --champagne: #d0d8ce;
+  --accent-secondary: #d0d8ce;
+}
+body .product-card .product-view {
+  color: #f4f4f0;
+  background: #171b19cc;
 }

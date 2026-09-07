@@ -1,0 +1,48 @@
+/* === Redesign partial: pdp ===
+   Owned by the pdp redesign agent. Rules: zero border-radius, honour
+   prefers-reduced-motion, no data-reveal. Monochrome/zero-radius system,
+   Cormorant display. Do NOT add the deferred "Future Heirloom" palette. */
+
+/* §9 F2 — "Buy it now" express path. Secondary/ghost: outline only, so it
+   never competes with the filled primary Add. Zero radius. Both instances
+   sit inside the dark cinematic PDP, so they read from --cine-* tokens. */
+.pdp-buy-now {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3.2rem;
+  padding-inline: 1.4rem;
+  border: 1px solid var(--cine-line);
+  border-radius: 0;
+  background: transparent;
+  color: var(--cine-paper);
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    border-color var(--dur-base, 0.32s) ease,
+    color var(--dur-base, 0.32s) ease,
+    background-color var(--dur-base, 0.32s) ease;
+}
+.pdp-buy-now:hover:not(:disabled),
+.pdp-buy-now:focus-visible:not(:disabled) {
+  border-color: var(--cine-paper);
+  background: rgba(255, 255, 255, 0.06);
+}
+.pdp-buy-now:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Buy rail: full-width, stacked directly under the primary Add. */
+.pdp-add + .pdp-buy-now {
+  width: 100%;
+  margin-top: 0.7rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pdp-buy-now {
+    transition: none;
+  }
+}

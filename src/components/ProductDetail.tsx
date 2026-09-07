@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useRef, useState, ViewTransition } from "react";
 import {
   ArrowLeft,
@@ -44,6 +45,43 @@ const ingredientVisuals: Partial<
 /** Studio close-ups live at /products/detail/<slug>/ for these four. */
 const DETAIL_SLUGS = ["coldwar", "old-love", "heavenly", "billionaire"];
 
+/** Per-fragrance PDP intro paragraph (plan §8.1–8.4). Falls back to
+ *  product.description where a slug is not listed. */
+const pdpIntros: Partial<Record<string, string>> = {
+  billionaire:
+    "Billionaire opens on a warm whiskey note, then spice: cinnamon and coriander settle in. The dry-down is tobacco, oud and resin, the part people remember after you have left the room.",
+  coldwar:
+    "Cold War opens sharp: plum, bergamot, mandarin. Pepper and juniper keep it from turning sweet. It ends dry on oakmoss and cedar, the kind of fresh that reads as composure rather than soap.",
+  heavenly:
+    "Heavenly opens on vanilla orchid and jasmine, then tonka and vanilla absolute settle in. Brown sugar and musk in the base keep it soft and close to the skin, a scent people notice when they are already near you.",
+  "old-love":
+    "Old Love opens on saffron and mango, bright for a moment. Then amber, sugar and ambergris pull it warm and low. Fir resin, ambroxan and cedar hold the base, the kind of scent that reads as a memory rather than a first impression.",
+};
+
+/** Per-fragrance "how it unfolds" captions (plan §8.1–8.4, "Unfold" rows). */
+const unfoldCaptions: Partial<Record<string, [string, string, string]>> = {
+  billionaire: [
+    "An opening of whiskey notes.",
+    "Spice, cinnamon and coriander come forward.",
+    "Tobacco, woods and resin shape the dry-down.",
+  ],
+  coldwar: [
+    "Plum, bergamot and mandarin, cold at first.",
+    "Pepper and juniper hold the centre.",
+    "Oakmoss and cedar in the dry-down.",
+  ],
+  heavenly: [
+    "Vanilla orchid and jasmine open it.",
+    "Tonka bean and vanilla absolute at the heart.",
+    "Brown sugar and musk in the trail.",
+  ],
+  "old-love": [
+    "Saffron and mango, bright for a moment.",
+    "Amber, sugar and ambergris pull it warm.",
+    "Fir resin, ambroxan and cedar hold the base.",
+  ],
+};
+
 /**
  * Fallback copy for the vertical story when a product has no dedicated studio
  * close-ups (the combos). Kept so the gallery still says something specific.
@@ -79,23 +117,28 @@ function buildStoryTiles(
 ): StoryTile[] {
   if (DETAIL_SLUGS.includes(product.slug)) {
     const base = `/products/detail/${product.slug}`;
+    const captions = unfoldCaptions[product.slug] ?? [
+      `${product.topNotes.join(", ")}. Bright and immediate, the note you meet first.`,
+      `${product.heartNotes.join(", ")}. The character of the scent as it settles on skin.`,
+      `${product.baseNotes.slice(0, 4).join(", ")} in the dry-down. ${product.longevity} of wear, remembered after you leave.`,
+    ];
     return [
       {
         image: `${base}/01.webp`,
         heading: "The opening",
-        copy: `${product.topNotes.join(", ")}. Bright and immediate, the note you meet first.`,
+        copy: captions[0],
         alt: `${product.name} ${product.concentration}, the opening notes`,
       },
       {
         image: `${base}/02.webp`,
         heading: "The heart",
-        copy: `${product.heartNotes.join(", ")}. The character of the scent as it settles on skin.`,
+        copy: captions[1],
         alt: `${product.name} ${product.concentration}, the heart notes`,
       },
       {
         image: `${base}/03.webp`,
         heading: "The trail",
-        copy: `${product.baseNotes.slice(0, 4).join(", ")} in the dry-down. ${product.longevity} of wear, remembered after you leave.`,
+        copy: captions[2],
         alt: `${product.name} ${product.concentration}, the base notes`,
       },
     ];
@@ -120,18 +163,26 @@ export default function ProductDetail({
   const available = product.variants.filter(
     (variant) => variant.active && variant.stock > variant.reserved,
   );
-  const [size] = useState<"20ml" | "100ml">(
+  const [size, setSize] = useState<"20ml" | "100ml">(
     available.find((item) => item.name === initialSize)?.name ??
       available.find((item) => item.name === "100ml")?.name ??
       available[0]?.name ??
       "100ml",
   );
   const [added, setAdded] = useState(false);
-  const { addItem } = useCart();
+  const { addItem, openCart } = useCart();
+  const router = useRouter();
   const variant = product.variants.find((item) => item.name === size);
   const isCombo = product.collection === "combos";
   const ingredientVisual = ingredientVisuals[product.slug];
-  const character = product.mood.split(/,| and /).filter(Boolean);
+  const character = [
+    ...(isCombo ? [] : [product.profile]),
+    ...product.mood.split(/,| and /),
+  ]
+    .map((word) => word.trim())
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1));
+  const sizeOptions = product.variants.filter((item) => item.active);
   const activeImages =
     product.variantImages?.[size]?.length && product.variantImages[size]
       ? product.variantImages[size]!
@@ -150,10 +201,18 @@ export default function ProductDetail({
   const inStock = !!variant && variant.stock > variant.reserved;
   const onSale = !!variant && variant.mrpPaise > variant.pricePaise;
 
+  const buyDesc = pdpIntros[product.slug] ?? product.description;
+
   const add = () => {
     addItem(product, size);
+    openCart();
     setAdded(true);
     window.setTimeout(() => setAdded(false), 1800);
+  };
+
+  const buyNow = () => {
+    addItem(product, size);
+    router.push("/checkout");
   };
 
   return (
@@ -196,6 +255,25 @@ export default function ProductDetail({
           </p>
           <h1 className="pdp-name">{product.name}</h1>
           <p className="pdp-story">&ldquo;{product.story}&rdquo;</p>
+          <div
+            className="pdp-hero-sizes"
+            role="group"
+            aria-label="Choose bottle size"
+          >
+            {sizeOptions.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                aria-pressed={item.name === size}
+                disabled={item.stock <= item.reserved}
+                onClick={() => setSize(item.name)}
+              >
+                {product.packSize && product.packSize > 1
+                  ? `${product.packSize} × ${item.name}`
+                  : item.name}
+              </button>
+            ))}
+          </div>
           <div className="pdp-hero-buy">
             <span className="pdp-hero-price">
               {variant ? formatInr(variant.pricePaise) : "Unavailable"}
@@ -208,6 +286,14 @@ export default function ProductDetail({
             >
               {added ? <Check size={16} /> : <ShoppingBag size={16} />}
               {added ? "Added to your bag" : "Add to bag"}
+            </button>
+            <button
+              type="button"
+              onClick={buyNow}
+              disabled={!inStock}
+              className="pdp-buy-now pdp-hero-buy-now"
+            >
+              Buy it now
             </button>
           </div>
         </div>
@@ -231,7 +317,31 @@ export default function ProductDetail({
             {product.topNotes.slice(0, 3).join(" · ")}
           </p>
           <h2 className="pdp-buy-name">{product.name}</h2>
-          <p className="pdp-buy-desc">{product.description}</p>
+          <p className="pdp-buy-desc">{buyDesc}</p>
+
+          {sizeOptions.length > 1 && (
+            <div
+              className="pdp-sizes"
+              role="group"
+              aria-label="Choose bottle size"
+            >
+              {sizeOptions.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  className={`pdp-size ${item.name === size ? "active" : ""}`}
+                  aria-pressed={item.name === size}
+                  disabled={item.stock <= item.reserved}
+                  onClick={() => setSize(item.name)}
+                >
+                  <span>{item.name}</span>
+                  <small>
+                    {item.name === "20ml" ? "Discover it" : "Make it yours"}
+                  </small>
+                </button>
+              ))}
+            </div>
+          )}
 
           <div className="pdp-price-row">
             <strong>
@@ -249,6 +359,14 @@ export default function ProductDetail({
           >
             {added ? <Check size={17} /> : <ShoppingBag size={17} />}
             {added ? "Added to your bag" : "Add to bag"}
+          </button>
+          <button
+            type="button"
+            onClick={buyNow}
+            disabled={!inStock}
+            className="pdp-buy-now"
+          >
+            Buy it now
           </button>
           {!inStock && (
             <p className="pdp-oos">Currently out of stock. Check back soon.</p>
@@ -271,6 +389,15 @@ export default function ProductDetail({
               <dt>Wears</dt>
               <dd>{product.longevity}</dd>
             </div>
+            {product.intensity ? (
+              <div>
+                <dt>Intensity</dt>
+                <dd aria-label={`${product.intensity} out of 5`}>
+                  {"★".repeat(product.intensity)}
+                  {"☆".repeat(Math.max(0, 5 - product.intensity))}
+                </dd>
+              </div>
+            ) : null}
             <div>
               <dt>Best for</dt>
               <dd>{product.occasion}</dd>

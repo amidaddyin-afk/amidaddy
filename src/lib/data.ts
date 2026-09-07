@@ -29,6 +29,8 @@ export interface Product {
   longevity: string;
   mood: string;
   occasion: string;
+  /** Overall strength, 1–5, shown as a star rating on the product page. */
+  intensity?: number;
   description: string;
   story: string;
   badge?: string;
@@ -152,6 +154,7 @@ const CATALOG: Product[] = [
     longevity: "8–10 hours",
     mood: "Powerful, sophisticated and magnetic",
     occasion: "Night, dates, events and formal occasions",
+    intensity: 4,
     description:
       "Polished cedarwood, amber and spice with a commanding warmth.",
     story: "Power without explanation.",
@@ -187,8 +190,9 @@ const CATALOG: Product[] = [
     longevity: "6–8 hours",
     mood: "Cold, clean and controlled",
     occasion: "Day and office",
+    intensity: 3,
     description:
-      "Icy freshness and clean musk with a precise, energetic finish.",
+      "Cold plum and citrus over pepper and juniper, drying down to oakmoss and cedar. Clean, but not soft.",
     story: "Freshness with an edge.",
     isNew: true,
     featured: true,
@@ -229,6 +233,7 @@ const CATALOG: Product[] = [
     longevity: "7–9 hours",
     mood: "Soft, intimate and ethereal",
     occasion: "Everyday and celebrations",
+    intensity: 3,
     description:
       "A luminous floral musk that moves softly from day into evening.",
     story: "Soft enough to draw someone closer.",
@@ -262,8 +267,9 @@ const CATALOG: Product[] = [
     longevity: "8–9 hours",
     mood: "Nostalgic, romantic and warm",
     occasion: "Date night and cool weather",
+    intensity: 4,
     description:
-      "Warm vanilla, saffron and resin composed with nostalgic depth.",
+      "Saffron and mango over amber and resin, with ambroxan and cedar in the base. Warm, nostalgic, a little dark.",
     story: "A memory you never completely forgot.",
     badge: "Limited",
     featured: true,

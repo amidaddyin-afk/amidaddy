@@ -1,0 +1,24 @@
+/* === Redesign partial: shop ===
+   Owned by the shop redesign agent. Rules: zero border-radius, honour
+   prefers-reduced-motion, no data-reveal. Monochrome/zero-radius system,
+   Cormorant display. Do NOT add the deferred "Future Heirloom" palette. */
+
+/* S3 — sticky filter bar. The form scrolled away with the hero; pin it so the
+   grid scrolls under it. top clears the fixed site header (inset 2rem +
+   ~4.5rem nav row). Solid ground + z-index so cards pass beneath. */
+.shop-page .shop-filters {
+  position: sticky;
+  top: 6.5rem;
+  z-index: 20;
+  background: var(--bg);
+  padding-block: 0.9rem;
+}
+
+/* On narrow screens the one-row form wraps tall; sticky would eat too much of
+   the viewport, so let it scroll normally. */
+@media (max-width: 640px) {
+  .shop-page .shop-filters {
+    position: static;
+    padding-block: 0;
+  }
+}
