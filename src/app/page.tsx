@@ -5,7 +5,10 @@ import Photo from "@/components/Photo";
 import ProductCard from "@/components/ProductCard";
 import ScentFinder from "@/components/ScentFinder";
 import Reveal from "@/components/Reveal";
+import TrackedLink from "@/components/TrackedLink";
+import ViewItemList from "@/components/ViewItemList";
 import { listCatalogProducts } from "@/lib/catalog";
+import { formatInr } from "@/lib/money";
 import {
   DEFAULT_FREE_SHIPPING_PAISE,
   DEFAULT_SHIPPING_FEE_PAISE,
@@ -13,45 +16,38 @@ import {
 
 export const metadata: Metadata = {
   description:
-    "Make it personal. Find a fragrance that feels like you: four Amidaddy signatures in 20ml and 100ml.",
+    "Find your signature. Try all four Amidaddy Eau de Parfums in 20ml — fresh, floral, amber and woody — then buy the 100ml of the one you love.",
   alternates: { canonical: "/" },
 };
 
 /**
- * Per-fragrance mood line and hero story image for the homepage editorial rail.
+ * Per-fragrance mood line and story image for the homepage editorial rail.
  * Billionaire, Cold War and Old Love use the launch campaign artwork. Heavenly
- * has no campaign art yet, so it stays on its own product photograph rather than
- * a recoloured stand-in.
+ * has no campaign art yet, so it stays on its own product photograph.
  */
-const STORY: Record<
-  string,
-  { mood: string; desktop: string; mobile: string; art: boolean }
-> = {
-  billionaire: {
-    mood: "Quiet confidence.",
-    desktop: "/campaign/billionaire-story-desktop.png",
-    mobile: "/campaign/billionaire-story-mobile.webp",
-    art: true,
-  },
-  coldwar: {
-    mood: "Keep your cool.",
-    desktop: "/campaign/cold-war-story-desktop.png",
-    mobile: "/campaign/cold-war-story-mobile.webp",
-    art: true,
-  },
-  "old-love": {
-    mood: "Stay a little closer.",
-    desktop: "/campaign/old-love-story-desktop.webp",
-    mobile: "/campaign/old-love-story-desktop.webp",
-    art: true,
-  },
-  heavenly: {
-    mood: "Leave a softer impression.",
-    desktop: "/products/detail/heavenly/hero.webp",
-    mobile: "/products/detail/heavenly/hero.webp",
-    art: false,
-  },
-};
+const STORY: Record<string, { mood: string; desktop: string; mobile: string }> =
+  {
+    billionaire: {
+      mood: "Quiet confidence.",
+      desktop: "/campaign/billionaire-story-desktop.png",
+      mobile: "/campaign/billionaire-story-mobile.webp",
+    },
+    coldwar: {
+      mood: "Keep your cool.",
+      desktop: "/campaign/cold-war-story-desktop.png",
+      mobile: "/campaign/cold-war-story-mobile.webp",
+    },
+    "old-love": {
+      mood: "Stay a little closer.",
+      desktop: "/campaign/old-love-story-desktop.webp",
+      mobile: "/campaign/old-love-story-desktop.webp",
+    },
+    heavenly: {
+      mood: "Leave a softer impression.",
+      desktop: "/products/detail/heavenly/hero.webp",
+      mobile: "/products/detail/heavenly/hero.webp",
+    },
+  };
 
 export default async function Home() {
   const { products } = await listCatalogProducts({
@@ -62,6 +58,9 @@ export default async function Home() {
   });
   const signatures = products.filter((p) => p.collection === "unisex");
   const combo = products.find((p) => p.slug === "signature-combo-20ml");
+  const comboVariant = combo?.variants.find((v) => v.name === "20ml");
+  const comboFreeShipping =
+    !!comboVariant && comboVariant.pricePaise >= DEFAULT_FREE_SHIPPING_PAISE;
   const siteUrl =
     process.env.NEXT_PUBLIC_APP_URL ??
     process.env.NEXT_PUBLIC_SITE_URL ??
@@ -83,12 +82,19 @@ export default async function Home() {
         }}
       />
 
-      {/* Hero: full campaign poster, shown whole, with the live CTA bar below. */}
+      <ViewItemList
+        listId="home_signatures"
+        products={signatures}
+        size="100ml"
+      />
+
+      {/* Hero: discovery-combo-led. Offer, price and both CTAs sit above the
+          fold on a typical phone. */}
       <section className="house-hero">
         <div className="house-hero-image">
           <Photo
             src="/campaign/hero-desktop.png"
-            alt="Amidaddy campaign: Old Love and Heavenly held by the models"
+            alt="The four Amidaddy Eau de Parfums held by the models"
             width={1672}
             height={941}
             priority
@@ -97,7 +103,7 @@ export default async function Home() {
           />
           <Photo
             src="/campaign/hero-mobile.png"
-            alt="Amidaddy campaign: Old Love and Heavenly held by the models"
+            alt="The four Amidaddy Eau de Parfums held by the models"
             width={941}
             height={1672}
             priority
@@ -106,17 +112,31 @@ export default async function Home() {
           />
         </div>
         <div className="house-hero-copy">
-          <h1>Make it personal.</h1>
-          <p>Find a fragrance that feels like you.</p>
+          <h1>Find your signature. Try all four.</h1>
+          <p>
+            Four unisex Eau de Parfums in 20ml bottles — fresh, floral, amber
+            and woody.
+          </p>
+          {comboVariant && (
+            <p className="house-hero-offer">
+              4 × 20ml · {formatInr(comboVariant.pricePaise)}
+              {comboFreeShipping ? " · Free delivery" : ""}
+            </p>
+          )}
           <div className="house-hero-actions">
-            <Link href="#shop-100ml" className="lux-button">
-              Shop fragrances <ArrowUpRight size={18} />
-            </Link>
+            <TrackedLink
+              href={combo ? `/products/${combo.slug}` : "#shop-100ml"}
+              event="discovery_cta_click"
+              params={{ location: "hero" }}
+              className="lux-button"
+            >
+              Shop the discovery combo <ArrowUpRight size={18} />
+            </TrackedLink>
             <Link
               href="#scent-finder"
               className="text-link house-hero-secondary"
             >
-              Not sure yet? Take the scent finder <ArrowUpRight size={16} />
+              Help me choose a scent <ArrowUpRight size={16} />
             </Link>
           </div>
         </div>
@@ -132,7 +152,37 @@ export default async function Home() {
         </span>
       </div>
 
-      {/* Shop grid: purchasable choices immediately after the hero. */}
+      {/* 1. Discovery offer — the primary first-time-buyer product, right after
+            the hero. */}
+      {combo && (
+        <section className="house-discovery" id="discovery-set">
+          <div className="house-discovery-copy">
+            <h2>
+              Meet all four.
+              <br />
+              Let your skin decide.
+            </h2>
+            <p>
+              Billionaire, Cold War, Heavenly and Old Love — four 20ml
+              fragrances, {combo.packSize ?? 4} bottles in one set. Try each on
+              its own, let it develop over a few wears, then buy the 100ml of
+              your favourite.
+            </p>
+            <TrackedLink
+              href={`/products/${combo.slug}`}
+              event="discovery_cta_click"
+              params={{ location: "discovery_section" }}
+              className="text-link"
+            >
+              See what is included <ArrowUpRight size={16} />
+            </TrackedLink>
+          </div>
+          <ProductCard product={combo} initialSize="20ml" />
+        </section>
+      )}
+
+      {/* 2 + 3. The four fragrances, comparable at a glance, each with a route
+            to its own 100ml. */}
       <section className="home-collection" id="shop-100ml">
         <div className="house-heading">
           <h2>Four signatures. Find yours.</h2>
@@ -201,11 +251,6 @@ export default async function Home() {
                   >
                     Explore {product.name} <ArrowUpRight size={16} />
                   </Link>
-                  {!story.art && (
-                    <p className="house-story-pending">
-                      Campaign photography for Heavenly is in production.
-                    </p>
-                  )}
                 </div>
               </Reveal>
             );
@@ -213,7 +258,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Composition: intent, not a purity claim. */}
+      {/* 6. Brand/process evidence. */}
       <section className="house-composition" id="story">
         <div className="house-composition-media">
           <Photo
@@ -247,7 +292,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Size story: real Billionaire sizes, not a bundle claim. */}
+      {/* 5. Individual fragrance shopping — sizes. */}
       <section className="house-format" id="shop-20ml">
         <div className="house-format-media">
           <Photo
@@ -277,28 +322,9 @@ export default async function Home() {
         </div>
       </section>
 
-      {combo && (
-        <section className="house-discovery" id="discovery-set">
-          <div className="house-discovery-copy">
-            <h2>
-              Meet all four.
-              <br />
-              Let your skin decide.
-            </h2>
-            <p>
-              Billionaire, Cold War, Heavenly and Old Love. Four 20ml
-              fragrances, ready to discover at your own pace.
-            </p>
-            <Link href={`/products/${combo.slug}`} className="text-link">
-              See what is included <ArrowUpRight size={16} />
-            </Link>
-          </div>
-          <ProductCard product={combo} initialSize="20ml" />
-        </section>
-      )}
-
       <ScentFinder products={signatures} />
 
+      {/* 8. FAQs. */}
       <section className="home-faq house-faq">
         <h2>Before it becomes yours.</h2>
         <div>
@@ -320,8 +346,8 @@ export default async function Home() {
               "Wear varies with skin, weather and application. Check the individual fragrance page for its verified wear information.",
             ],
             [
-              "What comes in a set?",
-              "The discovery set contains four 20ml fragrances. The full collection contains four 100ml fragrances. Each includes Billionaire, Cold War, Heavenly and Old Love.",
+              "What comes in the discovery combo?",
+              "Four 20ml fragrances — Billionaire, Cold War, Heavenly and Old Love. It is a paid four-bottle set, not free samples.",
             ],
             [
               "What does delivery cost?",
@@ -343,7 +369,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Closing CTA: back to the purchasable grid, cart intact. */}
+      {/* 9. Final purchase CTA. */}
       <section className="house-close">
         <div className="house-close-media">
           <Photo
@@ -363,9 +389,14 @@ export default async function Home() {
         </div>
         <div className="house-close-copy">
           <h2>Your next signature starts here.</h2>
-          <Link href="#shop-100ml" className="lux-button">
-            Choose your fragrance <ArrowUpRight size={18} />
-          </Link>
+          <TrackedLink
+            href={combo ? `/products/${combo.slug}` : "#shop-100ml"}
+            event="discovery_cta_click"
+            params={{ location: "footer_cta" }}
+            className="lux-button"
+          >
+            Shop the discovery combo <ArrowUpRight size={18} />
+          </TrackedLink>
         </div>
       </section>
     </main>

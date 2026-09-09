@@ -13,6 +13,7 @@ import { ArrowUpRight, ShoppingBag } from "lucide-react";
 import type { Product } from "@/lib/data";
 import { useCart } from "@/context/CartContext";
 import { formatInr } from "@/lib/money";
+import { analytics, toItem } from "@/lib/analytics";
 import Photo from "@/components/Photo";
 import {
   EASE,
@@ -92,6 +93,8 @@ export default function ProductCard({
     product.variants.find((item) => item.name === size) ?? product.variants[0];
   const cardImage = product.variantImages?.[size]?.[0] ?? product.image;
   const productHref = `/products/${product.slug}?size=${size}`;
+  const selectItem = () =>
+    analytics.selectItem("catalog", toItem(product, size));
   const add = () => {
     addItem(product, size);
     openCart();
@@ -130,6 +133,7 @@ export default function ProductCard({
           href={productHref}
           aria-label={`View ${product.name} ${size}`}
           transitionTypes={navType}
+          onClick={selectItem}
           className="absolute inset-0 z-10"
         />
         {/* Paired with the hero on the product page: the browser morphs this
@@ -165,6 +169,7 @@ export default function ProductCard({
         <Link
           href={productHref}
           transitionTypes={navType}
+          onClick={selectItem}
           className="product-view"
         >
           Discover <ArrowUpRight size={14} />

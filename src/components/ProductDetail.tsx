@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useRef, useState, ViewTransition } from "react";
+import { useEffect, useRef, useState, ViewTransition } from "react";
 import {
   ArrowLeft,
   ArrowUpRight,
@@ -16,6 +16,7 @@ import {
 import type { Product } from "@/lib/data";
 import { useCart } from "@/context/CartContext";
 import { formatInr } from "@/lib/money";
+import { analytics, toItem } from "@/lib/analytics";
 import Photo from "@/components/Photo";
 import ProductStory, { type StoryTile } from "@/components/ProductStory";
 import StickyBuyBar from "@/components/StickyBuyBar";
@@ -202,6 +203,11 @@ export default function ProductDetail({
   const onSale = !!variant && variant.mrpPaise > variant.pricePaise;
 
   const buyDesc = pdpIntros[product.slug] ?? product.description;
+
+  // Fire view_item once per product, and again when the shopper switches size.
+  useEffect(() => {
+    analytics.viewItem(toItem(product, size));
+  }, [product, size]);
 
   const add = () => {
     addItem(product, size);

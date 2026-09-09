@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FormEvent, useRef, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, LockKeyhole, ShoppingBag, Sparkles } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { formatInr } from "@/lib/money";
+import { analytics, toItem } from "@/lib/analytics";
 
 type CheckoutQuote = {
   subtotalPaise: number;
@@ -34,6 +35,23 @@ export default function CheckoutClient() {
   const displayedSubtotalPaise = quote?.subtotalPaise ?? subtotalPaise;
   const displayedShippingPaise = quote?.shippingPaise ?? estimatedShippingPaise;
   const displayedTotalPaise = quote?.totalPaise ?? estimatedTotalPaise;
+
+  const analyticsItems = useMemo(
+    () => items.map((item) => toItem(item.product, item.size, item.qty)),
+    [items],
+  );
+
+  // begin_checkout once, when the page first has a cart.
+  const beganCheckout = useRef(false);
+  useEffect(() => {
+    if (beganCheckout.current || !items.length) return;
+    beganCheckout.current = true;
+    analytics.beginCheckout(
+      estimatedTotalPaise,
+      items.map((item) => toItem(item.product, item.size, item.qty)),
+      appliedCoupon || undefined,
+    );
+  }, [items, estimatedTotalPaise, appliedCoupon]);
 
   function clearAppliedCoupon() {
     setAppliedCoupon("");
@@ -103,6 +121,10 @@ export default function CheckoutClient() {
       return;
     }
     setSubmitting(true);
+    // The form carries the delivery address and the shopper is about to open
+    // the Razorpay sheet: both funnel steps are complete at this point.
+    analytics.addShippingInfo(displayedTotalPaise, analyticsItems);
+    analytics.addPaymentInfo(displayedTotalPaise, analyticsItems);
     try {
       const response = await fetch("/api/checkout", {
         method: "POST",
