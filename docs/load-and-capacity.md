@@ -2,11 +2,12 @@
 
 Can the store handle a lot of people browsing and checking out at once?
 
-**Short answer: correctness yes, throughput not yet.** Nothing will oversell or
-double-charge under concurrency — that part is genuinely well built. But the
-storefront currently queries the database on _every single page view_, and on
-the free tiers you will feel that somewhere around a few hundred concurrent
-visitors. The fixes are small and listed at the end.
+**Correctness: yes** — nothing will oversell or double-charge under
+concurrency. **Throughput: much better now.** The storefront used to query the
+database on every single page view; the homepage and product pages are now
+cached, so a traffic burst no longer becomes a burst of identical queries.
+
+The remaining ceiling is the free tiers themselves (fix #2 below).
 
 ---
 
@@ -34,18 +35,48 @@ These are the things that are hard to get right, and this codebase does:
 
 Ranked by which one bites soonest.
 
-### 1. Every page view hits the database (the real bottleneck)
+### 1. Every page view hits the database — FIXED
 
-`/`, `/shop` and `/products/[slug]` have **no caching directive**. Each render
-calls `listCatalogProducts()` / `getCatalogProductBySlug()`, which is a live
-Supabase query. 1,000 people loading the homepage = 1,000 identical database
-queries returning identical data.
+**Was:** `/`, `/shop` and `/products/[slug]` had no caching. Each render called
+`listCatalogProducts()` / `getCatalogProductBySlug()` — a live Supabase query.
+1,000 homepage views meant 1,000 identical queries for a catalogue of six
+products that changes maybe weekly.
 
-The product catalogue is four fragrances and two combos. It changes maybe
-weekly. There is no reason to query it per visitor.
+**Now:** the homepage is `○ Static` and every product page is `● SSG`, both on a
+5-minute revalidate window. A burst of traffic is served from cache; the
+database sees roughly one query per page per 5 minutes.
 
-**Impact:** this is what saturates the connection pool and drives up p95 under
-load. Everything else on this list is downstream of it.
+Three things were needed, and the first two were the non-obvious part:
+
+1. **The Supabase client was reading cookies.** `createClient()` in
+   `src/lib/supabase/server.ts` calls `cookies()`, and reading cookies opts a
+   page out of Next's cache entirely — so `export const revalidate` was being
+   silently ignored. The storefront reads now use an anonymous client
+   (`src/lib/supabase/public-client.ts`). Safe because those queries already
+   filter to `active = true AND deleted_at IS NULL`, exactly what the
+   "catalog is publicly readable" RLS policy grants anonymous callers. Admin
+   reads and all writes still use the session client — they depend on
+   `is_admin()` in the RLS policies.
+2. **`generateStaticParams` was missing** on `/products/[slug]`. Without it Next
+   cannot know which slugs exist, so it rendered each on demand and the
+   revalidate window never applied.
+3. **`?size=` moved off the server.** Reading `searchParams` in a server
+   component forces dynamic rendering. It only preselects a bottle size, so
+   `ProductDetail` now reads it from `window.location` in a mount effect.
+   Deliberately _not_ `useSearchParams()` — that forces a Suspense boundary
+   whose fallback would ship an empty product page to crawlers. Verified: the
+   prerendered HTML still contains the full product content and Product schema.
+
+**`/shop` is still dynamic**, and correctly so — it reads `?family=`,
+`?search=`, `?sort=` to filter server-side. Lower traffic than the homepage and
+product pages, so it is not worth contorting.
+
+**Cache invalidation:** `revalidateStorefront()`
+(`src/lib/revalidate-storefront.ts`) clears all three page groups. It is called
+from every path that changes what a shopper sees — product create/update/
+delete/restore, stock adjustments, store settings, and `markOrderPaid` (a sale
+decrements stock). So admin edits appear immediately; the 5-minute window is
+only a backstop.
 
 ### 2. Database connection pool: `max: 8` per serverless instance
 
@@ -138,28 +169,22 @@ latency climbs, that confirms bottleneck #2.
 
 ## Fixes, in order of impact
 
-### 1. Cache the catalogue pages (biggest win, small change)
+### 1. Cache the catalogue pages — DONE
 
-Add revalidation to the storefront pages so Next serves a cached render instead
-of querying Supabase per visitor:
+See bottleneck #1 above for what was changed and why. Verify it after any
+future change to those pages by checking the build output:
 
-```ts
-// src/app/page.tsx, src/app/shop/page.tsx, src/app/products/[slug]/page.tsx
-export const revalidate = 300; // re-fetch from the DB at most once every 5 min
+```
+Route (app)                    Revalidate  Expire
+┌ ○ /                                 5m      1y     <- Static, good
+│ ├ ● /products/coldwar               5m      1y     <- SSG, good
+├ ƒ /shop                                            <- Dynamic, expected
 ```
 
-Effect: 1,000 homepage views become ~1 database query per 5 minutes instead of
-1,000. This alone moves the ceiling by roughly an order of magnitude.
-
-Trade-off: a price or stock edit in `/admin` takes up to 5 minutes to appear on
-the storefront. The _cart and checkout_ still read live data, so nothing can be
-bought at a stale price — server-side validation recomputes everything. If you
-want instant updates, use `revalidateTag`/`revalidatePath` from the admin
-save action instead of a time window.
-
-**Not yet applied** — it changes how fresh the storefront is, which is a
-business call. Say the word and I will wire it, including admin-triggered
-revalidation so edits still appear immediately.
+If `/` or a product page shows `ƒ`, something reintroduced a dynamic
+dependency — usually `cookies()`, `headers()`, or reading `searchParams` in a
+server component. Find it before shipping; the cache is silently gone
+otherwise, with no error to warn you.
 
 ### 2. Get off the free tiers
 
@@ -186,10 +211,12 @@ things worse, not better — you will exhaust the pooler faster.
 
 ## Honest bottom line
 
-- **Dozens of concurrent shoppers:** fine today, no changes needed.
-- **Hundreds concurrent (an ad or a reel landing):** you will see slow pages
-  and possibly errors. Fix #1 and #2 before you spend on ads.
-- **Correctness at any volume:** already sound. You will not oversell stock or
+- **Dozens of concurrent shoppers:** comfortable.
+- **Hundreds concurrent (an ad or a reel landing):** the caching fix removed the
+  database from that path for the homepage and product pages, which was the
+  binding constraint. Get off the free tiers (#2) before spending on ads, and
+  run the load test to confirm on your own numbers.
+- **Correctness at any volume:** sound. You will not oversell stock or
   double-charge a customer.
 
 Do not take these as measured numbers — they are informed estimates from the

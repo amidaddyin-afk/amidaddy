@@ -13,6 +13,7 @@ import {
 } from "@/lib/commerce";
 import { db, transaction } from "@/lib/db";
 import { includedGstPaise } from "@/lib/money";
+import { revalidateStorefront } from "@/lib/revalidate-storefront";
 import { recordLeadCheckoutStarted, recordLeadOrderPaid } from "@/lib/leads";
 import { brandedEmailHtml, sendMail } from "@/lib/mailer";
 
@@ -519,6 +520,11 @@ export async function markOrderPaid(
     return true;
   });
   if (changed) {
+    // A sale decremented stock. The storefront pages are cached, so refresh
+    // them or a sold-out variant keeps showing as available until the window
+    // expires. Checkout re-checks stock under a row lock either way, so this
+    // prevents a confusing dead end rather than an oversell.
+    revalidateStorefront();
     await sendOrderEmail(orderId, "order-confirmed");
     const order = await getOrder(orderId);
     if (order)

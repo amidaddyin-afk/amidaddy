@@ -7,6 +7,7 @@ import {
   updateCatalogProduct,
 } from "@/lib/catalog";
 import { productInputSchema } from "@/features/catalog/schemas";
+import { revalidateStorefront } from "@/lib/revalidate-storefront";
 
 export const dynamic = "force-dynamic";
 
@@ -37,10 +38,9 @@ export async function POST(request: NextRequest) {
       { error: parsed.error.issues[0]?.message ?? "Invalid product." },
       { status: 400 },
     );
-  return NextResponse.json(
-    { id: await createCatalogProduct(parsed.data) },
-    { status: 201 },
-  );
+  const id = await createCatalogProduct(parsed.data);
+  revalidateStorefront();
+  return NextResponse.json({ id }, { status: 201 });
 }
 
 export async function DELETE(request: NextRequest) {
@@ -50,6 +50,7 @@ export async function DELETE(request: NextRequest) {
   if (!id || !/^[0-9a-f-]{36}$/i.test(id))
     return NextResponse.json({ error: "Invalid product id." }, { status: 400 });
   await softDeleteCatalogProduct(id);
+  revalidateStorefront();
   return new NextResponse(null, { status: 204 });
 }
 
@@ -65,6 +66,7 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: "Invalid product id." }, { status: 400 });
   if (body.action === "restore") {
     await restoreCatalogProduct(body.id);
+    revalidateStorefront();
     return NextResponse.json({ ok: true });
   }
   if (body.action === "update") {
@@ -75,6 +77,7 @@ export async function PATCH(request: NextRequest) {
         { status: 400 },
       );
     await updateCatalogProduct(body.id, parsed.data);
+    revalidateStorefront();
     return NextResponse.json({ ok: true });
   }
   return NextResponse.json(

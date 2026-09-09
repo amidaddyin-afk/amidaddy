@@ -154,22 +154,29 @@ function buildStoryTiles(
   );
 }
 
-export default function ProductDetail({
-  product,
-  initialSize,
-}: {
-  product: Product;
-  initialSize?: "20ml" | "100ml";
-}) {
+export default function ProductDetail({ product }: { product: Product }) {
   const available = product.variants.filter(
     (variant) => variant.active && variant.stock > variant.reserved,
   );
   const [size, setSize] = useState<"20ml" | "100ml">(
-    available.find((item) => item.name === initialSize)?.name ??
-      available.find((item) => item.name === "100ml")?.name ??
+    available.find((item) => item.name === "100ml")?.name ??
       available[0]?.name ??
       "100ml",
   );
+
+  // Honour `?size=` from links like /products/x?size=20ml.
+  //
+  // Read from window rather than useSearchParams(): this page is prerendered,
+  // and useSearchParams() forces a Suspense boundary whose fallback would ship
+  // an empty product page to crawlers. Reading in an effect keeps the full
+  // product HTML static and just adjusts the preselection after hydration.
+  useEffect(() => {
+    const requested = new URLSearchParams(window.location.search).get("size");
+    if (requested !== "20ml" && requested !== "100ml") return;
+    if (available.some((item) => item.name === requested)) setSize(requested);
+    // Only on mount: after this the shopper's own size clicks own the state.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const [added, setAdded] = useState(false);
   const { addItem, openCart } = useCart();
   const router = useRouter();

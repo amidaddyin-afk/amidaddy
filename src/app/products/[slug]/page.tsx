@@ -2,12 +2,19 @@ import { notFound } from "next/navigation";
 import { ViewTransition } from "react";
 import type { Metadata } from "next";
 import ProductDetail from "@/components/ProductDetail";
-import { getCatalogProductBySlug } from "@/lib/catalog";
+import { getCatalogProductBySlug, listCatalogProducts } from "@/lib/catalog";
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_APP_URL ??
   process.env.NEXT_PUBLIC_SITE_URL ??
   "https://amidaddy.in";
+
+/** Cached render instead of a Supabase query per visitor. Admin edits clear it
+ *  immediately via revalidateStorefront(); see src/app/page.tsx for the full
+ *  rationale. Stock shown here can lag by up to this window, but checkout
+ *  re-checks stock under a row lock, so an out-of-stock variant still cannot
+ *  be bought. */
+export const revalidate = 300;
 
 const toAbsolute = (path: string) =>
   path.startsWith("http") ? path : `${SITE_URL}${path}`;
@@ -55,19 +62,32 @@ export async function generateMetadata({
   };
 }
 
+/**
+ * Prerender every product page at build time. Without this Next cannot know
+ * which slugs exist, so it renders each one on demand and the `revalidate`
+ * window above never applies. There are six products; building them all is
+ * trivial. A product added later still works — it renders on first request and
+ * is then cached, and the admin save calls revalidateStorefront().
+ */
+export async function generateStaticParams() {
+  const { products } = await listCatalogProducts({
+    page: 1,
+    pageSize: 48,
+    sort: "newest",
+  });
+  return products.map((product) => ({ slug: product.slug }));
+}
+
+// `?size=` is deliberately NOT read here. Reading searchParams in a server
+// component opts the whole page out of caching, and this page is the most
+// visited one in the store. The size is presentational state, so ProductDetail
+// (already a client component) reads the param itself and preselects from it.
 export default async function ProductPage({
   params,
-  searchParams,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ size?: string | string[] }>;
 }) {
   const { slug } = await params;
-  const requestedSize = (await searchParams).size;
-  const initialSize =
-    requestedSize === "20ml" || requestedSize === "100ml"
-      ? requestedSize
-      : undefined;
   const product = await getCatalogProductBySlug(slug);
   if (!product) notFound();
   const siteUrl = SITE_URL;
@@ -137,7 +157,7 @@ export default async function ProductPage({
         }}
         default="none"
       >
-        <ProductDetail product={product} initialSize={initialSize} />
+        <ProductDetail product={product} />
       </ViewTransition>
     </>
   );

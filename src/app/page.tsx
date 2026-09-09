@@ -21,6 +21,17 @@ export const metadata: Metadata = {
 };
 
 /**
+ * Serve a cached render rather than querying Supabase per visitor — the
+ * catalogue is six products that change rarely, so a burst of traffic should
+ * not become a burst of identical queries. Admin edits do not wait for this
+ * window: every catalogue mutation calls revalidateStorefront()
+ * (src/lib/revalidate-storefront.ts), which clears this page immediately.
+ * Cart and checkout still read live data, so nothing can be bought at a stale
+ * price regardless.
+ */
+export const revalidate = 300;
+
+/**
  * Per-fragrance mood line and story image for the homepage editorial rail.
  * Billionaire, Cold War and Old Love use the launch campaign artwork. Heavenly
  * has no campaign art yet, so it stays on its own product photograph.

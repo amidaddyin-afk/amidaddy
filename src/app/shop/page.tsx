@@ -29,6 +29,11 @@ export const metadata: Metadata = {
   alternates: { canonical: "/shop" },
 };
 
+/** Cached render instead of a Supabase query per visitor. Admin edits clear it
+ *  immediately via revalidateStorefront(); see src/app/page.tsx for the full
+ *  rationale. Filtered variants (?family=, ?search=) are cached per URL. */
+export const revalidate = 300;
+
 export default async function ShopPage({
   searchParams,
 }: {
