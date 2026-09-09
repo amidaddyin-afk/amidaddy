@@ -32,6 +32,7 @@ import {
   updateFulfillmentAction,
 } from "@/features/orders/actions";
 import CatalogManager from "@/components/CatalogManager";
+import IndiaTrafficMap from "@/components/IndiaTrafficMap";
 
 const initial: AdminActionState = {};
 const sections = [
@@ -40,6 +41,7 @@ const sections = [
   ["Products", Boxes],
   ["Inventory", Boxes],
   ["Customers", Users],
+  ["Traffic", MapPin],
   ["Leads", TrendingUp],
   ["Coupons", BadgePercent],
   ["Activity", Activity],
@@ -426,6 +428,57 @@ export default function AdminPortal({ overview }: { overview: AdminOverview }) {
                 </tbody>
               </table>
             </div>
+          </section>
+          <section id="traffic">
+            <div className="admin-heading">
+              <div>
+                <p className="eyebrow">Audience</p>
+                <h2 className="display-title admin-title">
+                  Where the traffic is.
+                </h2>
+                <p className="text-subtle mt-2 max-w-prose text-sm">
+                  First-party page views over the last 30 days, by state, and
+                  the share of shoppers who added to cart but did not buy. GA4
+                  holds the full report; this is the at-a-glance version.
+                </p>
+              </div>
+            </div>
+            <div className="admin-cards">
+              <article>
+                <span>Added to cart, didn&rsquo;t buy (30d)</span>
+                <strong>
+                  {overview.traffic.abandonment.abandonedSessions.toLocaleString(
+                    "en-IN",
+                  )}
+                </strong>
+              </article>
+              <article>
+                <span>Cart abandonment rate</span>
+                <strong>
+                  {Math.round(
+                    overview.traffic.abandonment.abandonmentRate * 100,
+                  )}
+                  %
+                </strong>
+              </article>
+              <article>
+                <span>Sessions with a cart add</span>
+                <strong>
+                  {overview.traffic.abandonment.cartSessions.toLocaleString(
+                    "en-IN",
+                  )}
+                </strong>
+              </article>
+              <article>
+                <span>Of those, purchased</span>
+                <strong>
+                  {overview.traffic.abandonment.purchasedSessions.toLocaleString(
+                    "en-IN",
+                  )}
+                </strong>
+              </article>
+            </div>
+            <IndiaTrafficMap data={overview.traffic.byRegion} />
           </section>
           <section id="leads">
             <div className="admin-heading">

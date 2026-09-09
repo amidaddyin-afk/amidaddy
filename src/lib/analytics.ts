@@ -43,8 +43,62 @@ export function track(event: string, params: Params = {}) {
   if (typeof window === "undefined") return;
   const gtag = (window as unknown as { gtag?: (...args: unknown[]) => void })
     .gtag;
-  if (!gtag) return;
-  gtag("event", event, stripPii(params));
+  if (gtag) gtag("event", event, stripPii(params));
+}
+
+// ---- first-party sink (/api/track) ----------------------------------------
+
+/**
+ * Opaque per-tab session id. Used only to count unique sessions and to link
+ * add_to_cart -> purchase within one visit. Not a user id, not persisted past
+ * the tab, never sent to GA4.
+ */
+function sessionId(): string {
+  try {
+    const KEY = "amidaddy-sid";
+    let id = sessionStorage.getItem(KEY);
+    if (!id) {
+      id = crypto.randomUUID();
+      sessionStorage.setItem(KEY, id);
+    }
+    return id;
+  } catch {
+    return "nostorage";
+  }
+}
+
+/** Mirror a funnel step to the store's own telemetry table. Always on (no key
+ *  to configure); the server drops anything malformed. `purchase` is recorded
+ *  server-side from the confirmed order, never beaconed. */
+export function beacon(
+  type: "page_view" | "view_item" | "add_to_cart" | "begin_checkout",
+  extra: { productRef?: string; metadata?: Params } = {},
+) {
+  if (typeof window === "undefined") return;
+  const payload = JSON.stringify({
+    type,
+    sessionId: sessionId(),
+    path: location.pathname,
+    productRef: extra.productRef,
+    metadata: extra.metadata,
+  });
+  try {
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon(
+        "/api/track",
+        new Blob([payload], { type: "application/json" }),
+      );
+      return;
+    }
+  } catch {
+    // fall through to fetch
+  }
+  fetch("/api/track", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: payload,
+    keepalive: true,
+  }).catch(() => {});
 }
 
 // ---- ecommerce item shape ----------------------------------------------------
@@ -96,6 +150,7 @@ export const analytics = {
       value: (item.price ?? 0) * (item.quantity ?? 1),
       items: [item],
     });
+    beacon("view_item", { productRef: item.item_id });
   },
   addToCart(item: AnalyticsItem) {
     track("add_to_cart", {
@@ -103,6 +158,7 @@ export const analytics = {
       value: (item.price ?? 0) * (item.quantity ?? 1),
       items: [item],
     });
+    beacon("add_to_cart", { productRef: item.item_id });
   },
   removeFromCart(item: AnalyticsItem) {
     track("remove_from_cart", {
@@ -121,6 +177,7 @@ export const analytics = {
       coupon,
       items,
     });
+    beacon("begin_checkout");
   },
   addShippingInfo(valuePaise: number, items: AnalyticsItem[]) {
     track("add_shipping_info", {

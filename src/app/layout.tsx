@@ -8,6 +8,7 @@ import AnnouncementBar from "@/components/AnnouncementBar";
 
 import Footer from "@/components/Footer";
 import Analytics from "@/components/Analytics";
+import PageViewTracker from "@/components/PageViewTracker";
 
 // Single family for the whole system (the reference's Aeonik substitute).
 // Both CSS vars point at the same font so every existing
@@ -58,6 +59,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${display.variable} ${sans.variable}`}>
         <Analytics />
+        <PageViewTracker />
         <CartProvider>
           <div data-surface="chrome">
             <AnnouncementBar />

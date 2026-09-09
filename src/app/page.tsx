@@ -67,18 +67,60 @@ export default async function Home() {
     "https://amidaddy.in";
   const shippingFee = Math.round(DEFAULT_SHIPPING_FEE_PAISE / 100);
   const freeShippingThreshold = Math.round(DEFAULT_FREE_SHIPPING_PAISE / 100);
+
+  // One source for the visible FAQ and the FAQPage structured data below, so a
+  // crawler and a customer never see different answers.
+  const faqs: Array<[string, string]> = [
+    [
+      "Are these original fragrances?",
+      "Amidaddy creates its own scent identities. Explore each composition's notes to find the one that feels right for you.",
+    ],
+    ["Are they unisex?", "Yes. Choose by the notes and mood you enjoy."],
+    [
+      "Is 20ml the same fragrance as 100ml?",
+      "Yes. Both sizes carry the same composition; choose the format that fits your routine.",
+    ],
+    [
+      "How long will it last?",
+      "Wear varies with skin, weather and application. Check the individual fragrance page for its verified wear information.",
+    ],
+    [
+      "What comes in the discovery combo?",
+      "Four 20ml fragrances — Billionaire, Cold War, Heavenly and Old Love. It is a paid four-bottle set, not free samples.",
+    ],
+    [
+      "What does delivery cost?",
+      `Delivery is ₹${shippingFee}, with complimentary delivery on orders of ₹${freeShippingThreshold} or more. See our shipping policy for details.`,
+    ],
+    [
+      "Can I return it?",
+      "Read our returns policy for eligibility, time limits and how to request help.",
+    ],
+  ];
   return (
     <main data-surface="story" className="storefront-home house-home">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Organization",
-            name: "Amidaddy Perfumes",
-            url: siteUrl,
-            logo: `${siteUrl}/og.png`,
-          }).replace(/</g, "\\u003c"),
+          __html: JSON.stringify([
+            {
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: "Amidaddy Perfumes",
+              url: siteUrl,
+              logo: `${siteUrl}/og.png`,
+              email: "support@amidaddy.in",
+            },
+            {
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              mainEntity: faqs.map(([question, answer]) => ({
+                "@type": "Question",
+                name: question,
+                acceptedAnswer: { "@type": "Answer", text: answer },
+              })),
+            },
+          ]).replace(/</g, "\\u003c"),
         }}
       />
 
@@ -328,36 +370,7 @@ export default async function Home() {
       <section className="home-faq house-faq">
         <h2>Before it becomes yours.</h2>
         <div>
-          {[
-            [
-              "Are these original fragrances?",
-              "Amidaddy creates its own scent identities. Explore each composition's notes to find the one that feels right for you.",
-            ],
-            [
-              "Are they unisex?",
-              "Yes. Choose by the notes and mood you enjoy.",
-            ],
-            [
-              "Is 20ml the same fragrance as 100ml?",
-              "Yes. Both sizes carry the same composition; choose the format that fits your routine.",
-            ],
-            [
-              "How long will it last?",
-              "Wear varies with skin, weather and application. Check the individual fragrance page for its verified wear information.",
-            ],
-            [
-              "What comes in the discovery combo?",
-              "Four 20ml fragrances — Billionaire, Cold War, Heavenly and Old Love. It is a paid four-bottle set, not free samples.",
-            ],
-            [
-              "What does delivery cost?",
-              `Delivery is ₹${shippingFee}, with complimentary delivery on orders of ₹${freeShippingThreshold} or more. See our shipping policy for details.`,
-            ],
-            [
-              "Can I return it?",
-              "Read our returns policy for eligibility, time limits and how to request help.",
-            ],
-          ].map(([q, a]) => (
+          {faqs.map(([q, a]) => (
             <details key={q}>
               <summary>
                 {q}

@@ -537,6 +537,44 @@ body .admin-shell .status-pill {
   color: #7e602a !important;
 }
 
+body .admin-traffic-map {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 220px;
+  gap: 28px;
+  align-items: start;
+  margin-top: 20px;
+}
+body .admin-traffic-svg {
+  width: 100%;
+  height: auto;
+  max-width: 460px;
+  border: 1px solid var(--line, rgba(0, 0, 0, 0.1));
+  background: rgba(159, 125, 69, 0.03);
+}
+body .admin-traffic-legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+}
+body .admin-traffic-legend li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--line, rgba(0, 0, 0, 0.08));
+  padding-bottom: 4px;
+}
+body .admin-traffic-legend-note {
+  opacity: 0.6;
+}
+@media (max-width: 780px) {
+  body .admin-traffic-map {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 900px) {
   .home-trust-strip {
     grid-template-columns: 1fr;

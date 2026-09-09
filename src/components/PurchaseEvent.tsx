@@ -4,11 +4,22 @@ import { useEffect } from "react";
 import { analytics, type AnalyticsItem } from "@/lib/analytics";
 
 /**
- * Fires GA4 `purchase` from the confirmation page, and only when the order is
- * server-confirmed as PAID. GA4 dedupes on transaction_id, so a page refresh or
- * a payment retry that lands here again reports one purchase, not two. A
- * sessionStorage guard also stops a same-session refresh from re-sending.
+ * Fires `purchase` from the confirmation page when the order is server-
+ * confirmed PAID:
+ *  - GA4 `purchase` (deduped on transaction_id).
+ *  - first-party POST to /api/track/purchase, carrying the browser session id
+ *    so the store's own funnel can link this back to the add_to_cart session.
+ *    That route re-checks PAID server-side and a unique index dedupes.
+ * A sessionStorage guard also stops a same-session refresh from re-sending.
  */
+
+function currentSessionId() {
+  try {
+    return sessionStorage.getItem("amidaddy-sid") ?? "nostorage";
+  } catch {
+    return "nostorage";
+  }
+}
 export default function PurchaseEvent({
   order,
 }: {
@@ -31,6 +42,28 @@ export default function PurchaseEvent({
       // private mode / storage disabled — GA4's transaction_id dedupe still covers us
     }
     analytics.purchase(order);
+
+    const payload = JSON.stringify({
+      orderId: order.id,
+      sessionId: currentSessionId(),
+    });
+    try {
+      if (
+        navigator.sendBeacon?.(
+          "/api/track/purchase",
+          new Blob([payload], { type: "application/json" }),
+        )
+      )
+        return;
+    } catch {
+      // fall through
+    }
+    fetch("/api/track/purchase", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: payload,
+      keepalive: true,
+    }).catch(() => {});
   }, [order]);
   return null;
 }
