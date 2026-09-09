@@ -20,6 +20,7 @@ import { analytics, toItem } from "@/lib/analytics";
 import Photo from "@/components/Photo";
 import ProductStory, { type StoryTile } from "@/components/ProductStory";
 import StickyBuyBar from "@/components/StickyBuyBar";
+import HeroVideo from "@/components/HeroVideo";
 
 /** The horizontal note-ingredient strips that exist for the four singles. */
 const ingredientVisuals: Partial<
@@ -45,6 +46,11 @@ const ingredientVisuals: Partial<
 
 /** Studio close-ups live at /products/detail/<slug>/ for these four. */
 const DETAIL_SLUGS = ["coldwar", "old-love", "heavenly", "billionaire"];
+
+/** Campaign hero loops encoded into public/videos/ (see
+ *  scripts/encode-product-video.mjs). The combos have no film, so they keep the
+ *  still hero. */
+const VIDEO_SLUGS = ["coldwar", "old-love", "heavenly", "billionaire"];
 
 /** Per-fragrance PDP intro paragraph (plan §8.1–8.4). Falls back to
  *  product.description where a slug is not listed. */
@@ -252,6 +258,12 @@ export default function ProductDetail({ product }: { product: Product }) {
               className="object-cover"
             />
           </ViewTransition>
+          {/* Campaign loop, layered over the still once it can play. The image
+              above stays put so the hero is never blank and keeps its morph
+              from the product card. */}
+          {VIDEO_SLUGS.includes(product.slug) && (
+            <HeroVideo slug={product.slug} className="pdp-hero-video" />
+          )}
         </div>
         <div className="pdp-hero-veil" />
         <div className="pdp-hero-copy">

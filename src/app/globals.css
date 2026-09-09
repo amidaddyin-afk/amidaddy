@@ -5329,6 +5329,38 @@ body:has(.cine-root) {
 .pdp-hero-media :where(img) {
   object-position: center 42%;
 }
+/* Campaign loop, layered over the still hero photograph. Same fit and framing
+   as the image so the crossfade does not shift the composition. Starts
+   transparent and is faded in by HeroVideo once the video can play, so a slow
+   or failed load simply leaves the photograph showing. */
+.pdp-hero-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* The footage is 1080x1920 vertical and the subject sits in the upper half.
+     On a phone the hero is tall too, so the frame lands almost uncropped. */
+  object-position: center 35%;
+  opacity: 0;
+  transition: opacity 900ms ease;
+  pointer-events: none;
+}
+/* Desktop: the hero is a wide band and the footage is vertical, so cover()
+   would crop away most of the frame. Show the whole frame (contain) and shift
+   it right, clear of the headline and buy controls on the left. The still
+   photograph underneath fills the sides, so there are no pillarbox bars. */
+@media (min-width: 901px) {
+  .pdp-hero-video {
+    object-fit: contain;
+    object-position: 72% center;
+  }
+  /* Darken the still behind the video so the two layers read as one image
+     rather than a video pasted onto a photo. */
+  .pdp-hero-media:has(.pdp-hero-video) :where(img) {
+    filter: brightness(0.45) saturate(0.85);
+  }
+}
 .pdp-hero-veil {
   position: absolute;
   inset: 0;
