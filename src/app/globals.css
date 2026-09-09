@@ -4706,15 +4706,13 @@ so it carries
   color: var(--color-paper);
 }
 
-/* Mobile: the story images run to the screen edges.
-   Escaping the page padding by its own variable rather than 100vw, which
-   would overflow by the width of a visible scrollbar. The copy keeps its own
-   inset so text never touches the edge. */
-@media (max-width: 767px) {
-  .product-story {
-    margin-inline: calc(-1 * var(--page-pad, 1rem));
-  }
-}
+/* The mobile full-bleed rule that used to live here is gone. It pulled
+   .product-story out by -1 * --page-pad (32px each side) to escape the page
+   padding — but ProductStory renders in exactly one place, inside
+   .pdp-unfolds, which has `padding: ... 0`. There was no padding to cancel, so
+   it simply made the document 32px wider than the viewport: a blank stripe
+   down the right edge and a horizontal scroll on every phone. The section is
+   already full-bleed without it. */
 
 /* ==========================================================================
    CINEMATIC TREATMENT
@@ -6294,6 +6292,21 @@ body .pdp-hero-copy .pdp-hero-price s {
 body .pdp-hero-copy .pdp-back:hover,
 body .pdp-hero-copy .pdp-back:focus-visible {
   color: #fff;
+}
+/* "Buy it now" in the hero. The shared .pdp-buy-now rule paints itself with
+   --cine-paper, which `body .cinematic` redefines to dark ink for the light
+   page body below the fold — correct there, invisible here, because the hero
+   sits on dark video/photography. Give the hero instance its own light-on-dark
+   colours, matching the headline and price above. */
+body .pdp-hero-copy .pdp-hero-buy-now {
+  color: #f7f7f3;
+  border-color: rgba(247, 247, 243, 0.45);
+}
+body .pdp-hero-copy .pdp-hero-buy-now:hover:not(:disabled),
+body .pdp-hero-copy .pdp-hero-buy-now:focus-visible:not(:disabled) {
+  color: #fff;
+  border-color: #f7f7f3;
+  background: rgba(255, 255, 255, 0.1);
 }
 body .shop-size-heading .eyebrow {
   color: var(--fg-muted);
