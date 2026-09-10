@@ -2,8 +2,13 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { readFileSync, statSync } from "node:fs";
 
+// Line endings are normalised because these tests match on source text with
+// embedded newlines, and git checks these files out as CRLF on Windows.
 const read = (path: string) =>
-  readFileSync(new URL(`../${path}`, import.meta.url), "utf8");
+  readFileSync(new URL(`../${path}`, import.meta.url), "utf8").replaceAll(
+    "\r\n",
+    "\n",
+  );
 
 const SLUGS = ["billionaire", "coldwar", "heavenly", "old-love"];
 
