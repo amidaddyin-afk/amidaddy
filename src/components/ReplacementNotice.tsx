@@ -7,7 +7,12 @@ export default function ReplacementNotice({
 }) {
   return (
     <aside
-      className={`replacement-notice${compact ? "replacement-notice--compact" : ""}`}
+      className={[
+        "replacement-notice",
+        compact && "replacement-notice--compact",
+      ]
+        .filter(Boolean)
+        .join(" ")}
       aria-labelledby={
         compact ? "checkout-replacement-title" : "replacement-title"
       }

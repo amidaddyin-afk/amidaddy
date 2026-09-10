@@ -1661,10 +1661,12 @@ without dimming the whole photograph. */
   grid-template-columns: 2fr repeat(4, 1fr);
   gap: 4rem;
 }
+/* Matches the header wordmark: Georgia, lowercase, tight tracking. The
+   .wordmark-title class on the element supplies the family and the red "i";
+   this only sets the footer's own size. */
 .footer-mark {
-  font-family: var(--font-display);
   font-size: 2.4rem;
-  letter-spacing: 0.18em;
+  display: inline-block;
 }
 .footer-top > div:first-child p {
   margin-top: 1rem;
@@ -6621,6 +6623,11 @@ body .product-card .product-view {
   z-index: 90;
   width: 60px;
   height: 60px;
+}
+/* An overlay (cart, menu, search) owns the screen while it is up; a floating
+   button on top of it is just in the way. */
+body[data-overlay] .fragrance-switcher {
+  display: none;
 }
 .fragrance-switcher-trigger {
   position: absolute;

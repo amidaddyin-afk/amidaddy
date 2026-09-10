@@ -69,7 +69,12 @@ export default function FragranceSwitcher() {
   }, [open]);
 
   return (
-    <div className={`fragrance-switcher${open ? "is-open" : ""}`} ref={rootRef}>
+    <div
+      className={["fragrance-switcher", open && "is-open"]
+        .filter(Boolean)
+        .join(" ")}
+      ref={rootRef}
+    >
       <ul className="fragrance-switcher-arc">
         {FRAGRANCES.map((item, index) => {
           const isCurrent = item.slug === current?.slug;

@@ -28,9 +28,13 @@ export default function Navbar() {
       }
     };
     document.body.style.overflow = "hidden";
+    // Mirrors what the cart sets, so anything floating over the page (the
+    // fragrance switcher) can hide itself while an overlay is up.
+    document.body.dataset.overlay = open ? "menu" : "search";
     window.addEventListener("keydown", closeOverlay);
     return () => {
       document.body.style.overflow = previousOverflow;
+      delete document.body.dataset.overlay;
       window.removeEventListener("keydown", closeOverlay);
     };
   }, [open, searchOpen]);

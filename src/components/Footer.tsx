@@ -8,8 +8,9 @@ export default function Footer() {
       <div className="mx-auto max-w-[1500px]">
         <div className="footer-top">
           <div>
-            <Link href="/" className="footer-mark">
-              AMIDADDY
+            {/* Same wordmark as the header: serif, lowercase, red "i". */}
+            <Link href="/" className="footer-mark wordmark-title">
+              am<span className="brand-i">i</span>daddy
             </Link>
             <p>Original compositions. Personal signatures.</p>
           </div>
