@@ -115,7 +115,14 @@ export default function CartSidebar() {
             </div>
 
             {/* Items */}
-            <div className="flex-1 space-y-4 overflow-y-auto px-4 py-4">
+            {/* basis-0 so this list, not its siblings, absorbs the free space:
+                as plain flex-1 it was compressed to a ~32px window on a short
+                phone while the suggestions below kept their full height, and
+                the items you had just added were almost invisible.
+
+                Deliberately no min-height — a floor here grows the panel past
+                the viewport and pushes Checkout off the bottom. */}
+            <div className="flex-1 basis-0 space-y-4 overflow-y-auto px-4 py-4">
               {/* popLayout so a removed line does not shove the rest down during
                   its own exit - the remaining items spring up to close the gap. */}
               <AnimatePresence mode="popLayout" initial={false}>
@@ -156,15 +163,15 @@ export default function CartSidebar() {
                       }}
                       className="cart-item border-line bg-raised flex gap-4 border p-3"
                     >
-                      <div className="bg-raised h-24 w-20 flex-shrink-0 overflow-hidden">
+                      <div className="bg-raised h-20 w-16 flex-shrink-0 overflow-hidden">
                         <Image
                           src={
                             item.product.variantImages?.[item.size]?.[0] ??
                             item.product.image
                           }
                           alt={item.product.name}
-                          width={80}
-                          height={96}
+                          width={64}
+                          height={80}
                           className="h-full w-full object-contain"
                         />
                       </div>
@@ -255,7 +262,7 @@ export default function CartSidebar() {
                   </div>
                 </div>
                 {suggestions.length > 0 && (
-                  <div className="cart-quick-add">
+                  <div className="cart-quick-add hidden flex-none [@media(min-height:760px)]:block">
                     <p className="text-subtle mb-2 text-[10px] tracking-[0.18em] uppercase">
                       You may also like
                     </p>
@@ -269,14 +276,14 @@ export default function CartSidebar() {
                         return (
                           <article
                             key={product.id}
-                            className="border-line bg-raised[.025] min-w-[112px] flex-1 border p-2"
+                            className="border-line bg-raised[.025] min-w-[92px] flex-1 border p-2"
                           >
-                            <div className="bg-raised relative mb-2 aspect-[4/5] overflow-hidden">
+                            <div className="bg-raised relative mb-1.5 aspect-square overflow-hidden">
                               <Image
                                 src={image}
                                 alt={`${product.name} 20 ml`}
                                 fill
-                                sizes="112px"
+                                sizes="92px"
                                 className="object-contain"
                               />
                             </div>
