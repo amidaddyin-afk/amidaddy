@@ -18,13 +18,8 @@ body .nav-inner {
   max-width: 1500px;
   min-height: 5.25rem;
 }
-body .wordmark img {
-  width: 3rem;
-  height: 3rem;
-  object-fit: contain;
-}
 body .wordmark-title {
-  font-size: 1.65rem;
+  font-size: 2.1rem;
 }
 .storefront-home {
   background: var(--bg);
@@ -537,6 +532,44 @@ body .admin-shell .status-pill {
   color: #7e602a !important;
 }
 
+body .admin-traffic-map {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 220px;
+  gap: 28px;
+  align-items: start;
+  margin-top: 20px;
+}
+body .admin-traffic-svg {
+  width: 100%;
+  height: auto;
+  max-width: 460px;
+  border: 1px solid var(--line, rgba(0, 0, 0, 0.1));
+  background: rgba(159, 125, 69, 0.03);
+}
+body .admin-traffic-legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+}
+body .admin-traffic-legend li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--line, rgba(0, 0, 0, 0.08));
+  padding-bottom: 4px;
+}
+body .admin-traffic-legend-note {
+  opacity: 0.6;
+}
+@media (max-width: 780px) {
+  body .admin-traffic-map {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 900px) {
   .home-trust-strip {
     grid-template-columns: 1fr;
@@ -853,12 +886,19 @@ main.house-home {
   background: var(--surface);
   box-shadow: none;
 }
+:root {
+  /* Fixed chrome above the page: the announcement bar plus the header. Kept
+     here so anything sizing itself against the viewport stays in step if
+     either height changes. */
+  --announcement-h: 2rem;
+  --chrome-h: calc(var(--announcement-h) + 72px);
+}
 .announcement-bar {
   position: fixed;
   inset: 0 0 auto;
   z-index: 80;
   display: flex;
-  height: 2rem;
+  height: var(--announcement-h);
   align-items: center;
   justify-content: center;
   overflow: hidden;
@@ -910,18 +950,14 @@ main.house-home {
   gap: 0.5rem;
   color: #fff;
 }
-.wordmark img {
-  width: 4.25rem;
-  height: auto;
-}
 .wordmark-title {
-  font-family: var(--font-display), sans-serif;
-  font-size: 2.15rem;
-  font-weight: 400;
-  letter-spacing: -0.01em;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 2.35rem;
+  font-weight: 500;
+  letter-spacing: -0.055em;
   line-height: 1;
 }
-.wordmark-title > span {
+.wordmark-title > .brand-i {
   color: var(--color-ember-red);
 }
 .nav-actions {
@@ -980,28 +1016,56 @@ main.house-home {
   background: transparent;
   color: white;
 }
+/* Dimmed page behind the drawer; tapping it closes the menu. */
+.mobile-menu-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 99;
+  background: rgba(8, 8, 10, 0.45);
+}
+
+/* The menu is a drawer, not a full-page slab: it covers the left portion of
+   the screen on a light surface and lets the page show through beside it. */
 .mobile-menu {
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+  inset: 0 auto 0 0;
+  width: min(21rem, 84vw);
+  background: #f6f5f2;
+  color: #14171a;
+  border-right: 1px solid #dcdad4;
+  box-shadow: 0 0 60px rgba(8, 8, 10, 0.28);
+  padding: 1.75rem 1.6rem;
+}
+.mobile-menu > button {
+  top: 1.5rem;
+  right: 1.4rem;
+  color: #14171a;
 }
 .mobile-menu nav {
   display: flex;
   flex: 1;
   flex-direction: column;
-  justify-content: center;
-  gap: 1.1rem;
-  padding: 4.5rem 0 2rem;
+  justify-content: flex-start;
+  gap: 0.25rem;
+  padding: 3.25rem 0 1rem;
 }
 .mobile-menu nav a {
-  font-family: var(--font-display);
-  font-size: clamp(2rem, 8vw, 3.25rem);
-  line-height: 1.1;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.35rem;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid #e4e2dc;
+}
+.mobile-menu nav a:last-child {
+  border-bottom: 0;
 }
 .mobile-menu p {
   margin-top: auto;
-  color: var(--champagne);
-  font-size: 0.7rem;
+  color: #6b7280;
+  font-size: 0.62rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
 }
@@ -1328,17 +1392,6 @@ main.house-home {
   overflow: hidden;
   padding: 10rem 2rem;
   background: var(--bg);
-}
-.finder-orbit {
-  position: absolute;
-  top: 50%;
-  left: 20%;
-  width: 480px;
-  height: 480px;
-  border: 1px solid var(--line);
-  border-radius: 0;
-  transform: translate(-50%, -50%);
-  box-shadow: none;
 }
 .finder-card {
   position: relative;
@@ -2062,20 +2115,18 @@ without dimming the whole photograph. */
   background: rgba(255, 255, 255, 0.07);
   color: var(--color-ember-red);
 }
-.mobile-menu,
 .search-overlay {
   background: #070808;
   backdrop-filter: blur(24px);
 }
 .mobile-menu nav a {
-  width: max-content;
   transition:
     color 0.25s ease,
     transform 0.35s var(--ease-premium);
 }
 .mobile-menu nav a:hover {
   transform: translate3d(0.35rem, 0, 0);
-  color: var(--champagne);
+  color: var(--color-ember-red);
 }
 .cart-overlay {
   background: rgba(0, 0, 0, 0.68);
@@ -2464,11 +2515,8 @@ body .site-header {
   .wordmark {
     gap: 0.3rem;
   }
-  .wordmark img {
-    width: 3rem;
-  }
   .wordmark-title {
-    font-size: 1.55rem;
+    font-size: 1.9rem;
   }
   .shop-size-sections {
     gap: 5rem;
@@ -3806,7 +3854,13 @@ so it stays single-column. */
   .story-copy h3 {
     font-size: 2rem;
   }
-  /* Flip by reordering the same markup rather than duplicating it. */
+  /* Flip by reordering the same markup rather than duplicating it. Mirroring
+     the tracks with it keeps the media in the wide column on both sides —
+     otherwise a flipped row drops the image into the narrow copy track and it
+     renders visibly smaller than its neighbours. */
+  .story-row.is-flipped {
+    grid-template-columns: 1fr 50%;
+  }
   .story-row.is-flipped .story-media {
     order: 2;
   }
@@ -3827,6 +3881,9 @@ so it stays single-column. */
     gap: 4rem; /* 64px */
     /* One comfortable viewport per pair, never two stacked into a screen. */
     min-height: min(78vh, 46rem);
+  }
+  .story-row.is-flipped {
+    grid-template-columns: 1fr 58%;
   }
   .story-copy h3 {
     font-size: 2.6rem;
@@ -4668,15 +4725,13 @@ so it carries
   color: var(--color-paper);
 }
 
-/* Mobile: the story images run to the screen edges.
-   Escaping the page padding by its own variable rather than 100vw, which
-   would overflow by the width of a visible scrollbar. The copy keeps its own
-   inset so text never touches the edge. */
-@media (max-width: 767px) {
-  .product-story {
-    margin-inline: calc(-1 * var(--page-pad, 1rem));
-  }
-}
+/* The mobile full-bleed rule that used to live here is gone. It pulled
+   .product-story out by -1 * --page-pad (32px each side) to escape the page
+   padding — but ProductStory renders in exactly one place, inside
+   .pdp-unfolds, which has `padding: ... 0`. There was no padding to cancel, so
+   it simply made the document 32px wider than the viewport: a blank stripe
+   down the right edge and a horizontal scroll on every phone. The section is
+   already full-bleed without it. */
 
 /* ==========================================================================
    CINEMATIC TREATMENT
@@ -5032,10 +5087,14 @@ body:has(.cine-root) {
   gap: 0.6rem;
   border: 1px solid var(--color-signal-blue);
   border-radius: 0;
-  padding: 1rem 1.9rem;
-  background: transparent;
-  color: var(--color-signal-blue);
-  font-size: var(--text-caption);
+  padding: 1.05rem 2.1rem;
+  /* Filled rather than outlined: as a transparent charcoal outline this read
+     as body text and was easy to miss. This CTA closes a dark section, so the
+     fill is paper on charcoal — the inverse of the buttons on light ground. */
+  background: var(--color-paper);
+  color: var(--color-obsidian);
+  border-color: var(--color-paper);
+  font-size: 0.9rem;
   font-weight: 500;
   letter-spacing: 0.02em;
   text-transform: none;
@@ -5045,7 +5104,7 @@ body:has(.cine-root) {
 }
 .cine-end-cta:hover,
 .cine-end-cta:focus-visible {
-  background: var(--color-signal-blue);
+  background: transparent;
   color: var(--color-paper);
   outline: none;
 }
@@ -5291,6 +5350,38 @@ body:has(.cine-root) {
 .pdp-hero-media :where(img) {
   object-position: center 42%;
 }
+/* Campaign loop, layered over the still hero photograph. Same fit and framing
+   as the image so the crossfade does not shift the composition. Starts
+   transparent and is faded in by HeroVideo once the video can play, so a slow
+   or failed load simply leaves the photograph showing. */
+.pdp-hero-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* The footage is 1080x1920 vertical and the subject sits in the upper half.
+     On a phone the hero is tall too, so the frame lands almost uncropped. */
+  object-position: center 35%;
+  opacity: 0;
+  transition: opacity 900ms ease;
+  pointer-events: none;
+}
+/* Desktop: the hero is a wide band and the footage is vertical, so cover()
+   would crop away most of the frame. Show the whole frame (contain) and shift
+   it right, clear of the headline and buy controls on the left. The still
+   photograph underneath fills the sides, so there are no pillarbox bars. */
+@media (min-width: 901px) {
+  .pdp-hero-video {
+    object-fit: contain;
+    object-position: 72% center;
+  }
+  /* Darken the still behind the video so the two layers read as one image
+     rather than a video pasted onto a photo. */
+  .pdp-hero-media:has(.pdp-hero-video) :where(img) {
+    filter: brightness(0.45) saturate(0.85);
+  }
+}
 .pdp-hero-veil {
   position: absolute;
   inset: 0;
@@ -5395,11 +5486,107 @@ body:has(.cine-root) {
   overflow: hidden;
   border: 1px solid var(--cine-line);
 }
-.pdp-object-media :where(img) {
-  transition: transform 0.9s var(--ease-premium);
+/* The gallery owns its own frames; a hover-zoom on the whole rail would fight
+   the swipe and shift the snap positions, so it is not applied here. */
+
+/* ---- PDP gallery: a scroll-snap rail of every frame for the size ---- */
+.pdp-gallery {
+  position: relative;
+  height: 100%;
 }
-.pdp-object-media:hover :where(img) {
-  transform: scale(1.03);
+.pdp-gallery-rail {
+  display: flex;
+  height: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+.pdp-gallery-rail::-webkit-scrollbar {
+  display: none;
+}
+.pdp-gallery-frame {
+  position: relative;
+  flex: 0 0 100%;
+  height: 100%;
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+}
+.pdp-gallery-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--cine-line);
+  background: rgba(255, 255, 255, 0.86);
+  color: #101010;
+  cursor: pointer;
+  opacity: 0;
+  transition:
+    opacity 0.25s ease,
+    background 0.25s ease;
+}
+.pdp-gallery-arrow.prev {
+  left: 12px;
+}
+.pdp-gallery-arrow.next {
+  right: 12px;
+}
+.pdp-gallery:hover .pdp-gallery-arrow,
+.pdp-gallery-arrow:focus-visible {
+  opacity: 1;
+}
+.pdp-gallery-arrow:hover {
+  background: #fff;
+}
+.pdp-gallery-arrow:disabled {
+  opacity: 0;
+  pointer-events: none;
+}
+.pdp-gallery-dots {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 14px;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  gap: 7px;
+}
+.pdp-gallery-dots button {
+  width: 7px;
+  height: 7px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.18);
+  cursor: pointer;
+  transition:
+    background 0.25s ease,
+    transform 0.25s ease;
+}
+.pdp-gallery-dots button.active {
+  background: #fff;
+  transform: scale(1.35);
+}
+/* Touch has no hover, so the arrows would never appear; the swipe and the dots
+   are the controls there. */
+@media (hover: none) {
+  .pdp-gallery-arrow {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pdp-gallery-rail {
+    scroll-behavior: auto;
+  }
 }
 .pdp-buy-notes {
   font-size: 0.7rem;
@@ -5502,6 +5689,14 @@ body:has(.cine-root) {
 }
 
 /* ---- the note journey ---- */
+/* The note stills are landscape (~1.15) and all four fragrances were shot to
+   the same framing. Giving their rows a matching frame shows each photograph
+   whole, so the three tiers read as one set rather than three different crops.
+   Scoped to the notes story: the combos keep the portrait frame their product
+   photography is shot for. */
+.pdp-unfolds[data-story="notes"] .story-media {
+  aspect-ratio: 7 / 6;
+}
 .pdp-unfolds {
   padding: clamp(4rem, 12vh, 9rem) 0 0;
 }
@@ -5526,7 +5721,7 @@ body:has(.cine-root) {
   letter-spacing: -0.02em;
 }
 
-/* ---- ingredients + how to wear ---- */
+/* ---- how to wear ---- */
 .pdp-detail {
   display: grid;
   gap: clamp(2.5rem, 6vw, 5rem);
@@ -5535,22 +5730,8 @@ body:has(.cine-root) {
   margin-inline: auto;
   padding: clamp(5rem, 13vh, 10rem) var(--cine-pad);
 }
-.pdp-ingredients {
-  margin: 0;
-  border: 1px solid var(--cine-line);
-  background: #fff;
-  padding: clamp(1rem, 3vw, 2rem);
-}
-.pdp-ingredients img {
-  width: 100%;
-  height: auto;
-}
-.pdp-ingredients figcaption {
-  margin-top: 0.9rem;
-  font-size: 0.68rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--cine-paper-faint);
+.pdp-detail .pdp-wear {
+  max-width: 60ch;
 }
 .pdp-wear .display-title {
   font-family: var(--font-display), "Inter", sans-serif;
@@ -5654,9 +5835,6 @@ body:has(.cine-root) {
 @media (min-width: 900px) {
   .pdp-object {
     grid-template-columns: 1.1fr 0.9fr;
-  }
-  .pdp-detail {
-    grid-template-columns: 1fr 1fr;
   }
 }
 
@@ -5822,8 +6000,8 @@ body .wordmark-title {
 }
 /* The house palette neutralises --color-ember-red site-wide; the wordmark "i"
    keeps a literal red regardless. */
-body .wordmark-title > span {
-  color: #ee3a49;
+body .wordmark-title > .brand-i {
+  color: #c52639;
 }
 body .lux-button {
   background: var(--fg);
@@ -5848,53 +6026,160 @@ body .display-title {
 .house-home h2 {
   font-size: clamp(2.4rem, 4.8vw, 4.6rem);
 }
+/* Homepage hero: copy panel on the left, rotating campaign panel on the right.
+   Collapses to a stack under 767px, copy first. */
 .house-hero {
-  display: flex;
-  flex-direction: column;
-  background: var(--bg);
-}
-.house-hero-image {
-  position: relative;
-  width: 100%;
-}
-.house-hero-photo {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-.house-hero-photo--mobile {
-  display: none;
+  display: grid;
+  grid-template-columns: 49% 51%;
+  /* Fills the screen below the fixed chrome so the film has the whole viewport
+     to play in. No max-height: capping it left a band of page showing under
+     the hero on a tall monitor. */
+  min-height: 570px;
+  height: calc(100svh - var(--chrome-h));
+  background: #171717;
+  color: #fff;
+  overflow: hidden;
 }
 .house-hero-copy {
-  padding: 40px 4vw 44px;
+  padding: 8% 7% 8% 8.2%;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 12px;
-  border-bottom: 1px solid var(--line);
+  align-items: flex-start;
+  justify-content: center;
+  text-align: left;
+  gap: 0;
+  border-bottom: 0;
+  position: relative;
+  z-index: 2;
+}
+.house-hero-copy .eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.13em;
+  line-height: 1.6;
+  color: #fff;
 }
 .house-hero-copy h1 {
-  font-size: clamp(2.4rem, 4vw, 4rem);
-  margin: 0;
+  font-size: clamp(3.5rem, 6.8vw, 6.9rem);
+  line-height: 0.98;
+  letter-spacing: -0.065em;
+  font-weight: 500;
+  margin: 34px 0;
+  color: #fff;
 }
-.house-hero-copy > p:not(.eyebrow) {
-  max-width: 340px;
-  line-height: 1.7;
-  color: var(--fg-muted);
+.house-hero-copy h1 span {
+  color: #cfcfcf;
+}
+.house-hero-copy > p:not(.eyebrow):not(.house-hero-tagline) {
+  max-width: none;
+  color: #c4c4c4;
+  line-height: 1.65;
   font-size: 17px;
   margin: 0;
 }
-.house-hero-actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 18px 28px;
-  margin-top: 14px;
+/* Sits low in the copy panel, filling the space under the CTA and echoing the
+   announcement bar's line. */
+.house-hero-tagline {
+  margin: 0;
+  padding-top: clamp(1.75rem, 5vh, 3.25rem);
+  /* Set to the same scale and tracking as the h1 above it, one step down and
+     dimmed, so it reads as part of the same statement without competing with
+     the headline. */
+  font-size: clamp(2.6rem, 5.2vw, 5.2rem);
+  line-height: 0.98;
+  letter-spacing: -0.065em;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.3);
 }
-.house-hero-actions .lux-button {
-  margin-top: 0;
+.house-hero-cta {
+  margin-top: 32px;
+  background: #fff;
+  color: #151515;
+  border-color: #fff;
+}
+.house-hero-cta:hover {
+  background: #e4e4e4;
+  color: #151515;
+}
+
+/* Campaign panel beside the hero copy. The still is the base layer; the film
+   slideshow fades in over it once a clip can play, so the panel is never empty
+   and a visitor who gets no video simply keeps the photograph. */
+.house-hero-image {
+  position: relative;
+  overflow: hidden;
+  background: #8f8b8c;
+}
+.house-hero-image img {
+  object-position: 50% 35%;
+}
+.house-hero-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 35%;
+  transition: opacity 0.6s ease;
+}
+/* Softens the join between the copy panel and the film: the panel colour
+   bleeds a little way into the video's left edge so the two halves read as one
+   image rather than two blocks butted together. */
+.house-hero-image::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    to right,
+    #171717 0%,
+    rgba(23, 23, 23, 0.72) 4%,
+    rgba(23, 23, 23, 0.28) 10%,
+    rgba(23, 23, 23, 0) 20%
+  );
+}
+
+/* A soft scrim over the film: enough shading to sit type on and to stop the
+   panel glaring against the dark copy half, while the footage stays clearly
+   visible. Sits above the video, below the CTA. */
+.house-hero-image::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      to top,
+      rgba(8, 8, 10, 0.62) 0%,
+      rgba(8, 8, 10, 0.22) 34%,
+      rgba(8, 8, 10, 0) 62%
+    ),
+    linear-gradient(to bottom, rgba(8, 8, 10, 0.3) 0%, rgba(8, 8, 10, 0) 28%);
+}
+/* Desktop keeps the copy in its own panel, so this CTA is mobile-only. */
+.house-hero-overlay-cta {
+  display: none;
+}
+
+/* The three headline prices, directly under the hero. */
+.house-value-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+}
+.house-value-strip span {
+  text-align: center;
+  padding: 23px 10px;
+  border-right: 1px solid var(--line);
+}
+.house-value-strip span:last-child {
+  border-right: 0;
+}
+.house-value-strip b {
+  margin-left: 8px;
+  font-weight: 600;
 }
 .house-benefits {
   display: flex;
@@ -6018,7 +6303,7 @@ body .size-chip.active {
   gap: 8vw;
 }
 body .pdp-hero {
-  min-height: 600px;
+  min-height: max(600px, 100svh);
 }
 body .pdp-hero-copy {
   padding-top: 45px;
@@ -6060,9 +6345,6 @@ body .shop-hero h1 {
   }
   .house-hero-copy > .lux-button {
     animation-delay: 0.18s;
-  }
-  .house-hero-image img {
-    animation: house-enter 0.9s ease both;
   }
 }
 @keyframes house-enter {
@@ -6107,19 +6389,67 @@ body .shop-hero h1 {
     --fg-muted: #b0b8b1;
   }
 }
-@media (max-width: 760px) {
+@media (max-width: 767px) {
+  .house-hero {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+  }
+  /* On a phone the film leads: the copy panel is hidden so the video is the
+     first thing on screen. Clipped rather than display:none — the <h1> is the
+     page's main heading and must stay in the document for crawlers and screen
+     readers. */
   .house-hero-copy {
-    padding: 32px 24px 36px;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
   }
-  .house-hero-copy h1 {
-    font-size: clamp(2.4rem, 9vw, 3.4rem);
+  /* Fill the screen below the fixed chrome. svh is the small viewport height,
+     so the film still fits when the mobile browser's toolbars are expanded
+     rather than being cut off by them. */
+  .house-hero-image {
+    height: calc(100svh - var(--chrome-h));
+    min-height: 420px;
   }
-  .house-hero-photo--desktop {
+  /* Stacked on a phone, so there is no vertical seam to soften. */
+  .house-hero-image::before {
     display: none;
   }
-  .house-hero-photo--mobile {
-    display: block;
+  .house-hero-overlay-cta {
+    position: absolute;
+    z-index: 2;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 26px;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px 26px;
+    background: #fff;
+    color: #151515;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
   }
+  .house-value-strip {
+    grid-template-columns: 1fr;
+  }
+  .house-value-strip span {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+    padding: 13px;
+  }
+}
+@media (max-width: 760px) {
   .house-benefits {
     flex-wrap: wrap;
     justify-content: center;
@@ -6150,8 +6480,11 @@ body .shop-hero h1 {
   .house-format {
     gap: 20px;
   }
+  /* Full screen for the product film. This hero sits at the top of the page
+     and runs under the fixed chrome, so it takes the whole viewport rather
+     than the viewport minus that chrome. */
   body .pdp-hero {
-    min-height: 650px;
+    min-height: 100svh;
   }
   .house-discovery .product-visual {
     aspect-ratio: 1.1;
@@ -6217,6 +6550,21 @@ body .pdp-hero-copy .pdp-back:hover,
 body .pdp-hero-copy .pdp-back:focus-visible {
   color: #fff;
 }
+/* "Buy it now" in the hero. The shared .pdp-buy-now rule paints itself with
+   --cine-paper, which `body .cinematic` redefines to dark ink for the light
+   page body below the fold — correct there, invisible here, because the hero
+   sits on dark video/photography. Give the hero instance its own light-on-dark
+   colours, matching the headline and price above. */
+body .pdp-hero-copy .pdp-hero-buy-now {
+  color: #f7f7f3;
+  border-color: rgba(247, 247, 243, 0.45);
+}
+body .pdp-hero-copy .pdp-hero-buy-now:hover:not(:disabled),
+body .pdp-hero-copy .pdp-hero-buy-now:focus-visible:not(:disabled) {
+  color: #fff;
+  border-color: #f7f7f3;
+  background: rgba(255, 255, 255, 0.1);
+}
 body .shop-size-heading .eyebrow {
   color: var(--fg-muted);
 }
@@ -6256,4 +6604,225 @@ body .shop-hero-copy .eyebrow {
 body .product-card .product-view {
   color: #f4f4f0;
   background: #171b19cc;
+}
+
+/* ---- floating fragrance switcher ----
+   Closed: one charcoal button in the bottom-right. Open: the four signatures
+   fan out on an arc, each dot carrying its bottle colour so it is identifiable
+   before the label is read. The chrome is the house charcoal/paper rather than
+   the bottle colours, so the widget belongs to the site and the colour only
+   ever appears in the dots themselves. */
+.fragrance-switcher {
+  position: fixed;
+  right: clamp(16px, 3vw, 28px);
+  /* Lifted clear of whatever else lives in this corner (support launcher,
+     sticky buy bar) so the two never sit on top of each other. */
+  bottom: clamp(88px, 12vh, 116px);
+  z-index: 90;
+  width: 60px;
+  height: 60px;
+}
+.fragrance-switcher-trigger {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  border: 1px solid var(--color-obsidian);
+  border-radius: 50%;
+  background: var(--color-obsidian);
+  color: var(--color-paper);
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(10, 12, 11, 0.32);
+  transition:
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.3s ease;
+}
+.fragrance-switcher-trigger:hover {
+  transform: scale(1.06);
+  box-shadow: 0 14px 36px rgba(10, 12, 11, 0.42);
+}
+.fragrance-switcher.is-open .fragrance-switcher-trigger {
+  transform: rotate(90deg);
+}
+/* Four pips in a 2x2 block: reads as "the four fragrances" at a glance. */
+.fragrance-switcher-pips {
+  display: grid;
+  grid-template-columns: repeat(2, 9px);
+  gap: 4px;
+}
+.fragrance-switcher-pips i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px rgba(244, 244, 240, 0.35);
+}
+
+.fragrance-switcher-arc {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.fragrance-switcher-arc li {
+  position: absolute;
+  /* Pinned to the trigger's right edge rather than stretched across it, so the
+     pill grows leftward into the page as the name gets longer instead of
+     running off the right of the screen. */
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: flex-end;
+  height: 60px;
+  align-items: center;
+  transform: translate3d(0, 0, 0) scale(0.4);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    transform 0.42s cubic-bezier(0.22, 1, 0.36, 1) var(--delay),
+    opacity 0.28s ease var(--delay);
+}
+.fragrance-switcher.is-open .fragrance-switcher-arc li {
+  transform: translate3d(var(--x), var(--y), 0) scale(1);
+  transform-origin: 100% 100%;
+  opacity: 1;
+  pointer-events: auto;
+}
+.fragrance-switcher-arc a {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 6px 14px 6px 6px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--color-paper);
+  color: var(--color-obsidian);
+  white-space: nowrap;
+  box-shadow: 0 6px 18px rgba(10, 12, 11, 0.22);
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease;
+}
+.fragrance-switcher-arc a:hover {
+  transform: scale(1.05);
+  border-color: var(--color-obsidian);
+}
+.fragrance-switcher-arc a.is-current {
+  border-color: var(--color-obsidian);
+  background: var(--color-obsidian);
+  color: var(--color-paper);
+}
+.fragrance-switcher-dot {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--dot);
+  box-shadow: inset 0 0 0 1px rgba(10, 12, 11, 0.22);
+  flex: none;
+}
+.fragrance-switcher-label {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+@media (prefers-reduced-motion: reduce) {
+  .fragrance-switcher-trigger,
+  .fragrance-switcher-arc li,
+  .fragrance-switcher-arc a {
+    transition: none;
+  }
+}
+
+/* ---- certification marks ----
+   The badge art is dark line work keyed to transparency, so on a light surface
+   it needs nothing behind it, and over photography it needs a plate. */
+.certifications {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+.certifications img {
+  display: block;
+  height: auto;
+}
+
+/* Standalone band: full set with captions. */
+.certifications--strip {
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: clamp(1.5rem, 4vw, 3.25rem);
+}
+.certifications--strip li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7rem;
+  width: 116px;
+  text-align: center;
+}
+.certifications--strip span {
+  font-size: 0.68rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--fg-muted, #636965);
+  line-height: 1.35;
+}
+
+/* Buy rail: full set, compact, no captions. */
+.certifications--row {
+  flex-wrap: wrap;
+  gap: 0.85rem;
+}
+.certifications--row img {
+  opacity: 0.78;
+}
+
+/* Over photography or video: a translucent plate so dark art stays legible on
+   a dark frame, and the marks read as an applied seal rather than page furniture. */
+.certifications--overlay {
+  position: absolute;
+  left: clamp(12px, 2vw, 20px);
+  bottom: clamp(12px, 2vw, 20px);
+  z-index: 3;
+  gap: 0.5rem;
+  padding: 0.5rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(244, 244, 240, 0.88);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 16px rgba(10, 12, 11, 0.18);
+  pointer-events: none;
+}
+@media (max-width: 640px) {
+  .certifications--strip {
+    gap: 1.25rem 1.5rem;
+  }
+  .certifications--strip li {
+    width: 92px;
+  }
+}
+
+/* Certification band on the homepage. */
+.house-certifications {
+  padding: clamp(2.75rem, 6vh, 4.5rem) 4vw;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(1.5rem, 4vh, 2.5rem);
+  text-align: center;
+}
+.house-certifications p {
+  margin: 0;
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+/* Marks in the buy rail sit under the assurance list. */
+.pdp-assure-marks {
+  margin-top: 1rem;
 }

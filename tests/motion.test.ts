@@ -100,9 +100,10 @@ test("the PDP carousel is gone and the vertical story replaces it", () => {
   }
   assert.match(detail, /<ProductStory tiles=\{storyTiles\} \/>/);
   // Four images per product, not the ten to fifteen the catalogue holds.
+  assert.match(detail, /const STORY_TILE_COUNT = 4;/);
   assert.match(
     detail,
-    /STORY_COPY\.slice\(0, Math\.min\(4, images\.length\)\)/,
+    /\.slice\(0, Math\.min\(STORY_TILE_COUNT, images\.length\)\)/,
   );
 });
 

@@ -3,6 +3,7 @@ import "server-only";
 import type { Product } from "@/lib/data";
 import { deriveNotes, PRODUCTS } from "@/lib/data";
 import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public-client";
 import type {
   productInputSchema,
   productListQuerySchema,
@@ -108,7 +109,10 @@ function mapProduct(product: Record<string, unknown>): Product {
     id: String(product.id),
     slug,
     name: approved?.name ?? String(product.name),
-    image: defaultImages[0] ?? fallback?.image ?? "/curated/billionaire.webp",
+    image:
+      defaultImages[0] ??
+      fallback?.image ??
+      "/ref/billionaire-100ml-mobile.webp",
     images: productImages,
     variantImages,
     profile: (product.fragrance_family ??
@@ -220,7 +224,10 @@ function unavailableProducts(query: ListQuery) {
 
 export async function listCatalogProducts(query: ListQuery) {
   if (!configured()) return unavailableProducts(query);
-  const supabase = await createClient();
+  // Anonymous client: this query filters to active, non-deleted rows itself, so
+  // it needs no session — and using the cookie-bearing client would opt every
+  // calling page out of Next's cache. See src/lib/supabase/public-client.ts.
+  const supabase = createPublicClient();
   const start = (query.page - 1) * query.pageSize;
   let request = supabase
     .from("products")
@@ -323,7 +330,8 @@ export async function getCatalogProductBySlug(slug: string) {
     const fallback = PRODUCTS.find((product) => product.slug === slug);
     return process.env.NODE_ENV === "production" || !fallback ? null : fallback;
   }
-  const supabase = await createClient();
+  // Anonymous client, same reasoning as listCatalogProducts above.
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("products")
     .select("*, product_images(url, position), product_variants(*)")

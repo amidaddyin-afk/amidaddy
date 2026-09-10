@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { CheckCircle2, Clock3 } from "lucide-react";
 import ClearCartOnSuccess from "@/components/ClearCartOnSuccess";
+import PurchaseEvent from "@/components/PurchaseEvent";
 import { getOrder } from "@/lib/orders";
 
 export const dynamic = "force-dynamic";
@@ -15,6 +16,25 @@ export default async function CheckoutSuccessPage({
   return (
     <main data-surface="commerce" className="empty-state">
       <ClearCartOnSuccess paid={paid} />
+      {paid && order && (
+        <PurchaseEvent
+          order={{
+            id: order.id,
+            subtotalPaise: order.subtotalPaise,
+            shippingPaise: order.shippingPaise,
+            taxPaise: order.taxPaise,
+            discountPaise: order.discountPaise,
+            couponCode: order.couponCode,
+            items: order.lines.map((line) => ({
+              item_id: line.productId,
+              item_name: line.name,
+              item_variant: line.size,
+              price: Math.round(line.unitPricePaise) / 100,
+              quantity: line.qty,
+            })),
+          }}
+        />
+      )}
       {paid ? <CheckCircle2 size={52} /> : <Clock3 size={52} />}
       <p className="eyebrow mt-6">
         {paid ? "Payment confirmed" : "Confirming payment"}

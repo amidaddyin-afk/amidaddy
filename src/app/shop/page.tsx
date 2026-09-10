@@ -29,6 +29,11 @@ export const metadata: Metadata = {
   alternates: { canonical: "/shop" },
 };
 
+/** Cached render instead of a Supabase query per visitor. Admin edits clear it
+ *  immediately via revalidateStorefront(); see src/app/page.tsx for the full
+ *  rationale. Filtered variants (?family=, ?search=) are cached per URL. */
+export const revalidate = 300;
+
 export default async function ShopPage({
   searchParams,
 }: {
@@ -109,7 +114,7 @@ export default async function ShopPage({
         <section className="shop-hero" data-surface="story">
           <div className="shop-hero-media">
             <Photo
-              src="/products/combos/100ml/02.webp"
+              src="/ref/collection-4x100ml-desktop.webp"
               alt="All four Amidaddy fragrances — Billionaire, Cold War, Heavenly and Old Love — in 100ml bottles"
               fill
               priority

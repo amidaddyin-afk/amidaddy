@@ -75,10 +75,24 @@ const makeVariants = (
   },
 ];
 
-const galleryImages = (slug: string, count: number) =>
-  Array.from(
-    { length: count },
-    (_, index) => `/gallery/${slug}/${String(index + 1).padStart(2, "0")}.webp`,
+/**
+ * Studio photography lives flat in /ref, named `<slug>-<frame>.webp`. Each
+ * fragrance keeps its own frame list rather than a padded index range, because
+ * the frames are the photographer's numbering, not a sequence we control.
+ */
+const REF_FRAMES: Record<string, number[]> = {
+  billionaire: [3987, 3994, 4004, 4014, 4023, 4038, 4055],
+  coldwar: [3487, 3527, 3536, 3545, 3577],
+  heavenly: [3620, 3682, 3695, 3705, 3763],
+  "old-love": [3804, 3810, 3903, 3926, 3956, 3958, 4096],
+};
+
+/** File prefix in /ref, which spells Cold War with a hyphen. */
+const refSlug = (slug: string) => (slug === "coldwar" ? "cold-war" : slug);
+
+const galleryImages = (slug: string) =>
+  (REF_FRAMES[slug] ?? []).map(
+    (frame) => `/ref/${refSlug(slug)}-${frame}.webp`,
   );
 
 const singleVariant = (
@@ -126,14 +140,18 @@ const CATALOG: Product[] = [
     id: "billionaire",
     slug: "billionaire",
     name: "Billionaire",
-    image: "/curated/billionaire.webp",
+    image: "/ref/billionaire-100ml-mobile.webp",
     images: [
-      "/curated/billionaire.webp",
-      "/curated/products/billionaire/detail.webp",
-      ...galleryImages("billionaire", 11),
+      "/ref/billionaire-100ml-mobile.webp",
+      "/ref/billionaire-100ml-desktop.webp",
+      ...galleryImages("billionaire"),
     ],
     variantImages: {
-      "20ml": ["/products/20ml/studio/billionaire.webp"],
+      "100ml": ["/ref/billionaire-100ml-mobile.webp"],
+      "20ml": [
+        "/ref/billionaire-20ml.webp",
+        "/ref/billionaire-20ml-desktop.webp",
+      ],
     },
     profile: "Woody",
     concentration: "Eau de Parfum",
@@ -171,14 +189,11 @@ const CATALOG: Product[] = [
     id: "coldwar",
     slug: "coldwar",
     name: "Cold War",
-    image: "/curated/cold-war.webp",
-    images: [
-      "/curated/cold-war.webp",
-      "/curated/products/coldwar/detail.webp",
-      ...galleryImages("coldwar", 10),
-    ],
+    image: "/ref/cold-war-100ml-mobile.webp",
+    images: ["/ref/cold-war-100ml-mobile.webp", ...galleryImages("coldwar")],
     variantImages: {
-      "20ml": ["/products/20ml/studio/cold-war.webp"],
+      "100ml": ["/ref/cold-war-100ml-mobile.webp"],
+      "20ml": ["/ref/cold-war-20ml.webp"],
     },
     profile: "Fresh",
     concentration: "Eau de Parfum",
@@ -207,14 +222,20 @@ const CATALOG: Product[] = [
     id: "heavenly",
     slug: "heavenly",
     name: "Heavenly",
-    image: "/curated/heavenly.webp",
+    image: "/ref/heavenly-100ml-mobile.webp",
     images: [
-      "/curated/heavenly.webp",
-      "/curated/products/heavenly/detail.webp",
-      ...galleryImages("heavenly", 13),
+      "/ref/heavenly-100ml-mobile.webp",
+      "/ref/heavenly-100ml-desktop.webp",
+      "/ref/heavenly-both-sizes-desktop.webp",
+      ...galleryImages("heavenly"),
     ],
     variantImages: {
-      "20ml": ["/products/20ml/studio/heavenly.webp"],
+      "100ml": ["/ref/heavenly-100ml-mobile.webp"],
+      "20ml": [
+        "/ref/heavenly-20ml.webp",
+        "/ref/heavenly-20ml-mobile.webp",
+        "/ref/heavenly-20ml-desktop.webp",
+      ],
     },
     profile: "Floral",
     concentration: "Eau de Parfum",
@@ -249,13 +270,11 @@ const CATALOG: Product[] = [
     id: "old-love",
     slug: "old-love",
     name: "Old Love",
-    image: "/curated/products/old-love/detail.webp",
-    images: [
-      "/curated/products/old-love/detail.webp",
-      ...galleryImages("old-love", 14),
-    ],
+    image: "/ref/old-love-100ml.webp",
+    images: ["/ref/old-love-100ml.webp", ...galleryImages("old-love")],
     variantImages: {
-      "20ml": ["/products/20ml/studio/old-love.webp"],
+      "100ml": ["/ref/old-love-100ml.webp"],
+      "20ml": ["/ref/old-love-20ml.webp"],
     },
     profile: "Amber",
     concentration: "Eau de Parfum",
@@ -284,29 +303,24 @@ const CATALOG: Product[] = [
     id: "combo-20ml",
     slug: "signature-combo-20ml",
     name: "Signature Discovery Combo",
-    image: "/products/combos/20ml/01.webp",
+    // The four-bottle pack shot leads: the set is what is being sold, so the
+    // card should show all four rather than one bottle from it.
+    image: "/products/combos/20ml-combo-of-4.jpg",
     images: [
-      "/products/combos/20ml/01.webp",
-      "/products/combos/20ml/02.webp",
-      "/products/combos/20ml/03.webp",
-      "/products/combos/20ml/04.webp",
-      "/products/combos/20ml/05.webp",
-      "/products/combos/20ml/06.webp",
-      "/products/combos/20ml/07.webp",
-      "/products/combos/20ml/08.webp",
-      "/products/combos/20ml/09.webp",
+      "/products/combos/20ml-combo-of-4.jpg",
+      "/ref/heavenly-20ml.webp",
+      "/ref/old-love-20ml.webp",
+      "/ref/billionaire-20ml.webp",
+      "/ref/cold-war-20ml.webp",
+      "/ref/heavenly-20ml-desktop.webp",
     ],
     variantImages: {
       "20ml": [
-        "/products/combos/20ml/01.webp",
-        "/products/combos/20ml/02.webp",
-        "/products/combos/20ml/03.webp",
-        "/products/combos/20ml/04.webp",
-        "/products/combos/20ml/05.webp",
-        "/products/combos/20ml/06.webp",
-        "/products/combos/20ml/07.webp",
-        "/products/combos/20ml/08.webp",
-        "/products/combos/20ml/09.webp",
+        "/products/combos/20ml-combo-of-4.jpg",
+        "/ref/heavenly-20ml.webp",
+        "/ref/old-love-20ml.webp",
+        "/ref/billionaire-20ml.webp",
+        "/ref/cold-war-20ml.webp",
       ],
     },
     profile: "Mixed",
@@ -338,19 +352,19 @@ const CATALOG: Product[] = [
     id: "combo-100ml",
     slug: "signature-combo-100ml",
     name: "Signature Collection Combo",
-    image: "/products/combos/100ml/01.webp",
+    image: "/ref/collection-4x100ml-mobile.webp",
     images: [
-      "/products/combos/100ml/01.webp",
-      "/products/combos/100ml/02.webp",
-      "/products/combos/100ml/03.webp",
-      "/products/combos/100ml/04.webp",
+      "/ref/collection-4x100ml-mobile.webp",
+      "/ref/collection-4x100ml-desktop.webp",
+      "/ref/old-love-100ml.webp",
+      "/ref/heavenly-100ml-mobile.webp",
+      "/ref/billionaire-100ml-mobile.webp",
+      "/ref/cold-war-100ml-mobile.webp",
     ],
     variantImages: {
       "100ml": [
-        "/products/combos/100ml/01.webp",
-        "/products/combos/100ml/02.webp",
-        "/products/combos/100ml/03.webp",
-        "/products/combos/100ml/04.webp",
+        "/ref/collection-4x100ml-mobile.webp",
+        "/ref/collection-4x100ml-desktop.webp",
       ],
     },
     profile: "Mixed",

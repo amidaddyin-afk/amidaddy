@@ -1,9 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useRef, useState, ViewTransition } from "react";
+import { useEffect, useRef, useState, ViewTransition } from "react";
 import {
   ArrowLeft,
   ArrowUpRight,
@@ -16,34 +15,31 @@ import {
 import type { Product } from "@/lib/data";
 import { useCart } from "@/context/CartContext";
 import { formatInr } from "@/lib/money";
+import { analytics, toItem } from "@/lib/analytics";
 import Photo from "@/components/Photo";
 import ProductStory, { type StoryTile } from "@/components/ProductStory";
+import ProductGallery from "@/components/ProductGallery";
+import FragranceSwitcher from "@/components/FragranceSwitcher";
+import Certifications from "@/components/Certifications";
 import StickyBuyBar from "@/components/StickyBuyBar";
+import HeroVideo from "@/components/HeroVideo";
 
-/** The horizontal note-ingredient strips that exist for the four singles. */
-const ingredientVisuals: Partial<
-  Record<string, { src: string; width: number; height: number }>
-> = {
-  "old-love": {
-    src: "/ingredients/old-love-notes.webp",
-    width: 915,
-    height: 223,
-  },
-  coldwar: { src: "/ingredients/coldwar-notes.webp", width: 915, height: 223 },
-  heavenly: {
-    src: "/ingredients/heavenly-notes.webp",
-    width: 915,
-    height: 218,
-  },
-  billionaire: {
-    src: "/ingredients/billionaire-notes.webp",
-    width: 915,
-    height: 194,
-  },
+/**
+ * Folder name under /perfumeNotes for each fragrance. The photography is
+ * shot per tier — top.jpeg, heart.jpeg, base.jpeg — for these four singles;
+ * the combos have no note pyramid of their own and so get no section.
+ */
+const NOTE_IMAGE_DIRS: Partial<Record<string, string>> = {
+  "old-love": "OldLove",
+  coldwar: "ColdWar",
+  heavenly: "Heavenly",
+  billionaire: "Billionaire",
 };
 
-/** Studio close-ups live at /products/detail/<slug>/ for these four. */
-const DETAIL_SLUGS = ["coldwar", "old-love", "heavenly", "billionaire"];
+/** Campaign hero loops encoded into public/videos/ (see
+ *  scripts/encode-product-video.mjs). The combos have no film, so they keep the
+ *  still hero. */
+const VIDEO_SLUGS = ["coldwar", "old-love", "heavenly", "billionaire"];
 
 /** Per-fragrance PDP intro paragraph (plan §8.1–8.4). Falls back to
  *  product.description where a slug is not listed. */
@@ -105,76 +101,88 @@ const STORY_COPY = [
   },
 ] as const;
 
+/** How many frames the vertical story shows at most. */
+const STORY_TILE_COUNT = 4;
+
 /**
- * The note journey. When studio close-ups exist it is three beats over three
- * macro frames of the bottle in its own world; otherwise it falls back to four
- * frames of the campaign photography with the copy above.
+ * The note journey.
+ *
+ * For the four singles this is told over the note photography — one still per
+ * tier, shot for that ingredient — so the section that names the notes is the
+ * section that shows them. The tiers are the content, which is why there is no
+ * separate note grid elsewhere on the page.
+ *
+ * The combos have no note pyramid of their own, so they keep the earlier
+ * behaviour: product photography with copy derived from their note lists.
  */
 function buildStoryTiles(
   product: Product,
   images: string[],
   size: "20ml" | "100ml",
 ): StoryTile[] {
-  if (DETAIL_SLUGS.includes(product.slug)) {
-    const base = `/products/detail/${product.slug}`;
-    const captions = unfoldCaptions[product.slug] ?? [
-      `${product.topNotes.join(", ")}. Bright and immediate, the note you meet first.`,
-      `${product.heartNotes.join(", ")}. The character of the scent as it settles on skin.`,
-      `${product.baseNotes.slice(0, 4).join(", ")} in the dry-down. ${product.longevity} of wear, remembered after you leave.`,
-    ];
-    return [
-      {
-        image: `${base}/01.webp`,
-        heading: "The opening",
-        copy: captions[0],
-        alt: `${product.name} ${product.concentration}, the opening notes`,
-      },
-      {
-        image: `${base}/02.webp`,
-        heading: "The heart",
-        copy: captions[1],
-        alt: `${product.name} ${product.concentration}, the heart notes`,
-      },
-      {
-        image: `${base}/03.webp`,
-        heading: "The trail",
-        copy: captions[2],
-        alt: `${product.name} ${product.concentration}, the base notes`,
-      },
-    ];
+  const noteDir = NOTE_IMAGE_DIRS[product.slug];
+  const unfold = unfoldCaptions[product.slug];
+
+  if (noteDir) {
+    const tiers = [
+      { key: "top", label: "Top notes", notes: product.topNotes },
+      { key: "heart", label: "Heart notes", notes: product.heartNotes },
+      { key: "base", label: "Base notes", notes: product.baseNotes },
+    ] as const;
+    return tiers.map((tier, index) => ({
+      image: `/perfumeNotes/${noteDir}/${tier.key}.jpeg`,
+      heading: tier.label,
+      // The hand-written line where there is one, the note list otherwise.
+      copy: unfold?.[index] ?? tier.notes.join(", "),
+      alt: `${tier.label} of ${product.name}: ${tier.notes.join(", ")}`,
+    }));
   }
-  return STORY_COPY.slice(0, Math.min(4, images.length)).map(
-    (entry, index) => ({
+
+  const entries = STORY_COPY.map((entry) => ({
+    heading: entry.heading,
+    copy: entry.from(product),
+  }));
+  return entries
+    .slice(0, Math.min(STORY_TILE_COUNT, images.length))
+    .map((entry, index) => ({
       image: images[index],
       heading: entry.heading,
-      copy: entry.from(product),
+      copy: entry.copy,
       alt: `${product.name} ${product.concentration}, ${size} — ${entry.heading.toLowerCase()}`,
-    }),
-  );
+    }));
 }
 
-export default function ProductDetail({
-  product,
-  initialSize,
-}: {
-  product: Product;
-  initialSize?: "20ml" | "100ml";
-}) {
+export default function ProductDetail({ product }: { product: Product }) {
   const available = product.variants.filter(
     (variant) => variant.active && variant.stock > variant.reserved,
   );
   const [size, setSize] = useState<"20ml" | "100ml">(
-    available.find((item) => item.name === initialSize)?.name ??
-      available.find((item) => item.name === "100ml")?.name ??
+    available.find((item) => item.name === "100ml")?.name ??
       available[0]?.name ??
       "100ml",
   );
+
+  // Honour `?size=` from links like /products/x?size=20ml.
+  //
+  // Read from window rather than useSearchParams(): this page is prerendered,
+  // and useSearchParams() forces a Suspense boundary whose fallback would ship
+  // an empty product page to crawlers. Reading in an effect keeps the full
+  // product HTML static and just adjusts the preselection after hydration.
+  useEffect(() => {
+    const requested = new URLSearchParams(window.location.search).get("size");
+    if (requested !== "20ml" && requested !== "100ml") return;
+    if (available.some((item) => item.name === requested)) setSize(requested);
+    // Only on mount: after this the shopper's own size clicks own the state.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const [added, setAdded] = useState(false);
   const { addItem, openCart } = useCart();
   const router = useRouter();
   const variant = product.variants.find((item) => item.name === size);
   const isCombo = product.collection === "combos";
-  const ingredientVisual = ingredientVisuals[product.slug];
+  // Set when this fragrance has note photography; buildStoryTiles uses it, and
+  // the "how to wear" steps below are shown for the same four singles.
+  const noteDir = NOTE_IMAGE_DIRS[product.slug];
   const character = [
     ...(isCombo ? [] : [product.profile]),
     ...product.mood.split(/,| and /),
@@ -189,11 +197,22 @@ export default function ProductDetail({
       : product.images;
   const addButtonRef = useRef<HTMLButtonElement>(null);
   const heroImage = activeImages[0];
-  const hasDetail = DETAIL_SLUGS.includes(product.slug);
-  const objectImage = hasDetail
-    ? `/products/detail/${product.slug}/hero.webp`
-    : (activeImages[1] ?? activeImages[0]);
-  const storyTiles = buildStoryTiles(product, activeImages, size);
+  // The gallery shows the size-correct bottle first, then the rest of the
+  // shoot — campaign frames included. variantImages alone is deliberately
+  // narrow (often a single pack shot), which would leave nothing to swipe, so
+  // the full image list follows it. Deduped, since the lead frame usually
+  // appears in both.
+  const galleryImages = [...new Set([...activeImages, ...product.images])];
+  // The story runs further down the same page as the hero and the gallery's
+  // opening frame, both of which lead on galleryImages[0]. Starting the story
+  // at the same photograph shows the visitor one image three times, so it
+  // begins after the frames those two already used and only falls back to the
+  // full set when there is not enough photography to go around.
+  const storyImages =
+    galleryImages.length > STORY_TILE_COUNT
+      ? galleryImages.slice(1)
+      : galleryImages;
+  const storyTiles = buildStoryTiles(product, storyImages, size);
   const sizeLabel =
     product.packSize && product.packSize > 1
       ? `${product.packSize} × ${size}`
@@ -202,6 +221,11 @@ export default function ProductDetail({
   const onSale = !!variant && variant.mrpPaise > variant.pricePaise;
 
   const buyDesc = pdpIntros[product.slug] ?? product.description;
+
+  // Fire view_item once per product, and again when the shopper switches size.
+  useEffect(() => {
+    analytics.viewItem(toItem(product, size));
+  }, [product, size]);
 
   const add = () => {
     addItem(product, size);
@@ -239,6 +263,12 @@ export default function ProductDetail({
               className="object-cover"
             />
           </ViewTransition>
+          {/* Campaign loop, layered over the still once it can play. The image
+              above stays put so the hero is never blank and keeps its morph
+              from the product card. */}
+          {VIDEO_SLUGS.includes(product.slug) && (
+            <HeroVideo slug={product.slug} className="pdp-hero-video" />
+          )}
         </div>
         <div className="pdp-hero-veil" />
         <div className="pdp-hero-copy">
@@ -299,17 +329,15 @@ export default function ProductDetail({
         </div>
       </section>
 
-      {/* ---- the object: a studio close-up beside the buy rail ----
+      {/* ---- the object: the full gallery beside the buy rail ----
           Static, never revealed on scroll: the buy rail must not depend on a
           motion trigger firing. */}
       <section className="pdp-object">
         <div className="pdp-object-media">
-          <Photo
-            src={objectImage}
-            alt={`${product.name} ${product.concentration}, studio detail`}
-            fill
-            sizes="(max-width: 900px) 100vw, 52vw"
-            className="object-cover"
+          <ProductGallery
+            images={galleryImages}
+            name={product.name}
+            concentration={product.concentration}
           />
         </div>
         <div className="pdp-buy lg:sticky lg:top-28 lg:h-fit">
@@ -384,6 +412,9 @@ export default function ProductDetail({
             </li>
           </ul>
 
+          {/* The marks themselves, at the point of decision. */}
+          <Certifications variant="row" className="pdp-assure-marks" />
+
           <dl className="pdp-facts">
             <div>
               <dt>Wears</dt>
@@ -410,28 +441,27 @@ export default function ProductDetail({
         </div>
       </section>
 
-      {/* ---- the note journey, told over the close-ups ---- */}
-      <section className="pdp-unfolds">
+      {/* ---- the note journey, told over the note photography ---- */}
+      <section
+        className="pdp-unfolds"
+        data-story={noteDir ? "notes" : "photos"}
+      >
         <div className="pdp-section-head">
-          <h2 className="display-title">How it unfolds.</h2>
-          <p>Three moments, from the first spray to the trail it leaves.</p>
+          <h2 className="display-title">
+            {noteDir ? "The notes." : "How it unfolds."}
+          </h2>
+          <p>
+            {noteDir
+              ? `What ${product.name} is built from, tier by tier — the opening, the heart it settles into, and the base it leaves behind.`
+              : "Three moments, from the first spray to the trail it leaves."}
+          </p>
         </div>
         <ProductStory tiles={storyTiles} />
       </section>
 
-      {/* ---- ingredients + how to wear ---- */}
-      {ingredientVisual && (
+      {/* ---- how to wear ---- */}
+      {noteDir && (
         <section className="pdp-detail">
-          <figure className="pdp-ingredients">
-            <Image
-              src={ingredientVisual.src}
-              alt={`${product.name} top, heart and base note ingredients`}
-              width={ingredientVisual.width}
-              height={ingredientVisual.height}
-              sizes="(max-width: 1024px) 100vw, 44vw"
-            />
-            <figcaption>Top, heart and base, shown for reference.</figcaption>
-          </figure>
           <div className="pdp-wear">
             <h2 className="display-title">Make the trail last.</h2>
             <ol>
@@ -513,6 +543,8 @@ export default function ProductDetail({
         added={added}
         anchorRef={addButtonRef}
       />
+      {/* Jump straight to another signature without going back to the shop. */}
+      <FragranceSwitcher />
     </main>
   );
 }

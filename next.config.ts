@@ -1,13 +1,21 @@
 import type { NextConfig } from "next";
 
 const isDevelopment = process.env.NODE_ENV === "development";
+// Google Analytics 4: gtag.js is served from googletagmanager.com; the
+// collected events POST to *.google-analytics.com / *.analytics.google.com.
+// Only referenced when NEXT_PUBLIC_GA_MEASUREMENT_ID is set (see
+// src/components/Analytics.tsx), but the CSP must allow it either way.
 const contentSecurityPolicy = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isDevelopment ? " 'unsafe-eval'" : ""} https://checkout.razorpay.com https://challenges.cloudflare.com`,
+  `script-src 'self' 'unsafe-inline'${isDevelopment ? " 'unsafe-eval'" : ""} https://checkout.razorpay.com https://challenges.cloudflare.com https://www.googletagmanager.com`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' blob: data: https:",
+  // Product hero loops are served from /public. Stated explicitly rather than
+  // inherited from default-src, so a future default-src change cannot silently
+  // stop video from playing.
+  "media-src 'self'",
   "font-src 'self' data:",
-  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.razorpay.com https://challenges.cloudflare.com",
+  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.razorpay.com https://challenges.cloudflare.com https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com",
   "frame-src https://api.razorpay.com https://checkout.razorpay.com https://challenges.cloudflare.com",
   "object-src 'none'",
   "base-uri 'self'",

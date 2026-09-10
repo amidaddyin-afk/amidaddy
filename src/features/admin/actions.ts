@@ -5,6 +5,7 @@ import { z } from "zod";
 import { requireAdminUser } from "@/lib/auth";
 import { appendAuditEvent } from "@/lib/audit";
 import { db, transaction } from "@/lib/db";
+import { revalidateStorefront } from "@/lib/revalidate-storefront";
 
 export type AdminActionState = { error?: string; message?: string };
 async function admin() {
@@ -135,6 +136,8 @@ export async function adjustVariantStockAction(
       });
     });
     revalidatePath("/admin");
+    // Availability is rendered on the cached storefront pages.
+    revalidateStorefront();
     return { message: "Stock updated." };
   } catch (error) {
     return {
@@ -178,6 +181,9 @@ export async function updateStoreSettingsAction(
       );
     });
     revalidatePath("/admin");
+    // The shipping fee and free-delivery threshold appear in the homepage
+    // benefits strip and FAQ.
+    revalidateStorefront();
     return { message: "Store settings updated." };
   } catch (error) {
     return {

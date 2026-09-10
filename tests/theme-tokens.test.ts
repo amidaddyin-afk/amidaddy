@@ -107,16 +107,13 @@ test("footer account links are client-resolved, not server-rendered", () => {
   assert.match(links, /href="\/signup"/);
 });
 
-test("footer offers an admin sign-in without advertising the admin route", () => {
+test("footer carries no admin entry point in customer navigation", () => {
+  // Admins reach /admin by typing the URL; middleware (src/proxy.ts) gates it.
+  // The customer-facing footer must not surface an admin link at all.
   const footer = read("src/components/Footer.tsx");
-  assert.match(
-    footer,
-    /href="\/login\?next=\/admin"/,
-    "admin entry point should go through the login page",
-  );
   assert.ok(
-    !/href="\/admin"/.test(footer),
-    "footer should not link straight to /admin",
+    !/href="\/admin"/.test(footer) && !/next=\/admin/.test(footer),
+    "footer should not link to the admin area",
   );
 });
 

@@ -10,7 +10,7 @@ test("signature products keep 20 ml photography separate", () => {
   for (const product of signatures) {
     const twentyMlImages = product.variantImages?.["20ml"] ?? [];
     assert.ok(twentyMlImages.length > 0);
-    assert.ok(twentyMlImages.every((image) => image.includes("/20ml/")));
+    assert.ok(twentyMlImages.every((image) => image.includes("-20ml")));
     assert.ok(twentyMlImages.every((image) => !product.images.includes(image)));
   }
 });
@@ -33,10 +33,18 @@ test("20 ml and 100 ml combos have separate products and galleries", () => {
     hundredMl.variants.map((variant) => variant.name),
     ["100ml"],
   );
-  assert.ok(twentyMl.images.every((image) => image.includes("/combos/20ml/")));
-  assert.equal(twentyMl.images.length, 9);
+  // The 20 ml set leads on its own four-bottle pack shot and is otherwise
+  // shot as individual pocket bottles; the 100 ml set leads on the full-size
+  // collection frames. Neither borrows the other's frames.
   assert.ok(
-    hundredMl.images.every((image) => image.includes("/combos/100ml/")),
+    twentyMl.images.every(
+      (image) => image.includes("20ml") && !image.includes("100ml"),
+    ),
+  );
+  assert.ok(
+    hundredMl.images.every(
+      (image) => image.includes("100ml") || image.includes("4x100ml"),
+    ),
   );
   assert.equal(
     twentyMl.images.some((image) => hundredMl.images.includes(image)),

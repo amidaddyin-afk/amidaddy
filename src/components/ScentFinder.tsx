@@ -1,11 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, RotateCcw } from "lucide-react";
 import type { FragranceFamily, Product } from "@/lib/data";
 import Reveal from "@/components/Reveal";
+import { analytics } from "@/lib/analytics";
 
 const questions: Array<{
   title: string;
@@ -53,9 +54,19 @@ export default function ScentFinder({ products }: { products: Product[] }) {
       products.find((product) => product.profile === family) ?? products[0]
     );
   }, [answers, products, step]);
+
+  const started = useRef(false);
+  useEffect(() => {
+    if (step === 1 && !started.current) {
+      started.current = true;
+      analytics.scentFinderStart();
+    }
+  }, [step]);
+  useEffect(() => {
+    if (result) analytics.scentFinderComplete(result.slug);
+  }, [result]);
   return (
     <section className="finder-section" id="scent-finder">
-      <div className="finder-orbit" />
       <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[.75fr_1.25fr]">
         <Reveal from="left">
           <p className="eyebrow">Scent finder</p>
@@ -113,6 +124,9 @@ export default function ScentFinder({ products }: { products: Product[] }) {
                 </p>
                 <Link
                   href={`/products/${result.slug}`}
+                  onClick={() =>
+                    analytics.scentRecommendationClick(result.slug)
+                  }
                   className="lux-button mt-7"
                 >
                   Meet your scent <ArrowRight size={15} />

@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { ShieldCheck } from "lucide-react";
 import FooterAccountLinks from "@/components/FooterAccountLinks";
 import { policyLinks } from "@/lib/policies";
 
@@ -45,13 +44,6 @@ export default function Footer() {
         <div className="footer-bottom">
           <span>© {new Date().getFullYear()} Amidaddy Perfumes</span>
           <span>India · INR · GST-inclusive pricing</span>
-          {/* Points at the sign-in page rather than /admin so the footer does
-              not advertise the admin route itself. Non-admins who sign in here
-              land on their account page. */}
-          <Link href="/login?next=/admin" className="footer-admin-link">
-            <ShieldCheck size={13} aria-hidden="true" />
-            Admin login
-          </Link>
         </div>
       </div>
     </footer>

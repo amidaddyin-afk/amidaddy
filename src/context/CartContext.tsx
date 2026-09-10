@@ -13,6 +13,7 @@ import {
   DEFAULT_FREE_SHIPPING_PAISE,
   DEFAULT_SHIPPING_FEE_PAISE,
 } from "@/lib/commerce";
+import { analytics, toItem } from "@/lib/analytics";
 
 export interface CartItem {
   product: Product;
@@ -71,6 +72,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       (item) => item.name === size && item.active,
     );
     if (!variant || variant.stock - variant.reserved <= 0) return;
+    analytics.addToCart(toItem(product, size, 1));
     setItems((previous) => {
       const index = previous.findIndex((item) => item.variantId === variant.id);
       if (index >= 0) {
@@ -99,11 +101,16 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, []);
   const removeItem = useCallback(
     (productId: string, size: string) =>
-      setItems((previous) =>
-        previous.filter(
+      setItems((previous) => {
+        const gone = previous.find(
+          (item) => item.product.id === productId && item.size === size,
+        );
+        if (gone)
+          analytics.removeFromCart(toItem(gone.product, gone.size, gone.qty));
+        return previous.filter(
           (item) => !(item.product.id === productId && item.size === size),
-        ),
-      ),
+        );
+      }),
     [],
   );
   const updateQty = useCallback(

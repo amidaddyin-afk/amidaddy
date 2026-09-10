@@ -15,20 +15,20 @@ const blocks = [
   {
     heading: "Original, not a reference.",
     body: "Every Amidaddy scent is its own composition. We are not trying to reproduce another house's smell, and we do not name one on the label.",
-    image: "/products/detail/billionaire/hero.webp",
-    alt: "Billionaire beside a glass of whiskey and cinnamon bark",
+    image: "/ref/billionaire-3994.webp",
+    alt: "The Billionaire bottle in its campaign setting",
   },
   {
     heading: "The composition comes first.",
     body: "Our attention goes to what is in the bottle and how it develops on skin, from the first spray to the trail it leaves hours later.",
-    image: "/products/approach/lineup.webp",
+    image: "/ref/collection-4x100ml-desktop.webp",
     alt: "The four Amidaddy signatures in 100ml and 20ml, stacked together",
   },
   {
     heading: "Made to be worn, not saved.",
     body: "Fragrance you finish, in a size that fits your routine. Start with 20ml to discover; keep 100ml for every day.",
-    image: "/products/detail/coldwar/01.webp",
-    alt: "Close detail of the Cold War bottle collar and spray head",
+    image: "/ref/cold-war-3536.webp",
+    alt: "Close detail of the Cold War bottle",
   },
 ];
 
@@ -48,8 +48,8 @@ export default function OurApproachPage() {
         </div>
         <Reveal variant="clip" className="approach-hero-media">
           <Photo
-            src="/products/detail/old-love/hero.webp"
-            alt="Old Love on a dark surface with saffron and amber notes staged around it"
+            src="/ref/old-love-3804.webp"
+            alt="Old Love photographed for the campaign"
             fill
             priority
             sizes="100vw"

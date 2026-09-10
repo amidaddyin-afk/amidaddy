@@ -405,6 +405,30 @@ model LeadEvent {
   @@map("lead_events")
 }
 
+/// First-party funnel + geo telemetry. Append-only, no PII. See
+/// prisma/migrations/20260909120000_analytics_events for the full rationale.
+/// The purchase-dedupe unique index (analytics_events_purchase_order_idx) is a
+/// partial index Prisma can't express declaratively, so it lives only in the
+/// migration — do not add @@unique here.
+model AnalyticsEvent {
+  id         BigInt   @id @default(autoincrement())
+  type       String
+  sessionId  String   @map("session_id")
+  path       String?
+  region     String?
+  country    String?
+  productRef String?  @map("product_ref")
+  valuePaise Int?     @map("value_paise")
+  orderId    String?  @map("order_id")
+  metadata   Json     @default("{}")
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([createdAt])
+  @@index([type, createdAt, region])
+  @@index([type, sessionId])
+  @@map("analytics_events")
+}
+
 model CampaignSend {
   id        BigInt   @id @default(autoincrement())
   email     String

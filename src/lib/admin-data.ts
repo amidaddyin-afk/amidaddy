@@ -9,6 +9,12 @@ import {
   type LeadFunnel,
   type LeadRecord,
 } from "@/lib/leads";
+import {
+  getCartAbandonment,
+  getTrafficByRegion,
+  type CartAbandonment,
+  type RegionTraffic,
+} from "@/lib/analytics-server";
 
 export type AdminOverview = {
   orders: OrderRecord[];
@@ -55,6 +61,10 @@ export type AdminOverview = {
   }>;
   leadFunnel: LeadFunnel;
   leads: LeadRecord[];
+  traffic: {
+    byRegion: RegionTraffic[];
+    abandonment: CartAbandonment;
+  };
   metrics: {
     netRevenuePaise: number;
     refundsPaise: number;
@@ -122,6 +132,16 @@ export async function getAdminOverview(): Promise<AdminOverview> {
     ),
     listLeads({ limit: 250 }).catch(() => []),
   ]);
+  const [trafficByRegion, cartAbandonment] = await Promise.all([
+    getTrafficByRegion(30).catch(() => []),
+    getCartAbandonment(30).catch(() => ({
+      days: 30,
+      cartSessions: 0,
+      purchasedSessions: 0,
+      abandonedSessions: 0,
+      abandonmentRate: 0,
+    })),
+  ]);
   const refundsPaise = Number(refunds.rows[0]?.total ?? 0);
   const paid = orders.filter((order) =>
     ["PAID", "PARTIALLY_REFUNDED", "REFUNDED"].includes(order.paymentStatus),
@@ -181,6 +201,7 @@ export async function getAdminOverview(): Promise<AdminOverview> {
     inventory: inventoryRows,
     leadFunnel,
     leads,
+    traffic: { byRegion: trafficByRegion, abandonment: cartAbandonment },
     metrics: {
       netRevenuePaise: gross - refundsPaise,
       refundsPaise,
