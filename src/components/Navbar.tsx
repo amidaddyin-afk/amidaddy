@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Menu, Search, ShoppingBag, UserRound, X } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
 import { useCart } from "@/context/CartContext";
 
 export default function Navbar() {
@@ -58,15 +57,8 @@ export default function Navbar() {
             className="wordmark"
             aria-label="Amidaddy Perfumes home"
           >
-            <Image
-              src="/brand/amidaddy-ad-signature-mark.png"
-              alt="Amidaddy Perfumes"
-              width={512}
-              height={512}
-              priority
-            />
             <span className="wordmark-title" aria-hidden="true">
-              am<span>i</span>daddy
+              am<span className="brand-i">i</span>daddy
             </span>
           </Link>
           <div className="nav-actions">
@@ -94,14 +86,25 @@ export default function Navbar() {
       <AnimatePresence>
         {open && (
           <motion.div
+            className="mobile-menu-scrim"
+            aria-hidden="true"
+            onClick={() => setOpen(false)}
+            initial={reduceMotion ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: reduceMotion ? 0 : 0.25 }}
+          />
+        )}
+        {open && (
+          <motion.div
             className="mobile-menu"
             role="dialog"
             aria-modal="true"
             aria-label="Site navigation"
-            initial={reduceMotion ? false : { opacity: 0, y: -8 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: reduceMotion ? 0 : 0.35 }}
+            initial={reduceMotion ? false : { opacity: 0, x: -24 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -24 }}
+            transition={{ duration: reduceMotion ? 0 : 0.3 }}
           >
             <button
               autoFocus

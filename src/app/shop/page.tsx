@@ -114,7 +114,7 @@ export default async function ShopPage({
         <section className="shop-hero" data-surface="story">
           <div className="shop-hero-media">
             <Photo
-              src="/products/combos/100ml/02.webp"
+              src="/ref/collection-4x100ml-desktop.webp"
               alt="All four Amidaddy fragrances — Billionaire, Cold War, Heavenly and Old Love — in 100ml bottles"
               fill
               priority

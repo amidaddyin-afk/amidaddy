@@ -67,7 +67,6 @@ export default function ScentFinder({ products }: { products: Product[] }) {
   }, [result]);
   return (
     <section className="finder-section" id="scent-finder">
-      <div className="finder-orbit" />
       <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[.75fr_1.25fr]">
         <Reveal from="left">
           <p className="eyebrow">Scent finder</p>

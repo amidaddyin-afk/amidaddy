@@ -109,7 +109,10 @@ function mapProduct(product: Record<string, unknown>): Product {
     id: String(product.id),
     slug,
     name: approved?.name ?? String(product.name),
-    image: defaultImages[0] ?? fallback?.image ?? "/curated/billionaire.webp",
+    image:
+      defaultImages[0] ??
+      fallback?.image ??
+      "/ref/billionaire-100ml-mobile.webp",
     images: productImages,
     variantImages,
     profile: (product.fragrance_family ??

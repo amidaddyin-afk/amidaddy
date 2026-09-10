@@ -9,7 +9,7 @@
 .house-hero-secondary {
   margin-top: 16px;
 }
-.house-hero-copy > p:not(.eyebrow) {
+.house-hero-copy > p:not(.eyebrow):not(.house-hero-tagline) {
   font-size: clamp(1rem, 1.6vw, 1.25rem);
 }
 
@@ -41,9 +41,17 @@
 }
 .house-story-media {
   position: relative;
-  aspect-ratio: 16 / 10;
+  /* The photography is 4:5 portrait; a 16/10 frame threw away half of every
+     shot. 5/4 keeps the rail horizontal while showing far more of the image. */
+  aspect-ratio: 5 / 4;
   overflow: hidden;
   background: var(--bg-band);
+}
+/* These are tall portraits dropped into a landscape frame; a centred crop
+   takes the top of the head off, so the crop is biased upward to keep the
+   face and the bottle in shot. */
+.house-story-photo {
+  object-position: 50% 22%;
 }
 .house-story-photo--mobile {
   display: none;
@@ -84,9 +92,15 @@
 }
 .house-composition-media {
   position: relative;
+  /* Same 5/4 frame as the story tiles above, so the rail and this band crop
+     their photography identically instead of each picking its own height. */
+  aspect-ratio: 5 / 4;
   min-height: 460px;
   overflow: hidden;
   background: var(--bg-band);
+}
+.house-composition-photo {
+  object-position: 50% 20%;
 }
 .house-composition-photo--mobile {
   display: none;
@@ -128,7 +142,9 @@
 .house-close {
   position: relative;
   border-top: 1px solid var(--line);
-  min-height: 420px;
+  /* Taller than the old 420px letterbox: these are 4:5 portraits, and a short
+     band cropped away roughly three quarters of the frame. */
+  min-height: 620px;
   display: grid;
   place-items: center;
   text-align: center;
@@ -145,6 +161,11 @@
   position: absolute;
   inset: 0;
   background: color-mix(in srgb, var(--bg) 68%, transparent);
+}
+/* Portrait source in a wide band — bias the crop up so the subject stays in
+   frame instead of being cut through the middle. */
+.house-close-photo {
+  object-position: 50% 24%;
 }
 .house-close-photo--mobile {
   display: none;
@@ -173,6 +194,12 @@
   .house-story {
     gap: 22px;
   }
+  /* The even rows carry a desktop two-column split; without resetting it here
+     they keep those tracks on a phone and the media collapses to under half
+     width. Reset both the tracks and the order so every tile is identical. */
+  .house-story:nth-child(even) {
+    grid-template-columns: 1fr;
+  }
   .house-story:nth-child(even) .house-story-media {
     order: 0;
   }
@@ -193,10 +220,17 @@
     padding-left: 20px;
     padding-right: 20px;
   }
+  /* One crop for every full-bleed band on a phone, so the page keeps a steady
+     rhythm instead of each section picking its own height. */
   .house-composition-media,
-  .house-format-media {
+  .house-format-media,
+  .house-close-media {
     aspect-ratio: 4 / 5;
     min-height: 0;
+    height: auto;
+  }
+  .house-story-media {
+    aspect-ratio: 4 / 5;
   }
   .house-composition-copy {
     padding-top: 48px;
