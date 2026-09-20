@@ -2,9 +2,10 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ImageUp, Pencil, Plus, Trash2, X } from "lucide-react";
+import { ImageUp, Images, Pencil, Plus, Trash2, X } from "lucide-react";
 import type { Product } from "@/lib/data";
 import { formatInr } from "@/lib/money";
+import ProductPhotoManager, { mediaOf } from "@/components/ProductPhotoManager";
 
 const split = (value: FormDataEntryValue | null) =>
   String(value ?? "")
@@ -15,6 +16,7 @@ export default function CatalogManager({ products }: { products: Product[] }) {
   const router = useRouter();
   const [editing, setEditing] = useState<Product | null>(null);
   const [creating, setCreating] = useState(false);
+  const [photoTarget, setPhotoTarget] = useState<Product | null>(null);
   const [message, setMessage] = useState("");
   const [uploading, setUploading] = useState(false);
   const [uploadedUrl, setUploadedUrl] = useState("");
@@ -51,11 +53,17 @@ export default function CatalogManager({ products }: { products: Product[] }) {
       seoDescription: data.get("seoDescription") || null,
       brandId: null,
       categoryId: null,
-      images: split(data.get("images")).map((url) => ({
-        url,
-        alt: String(data.get("name")),
-        variantName: editingComboSize,
-      })),
+      // Photos are managed in their own editor, so a details save must hand
+      // back the galleries untouched rather than flatten them onto one size.
+      images: editing
+        ? mediaOf(editing)
+        : [
+            {
+              url: uploadedUrl,
+              alt: String(data.get("name")),
+              variantName: editingComboSize,
+            },
+          ],
       variants: [
         {
           id: editing?.variants.find((item) => item.name === "20ml")?.id,
@@ -149,9 +157,20 @@ export default function CatalogManager({ products }: { products: Product[] }) {
                 onClick={() => {
                   setEditing(product);
                   setCreating(false);
+                  setPhotoTarget(null);
                 }}
               >
                 <Pencil size={13} /> Edit
+              </button>
+              <button
+                className="btn-ghost"
+                onClick={() => {
+                  setPhotoTarget(product);
+                  setEditing(null);
+                  setCreating(false);
+                }}
+              >
+                <Images size={13} /> Photos
               </button>
               {/^[0-9a-f-]{36}$/i.test(product.id) && (
                 <button
@@ -171,11 +190,19 @@ export default function CatalogManager({ products }: { products: Product[] }) {
         onClick={() => {
           setCreating(true);
           setEditing(null);
+          setPhotoTarget(null);
         }}
       >
         <Plus size={14} /> New fragrance
       </button>
       {message && <p className="text-champagne mt-3 text-sm">{message}</p>}
+      {photoTarget && (
+        <ProductPhotoManager
+          key={photoTarget.id}
+          product={photoTarget}
+          onClose={() => setPhotoTarget(null)}
+        />
+      )}
       {(creating || editing) && (
         <div className="catalog-editor">
           <button
@@ -265,24 +292,33 @@ export default function CatalogManager({ products }: { products: Product[] }) {
               defaultValue={selected?.occasion}
               required
             />
-            <input
-              name="images"
-              placeholder="Image URLs, comma separated"
-              defaultValue={uploadedUrl || selected?.images.join(", ")}
-              required
-            />
-            <label className="upload-control">
-              <ImageUp size={15} />
-              {uploading ? "Uploading…" : "Upload product image"}
-              <input
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                hidden
-                onChange={(event) =>
-                  event.target.files?.[0] && upload(event.target.files[0])
-                }
-              />
-            </label>
+            {editing ? (
+              <p className="text-sm opacity-70">
+                Photos are managed in the Photos editor for this fragrance.
+              </p>
+            ) : (
+              <>
+                <input
+                  name="images"
+                  placeholder="First photo URL"
+                  value={uploadedUrl}
+                  onChange={(event) => setUploadedUrl(event.target.value)}
+                  required
+                />
+                <label className="upload-control">
+                  <ImageUp size={15} />
+                  {uploading ? "Uploading…" : "Upload first photo"}
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    hidden
+                    onChange={(event) =>
+                      event.target.files?.[0] && upload(event.target.files[0])
+                    }
+                  />
+                </label>
+              </>
+            )}
             <input
               name="sku20"
               placeholder="20 ml SKU"

@@ -32,6 +32,7 @@ function mapProduct(product: Record<string, unknown>): Product {
   const images = (
     (product.product_images as Array<{
       url: string;
+      alt?: string | null;
       position?: number;
       variant_name?: "20ml" | "100ml" | null;
     }> | null) ?? []
@@ -86,20 +87,17 @@ function mapProduct(product: Record<string, unknown>): Product {
         .filter((item) => item.variant_name === name)
         .map((item) => item.url);
       const fallbackImages = fallback?.variantImages?.[name] ?? [];
-      const selected =
-        name === "20ml" && fallbackImages.length
+      // Admin-managed rows are authoritative: whatever the portal has saved for
+      // this size wins, in its saved `position` order, so the first photo of
+      // each gallery is the one the admin put on top. The hardcoded catalog
+      // images are only a fallback for sizes the database has no photos for.
+      const selected = explicit.length
+        ? explicit
+        : fallbackImages.length
           ? fallbackImages
-          : fallback?.collection === "combos"
-            ? fallbackImages.length
-              ? fallbackImages
-              : explicit
-            : explicit.length
-              ? explicit
-              : fallbackImages.length
-                ? fallbackImages
-                : name === "100ml"
-                  ? productImages
-                  : [];
+          : name === "100ml"
+            ? productImages
+            : [];
       return [name, Array.from(new Set(selected))];
     }),
   ) as Product["variantImages"];
@@ -115,6 +113,11 @@ function mapProduct(product: Record<string, unknown>): Product {
       "/ref/billionaire-100ml-mobile.webp",
     images: productImages,
     variantImages,
+    mediaLibrary: images.map((item) => ({
+      url: item.url,
+      alt: item.alt ?? "",
+      variantName: item.variant_name ?? null,
+    })),
     profile: (product.fragrance_family ??
       fallback?.profile ??
       "Woody") as Product["profile"],
@@ -234,7 +237,7 @@ export async function listCatalogProducts(query: ListQuery) {
     .select(
       // Keep storefront reads compatible with databases that have not yet
       // applied the optional combo/variant-image catalog migration.
-      "*, product_images(url, position), product_variants(*)",
+      "*, product_images(url, alt, position, variant_name), product_variants(*)",
       {
         count: "exact",
       },
@@ -334,7 +337,9 @@ export async function getCatalogProductBySlug(slug: string) {
   const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("products")
-    .select("*, product_images(url, position), product_variants(*)")
+    .select(
+      "*, product_images(url, alt, position, variant_name), product_variants(*)",
+    )
     .eq("slug", slug)
     .eq("active", true)
     .is("deleted_at", null)
@@ -360,7 +365,7 @@ export async function listAdminProducts() {
   const { data, error } = await supabase
     .from("products")
     .select(
-      "*, product_images(url, position, variant_name), product_variants(*)",
+      "*, product_images(url, alt, position, variant_name), product_variants(*)",
     )
     .order("created_at", { ascending: false });
   if (error) throw new Error("Unable to load products.");
@@ -518,6 +523,34 @@ export async function updateCatalogProduct(id: string, input: ProductInput) {
         "Unable to update a variant. Stock cannot be set below its reserved quantity.",
       );
   }
+}
+
+/**
+ * Replace a product's photos without touching any other field, so the admin
+ * portal can manage the galleries on its own. The array order is the gallery
+ * order: `position` is the index, and the first entry of each size is the photo
+ * the storefront leads with.
+ */
+export async function updateCatalogProductImages(
+  id: string,
+  images: ProductInput["images"],
+) {
+  const supabase = await createClient();
+  const removal = await supabase
+    .from("product_images")
+    .delete()
+    .eq("product_id", id);
+  if (removal.error) throw new Error("Unable to update product media.");
+  const insert = await supabase.from("product_images").insert(
+    images.map((image, position) => ({
+      product_id: id,
+      url: image.url,
+      alt: image.alt,
+      position,
+      variant_name: image.variantName ?? null,
+    })),
+  );
+  if (insert.error) throw new Error("Unable to update product media.");
 }
 
 export async function softDeleteCatalogProduct(id: string) {

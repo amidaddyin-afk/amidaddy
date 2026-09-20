@@ -12,6 +12,13 @@ export interface ProductVariant {
   active: boolean;
 }
 
+export interface ProductMedia {
+  url: string;
+  alt: string;
+  /** null means the photo shows in every size's gallery. */
+  variantName: ProductVariant["name"] | null;
+}
+
 export interface Product {
   id: string;
   slug: string;
@@ -19,6 +26,13 @@ export interface Product {
   image: string;
   images: string[];
   variantImages?: Partial<Record<ProductVariant["name"], string[]>>;
+  /**
+   * The admin-managed photo rows exactly as stored, in `position` order. Only
+   * the admin portal reads this; storefront surfaces use `image`/`images`/
+   * `variantImages`, which are derived from it. Empty for the hardcoded
+   * catalog fallback, which has no database rows behind it.
+   */
+  mediaLibrary?: ProductMedia[];
   profile: FragranceFamily;
   concentration: string;
   genderPositioning: string;

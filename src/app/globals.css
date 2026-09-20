@@ -2625,6 +2625,38 @@ body .site-header {
   font-size: 0.7rem;
   text-transform: uppercase;
 }
+.admin-photo-list {
+  display: grid;
+  gap: 0.6rem;
+}
+.admin-photo-list li {
+  display: grid;
+  grid-template-columns: 3.5rem 1fr auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  border: 1px solid rgba(213, 184, 123, 0.22);
+}
+.admin-photo-list img {
+  width: 3.5rem;
+  height: 3.5rem;
+  object-fit: cover;
+}
+.admin-photo-list input {
+  width: 100%;
+}
+.admin-photo-list button:disabled {
+  opacity: 0.35;
+}
+@media (max-width: 560px) {
+  .admin-photo-list li {
+    grid-template-columns: 3.5rem 1fr;
+  }
+  .admin-photo-list li > div:last-child {
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+  }
+}
 .policy-shell {
   min-height: 100vh;
   padding: 9rem 1.25rem 6rem;

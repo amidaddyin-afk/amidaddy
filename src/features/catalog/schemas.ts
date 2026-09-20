@@ -7,6 +7,29 @@ const slug = z
   .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
   .max(120);
 
+const productImageSchema = z.object({
+  url: z
+    .string()
+    .trim()
+    .min(1)
+    .max(2048)
+    .refine((value) => {
+      if (value.startsWith("/") && !value.startsWith("//")) return true;
+      if (!URL.canParse(value)) return false;
+      return new URL(value).protocol === "https:";
+    }, "Use an HTTPS image URL or site path."),
+  alt: z.string().trim().min(1).max(160),
+  variantName: z.enum(["20ml", "100ml"]).optional().nullable(),
+});
+
+/**
+ * Photo-only edits from the admin portal. The gallery order is the array order,
+ * so index 0 of each size is the photo the storefront shows first.
+ */
+export const productImagesInputSchema = z.object({
+  images: z.array(productImageSchema).min(1).max(24),
+});
+
 export const productInputSchema = z
   .object({
     name: z.string().trim().min(2).max(160),
@@ -35,25 +58,7 @@ export const productInputSchema = z
     seoDescription: z.string().trim().max(160).optional().nullable(),
     brandId: z.string().uuid().optional().nullable(),
     categoryId: z.string().uuid().optional().nullable(),
-    images: z
-      .array(
-        z.object({
-          url: z
-            .string()
-            .trim()
-            .min(1)
-            .max(2048)
-            .refine((value) => {
-              if (value.startsWith("/") && !value.startsWith("//")) return true;
-              if (!URL.canParse(value)) return false;
-              return new URL(value).protocol === "https:";
-            }, "Use an HTTPS image URL or site path."),
-          alt: z.string().trim().min(1).max(160),
-          variantName: z.enum(["20ml", "100ml"]).optional().nullable(),
-        }),
-      )
-      .min(1)
-      .max(8),
+    images: z.array(productImageSchema).min(1).max(24),
     variants: z
       .array(
         z.object({

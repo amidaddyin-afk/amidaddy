@@ -2,11 +2,16 @@ import { NextRequest, NextResponse } from "next/server";
 import { isAdmin } from "@/lib/auth";
 import {
   createCatalogProduct,
+  listAdminProducts,
   restoreCatalogProduct,
   softDeleteCatalogProduct,
   updateCatalogProduct,
+  updateCatalogProductImages,
 } from "@/lib/catalog";
-import { productInputSchema } from "@/features/catalog/schemas";
+import {
+  productImagesInputSchema,
+  productInputSchema,
+} from "@/features/catalog/schemas";
 import { revalidateStorefront } from "@/lib/revalidate-storefront";
 
 export const dynamic = "force-dynamic";
@@ -20,13 +25,7 @@ async function guard() {
 export async function GET() {
   const denied = await guard();
   if (denied) return denied;
-  return NextResponse.json(
-    {
-      error:
-        "Admin product listing will be completed with the catalog management view.",
-    },
-    { status: 501 },
-  );
+  return NextResponse.json({ products: await listAdminProducts() });
 }
 
 export async function POST(request: NextRequest) {
@@ -66,6 +65,17 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: "Invalid product id." }, { status: 400 });
   if (body.action === "restore") {
     await restoreCatalogProduct(body.id);
+    revalidateStorefront();
+    return NextResponse.json({ ok: true });
+  }
+  if (body.action === "images") {
+    const parsed = productImagesInputSchema.safeParse(body.product);
+    if (!parsed.success)
+      return NextResponse.json(
+        { error: parsed.error.issues[0]?.message ?? "Invalid product media." },
+        { status: 400 },
+      );
+    await updateCatalogProductImages(body.id, parsed.data.images);
     revalidateStorefront();
     return NextResponse.json({ ok: true });
   }
