@@ -107,7 +107,9 @@ function mapProduct(product: Record<string, unknown>): Product {
     id: String(product.id),
     slug,
     name: approved?.name ?? String(product.name),
+    catalogImage: generalImages[0],
     image:
+      generalImages[0] ??
       defaultImages[0] ??
       fallback?.image ??
       "/ref/billionaire-100ml-mobile.webp",
@@ -547,6 +549,41 @@ export async function updateCatalogProductImages(
     })),
   );
   if (insert.error) throw new Error("Unable to update product media.");
+}
+
+/** Replace the image used by catalogue cards without rewriting size galleries.
+ * Omitting variant_name on writes keeps this working with the older production
+ * product_images table; the column defaults to null when it exists. */
+export async function updateCatalogCoverImage(
+  id: string,
+  image: { url: string; alt: string },
+) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("product_images")
+    .select("*")
+    .eq("product_id", id)
+    .order("position", { ascending: true });
+  if (error) throw new Error("Unable to load product photos.");
+  const rows = (data ?? []) as Array<{
+    id: string;
+    position: number;
+    variant_name?: string | null;
+  }>;
+  const current = rows.find((row) => !row.variant_name);
+  const result = current
+    ? await supabase
+        .from("product_images")
+        .update({ url: image.url, alt: image.alt })
+        .eq("id", current.id)
+        .eq("product_id", id)
+    : await supabase.from("product_images").insert({
+        product_id: id,
+        url: image.url,
+        alt: image.alt,
+        position: Math.max(-1, ...rows.map((row) => row.position)) + 1,
+      });
+  if (result.error) throw new Error("Unable to update catalogue image.");
 }
 
 export async function softDeleteCatalogProduct(id: string) {

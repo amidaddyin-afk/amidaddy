@@ -6,9 +6,11 @@ import {
   restoreCatalogProduct,
   softDeleteCatalogProduct,
   updateCatalogProduct,
+  updateCatalogCoverImage,
   updateCatalogProductImages,
 } from "@/lib/catalog";
 import {
+  catalogCoverInputSchema,
   productImagesInputSchema,
   productInputSchema,
 } from "@/features/catalog/schemas";
@@ -76,6 +78,17 @@ export async function PATCH(request: NextRequest) {
         { status: 400 },
       );
     await updateCatalogProductImages(body.id, parsed.data.images);
+    revalidateStorefront();
+    return NextResponse.json({ ok: true });
+  }
+  if (body.action === "catalog-image") {
+    const parsed = catalogCoverInputSchema.safeParse(body.product);
+    if (!parsed.success)
+      return NextResponse.json(
+        { error: parsed.error.issues[0]?.message ?? "Invalid image." },
+        { status: 400 },
+      );
+    await updateCatalogCoverImage(body.id, parsed.data);
     revalidateStorefront();
     return NextResponse.json({ ok: true });
   }

@@ -6,6 +6,7 @@ import { ImageUp, Images, Pencil, Plus, Trash2, X } from "lucide-react";
 import type { Product } from "@/lib/data";
 import { formatInr } from "@/lib/money";
 import ProductPhotoManager, { mediaOf } from "@/components/ProductPhotoManager";
+import { catalogCardImage } from "@/features/catalog/photo-order";
 
 const split = (value: FormDataEntryValue | null) =>
   String(value ?? "")
@@ -19,6 +20,7 @@ export default function CatalogManager({ products }: { products: Product[] }) {
   const [photoTarget, setPhotoTarget] = useState<Product | null>(null);
   const [message, setMessage] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [replacingId, setReplacingId] = useState<string | null>(null);
   const [uploadedUrl, setUploadedUrl] = useState("");
   async function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -130,6 +132,39 @@ export default function CatalogManager({ products }: { products: Product[] }) {
     if (response.ok) setUploadedUrl(body.url);
     else setMessage(body.error ?? "Upload failed.");
   }
+  async function replaceCatalogImage(product: Product, file: File) {
+    setReplacingId(product.id);
+    setMessage(`Uploading ${product.name} image…`);
+    try {
+      const data = new FormData();
+      data.set("file", file);
+      const uploadResponse = await fetch("/api/admin/media", {
+        method: "POST",
+        body: data,
+      });
+      const uploaded = await uploadResponse.json().catch(() => ({}));
+      if (!uploadResponse.ok || !uploaded.url)
+        throw new Error(uploaded.error ?? "Upload failed.");
+      const response = await fetch("/api/admin/products", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: product.id,
+          action: "catalog-image",
+          product: { url: uploaded.url, alt: product.name },
+        }),
+      });
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok)
+        throw new Error(body.error ?? "Unable to update catalogue image.");
+      setMessage(`${product.name} catalogue image updated.`);
+      router.refresh();
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Upload failed.");
+    } finally {
+      setReplacingId(null);
+    }
+  }
   const selected = editing;
   const comboSize =
     selected?.collection === "combos" ? selected.variants[0]?.name : null;
@@ -140,6 +175,17 @@ export default function CatalogManager({ products }: { products: Product[] }) {
       <div className="admin-product-grid">
         {products.map((product) => (
           <article key={product.id}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              className="admin-product-cover"
+              src={catalogCardImage(
+                product,
+                product.variants.find((variant) => variant.name === "100ml")
+                  ? "100ml"
+                  : "20ml",
+              )}
+              alt={`${product.name} catalogue image`}
+            />
             <div>
               <strong>{product.name}</strong>
               <span>
@@ -152,6 +198,21 @@ export default function CatalogManager({ products }: { products: Product[] }) {
               </p>
             </div>
             <div className="flex gap-2">
+              <label className="btn-ghost admin-cover-upload">
+                <ImageUp size={13} />
+                {replacingId === product.id ? "Uploading…" : "Replace image"}
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  hidden
+                  disabled={replacingId !== null}
+                  onChange={(event) => {
+                    const file = event.target.files?.[0];
+                    event.target.value = "";
+                    if (file) void replaceCatalogImage(product, file);
+                  }}
+                />
+              </label>
               <button
                 className="btn-ghost"
                 onClick={() => {

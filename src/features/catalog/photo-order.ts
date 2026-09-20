@@ -1,4 +1,11 @@
-import type { ProductMedia } from "@/lib/data";
+import type { Product, ProductMedia, ProductVariant } from "@/lib/data";
+
+/** The image a shopper sees on a catalogue card for the selected size. */
+export const catalogCardImage = (
+  product: Product,
+  size: ProductVariant["name"],
+) =>
+  product.catalogImage ?? product.variantImages?.[size]?.[0] ?? product.image;
 
 /**
  * A product's photos are one flat list, because `position` is a single sequence

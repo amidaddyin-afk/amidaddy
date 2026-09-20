@@ -2,10 +2,12 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { readFileSync } from "node:fs";
 import {
+  catalogCardImage,
   galleryIndices,
   makeFirstPhoto,
   movePhoto,
 } from "../src/features/catalog/photo-order.ts";
+import type { Product } from "../src/lib/data.ts";
 
 const read = (path: string) =>
   readFileSync(new URL(`../${path}`, import.meta.url), "utf8");
@@ -34,6 +36,21 @@ const urls = (
   photos: ReturnType<typeof mixed>,
   gallery: "20ml" | "100ml" | null,
 ) => galleryIndices(photos, gallery).map((index) => photos[index].url);
+
+test("catalogue image replaces the card photo for either bottle size", () => {
+  const product = {
+    image: "/default.webp",
+    variantImages: {
+      "20ml": ["/small.webp"],
+      "100ml": ["/large.webp"],
+    },
+  } as Product;
+  assert.equal(catalogCardImage(product, "20ml"), "/small.webp");
+  assert.equal(catalogCardImage(product, "100ml"), "/large.webp");
+  product.catalogImage = "/uploaded.webp";
+  assert.equal(catalogCardImage(product, "20ml"), "/uploaded.webp");
+  assert.equal(catalogCardImage(product, "100ml"), "/uploaded.webp");
+});
 
 test("each gallery reads only its own photos, in order", () => {
   const photos = mixed();

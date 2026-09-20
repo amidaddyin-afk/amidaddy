@@ -22,6 +22,11 @@ const productImageSchema = z.object({
   variantName: z.enum(["20ml", "100ml"]).optional().nullable(),
 });
 
+export const catalogCoverInputSchema = productImageSchema.pick({
+  url: true,
+  alt: true,
+});
+
 /**
  * Photo-only edits from the admin portal. The gallery order is the array order,
  * so index 0 of each size is the photo the storefront shows first.

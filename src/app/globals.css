@@ -2137,6 +2137,20 @@ main.house-home {
   border: 1px solid var(--line);
   padding: 1.2rem;
 }
+.admin-product-cover {
+  width: 4.5rem;
+  height: 4.5rem;
+  flex: none;
+  object-fit: cover;
+  background: var(--line);
+}
+.admin-cover-upload {
+  cursor: pointer;
+}
+.admin-cover-upload:has(input:disabled) {
+  cursor: wait;
+  opacity: 0.5;
+}
 .admin-product-grid strong,
 .admin-product-grid span {
   display: block;

@@ -15,6 +15,7 @@ import { useCart } from "@/context/CartContext";
 import { formatInr } from "@/lib/money";
 import { analytics, toItem } from "@/lib/analytics";
 import Photo from "@/components/Photo";
+import { catalogCardImage } from "@/features/catalog/photo-order";
 import {
   EASE,
   DURATION,
@@ -91,7 +92,7 @@ export default function ProductCard({
   };
   const variant =
     product.variants.find((item) => item.name === size) ?? product.variants[0];
-  const cardImage = product.variantImages?.[size]?.[0] ?? product.image;
+  const cardImage = catalogCardImage(product, size);
   const productHref = `/products/${product.slug}?size=${size}`;
   const selectItem = () =>
     analytics.selectItem("catalog", toItem(product, size));

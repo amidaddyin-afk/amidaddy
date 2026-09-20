@@ -24,6 +24,8 @@ export interface Product {
   slug: string;
   name: string;
   image: string;
+  /** Admin-selected image for catalogue cards, when one has been uploaded. */
+  catalogImage?: string;
   images: string[];
   variantImages?: Partial<Record<ProductVariant["name"], string[]>>;
   /**
