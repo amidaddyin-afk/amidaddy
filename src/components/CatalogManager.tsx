@@ -21,6 +21,9 @@ export default function CatalogManager({ products }: { products: Product[] }) {
   const [message, setMessage] = useState("");
   const [uploading, setUploading] = useState(false);
   const [replacingId, setReplacingId] = useState<string | null>(null);
+  const [replacedImages, setReplacedImages] = useState<Record<string, string>>(
+    {},
+  );
   const [uploadedUrl, setUploadedUrl] = useState("");
   async function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -157,6 +160,10 @@ export default function CatalogManager({ products }: { products: Product[] }) {
       const body = await response.json().catch(() => ({}));
       if (!response.ok)
         throw new Error(body.error ?? "Unable to update catalogue image.");
+      setReplacedImages((current) => ({
+        ...current,
+        [product.id]: uploaded.url,
+      }));
       setMessage(`${product.name} catalogue image updated.`);
       router.refresh();
     } catch (error) {
@@ -178,12 +185,15 @@ export default function CatalogManager({ products }: { products: Product[] }) {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               className="admin-product-cover"
-              src={catalogCardImage(
-                product,
-                product.variants.find((variant) => variant.name === "100ml")
-                  ? "100ml"
-                  : "20ml",
-              )}
+              src={
+                replacedImages[product.id] ??
+                catalogCardImage(
+                  product,
+                  product.variants.find((variant) => variant.name === "100ml")
+                    ? "100ml"
+                    : "20ml",
+                )
+              }
               alt={`${product.name} catalogue image`}
             />
             <div>
