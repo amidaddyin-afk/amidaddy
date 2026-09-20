@@ -77,6 +77,9 @@ test("catalogue queries read the columns the photo editor writes", () => {
   const selects = catalog.match(/product_images\([^)]*\)/g) ?? [];
   assert.ok(selects.length >= 3);
   for (const select of selects) {
+    // A wildcard also works against older catalogues without variant_name;
+    // mapProduct treats that missing field as a shared photo.
+    if (select === "product_images(*)") continue;
     for (const column of ["url", "alt", "position", "variant_name"])
       assert.ok(select.includes(column), `${select} is missing ${column}`);
   }

@@ -237,7 +237,7 @@ export async function listCatalogProducts(query: ListQuery) {
     .select(
       // Keep storefront reads compatible with databases that have not yet
       // applied the optional combo/variant-image catalog migration.
-      "*, product_images(url, alt, position, variant_name), product_variants(*)",
+      "*, product_images(*), product_variants(*)",
       {
         count: "exact",
       },
@@ -337,9 +337,7 @@ export async function getCatalogProductBySlug(slug: string) {
   const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("products")
-    .select(
-      "*, product_images(url, alt, position, variant_name), product_variants(*)",
-    )
+    .select("*, product_images(*), product_variants(*)")
     .eq("slug", slug)
     .eq("active", true)
     .is("deleted_at", null)
@@ -364,9 +362,7 @@ export async function listAdminProducts() {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("products")
-    .select(
-      "*, product_images(url, alt, position, variant_name), product_variants(*)",
-    )
+    .select("*, product_images(*), product_variants(*)")
     .order("created_at", { ascending: false });
   if (error) throw new Error("Unable to load products.");
   return (data ?? []).map((item) =>
