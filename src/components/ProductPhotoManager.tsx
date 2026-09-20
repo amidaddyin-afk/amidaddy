@@ -10,6 +10,7 @@ import {
   movePhoto,
   type Gallery,
 } from "@/features/catalog/photo-order";
+import { prepareProductImage } from "@/features/catalog/prepare-image";
 
 /**
  * The three galleries a photo can belong to. `null` is the shared gallery shown
@@ -66,24 +67,28 @@ export default function ProductPhotoManager({
 
   async function upload(file: File, gallery: Gallery) {
     setBusy(true);
-    setMessage("Uploading…");
-    const data = new FormData();
-    data.set("file", file);
-    const response = await fetch("/api/admin/media", {
-      method: "POST",
-      body: data,
-    });
-    const body = await response.json().catch(() => ({}));
-    setBusy(false);
-    if (!response.ok) {
-      setMessage(body.error ?? "Upload failed.");
-      return;
+    setMessage("Preparing photo…");
+    try {
+      const data = new FormData();
+      data.set("file", await prepareProductImage(file));
+      setMessage("Uploading…");
+      const response = await fetch("/api/admin/media", {
+        method: "POST",
+        body: data,
+      });
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok || !body.url)
+        throw new Error(body.error ?? "Upload failed.");
+      setMessage("");
+      setPhotos((current) => [
+        ...current,
+        { url: body.url, alt: product.name, variantName: gallery },
+      ]);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Upload failed.");
+    } finally {
+      setBusy(false);
     }
-    setMessage("");
-    setPhotos([
-      ...photos,
-      { url: body.url, alt: product.name, variantName: gallery },
-    ]);
   }
 
   async function save() {
@@ -97,23 +102,27 @@ export default function ProductPhotoManager({
     }
     setBusy(true);
     setMessage("Saving…");
-    const response = await fetch("/api/admin/products", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        id: product.id,
-        action: "images",
-        product: { images: photos },
-      }),
-    });
-    const body = await response.json().catch(() => ({}));
-    setBusy(false);
-    if (!response.ok) {
-      setMessage(body.error ?? "Unable to save photos.");
-      return;
+    try {
+      const response = await fetch("/api/admin/products", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: product.id,
+          action: "images",
+          product: { images: photos },
+        }),
+      });
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(body.error ?? "Unable to save photos.");
+      setMessage("Photos saved.");
+      router.refresh();
+    } catch (error) {
+      setMessage(
+        error instanceof Error ? error.message : "Unable to save photos.",
+      );
+    } finally {
+      setBusy(false);
     }
-    setMessage("Photos saved.");
-    router.refresh();
   }
 
   return (

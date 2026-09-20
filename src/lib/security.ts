@@ -25,7 +25,7 @@ export function requestUsesHttps(request: Request) {
 export async function isAllowedProductImage(file: File) {
   if (
     file.size === 0 ||
-    file.size > 5 * 1024 * 1024 ||
+    file.size > 3 * 1024 * 1024 ||
     !["image/jpeg", "image/png", "image/webp"].includes(file.type)
   )
     return false;

@@ -7,6 +7,7 @@ import type { Product } from "@/lib/data";
 import { formatInr } from "@/lib/money";
 import ProductPhotoManager, { mediaOf } from "@/components/ProductPhotoManager";
 import { catalogCardImage } from "@/features/catalog/photo-order";
+import { prepareProductImage } from "@/features/catalog/prepare-image";
 
 const split = (value: FormDataEntryValue | null) =>
   String(value ?? "")
@@ -124,23 +125,30 @@ export default function CatalogManager({ products }: { products: Product[] }) {
   }
   async function upload(file: File) {
     setUploading(true);
-    const data = new FormData();
-    data.set("file", file);
-    const response = await fetch("/api/admin/media", {
-      method: "POST",
-      body: data,
-    });
-    const body = await response.json();
-    setUploading(false);
-    if (response.ok) setUploadedUrl(body.url);
-    else setMessage(body.error ?? "Upload failed.");
+    try {
+      const data = new FormData();
+      data.set("file", await prepareProductImage(file));
+      const response = await fetch("/api/admin/media", {
+        method: "POST",
+        body: data,
+      });
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok || !body.url)
+        throw new Error(body.error ?? "Upload failed.");
+      setUploadedUrl(body.url);
+      setMessage("");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Upload failed.");
+    } finally {
+      setUploading(false);
+    }
   }
   async function replaceCatalogImage(product: Product, file: File) {
     setReplacingId(product.id);
     setMessage(`Uploading ${product.name} image…`);
     try {
       const data = new FormData();
-      data.set("file", file);
+      data.set("file", await prepareProductImage(file));
       const uploadResponse = await fetch("/api/admin/media", {
         method: "POST",
         body: data,

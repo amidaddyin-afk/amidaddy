@@ -3,6 +3,7 @@ import test from "node:test";
 import { readFileSync } from "node:fs";
 import {
   catalogCardImage,
+  productGalleryImages,
   galleryIndices,
   makeFirstPhoto,
   movePhoto,
@@ -50,6 +51,14 @@ test("catalogue image replaces the card photo for either bottle size", () => {
   product.catalogImage = "/uploaded.webp";
   assert.equal(catalogCardImage(product, "20ml"), "/uploaded.webp");
   assert.equal(catalogCardImage(product, "100ml"), "/uploaded.webp");
+  assert.deepEqual(productGalleryImages(product, "20ml"), [
+    "/uploaded.webp",
+    "/small.webp",
+  ]);
+  assert.deepEqual(productGalleryImages(product, "100ml"), [
+    "/uploaded.webp",
+    "/large.webp",
+  ]);
 });
 
 test("each gallery reads only its own photos, in order", () => {

@@ -77,7 +77,17 @@ export async function PATCH(request: NextRequest) {
         { error: parsed.error.issues[0]?.message ?? "Invalid product media." },
         { status: 400 },
       );
-    await updateCatalogProductImages(body.id, parsed.data.images);
+    try {
+      await updateCatalogProductImages(body.id, parsed.data.images);
+    } catch (error) {
+      return NextResponse.json(
+        {
+          error:
+            error instanceof Error ? error.message : "Unable to save photos.",
+        },
+        { status: 409 },
+      );
+    }
     revalidateStorefront();
     return NextResponse.json({ ok: true });
   }
@@ -88,7 +98,17 @@ export async function PATCH(request: NextRequest) {
         { error: parsed.error.issues[0]?.message ?? "Invalid image." },
         { status: 400 },
       );
-    await updateCatalogCoverImage(body.id, parsed.data);
+    try {
+      await updateCatalogCoverImage(body.id, parsed.data);
+    } catch (error) {
+      return NextResponse.json(
+        {
+          error:
+            error instanceof Error ? error.message : "Unable to save image.",
+        },
+        { status: 409 },
+      );
+    }
     revalidateStorefront();
     return NextResponse.json({ ok: true });
   }

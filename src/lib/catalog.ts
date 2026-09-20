@@ -534,6 +534,17 @@ export async function updateCatalogProductImages(
   images: ProductInput["images"],
 ) {
   const supabase = await createClient();
+  const { error: variantColumnError } = await supabase
+    .from("product_images")
+    .select("variant_name")
+    .limit(0);
+  const legacySchema = variantColumnError?.code === "42703";
+  if (variantColumnError && !legacySchema)
+    throw new Error("Unable to check product media schema.");
+  if (legacySchema && images.some((image) => image.variantName))
+    throw new Error(
+      "Size-specific galleries need the combo catalog database migration. Use Replace image on the product card for now.",
+    );
   const removal = await supabase
     .from("product_images")
     .delete()
@@ -545,7 +556,7 @@ export async function updateCatalogProductImages(
       url: image.url,
       alt: image.alt,
       position,
-      variant_name: image.variantName ?? null,
+      ...(legacySchema ? {} : { variant_name: image.variantName ?? null }),
     })),
   );
   if (insert.error) throw new Error("Unable to update product media.");
@@ -577,13 +588,23 @@ export async function updateCatalogCoverImage(
         .update({ url: image.url, alt: image.alt })
         .eq("id", current.id)
         .eq("product_id", id)
-    : await supabase.from("product_images").insert({
-        product_id: id,
-        url: image.url,
-        alt: image.alt,
-        position: Math.max(-1, ...rows.map((row) => row.position)) + 1,
-      });
+        .select("id")
+        .maybeSingle()
+    : await supabase
+        .from("product_images")
+        .insert({
+          product_id: id,
+          url: image.url,
+          alt: image.alt,
+          position: Math.max(-1, ...rows.map((row) => row.position)) + 1,
+        })
+        .select("id")
+        .maybeSingle();
   if (result.error) throw new Error("Unable to update catalogue image.");
+  if (!result.data)
+    throw new Error(
+      "No image was updated. Check the admin product image policy.",
+    );
 }
 
 export async function softDeleteCatalogProduct(id: string) {

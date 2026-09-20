@@ -7,6 +7,22 @@ export const catalogCardImage = (
 ) =>
   product.catalogImage ?? product.variantImages?.[size]?.[0] ?? product.image;
 
+/** A replaced catalogue image also leads the product page for either size. */
+export const productGalleryImages = (
+  product: Product,
+  size: ProductVariant["name"],
+) => {
+  const sizeImages = product.variantImages?.[size]?.length
+    ? product.variantImages[size]!
+    : product.images;
+  return product.catalogImage
+    ? [
+        product.catalogImage,
+        ...sizeImages.filter((url) => url !== product.catalogImage),
+      ]
+    : sizeImages;
+};
+
 /**
  * A product's photos are one flat list, because `position` is a single sequence
  * per product row. Each gallery ("all sizes", 20 ml, 100 ml) is a filtered view

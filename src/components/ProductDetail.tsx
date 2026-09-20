@@ -19,6 +19,7 @@ import { analytics, toItem } from "@/lib/analytics";
 import Photo from "@/components/Photo";
 import ProductStory, { type StoryTile } from "@/components/ProductStory";
 import ProductGallery from "@/components/ProductGallery";
+import { productGalleryImages } from "@/features/catalog/photo-order";
 import FragranceSwitcher from "@/components/FragranceSwitcher";
 import Certifications from "@/components/Certifications";
 import StickyBuyBar from "@/components/StickyBuyBar";
@@ -192,10 +193,7 @@ export default function ProductDetail({ product }: { product: Product }) {
     .filter(Boolean)
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1));
   const sizeOptions = product.variants.filter((item) => item.active);
-  const activeImages =
-    product.variantImages?.[size]?.length && product.variantImages[size]
-      ? product.variantImages[size]!
-      : product.images;
+  const activeImages = productGalleryImages(product, size);
   const addButtonRef = useRef<HTMLButtonElement>(null);
   const heroImage = activeImages[0];
   // The gallery shows ONLY frames of the size currently selected.
