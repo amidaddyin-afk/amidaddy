@@ -33,6 +33,17 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: ["127.0.0.1", "localhost"],
   experimental: { serverActions: { bodySizeLimit: "1mb" } },
   images: {
+    // Photos uploaded through the admin portal live in Supabase Storage, not
+    // in /public, so next/image needs their host on the allowlist - without it
+    // every admin-managed photo renders as a broken image while the shipped
+    // /ref/ photography keeps working, which makes the cause easy to miss.
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "*.supabase.co",
+        pathname: "/storage/v1/object/public/**",
+      },
+    ],
     // AVIF first: roughly 20-30% smaller than WebP on this photography, with
     // WebP as the fallback for older Safari.
     formats: ["image/avif", "image/webp"],

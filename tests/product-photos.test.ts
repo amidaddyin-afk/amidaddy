@@ -125,3 +125,18 @@ test("saved photos win over the hardcoded catalogue fallback", () => {
     "the database rows must be preferred over the hardcoded images",
   );
 });
+
+/**
+ * Photos uploaded through the admin portal are served from Supabase Storage,
+ * which is a different host to the rest of the site. next/image refuses any
+ * remote host missing from `remotePatterns`, and it fails quietly: the shipped
+ * /ref/ photography keeps rendering, so only the admin-managed photos break.
+ */
+test("next/image allows the Supabase Storage host", () => {
+  const config = read("next.config.ts");
+  const start = config.indexOf("remotePatterns");
+  assert.ok(start > -1, "next.config.ts declares no remotePatterns");
+  const patterns = config.slice(start, config.indexOf("]", start));
+  assert.match(patterns, /supabase\.co/);
+  assert.match(patterns, /storage\/v1\/object\/public/);
+});
