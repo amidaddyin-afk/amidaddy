@@ -1,7 +1,10 @@
 export const policyDetails = {
-  brand: "Amidaddy (AD Perfume)",
+  brand: "Amidaddy™ (AD Perfume)",
   supportEmail: "support@amidaddy.in",
-  lastUpdated: "18 August 2026",
+  // DPDP Act 2023 s.13: a published contact for the Grievance Officer is
+  // mandatory. Point this at a real, monitored mailbox before launch.
+  grievanceEmail: "grievance@amidaddy.in",
+  lastUpdated: "18 September 2026",
   shippingFee: "₹99",
   freeShippingAbove: "₹599",
   paymentGateway: "Razorpay",

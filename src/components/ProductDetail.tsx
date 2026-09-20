@@ -130,7 +130,8 @@ function buildStoryTiles(
       { key: "base", label: "Base notes", notes: product.baseNotes },
     ] as const;
     return tiers.map((tier, index) => ({
-      image: `/perfumeNotes/${noteDir}/${tier.key}.jpeg`,
+      // .webp, not the .jpeg beside it: same photograph, ~45% fewer bytes.
+      image: `/perfumeNotes/${noteDir}/${tier.key}.webp`,
       heading: tier.label,
       // The hand-written line where there is one, the note list otherwise.
       copy: unfold?.[index] ?? tier.notes.join(", "),
@@ -197,12 +198,35 @@ export default function ProductDetail({ product }: { product: Product }) {
       : product.images;
   const addButtonRef = useRef<HTMLButtonElement>(null);
   const heroImage = activeImages[0];
-  // The gallery shows the size-correct bottle first, then the rest of the
-  // shoot — campaign frames included. variantImages alone is deliberately
-  // narrow (often a single pack shot), which would leave nothing to swipe, so
-  // the full image list follows it. Deduped, since the lead frame usually
-  // appears in both.
-  const galleryImages = [...new Set([...activeImages, ...product.images])];
+  // The gallery shows ONLY frames of the size currently selected.
+  //
+  // This used to append the whole product.images list after the size-specific
+  // frames, so that there was always something to swipe. That mixed the sizes:
+  // choosing 20ml and swiping showed 100ml bottles, which misrepresents what
+  // is being bought. product.images is the full shoot and is dominated by the
+  // 100ml frames, so the very next swipe was usually the wrong bottle.
+  //
+  // Padding is now taken from frames that carry no size claim - the shared
+  // campaign photography that is not listed under any variant - rather than
+  // from another size's pack shots. When a size has only one frame and no
+  // unclaimed campaign frames exist, the gallery is simply that one image:
+  // a short gallery is better than a misleading one.
+  const claimedByOtherSize = new Set(
+    Object.entries(product.variantImages ?? {})
+      .filter(([variantSize]) => variantSize !== size)
+      .flatMap(([, images]) => images ?? []),
+  );
+  // A frame also belongs to a size when its filename says so. Several shots
+  // (billionaire-100ml-desktop.webp and friends) sit in product.images without
+  // being listed under any variant, so the variantImages check alone let them
+  // through and a 100ml bottle still appeared under 20ml.
+  const otherSizes = ["20ml", "100ml"].filter((name) => name !== size);
+  const namesOtherSize = (image: string) =>
+    otherSizes.some((name) => image.includes(`-${name}`));
+  const unclaimed = product.images.filter(
+    (image) => !claimedByOtherSize.has(image) && !namesOtherSize(image),
+  );
+  const galleryImages = [...new Set([...activeImages, ...unclaimed])];
   // The story runs further down the same page as the hero and the gallery's
   // opening frame, both of which lead on galleryImages[0]. Starting the story
   // at the same photograph shows the visitor one image three times, so it
@@ -506,7 +530,7 @@ export default function ProductDetail({ product }: { product: Product }) {
               Is it unisex?<span>+</span>
             </summary>
             <p>
-              Yes. Every Amidaddy fragrance is composed around character and
+              Yes. Every Amidaddy™ fragrance is composed around character and
               mood rather than gender.
             </p>
           </details>

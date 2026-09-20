@@ -4,6 +4,7 @@ import { createHash } from "node:crypto";
 import type { PoolClient } from "pg";
 import { appendAuditEvent } from "@/lib/audit";
 import {
+  comboDiscountPaise,
   couponDiscountPaise,
   DEFAULT_FREE_SHIPPING_PAISE,
   isCustomerCancellationAllowed,
@@ -289,7 +290,10 @@ async function calculateCheckoutPricing(
     (sum, line) => sum + line.lineTotalPaise,
     0,
   );
-  let discountPaise = 0;
+  // Build-your-own combo. Computed from the repriced lines above, never from
+  // anything the client sent, so a forged cart cannot buy itself a discount.
+  const combo = comboDiscountPaise(lines);
+  let discountPaise = combo.discountPaise;
   let couponId: string | null = null;
   let couponCode: string | null = null;
   if (input.couponCode?.trim()) {
@@ -322,7 +326,10 @@ async function calculateCheckoutPricing(
       customerUses >= Number(coupon.per_customer_limit)
     )
       throw new Error("This coupon has reached its usage limit.");
-    discountPaise = couponDiscountPaise(
+    // Stacks on top of the combo discount. The coupon is still calculated
+    // against the full subtotal, and the pair is capped at the subtotal below
+    // so the two together can never exceed what the order is worth.
+    discountPaise += couponDiscountPaise(
       subtotalPaise,
       coupon.type,
       Number(coupon.value),
@@ -337,6 +344,8 @@ async function calculateCheckoutPricing(
     shipping_fee_paise: 9900,
     free_shipping_above_paise: DEFAULT_FREE_SHIPPING_PAISE,
   };
+  // A combo plus a generous coupon could otherwise drive this negative.
+  discountPaise = Math.min(discountPaise, subtotalPaise);
   const discountedMerchandise = subtotalPaise - discountPaise;
   // Free-shipping eligibility uses the pre-coupon subtotal: a coupon should
   // never cost the customer their already-earned free shipping.
@@ -835,7 +844,7 @@ export async function sendOrderEmail(orderId: string, template: string) {
     <div style="background:#f5f1e8;padding:20px">
       <div style="max-width:600px;margin:0 auto;background:#fff;padding:30px;border-radius:4px">
         <div style="text-align:center;margin-bottom:30px">
-          <p style="color:#d8b77a;letter-spacing:.3em;font-size:14px;margin:0">AMIDADDY</p>
+          <p style="color:#d8b77a;letter-spacing:.3em;font-size:14px;margin:0">AMIDADDY&#8482;</p>
         </div>
 
         <h1 style="font-size:24px;margin:20px 0;text-align:center">${emailSubject(template, order.id)}</h1>

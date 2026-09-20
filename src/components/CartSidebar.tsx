@@ -23,6 +23,9 @@ export default function CartSidebar() {
     estimatedTotalPaise,
     totalQty,
     addItem,
+    comboPercent,
+    comboDiscountPaise,
+    comboNextTier,
   } = useCart();
   const router = useRouter();
   const reduceMotion = useReducedMotion();
@@ -95,10 +98,10 @@ export default function CartSidebar() {
             aria-label="Shopping bag"
           >
             {/* Header */}
-            <div className="border-line flex items-center justify-between border-b p-6">
+            <div className="border-line flex items-center justify-between border-b px-5 py-4">
               <div className="flex items-center gap-3">
                 <ShoppingBag size={20} className="text-accent" />
-                <span className="font-cinzel text-fg text-sm tracking-widest uppercase">
+                <span className="text-fg text-xs tracking-[0.2em] uppercase">
                   Cart ({totalQty})
                 </span>
               </div>
@@ -122,7 +125,7 @@ export default function CartSidebar() {
 
                 Deliberately no min-height — a floor here grows the panel past
                 the viewport and pushes Checkout off the bottom. */}
-            <div className="flex-1 basis-0 space-y-4 overflow-y-auto px-4 py-4">
+            <div className="flex-1 basis-0 space-y-3 overflow-y-auto px-5 py-4">
               {/* popLayout so a removed line does not shove the rest down during
                   its own exit - the remaining items spring up to close the gap. */}
               <AnimatePresence mode="popLayout" initial={false}>
@@ -242,7 +245,7 @@ export default function CartSidebar() {
 
             {/* Summary */}
             {items.length > 0 && (
-              <div className="border-line space-y-3 border-t p-6">
+              <div className="border-line space-y-3 border-t px-5 py-5">
                 <div className="cart-shipping-progress">
                   <div className="flex items-center justify-between gap-3 text-xs">
                     <span className="text-muted">
@@ -262,7 +265,7 @@ export default function CartSidebar() {
                   </div>
                 </div>
                 {suggestions.length > 0 && (
-                  <div className="cart-quick-add hidden flex-none [@media(min-height:760px)]:block">
+                  <div className="cart-quick-add hidden flex-none [@media(min-height:900px)]:block">
                     <p className="text-subtle mb-2 text-[10px] tracking-[0.18em] uppercase">
                       You may also like
                     </p>
@@ -313,6 +316,22 @@ export default function CartSidebar() {
                   <span className="text-subtle tracking-wider">Subtotal</span>
                   <span className="text-fg">{formatInr(subtotalPaise)}</span>
                 </div>
+                {comboPercent > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-accent tracking-wider">
+                      Combo saving ({comboPercent}%)
+                    </span>
+                    <span className="text-accent">
+                      -{formatInr(comboDiscountPaise)}
+                    </span>
+                  </div>
+                )}
+                {comboPercent === 0 && comboNextTier && (
+                  <p className="text-subtle text-xs">
+                    Add {comboNextTier.addQty} more 100ml to save{" "}
+                    {comboNextTier.percent}%.
+                  </p>
+                )}
                 <div className="flex justify-between text-sm">
                   <span className="text-subtle tracking-wider">Shipping</span>
                   <span className="text-fg">

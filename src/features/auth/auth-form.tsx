@@ -64,7 +64,7 @@ export function AuthForm({
       >
         {isLogin && <input type="hidden" name="next" value={safeNext} />}
         <p className="text-accent mb-3 text-xs tracking-[0.2em] uppercase">
-          Amidaddy account
+          Amidaddy™ account
         </p>
         <h1 className="font-cinzel text-fg mb-6 text-2xl">
           {isLogin
@@ -103,6 +103,18 @@ export function AuthForm({
             placeholder="Password"
             className="checkout-input mb-3 w-full"
           />
+        )}
+        {isSignup && (
+          <label className="checkout-consent">
+            {/* DPDP s.6: unticked by default. Account and order email is
+                separate and does not depend on this box. */}
+            <input type="checkbox" name="marketingOptIn" value="yes" />
+            <span>
+              Email me new releases and offers from Amidaddy&trade;. Optional —
+              you can withdraw any time from the footer of any email. See our{" "}
+              <Link href="/policies/privacy-policy">privacy policy</Link>.
+            </span>
+          </label>
         )}
         {mode !== "reset-password" && turnstileSiteKey && (
           <>

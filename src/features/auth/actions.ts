@@ -3,7 +3,11 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { assertLoginAllowed, recordLoginAttempt } from "@/lib/rate-limit";
-import { recordLeadSignup, recordLeadSignupStarted } from "@/lib/leads";
+import {
+  recordLeadSignup,
+  recordLeadSignupStarted,
+  setLeadMarketingOptIn,
+} from "@/lib/leads";
 import {
   resendOtpSchema,
   resetSchema,
@@ -68,6 +72,8 @@ export async function signUpAction(
   await recordLeadSignupStarted(parsed.data.email, parsed.data.fullName).catch(
     () => {},
   );
+  if (parsed.data.marketingOptIn)
+    await setLeadMarketingOptIn(parsed.data.email).catch(() => {});
   redirect(`/verify-email?email=${encodeURIComponent(parsed.data.email)}`);
 }
 

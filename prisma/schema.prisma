@@ -371,7 +371,8 @@ model Lead {
   customerId     String?     @map("customer_id") @db.Uuid
   source         String      @default("SIGNUP")
   stage          LeadStage   @default(SUBSCRIBER)
-  marketingOptIn Boolean     @default(true) @map("marketing_opt_in")
+  marketingOptIn Boolean     @default(false) @map("marketing_opt_in")
+  marketingOptInAt DateTime? @map("marketing_opt_in_at") @db.Timestamptz(6)
   unsubscribedAt DateTime?   @map("unsubscribed_at") @db.Timestamptz(6)
   signedUpAt     DateTime?   @map("signed_up_at") @db.Timestamptz(6)
   firstSeenAt    DateTime    @default(now()) @map("first_seen_at") @db.Timestamptz(6)

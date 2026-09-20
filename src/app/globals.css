@@ -8,6 +8,7 @@
 @import "../styles/redesign/shop.css";
 @import "../styles/redesign/pdp.css";
 @import "../styles/redesign/chrome.css";
+@import "../styles/redesign/journey.css";
 
 /* 2026 commerce storefront redesign */
 body .site-header {
@@ -79,6 +80,38 @@ body .wordmark-title {
   border-color: var(--line);
   background: var(--bg-raised);
   color: var(--fg);
+}
+/* --line is pure #000 in the light theme, which drew a hard black box around
+   every card and read as harsh against the paper. A tonal rule separates the
+   card from the wash behind it without the boxed-in look. */
+.shop-page .product-card {
+  border-color: rgb(23 27 25 / 0.14);
+}
+.shop-page .product-card:hover {
+  border-color: rgb(23 27 25 / 0.32);
+}
+/* The size chip was a solid black block for what is only a label. An outlined
+   chip states the size without competing with the price and the CTA. */
+body .shop-page .size-chip {
+  background: transparent;
+  border: 1px solid rgb(23 27 25 / 0.2);
+  color: var(--fg-muted);
+}
+body .shop-page .size-chip.active {
+  background: transparent;
+  border-color: rgb(23 27 25 / 0.55);
+  color: var(--fg);
+}
+/* The one deliberate high-contrast element per card: the buy action. Keeping
+   it solid is what makes it read as the primary move now that the chip and
+   the card border have stepped back. */
+.shop-page .icon-add {
+  background: var(--fg);
+  color: var(--color-paper);
+}
+.shop-page .icon-add:hover:not(:disabled) {
+  background: var(--accent);
+  color: var(--accent-fg);
 }
 .storefront-home .product-card:hover,
 .shop-page .product-card:hover {
@@ -276,7 +309,6 @@ body .shop-page {
   background: var(--bg);
   color: var(--fg);
 }
-body .shop-page .shop-hero > p:last-child,
 body .shop-page .shop-size-heading > span,
 body .shop-page .mb-6 {
   color: var(--fg-muted);
@@ -434,6 +466,25 @@ body .cart-panel .text-muted {
 }
 body .cart-panel .text-accent {
   color: #8a6d3b;
+}
+/* .btn-gold is `width: max-content`, which beats Tailwind's w-full, so the
+   checkout CTA sat at 181px inside a 390px panel while Continue Shopping ran
+   the full width beneath it. */
+body .cart-panel .btn-gold {
+  display: flex;
+  width: 100%;
+}
+/* Checkout is the primary action; as an outlined button it carried the same
+   weight as the ghost button under it. */
+body .cart-panel .btn-gold {
+  border-color: #1b1b1b;
+  background: #1b1b1b;
+  color: #fbf9f5;
+}
+body .cart-panel .btn-gold:hover {
+  border-color: var(--color-ember-red);
+  background: var(--color-ember-red);
+  color: #ffffff;
 }
 body .checkout-shell .text-white\/40,
 body .checkout-shell .text-white\/45,
@@ -770,6 +821,12 @@ main.house-home {
   font-weight: 300;
   letter-spacing: var(--tracking-display);
   line-height: var(--leading-display);
+  /* Every other font-size for .display-title is scoped to a parent section
+     (.commerce-heading, .pdp-*, .school-curriculum). A .display-title outside
+     those parents matched none of them and fell back to the browser default of
+     16px, which is what happened to the /our-approach h1. This is the base the
+     scoped rules override, so the class is safe to use on any page. */
+  font-size: clamp(2.1rem, 5vw, 3.6rem);
 }
 .text-champagne {
   color: var(--champagne);
@@ -894,8 +951,7 @@ main.house-home {
   --chrome-h: calc(var(--announcement-h) + 72px);
 }
 .announcement-bar {
-  position: fixed;
-  inset: 0 0 auto;
+  position: relative;
   z-index: 80;
   display: flex;
   height: var(--announcement-h);
@@ -911,9 +967,11 @@ main.house-home {
   text-align: center;
   text-transform: none;
 }
+/* The header scrolls away with the page rather than floating over it: a fixed
+   bar tracked the reader down every page and covered the photography. Search
+   and the bag are reachable from the top of the document and from the footer. */
 .site-header {
-  position: fixed;
-  inset: 2rem 0 auto;
+  position: relative;
   z-index: 70;
   background: var(--color-obsidian);
   transition: border 0.35s ease;
@@ -959,6 +1017,23 @@ main.house-home {
 }
 .wordmark-title > .brand-i {
   color: var(--color-ember-red);
+}
+/* Trademark mark: reads as a superscript next to the wordmark rather than a
+   letter in it, so it keeps its own size, tracking and baseline. `super` is
+   relative to the shrunken glyph's own baseline, which drops it into the "y"
+   descender - an explicit lift off the baseline pins it to the cap height
+   instead, and the inline-block stops the tight wordmark tracking pulling it
+   back onto the "y". */
+.brand-tm {
+  display: inline-block;
+  font-size: 0.26em;
+  font-weight: 600;
+  letter-spacing: 0;
+  vertical-align: baseline;
+  transform: translateY(-2.1em);
+  line-height: 1;
+  margin-left: 0.5em;
+  text-transform: none;
 }
 .nav-actions {
   display: flex;
@@ -1310,15 +1385,38 @@ main.house-home {
   font-size: 0.7rem;
   line-height: 1.6;
 }
+/* Intrinsic column count: the grid fits as many 17rem cards as the container
+   allows and collapses to one on a phone, so there is no breakpoint ladder to
+   keep in step and no width where the cards are stranded mid-stretch.
+   min(17rem, 100%) stops the track overflowing below 17rem viewports. */
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(17rem, 100%), 1fr));
+  gap: clamp(0.75rem, 1.5vw, 1.25rem);
 }
+/* auto-fit stretches a lone card across every track. A single product should
+   sit at one card's width, not spread over the full row. */
+.product-grid:has(> :only-child) {
+  grid-template-columns: minmax(min(17rem, 100%), 22rem);
+}
+/* A column so the price row and Add button land on the same baseline across
+   a row. Without it a card with two lines of notes pushes its own footer down
+   and the row reads as misaligned. */
 .product-card {
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
   border: 1px solid var(--line);
   background: var(--bg-raised);
+}
+.product-card > div:last-child {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+/* Absorbs the slack, so everything after it is pinned to the card's bottom. */
+.product-card .text-subtle.mt-4 {
+  flex: 1;
 }
 .product-card:hover {
   border-color: var(--color-signal-blue);
@@ -1429,75 +1527,95 @@ main.house-home {
   color: var(--champagne);
   transform: translateY(-2px);
 }
+/* No padding-top: the header is in normal flow now, so these shells start
+   directly under it instead of clearing a fixed bar. */
 .shop-page,
 .product-page,
 .checkout-shell,
 .account-shell,
 .admin-shell {
   min-height: 100svh;
-  padding-top: 8rem;
   background: var(--bg-raised);
-}
-.shop-hero {
-  position: relative;
-  display: grid;
-  align-items: end;
-  min-height: clamp(26rem, 52vh, 40rem);
-  isolation: isolate;
-}
-.shop-hero-media {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  overflow: hidden;
-}
-/* Weighted to the bottom so the headline keeps contrast wherever the crop
-   lands,
-without dimming the whole photograph. */
-.shop-hero-scrim {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to top,
-    rgb(8 9 10 / 0.88) 0%,
-    rgb(8 9 10 / 0.55) 38%,
-    rgb(8 9 10 / 0.12) 72%,
-    transparent 100%
-  );
-}
-.shop-hero-copy {
-  max-width: 1500px;
-  width: 100%;
-  margin-inline: auto;
-  padding: 9rem 2rem 4rem;
-  color: var(--on-image);
-}
-.shop-hero-copy .eyebrow {
-  color: var(--color-ember-red);
-}
-.shop-hero h1 {
-  margin: 1.25rem 0;
-  font-size: clamp(3rem, 7.5vw, 6.5rem);
-}
-.shop-hero-copy > p:last-child {
-  max-width: 46ch;
-  color: rgb(247 242 232 / 0.78);
-  line-height: 1.8;
 }
 .shop-size-sections {
   display: grid;
+  /* A grid item's automatic minimum size is its min-content width, so a
+     section whose card floor exceeds the track pushes the row wider than the
+     page instead of shrinking. minmax(0, 1fr) lets it shrink. */
+  grid-template-columns: minmax(0, 1fr);
   gap: 7rem;
 }
+/* Each size section is framed as a chapter: a heading over a
+   parallaxed backdrop, mirroring Scent School. The backdrop is decorative -
+   it sits behind a veil so the product grid keeps its contrast, and the
+   photography that carries meaning is in the cards themselves. */
 .shop-size-section {
+  position: relative;
   scroll-margin-top: 7rem;
+  isolation: isolate;
+  /* Clips the backdrop's overscan. Without it the -8% inset and the parallax
+     travel push past the section box and add horizontal page scroll on a
+     phone, where the section is already inside the page gutter. */
+  overflow: clip;
+  padding: clamp(3rem, 8vh, 6rem) clamp(1rem, 4vw, 3rem);
 }
+.shop-section-media,
+.shop-section-veil {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+}
+.shop-section-media {
+  overflow: hidden;
+}
+.shop-section-media-inner {
+  position: absolute;
+  /* Overscan on the vertical axis only - that is the axis the parallax
+     travels on. Overscanning horizontally bought nothing and overflowed. */
+  inset: -8% 0;
+  width: 100%;
+}
+.shop-section-media-inner img {
+  object-fit: cover;
+}
+.shop-section-veil {
+  z-index: 0;
+  /* A paper wash, not a black slab. The page is a light theme; veiling a
+     section to near-black inverted it and left the cards and the panel in a
+     hard black/white collision. This keeps the photograph as a quiet texture
+     and holds the whole page on one theme. */
+  background: linear-gradient(
+    90deg,
+    rgb(244 244 240 / 0.97) 0%,
+    rgb(244 244 240 / 0.94) 46%,
+    rgb(244 244 240 / 0.88) 72%,
+    rgb(244 244 240 / 0.82) 100%
+  );
+}
+.shop-size-section[data-align="right"] .shop-section-veil {
+  background: linear-gradient(
+    270deg,
+    rgb(244 244 240 / 0.97) 0%,
+    rgb(244 244 240 / 0.94) 46%,
+    rgb(244 244 240 / 0.88) 72%,
+    rgb(244 244 240 / 0.82) 100%
+  );
+}
+
+/* Two columns only where there is room. On a phone the count collided with
+   the headline and was clipped at the edge, so it stacks underneath instead. */
 .shop-size-heading {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 1fr;
   align-items: end;
   margin-bottom: 2rem;
   padding-bottom: 1.35rem;
   border-bottom: 1px solid var(--line);
+}
+@media (min-width: 640px) {
+  .shop-size-heading {
+    grid-template-columns: 1fr auto;
+  }
 }
 .shop-size-heading .eyebrow {
   grid-column: 1 / -1;
@@ -1512,15 +1630,19 @@ without dimming the whole photograph. */
   margin-right: 0.35ch;
 }
 .shop-size-heading > span {
+  margin-top: 0.5rem;
   padding-bottom: 0.5rem;
   color: var(--fg-subtle);
   font-size: 0.65rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
+/* Wraps intrinsically: the fixed 5-track version forced a 2-col ladder at
+   1100px and left the Refine button stranded on its own row between sizes. */
 .shop-filters {
   display: grid;
-  grid-template-columns: 1.4fr repeat(3, 1fr) auto;
+  grid-template-columns: repeat(auto-fit, minmax(min(11rem, 100%), 1fr));
+  align-items: end;
   gap: 0.75rem;
   margin-bottom: 2rem;
   padding: 1rem;
@@ -2164,8 +2286,10 @@ without dimming the whole photograph. */
 .catalog-editor {
   border-radius: 0;
 }
-.finder-section,
-.shop-hero {
+/* The shop hero is deliberately NOT in this list. It is above the fold, so
+   content-visibility bought nothing there, and skipping its layout breaks the
+   scroll-progress measurement its parallax depends on. */
+.finder-section {
   content-visibility: auto;
   contain-intrinsic-size: auto 800px;
 }
@@ -2457,9 +2581,6 @@ body .site-header {
   transition: color 0.2s ease;
 }
 @media (max-width: 1100px) {
-  .product-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
   .desktop-nav {
     display: none;
   }
@@ -2468,9 +2589,6 @@ body .site-header {
   }
   .nav-inner {
     grid-template-columns: 1fr auto 1fr;
-  }
-  .shop-filters {
-    grid-template-columns: repeat(2, 1fr);
   }
   .shop-filters .lux-button {
     width: 100%;
@@ -2528,17 +2646,11 @@ body .site-header {
     grid-template-columns: 1fr;
     padding: 1.35rem;
   }
-  .product-grid {
-    grid-template-columns: 1fr;
-  }
   .product-visual {
     height: clamp(360px, 112vw, 460px);
   }
   .finder-section {
     padding: 6rem 1rem;
-  }
-  .shop-hero {
-    padding: 5rem 1.25rem 3rem;
   }
   .shop-filters {
     grid-template-columns: 1fr;
@@ -2693,7 +2805,8 @@ body .site-header {
 }
 .policy-document section h2 {
   margin-bottom: 1rem;
-  color: #ead9b8;
+  /* Was a hardcoded #ead9b8 (old gold). Follows the theme now. */
+  color: var(--fg);
   font-family: var(--font-display);
   font-size: 1.9rem;
 }
@@ -2745,6 +2858,50 @@ body .site-header {
   margin-top: 0.12rem;
   accent-color: var(--accent);
   flex: 0 0 auto;
+}
+
+/* DPDP consent banner: pinned to the bottom, both choices equally prominent. */
+.consent-banner {
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 60;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+  padding: 1.15rem 1.5rem;
+  border-top: 1px solid rgba(201, 169, 110, 0.28);
+  background: var(--bg-raised, #12100e);
+  color: var(--fg-muted);
+  font-size: 0.78rem;
+  line-height: 1.6;
+}
+.consent-banner strong {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: var(--fg);
+}
+.consent-banner p {
+  max-width: 62ch;
+  margin: 0;
+}
+.consent-banner a {
+  color: var(--accent);
+  text-decoration: underline;
+}
+.consent-banner-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+@media (max-width: 640px) {
+  .consent-banner-actions {
+    width: 100%;
+  }
+  .consent-banner-actions button {
+    flex: 1 1 auto;
+  }
 }
 
 .perfume-spray-template {
@@ -3112,7 +3269,9 @@ body .policy-document section {
   border-color: var(--line);
 }
 body .policy-document section h2 {
-  color: #3b342d;
+  /* Was a hardcoded #3b342d from the old brown palette, which never followed
+     the theme: in dark mode it sat at 1.23:1 on the page surface. */
+  color: var(--fg);
 }
 body .policy-contact {
   border-color: rgba(159, 125, 69, 0.32);
@@ -4485,7 +4644,10 @@ so the shape carries the idea. */
 }
 .lesson-pyramid p {
   margin-top: 0.3rem;
-  color: var(--fg-muted);
+  /* --fg-muted lands at 3.42:1 over the tinted pyramid panels, under the 4.5:1
+     minimum. The panels are a wash over the page ground, so the body colour is
+     the readable choice here. */
+  color: var(--fg);
   font-size: 0.88rem;
 }
 
@@ -4606,10 +4768,13 @@ so the shape carries the idea. */
   margin-top: 2.5rem;
 }
 .lesson-sources h2 {
-  color: var(--fg-subtle);
-  font-size: 0.62rem;
+  color: var(--fg-muted);
+  /* Was 0.62rem (9.92px), smaller than the 0.78rem list it heads, so the
+     heading read as less important than its own content. Still a quiet label,
+     but now above the text it introduces. */
+  font-size: 0.8rem;
   font-weight: 600;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
 }
 .lesson-sources ul {
@@ -4782,6 +4947,9 @@ so it carries
 .cinematic {
   --cine-ink: #000000;
   --cine-paper: #ffffff;
+  /* Text painted on --cine-ink panels. Here the two are already opposites,
+     so it matches --cine-paper; the light house overrides it. */
+  --cine-on-ink: #ffffff;
   --cine-paper-dim: rgba(255, 255, 255, 0.62);
   --cine-paper-faint: rgba(255, 255, 255, 0.4);
   --cine-line: rgba(255, 255, 255, 0.14);
@@ -5863,7 +6031,11 @@ body:has(.cine-root) {
   font-size: clamp(2rem, 5.5vw, 4rem);
   line-height: 1.05;
   letter-spacing: -0.04em;
-  color: var(--cine-paper);
+  /* The .pdp-close band paints --cine-ink. In the light house --cine-paper is
+     also dark ink (it is the PDP *text* colour there), so painting this with
+     --cine-paper put #171b19 on #171b19: the line was invisible in both
+     schemes. --cine-on-ink is the colour that always contrasts with the band. */
+  color: var(--cine-on-ink);
 }
 
 @media (min-width: 900px) {
@@ -6029,6 +6201,15 @@ body .wordmark-title,
 body .desktop-nav a {
   color: var(--on-image);
 }
+/* The base rule hovers these to --color-ember-red, which the house palette
+   neutralises to a mid grey: on the charcoal header that measured 2.8:1, so
+   a nav link got HARDER to read on hover. Brightening to full ivory keeps the
+   hover an emphasis rather than a dimming. The underline in the rule below
+   still carries the accent. */
+body .desktop-nav a:hover,
+body .desktop-nav a:focus-visible {
+  color: #ffffff;
+}
 body .wordmark-title {
   text-transform: lowercase;
 }
@@ -6064,18 +6245,28 @@ body .display-title {
    Collapses to a stack under 767px, copy first. */
 .house-hero {
   display: grid;
-  grid-template-columns: 49% 51%;
-  /* Fills the screen below the fixed chrome so the film has the whole viewport
-     to play in. No max-height: capping it left a band of page showing under
-     the hero on a tall monitor. */
-  min-height: 570px;
+  /* 40/60 in favour of the film. */
+  grid-template-columns: 40% 60%;
+  /* Full viewport height below the chrome, so the film is seen complete
+     rather than cropped into a band - matching production. svh is the small
+     viewport height, so the hero still fits when a mobile browser's toolbars
+     are expanded. */
+  min-height: 560px;
   height: calc(100svh - var(--chrome-h));
   background: #171717;
   color: #fff;
   overflow: hidden;
 }
+/* Short landscape screens: let the content set the height rather than
+   squeezing the copy into a 390px-tall band. */
+@media (max-height: 560px) and (min-width: 768px) {
+  .house-hero {
+    height: auto;
+    min-height: 0;
+  }
+}
 .house-hero-copy {
-  padding: 8% 7% 8% 8.2%;
+  padding: clamp(2.5rem, 5vw, 4rem) clamp(2rem, 4vw, 3.25rem);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -6093,46 +6284,73 @@ body .display-title {
   color: #fff;
 }
 .house-hero-copy h1 {
-  font-size: clamp(3.5rem, 6.8vw, 6.9rem);
-  line-height: 0.98;
-  letter-spacing: -0.065em;
+  /* Scaled for the 40% column: the old 6.8vw overflowed it. */
+  font-size: clamp(2.75rem, 4.4vw, 4.25rem);
+  line-height: 1;
+  letter-spacing: -0.045em;
   font-weight: 500;
-  margin: 34px 0;
+  margin: 22px 0 18px;
   color: #fff;
 }
 .house-hero-copy h1 span {
   color: #cfcfcf;
 }
-.house-hero-copy > p:not(.eyebrow):not(.house-hero-tagline) {
-  max-width: none;
+.house-hero-copy > p:not(.eyebrow) {
+  max-width: 30ch;
   color: #c4c4c4;
-  line-height: 1.65;
-  font-size: 17px;
+  line-height: 1.6;
+  font-size: 16px;
   margin: 0;
 }
-/* Sits low in the copy panel, filling the space under the CTA and echoing the
-   announcement bar's line. */
-.house-hero-tagline {
-  margin: 0;
-  padding-top: clamp(1.75rem, 5vh, 3.25rem);
-  /* Set to the same scale and tracking as the h1 above it, one step down and
-     dimmed, so it reads as part of the same statement without competing with
-     the headline. */
-  font-size: clamp(2.6rem, 5.2vw, 5.2rem);
-  line-height: 0.98;
-  letter-spacing: -0.065em;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.3);
+.house-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.85rem 1.5rem;
+  margin-top: 28px;
 }
+/* The one prominent action. Ivory on charcoal, no rounding, no shadow. */
 .house-hero-cta {
-  margin-top: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  /* 44px minimum touch target. */
+  min-height: 48px;
+  padding: 0 1.6rem;
+  border: 1px solid #fff;
   background: #fff;
   color: #151515;
-  border-color: #fff;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition:
+    background 0.18s ease,
+    color 0.18s ease,
+    transform 0.18s ease;
 }
 .house-hero-cta:hover {
   background: #e4e4e4;
-  color: #151515;
+}
+.house-hero-cta:active {
+  transform: translateY(1px);
+}
+/* The quieter second route. */
+.house-hero-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.86rem;
+  text-decoration: underline;
+  text-underline-offset: 5px;
+  text-decoration-color: rgba(255, 255, 255, 0.35);
+  transition:
+    color 0.18s ease,
+    text-decoration-color 0.18s ease;
+}
+.house-hero-link:hover {
+  color: #fff;
+  text-decoration-color: #fff;
 }
 
 /* Campaign panel beside the hero copy. The still is the base layer; the film
@@ -6155,21 +6373,26 @@ body .display-title {
   object-position: 50% 35%;
   transition: opacity 0.6s ease;
 }
-/* Softens the join between the copy panel and the film: the panel colour
-   bleeds a little way into the video's left edge so the two halves read as one
-   image rather than two blocks butted together. */
+/* A clean, continuous edge between the copy panel and the film. The previous
+   treatment faded the panel colour ~20% into the video, which read as a smudge
+   rather than a join: no definite line, and the footage was dimmed well past
+   the seam. This is a single hairline the full height of the hero, with only a
+   very short tonal step behind it to stop a bright frame glaring against the
+   charcoal. */
 .house-hero-image::before {
   content: "";
   position: absolute;
   inset: 0;
   z-index: 1;
   pointer-events: none;
+  /* Strong enough to stay visible against a dark frame - several of the
+     films are near-black at the left edge, where a 0.16 hairline vanished. */
+  border-left: 1px solid rgba(255, 255, 255, 0.32);
   background: linear-gradient(
     to right,
-    #171717 0%,
-    rgba(23, 23, 23, 0.72) 4%,
-    rgba(23, 23, 23, 0.28) 10%,
-    rgba(23, 23, 23, 0) 20%
+    rgba(23, 23, 23, 0.55) 0%,
+    rgba(23, 23, 23, 0.22) 2.5%,
+    rgba(23, 23, 23, 0) 6%
   );
 }
 
@@ -6191,9 +6414,147 @@ body .display-title {
     ),
     linear-gradient(to bottom, rgba(8, 8, 10, 0.3) 0%, rgba(8, 8, 10, 0) 28%);
 }
-/* Desktop keeps the copy in its own panel, so this CTA is mobile-only. */
-.house-hero-overlay-cta {
+/* Desktop keeps the copy in its own panel, so the overlay is mobile-only. */
+.house-hero-overlay {
   display: none;
+}
+
+/* Wrapper for the two <video> slots plus the playback control. Transparent
+   and inset-0, so it does not change how the films are positioned. */
+.house-hero-film {
+  position: absolute;
+  inset: 0;
+}
+/* Discreet, but a real 44px target and keyboard reachable. */
+.house-hero-film-toggle {
+  position: absolute;
+  z-index: 3;
+  right: 0.85rem;
+  bottom: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(8, 8, 10, 0.55);
+  color: #fff;
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease;
+}
+.house-hero-film-toggle:hover {
+  background: rgba(8, 8, 10, 0.78);
+  border-color: rgba(255, 255, 255, 0.7);
+}
+
+/* One-time entrance: opacity plus a small rise, staggered. Declared as a
+   plain CSS animation so the content is visible if JavaScript never runs -
+   `backwards` only applies the from-state during the delay. */
+@media (prefers-reduced-motion: no-preference) {
+  .house-hero-copy > .eyebrow,
+  .house-hero-copy > h1,
+  .house-hero-copy > p:not(.eyebrow),
+  .house-hero-actions {
+    animation: house-hero-enter 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  }
+  .house-hero-copy > h1 {
+    animation-delay: 0.06s;
+  }
+  .house-hero-copy > p:not(.eyebrow) {
+    animation-delay: 0.12s;
+  }
+  .house-hero-actions {
+    animation-delay: 0.18s;
+  }
+}
+@keyframes house-hero-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Three ways in, directly under the hero. Flat panels on the page ground:
+   no floating cards, no rounding, no shadows. */
+.house-entry {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.house-entry-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 1rem;
+  /* Comfortably past the 44px touch minimum. */
+  min-height: 96px;
+  padding: 1rem 1.25rem;
+  background: var(--bg);
+  transition: background 0.18s ease;
+}
+/* A tint of the page ink, never a named surface token: --bg-band resolves to
+   pure black in this theme, so hovering painted a black panel behind dark text
+   and the card became unreadable. A low-alpha ink wash cannot invert the
+   foreground whatever the ambient palette is. */
+.house-entry-card:hover {
+  background: rgb(23 27 25 / 0.05);
+}
+/* Portrait, matching the product photography's own shape, and `contain` so
+   no crop clips a cap or label the way a square cover crop did. */
+.house-entry-shot {
+  position: relative;
+  display: block;
+  width: 58px;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.04);
+}
+.house-entry-shot img {
+  object-fit: contain;
+  padding: 3px;
+}
+/* Hover-capable pointers only, so a tap does not leave a stuck scale. */
+@media (hover: hover) {
+  .house-entry-shot img {
+    transition: scale 0.2s ease;
+  }
+  .house-entry-card:hover .house-entry-shot img {
+    scale: 1.03;
+  }
+}
+.house-entry-body {
+  display: grid;
+  gap: 0.15rem;
+  min-width: 0;
+}
+.house-entry-name {
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+.house-entry-meta {
+  color: var(--fg-muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.house-entry-price {
+  margin-top: 0.15rem;
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+}
+/* One column on a phone: three across would shrink the text below a
+   comfortable size, and a carousel would hide two of the three choices. */
+@media (max-width: 767px) {
+  .house-entry {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 /* The three headline prices, directly under the hero. */
@@ -6257,6 +6618,23 @@ body .product-glow {
 }
 body .product-card > div:last-child {
   padding: 22px 0;
+}
+/* On /shop the card keeps its border and raised background, so text flush to
+   the edge reads as clipped. The borderless home-page card above is unchanged. */
+body .shop-page .product-card > div:last-child {
+  padding: 22px clamp(1rem, 1.4vw, 1.35rem);
+}
+/* The title and the longevity range shared a flex row and fought for width:
+   the range wrapped on long values, and forcing nowrap pushed it past the
+   card edge instead. Stacking the range under the eyebrow gives the title the
+   full card width and keeps every card's heading block the same height. */
+.shop-page .product-card > div:last-child > div:first-child {
+  display: block;
+}
+.shop-page .product-card > div:last-child > div:first-child > span {
+  display: block;
+  margin-top: 0.35rem;
+  white-space: nowrap;
 }
 body .product-card .eyebrow {
   color: var(--fg-muted);
@@ -6360,12 +6738,6 @@ body .pdp-hero-copy {
   opacity: 0.4;
   cursor: not-allowed;
 }
-body .shop-hero {
-  min-height: 360px;
-}
-body .shop-hero h1 {
-  font-size: clamp(2.5rem, 4.5vw, 4.5rem);
-}
 :focus-visible {
   outline: 2px solid currentColor;
   outline-offset: 5px;
@@ -6431,25 +6803,36 @@ body .shop-hero h1 {
     min-height: 0;
     max-height: none;
   }
-  /* On a phone the film leads: the copy panel is hidden so the video is the
-     first thing on screen. Clipped rather than display:none — the <h1> is the
-     page's main heading and must stay in the document for crawlers and screen
-     readers. */
+  /* The copy is a compact band under the film rather than hidden. The old
+     build clipped it away entirely, so a phone visitor never saw the brand
+     message and the film filled the screen like an advertisement. */
   .house-hero-copy {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-    border: 0;
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    clip-path: none;
+    white-space: normal;
+    padding: 1.6rem 1.25rem 2rem;
+    order: 2;
   }
-  /* Fill the screen below the fixed chrome. svh is the small viewport height,
-     so the film still fits when the mobile browser's toolbars are expanded
-     rather than being cut off by them. */
+  .house-hero-copy h1 {
+    font-size: clamp(2.1rem, 9vw, 2.9rem);
+    margin: 14px 0 12px;
+  }
+  .house-hero-copy > p:not(.eyebrow) {
+    font-size: 15px;
+    max-width: none;
+  }
+  .house-hero-actions {
+    margin-top: 20px;
+    gap: 0.75rem 1.25rem;
+  }
+  /* The film fills the screen below the chrome so it is seen complete, with
+     the copy band and the shopping options directly beneath it. */
   .house-hero-image {
+    order: 1;
     height: calc(100svh - var(--chrome-h));
     min-height: 420px;
   }
@@ -6457,21 +6840,28 @@ body .shop-hero h1 {
   .house-hero-image::before {
     display: none;
   }
-  .house-hero-overlay-cta {
+  /* Headline and primary action over the foot of the film, where the scrim is
+     strongest and the footage carries the least subject matter. */
+  .house-hero-overlay {
     position: absolute;
     z-index: 2;
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: 26px;
+    inset: auto 0 0 0;
+    display: grid;
+    justify-items: center;
+    gap: 0.75rem;
+    padding: 1.25rem 1.25rem 1.5rem;
+  }
+  .house-hero-overlay-cta {
     display: inline-flex;
     align-items: center;
-    gap: 12px;
-    padding: 15px 26px;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 46px;
+    padding: 0 1.4rem;
     background: #fff;
     color: #151515;
-    font-size: 14px;
+    font-size: 0.88rem;
     font-weight: 500;
-    letter-spacing: 0.01em;
     white-space: nowrap;
   }
   .house-value-strip {
@@ -6525,9 +6915,9 @@ body .shop-hero h1 {
   }
 }
 /* Neutralize the previous cinematic palette so inner pages share the house. */
-.house-home {
-  padding-top: 104px;
-}
+/* No padding-top here: the 104px was clearance for the announcement bar plus
+   the header while both were position: fixed. They sit in normal flow now, so
+   the padding double-counted and left an empty band above the hero. */
 body .cinematic {
   --bg: #f4f4f0;
   --bg-raised: #f4f4f0;
@@ -6544,6 +6934,9 @@ body .cinematic {
      readable greys (WCAG AA on #f4f4f0), gold is the real accent. --cine-ink
      stays dark because it backs the inverted fact chips. */
   --cine-ink: #171b19;
+  /* Text painted ON --cine-ink panels. Distinct from --cine-paper, which in
+     this house is the dark body ink rather than a background. */
+  --cine-on-ink: #f4f4f0;
   --cine-paper: #171b19;
   --cine-paper-dim: #4a504b;
   --cine-paper-faint: #6b716c;
@@ -6606,9 +6999,6 @@ body .announcement-bar {
   background: #353c39;
   color: #f4f4f0;
 }
-body .shop-hero-copy .eyebrow {
-  color: #e4e8df;
-}
 @media (prefers-color-scheme: dark) {
   body .cinematic {
     --bg: #1b201d;
@@ -6620,6 +7010,17 @@ body .shop-hero-copy .eyebrow {
     --line: #3c453e;
     --line-strong: #778277;
     --accent: #d9e1d6;
+    /* The --cine-* set has to flip with the scheme too. Without this the PDP
+       kept the light house's dark ink (#171b19) while the page turned dark,
+       so the product name, price, size and the Buy it now label all sat at
+       about 1.05:1 against the surface. */
+    --cine-ink: #eeefea;
+    --cine-on-ink: #171b19;
+    --cine-paper: #eeefea;
+    --cine-paper-dim: #b0b8b1;
+    --cine-paper-faint: #99a29a;
+    --cine-gold: #d9e1d6;
+    --cine-line: #3c453e;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -6844,6 +7245,23 @@ body[data-overlay] .fragrance-switcher {
   }
 }
 
+/* Dark mode: the badge art is dark ink keyed to transparency (measured average
+   luma ~40-57), which sits at roughly 1.2:1 against the dark ground - the marks
+   effectively vanish. The art is monochrome line work, so inverting flips the
+   ink to light while leaving the transparent field alone; no second asset set.
+   The overlay variant is deliberately excluded: it carries its own light plate,
+   so its art must stay dark. */
+@media (prefers-color-scheme: dark) {
+  .certifications:not(.certifications--overlay) img {
+    filter: invert(1) brightness(1.9);
+  }
+  /* The compact row is knocked back to 0.78 on light; on dark the inverted ink
+     needs the full value to hold its edge at 34px. */
+  .certifications--row img {
+    opacity: 0.92;
+  }
+}
+
 /* Certification band on the homepage. */
 .house-certifications {
   padding: clamp(2.75rem, 6vh, 4.5rem) 4vw;
@@ -6864,4 +7282,31 @@ body[data-overlay] .fragrance-switcher {
 /* Marks in the buy rail sit under the assurance list. */
 .pdp-assure-marks {
   margin-top: 1rem;
+}
+
+/* Privacy centre (DPDP data-principal rights). */
+.privacy-section {
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(201, 169, 110, 0.2);
+}
+.privacy-section h2 {
+  font-family: var(--font-display, Georgia, serif);
+  font-size: 1.35rem;
+  margin-bottom: 0.6rem;
+  color: var(--fg);
+}
+.privacy-section p {
+  color: var(--fg-muted);
+  font-size: 0.85rem;
+  line-height: 1.7;
+  max-width: 62ch;
+}
+.privacy-section a {
+  color: var(--accent);
+}
+.privacy-note {
+  margin-top: 0.75rem;
+  font-size: 0.78rem;
+  color: var(--fg-muted);
 }

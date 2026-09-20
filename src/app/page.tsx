@@ -72,8 +72,6 @@ export default async function Home() {
   const signatures = products.filter((p) => p.collection === "unisex");
   const combo = products.find((p) => p.slug === "signature-combo-20ml");
   const comboVariant = combo?.variants.find((v) => v.name === "20ml");
-  const comboFreeShipping =
-    !!comboVariant && comboVariant.pricePaise >= DEFAULT_FREE_SHIPPING_PAISE;
   // Headline prices for the value strip, read off the live catalogue rather
   // than hardcoded, so an admin price change moves them too.
   const variantPrice = (size: "100ml" | "20ml") =>
@@ -86,6 +84,13 @@ export default async function Home() {
     process.env.NEXT_PUBLIC_APP_URL ??
     process.env.NEXT_PUBLIC_SITE_URL ??
     "https://amidaddy.in";
+  /* Bottle photography for the three shopping cards, taken from the variant
+     images rather than a product's lead `image` - several leads are lifestyle
+     frames where a model, not the bottle, is the subject, which reads wrong at
+     thumbnail size. Falls back to a known bottle shot if the field is absent. */
+  const entryShot = (size: "100ml" | "20ml", fallback: string) =>
+    signatures.find((product) => product.variantImages?.[size]?.[0])
+      ?.variantImages?.[size]?.[0] ?? fallback;
   const shippingFee = Math.round(DEFAULT_SHIPPING_FEE_PAISE / 100);
   const freeShippingThreshold = Math.round(DEFAULT_FREE_SHIPPING_PAISE / 100);
 
@@ -94,7 +99,7 @@ export default async function Home() {
   const faqs: Array<[string, string]> = [
     [
       "Are these original fragrances?",
-      "Amidaddy creates its own scent identities. Explore each composition's notes to find the one that feels right for you.",
+      "Amidaddy™ creates its own scent identities. Explore each composition's notes to find the one that feels right for you.",
     ],
     ["Are they unisex?", "Yes. Choose by the notes and mood you enjoy."],
     [
@@ -151,26 +156,30 @@ export default async function Home() {
         size="100ml"
       />
 
-      {/* Hero: copy panel left, the four fragrance films playing back to back
-          on the right. The still stays underneath as the poster and as the
-          fallback for reduced-motion and metered connections. */}
+      {/* Hero: copy panel left, the fragrance films playing on the right. The
+          still stays underneath as the poster and as the fallback for
+          reduced-motion, blocked autoplay and metered connections, so the
+          panel is never blank. */}
       <section className="house-hero">
         <div className="house-hero-copy">
-          <p className="eyebrow">EAU DE PERFUME. EVERY SIDE OF YOU.</p>
+          <p className="eyebrow">Eau de Parfum. Every side of you.</p>
           <h1>
             Leave an
             <br />
             <span>impression.</span>
           </h1>
-          <p>
-            Four fragrances. Endless versions of you.
-            <br />
-            Find the one that feels like yours.
-          </p>
-          <Link className="lux-button house-hero-cta" href="/shop">
-            Find your fragrance <ArrowUpRight size={20} />
-          </Link>
-          <p className="house-hero-tagline">Unbottle the Vibe</p>
+          <p>Four unisex fragrances. Find the one that feels like you.</p>
+          <div className="house-hero-actions">
+            <a className="house-hero-cta" href="#shop-100ml">
+              Shop fragrances <ArrowUpRight size={18} />
+            </a>
+            <Link
+              className="house-hero-link"
+              href="/products/signature-combo-20ml"
+            >
+              Explore the discovery set
+            </Link>
+          </div>
         </div>
         <div className="house-hero-image">
           <Photo
@@ -178,51 +187,98 @@ export default async function Home() {
             alt="The Amidaddy collection, photographed for the launch"
             fill
             priority
-            sizes="(max-width: 767px) 100vw, 51vw"
+            sizes="(max-width: 767px) 100vw, 60vw"
             className="object-cover"
           />
           <HeroVideoSlideshow />
-          {/* Mobile-only: the copy panel is hidden on a phone, so the hero
-              still needs a way into the catalogue. Sits over the scrim at the
-              foot of the film. */}
-          <Link className="house-hero-overlay-cta" href="/shop">
-            Find your fragrance <ArrowUpRight size={18} />
-          </Link>
+          {/* Mobile-only: the primary action sits over the foot of the film
+              so shopping is reachable without scrolling past it. The headline
+              itself is not repeated here - it reads immediately below in the
+              copy band, and printing it twice looked like a bug. */}
+          <div className="house-hero-overlay">
+            <a className="house-hero-overlay-cta" href="#shop-100ml">
+              Shop fragrances <ArrowUpRight size={16} />
+            </a>
+          </div>
         </div>
       </section>
 
-      {/* Value strip: the three prices, above the fold on the way down. */}
-      <div className="house-value-strip">
-        <span>
-          100 ml. Full expression. <b>{formatInr(full100Paise)}</b>
-        </span>
-        <span>
-          20 ml. Take it anywhere. <b>{formatInr(pocket20Paise)}</b>
-        </span>
-        {comboVariant && (
-          <span>
-            Four fragrances. One discovery.{" "}
-            <b>{formatInr(comboVariant.pricePaise)}</b>
-            {comboFreeShipping ? " · Free delivery" : ""}
+      {/* Three ways in, directly under the hero, so the first thing after the
+          film is something to buy rather than another banner. Prices,
+          availability and destinations all come from the live catalogue - see
+          full100Paise / pocket20Paise / comboVariant above - so an admin price
+          change moves these too and nothing here is hardcoded. */}
+      <section className="house-entry" aria-label="Shop by format">
+        <Link className="house-entry-card" href="/shop#100ml">
+          <span className="house-entry-shot">
+            <Photo
+              src={entryShot("100ml", "/ref/billionaire-100ml-mobile.webp")}
+              alt="A 100ml Amidaddy Eau de Parfum"
+              fill
+              sizes="(max-width: 767px) 33vw, 30vw"
+              className="object-cover"
+            />
           </span>
+          <span className="house-entry-body">
+            <span className="house-entry-name">Full size</span>
+            <span className="house-entry-meta">100ml</span>
+            <span className="house-entry-price">{formatInr(full100Paise)}</span>
+          </span>
+        </Link>
+        <Link className="house-entry-card" href="/shop#20ml">
+          <span className="house-entry-shot">
+            <Photo
+              src={entryShot("20ml", "/ref/heavenly-20ml.webp")}
+              alt="A 20ml Amidaddy Eau de Parfum"
+              fill
+              sizes="(max-width: 767px) 33vw, 30vw"
+              className="object-cover"
+            />
+          </span>
+          <span className="house-entry-body">
+            <span className="house-entry-name">Travel size</span>
+            <span className="house-entry-meta">20ml</span>
+            <span className="house-entry-price">
+              {formatInr(pocket20Paise)}
+            </span>
+          </span>
+        </Link>
+        {comboVariant && (
+          <Link
+            className="house-entry-card"
+            href="/products/signature-combo-20ml"
+          >
+            <span className="house-entry-shot">
+              <Photo
+                src={combo?.image ?? "/products/combos/20ml-combo-of-4.webp"}
+                alt="The four-fragrance Amidaddy discovery set"
+                fill
+                sizes="(max-width: 767px) 33vw, 30vw"
+                className="object-cover"
+              />
+            </span>
+            <span className="house-entry-body">
+              <span className="house-entry-name">Discovery set</span>
+              <span className="house-entry-meta">Four x 20ml</span>
+              <span className="house-entry-price">
+                {formatInr(comboVariant.pricePaise)}
+              </span>
+            </span>
+          </Link>
         )}
-      </div>
+      </section>
 
+      {/* One compact reassurance row near the opening. The full certification
+          band moves below the products, where it informs rather than delays. */}
       <div className="house-benefits">
         <span>Four unisex signatures</span>
         <span>
-          <Truck size={16} /> Free delivery from ₹{freeShippingThreshold}
+          <Truck size={16} /> Free delivery from Rs {freeShippingThreshold}
         </span>
         <span>
           <ShieldCheck size={16} /> Secure payments
         </span>
       </div>
-
-      {/* Certification marks: the full set, captioned, as its own band. */}
-      <section className="house-certifications" aria-label="Certifications">
-        <p>Made to standard. Verified, not claimed.</p>
-        <Certifications variant="strip" />
-      </section>
 
       {/* 1. The four fragrances, comparable at a glance, each with a route to
             its own 100ml. */}
@@ -277,6 +333,15 @@ export default async function Home() {
           <ProductCard product={combo} initialSize="20ml" />
         </section>
       )}
+
+      {/* Certification marks. Moved below the products and the discovery set:
+          as a full band directly under the hero it pushed the first buyable
+          thing off the fold. It informs a considering visitor, so it belongs
+          after they have seen what is for sale. */}
+      <section className="house-certifications" aria-label="Certifications">
+        <p>Made to standard. Verified, not claimed.</p>
+        <Certifications variant="strip" />
+      </section>
 
       {/* Four signature stories: mood, notes and a route back to the SKU. */}
       <section className="house-stories" aria-labelledby="house-stories-title">
@@ -355,7 +420,7 @@ export default async function Home() {
             skin, from the first spray to the trail it leaves.
           </p>
           <p>
-            Amidaddy is built around original scent identities. Explore the
+            Amidaddy™ is built around original scent identities. Explore the
             notes, wear them, and decide what feels like you.
           </p>
           <Link className="text-link" href="/our-approach">

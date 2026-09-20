@@ -163,6 +163,7 @@ const CATALOG: Product[] = [
     variantImages: {
       "100ml": ["/ref/billionaire-100ml-mobile.webp"],
       "20ml": [
+        "/ref/billionaire-20ml-studio.webp",
         "/ref/billionaire-20ml.webp",
         "/ref/billionaire-20ml-desktop.webp",
       ],
@@ -207,7 +208,7 @@ const CATALOG: Product[] = [
     images: ["/ref/cold-war-100ml-mobile.webp", ...galleryImages("coldwar")],
     variantImages: {
       "100ml": ["/ref/cold-war-100ml-mobile.webp"],
-      "20ml": ["/ref/cold-war-20ml.webp"],
+      "20ml": ["/ref/cold-war-20ml-studio.webp", "/ref/cold-war-20ml.webp"],
     },
     profile: "Fresh",
     concentration: "Eau de Parfum",
@@ -246,6 +247,7 @@ const CATALOG: Product[] = [
     variantImages: {
       "100ml": ["/ref/heavenly-100ml-mobile.webp"],
       "20ml": [
+        "/ref/heavenly-20ml-studio.webp",
         "/ref/heavenly-20ml.webp",
         "/ref/heavenly-20ml-mobile.webp",
         "/ref/heavenly-20ml-desktop.webp",
@@ -288,7 +290,7 @@ const CATALOG: Product[] = [
     images: ["/ref/old-love-100ml.webp", ...galleryImages("old-love")],
     variantImages: {
       "100ml": ["/ref/old-love-100ml.webp"],
-      "20ml": ["/ref/old-love-20ml.webp"],
+      "20ml": ["/ref/old-love-20ml-studio.webp", "/ref/old-love-20ml.webp"],
     },
     profile: "Amber",
     concentration: "Eau de Parfum",
@@ -319,9 +321,9 @@ const CATALOG: Product[] = [
     name: "Signature Discovery Combo",
     // The four-bottle pack shot leads: the set is what is being sold, so the
     // card should show all four rather than one bottle from it.
-    image: "/products/combos/20ml-combo-of-4.jpg",
+    image: "/products/combos/20ml-combo-of-4.webp",
     images: [
-      "/products/combos/20ml-combo-of-4.jpg",
+      "/products/combos/20ml-combo-of-4.webp",
       "/ref/heavenly-20ml.webp",
       "/ref/old-love-20ml.webp",
       "/ref/billionaire-20ml.webp",
@@ -330,7 +332,7 @@ const CATALOG: Product[] = [
     ],
     variantImages: {
       "20ml": [
-        "/products/combos/20ml-combo-of-4.jpg",
+        "/products/combos/20ml-combo-of-4.webp",
         "/ref/heavenly-20ml.webp",
         "/ref/old-love-20ml.webp",
         "/ref/billionaire-20ml.webp",
@@ -342,13 +344,13 @@ const CATALOG: Product[] = [
     genderPositioning: "Unisex",
     topNotes: ["Four signature openings"],
     heartNotes: ["Floral, fresh, woody and amber"],
-    baseNotes: ["The complete Amidaddy wardrobe"],
+    baseNotes: ["The complete Amidaddy™ wardrobe"],
     notes: "Cold War · Heavenly · Old Love · Billionaire",
     longevity: "6–10 hours",
     mood: "Discover every signature",
     occasion: "Discovery, travel and gifting",
     description:
-      "All four Amidaddy fragrances together in travel-ready 20 ml bottles.",
+      "All four Amidaddy™ fragrances together in travel-ready 20 ml bottles.",
     story:
       "A complete introduction to the house: four moods, four bottles, one considered set.",
     badge: "Combo",
@@ -386,13 +388,13 @@ const CATALOG: Product[] = [
     genderPositioning: "Unisex",
     topNotes: ["Four signature openings"],
     heartNotes: ["Floral, fresh, woody and amber"],
-    baseNotes: ["The complete Amidaddy wardrobe"],
+    baseNotes: ["The complete Amidaddy™ wardrobe"],
     notes: "Cold War · Heavenly · Old Love · Billionaire",
     longevity: "6–10 hours",
     mood: "The complete collection",
     occasion: "Daily rotation and gifting",
     description:
-      "The complete Amidaddy collection with all four fragrances in 100 ml bottles.",
+      "The complete Amidaddy™ collection with all four fragrances in 100 ml bottles.",
     story:
       "Four full-size signatures composed for every side of your presence.",
     badge: "Combo",

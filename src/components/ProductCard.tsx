@@ -188,19 +188,21 @@ export default function ProductCard({
         <p className="text-subtle mt-4 text-sm leading-6">{product.notes}</p>
         {!lockSize && (
           <div className="mt-5 flex gap-2" aria-label="Choose bottle size">
-            {product.variants.map((item) => (
-              <button
-                key={item.id}
-                disabled={!item.active || item.stock <= item.reserved}
-                aria-pressed={size === item.name}
-                onClick={() => setSize(item.name)}
-                className={`size-chip ${size === item.name ? "active" : ""}`}
-              >
-                {product.packSize && product.packSize > 1
-                  ? `${product.packSize} × ${item.name}`
-                  : item.name}
-              </button>
-            ))}
+            {product.variants
+              .filter((item) => !initialSize || item.name === initialSize)
+              .map((item) => (
+                <button
+                  key={item.id}
+                  disabled={!item.active || item.stock <= item.reserved}
+                  aria-pressed={size === item.name}
+                  onClick={() => setSize(item.name)}
+                  className={`size-chip ${size === item.name ? "active" : ""}`}
+                >
+                  {product.packSize && product.packSize > 1
+                    ? `${product.packSize} × ${item.name}`
+                    : item.name}
+                </button>
+              ))}
           </div>
         )}
         {lockSize && (

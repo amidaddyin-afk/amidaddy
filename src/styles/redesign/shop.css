@@ -3,22 +3,547 @@
    prefers-reduced-motion, no data-reveal. Monochrome/zero-radius system,
    Cormorant display. Do NOT add the deferred "Future Heirloom" palette. */
 
-/* S3 — sticky filter bar. The form scrolled away with the hero; pin it so the
-   grid scrolls under it. top clears the fixed site header (inset 2rem +
-   ~4.5rem nav row). Solid ground + z-index so cards pass beneath. */
+/* The filter form scrolls away with the page. It was previously sticky
+   (top: 6.5rem, to clear the then-fixed site header) but it tracked the
+   reader down the page and passed over the product cards. The header is in
+   normal flow now, so nothing floats over the grid. */
 .shop-page .shop-filters {
-  position: sticky;
-  top: 6.5rem;
-  z-index: 20;
-  background: var(--bg);
   padding-block: 0.9rem;
 }
 
-/* On narrow screens the one-row form wraps tall; sticky would eat too much of
-   the viewport, so let it scroll normally. */
-@media (max-width: 640px) {
-  .shop-page .shop-filters {
-    position: static;
-    padding-block: 0;
+/* === Build-your-own gift combo ===
+   Same light paper surface as the rest of /shop; the bottles carry the colour.
+   Drag is an enhancement over the Add buttons, never the only route in. */
+.combo-builder {
+  display: grid;
+  gap: clamp(1.75rem, 4vw, 3rem);
+  margin-top: 7rem;
+  padding: clamp(2rem, 5vw, 3.5rem) clamp(1rem, 4vw, 3rem);
+  border: 1px solid rgb(23 27 25 / 0.14);
+  background: rgb(255 255 255 / 0.55);
+}
+.combo-lede {
+  max-width: 52ch;
+  margin-top: 0.85rem;
+  color: var(--fg-muted);
+  line-height: 1.75;
+}
+.combo-tiers {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(9rem, 100%), 1fr));
+  gap: 0.6rem;
+  margin-top: 1.5rem;
+}
+.combo-tiers li {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid rgb(23 27 25 / 0.14);
+  transition:
+    border-color 0.3s ease,
+    background 0.3s ease;
+}
+/* The reached tier is the only filled cell, so the current saving is legible
+   at a glance without a progress bar. */
+.combo-tiers li[data-reached="true"] {
+  border-color: rgb(23 27 25 / 0.5);
+  background: rgb(23 27 25 / 0.05);
+}
+.combo-tiers strong {
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+.combo-tiers span {
+  color: var(--fg-muted);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.combo-stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  gap: clamp(1.25rem, 3vw, 2.5rem);
+  align-items: start;
+}
+/* Single column below the tablet step: a 2-col stage puts the basket in a
+   column too narrow to read its own price rows. */
+@media (max-width: 899px) {
+  .combo-stage {
+    grid-template-columns: minmax(0, 1fr);
   }
+}
+.combo-shelf {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(9.5rem, 100%), 1fr));
+  gap: 0.75rem;
+}
+.combo-bottle {
+  display: grid;
+  gap: 0.4rem;
+  padding: 0.85rem;
+  border: 1px solid rgb(23 27 25 / 0.14);
+  background: var(--color-paper);
+  cursor: grab;
+  transition: border-color 0.25s ease;
+}
+.combo-bottle:hover {
+  border-color: rgb(23 27 25 / 0.34);
+}
+.combo-bottle:active {
+  cursor: grabbing;
+}
+.combo-bottle-shot {
+  position: relative;
+  display: block;
+  aspect-ratio: 1;
+  background: rgb(23 27 25 / 0.03);
+}
+.combo-bottle-name {
+  font-size: 0.9rem;
+}
+.combo-bottle-price {
+  color: var(--fg-muted);
+  font-size: 0.78rem;
+}
+.combo-bottle-add {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  /* 44px: the minimum comfortable touch target. */
+  min-height: 44px;
+  margin-top: 0.25rem;
+  border: 1px solid rgb(23 27 25 / 0.2);
+  color: var(--fg);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition:
+    background 0.25s ease,
+    color 0.25s ease;
+}
+.combo-bottle-add:hover {
+  background: var(--fg);
+  color: var(--color-paper);
+}
+.combo-basket {
+  display: grid;
+  gap: 0.9rem;
+  padding: 1.1rem;
+  border: 1px dashed rgb(23 27 25 / 0.28);
+  background: var(--color-paper);
+  transition:
+    border-color 0.25s ease,
+    background 0.25s ease;
+}
+.combo-basket[data-over="true"] {
+  border-color: var(--accent);
+  border-style: solid;
+  background: rgb(238 58 73 / 0.04);
+}
+.combo-basket-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid rgb(23 27 25 / 0.12);
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.combo-basket-head span {
+  margin-left: auto;
+  color: var(--fg-muted);
+  letter-spacing: 0.08em;
+}
+.combo-basket-empty {
+  padding: 1.75rem 0;
+  color: var(--fg-muted);
+  font-size: 0.82rem;
+  text-align: center;
+}
+.combo-basket-list {
+  display: grid;
+  gap: 0.5rem;
+}
+.combo-basket-list li {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) auto auto;
+  gap: 0.6rem;
+  align-items: center;
+}
+.combo-basket-thumb {
+  position: relative;
+  display: block;
+  aspect-ratio: 1;
+  background: rgb(23 27 25 / 0.03);
+}
+.combo-basket-name {
+  overflow: hidden;
+  font-size: 0.85rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.combo-basket-qty {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgb(23 27 25 / 0.18);
+}
+.combo-basket-qty button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 30px;
+  min-height: 30px;
+  color: var(--fg-muted);
+  transition: color 0.2s ease;
+}
+.combo-basket-qty button:hover:not(:disabled) {
+  color: var(--fg);
+}
+.combo-basket-qty button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.combo-basket-qty b {
+  min-width: 1.5rem;
+  font-size: 0.82rem;
+  font-weight: 400;
+  text-align: center;
+}
+.combo-basket-price {
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+.combo-total {
+  display: grid;
+  gap: 0.6rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid rgb(23 27 25 / 0.12);
+}
+.combo-total-live {
+  color: var(--accent);
+  font-size: 0.75rem;
+  min-height: 1rem;
+}
+.combo-total dl {
+  display: grid;
+  gap: 0.35rem;
+}
+.combo-total dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.85rem;
+}
+.combo-total dd {
+  font-variant-numeric: tabular-nums;
+}
+.combo-total-save dt,
+.combo-total-save dd {
+  color: var(--accent);
+}
+.combo-total-net {
+  padding-top: 0.5rem;
+  border-top: 1px solid rgb(23 27 25 / 0.12);
+  font-size: 1rem !important;
+}
+.combo-cta {
+  width: 100%;
+  min-height: 48px;
+  margin-top: 0.3rem;
+}
+.combo-cta:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* === Shop hero ===
+   An ivory editorial banner: charcoal copy in the clear left of the frame,
+   all four bottles in the right. The panel is painted #f5ede3, sampled from
+   the photograph's own leftmost column - the value that actually butts against
+   it - so the two halves read as one continuous surface. Sampling the image's
+   overall average instead gave #f3ebe1, two steps darker and pinker, which
+   showed as a vertical step exactly on the join.
+
+   These colours are local to the hero. The house palette is pure #000/#fff,
+   which is correct for the product grid but would put a hard black slab
+   against warm ivory here. Scoping them to .shop-hero keeps the warmth from
+   leaking into the cards below. */
+.shop-hero {
+  --hero-ivory: #f5ede3;
+  --hero-ink: #23201c;
+  --hero-ink-muted: #5b544c;
+  position: relative;
+  background: var(--hero-ivory);
+  color: var(--hero-ink);
+  /* The page section below is capped at 1500px with a 1.25rem/2rem gutter.
+     Matching both here aligns the hero copy with the product grid. */
+  padding-inline: clamp(1.25rem, 4vw, 2rem);
+}
+.shop-hero-inner {
+  max-width: 1500px;
+  margin-inline: auto;
+  display: grid;
+  /* Copy column holds to the brief's 360-420px; the photograph takes the
+     rest. minmax(0, …) on the media lets it shrink rather than forcing the
+     row wider than the page. */
+  grid-template-columns: minmax(20rem, 25rem) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+}
+.shop-hero-copy {
+  padding-block: clamp(2.5rem, 6vw, 4rem);
+}
+.shop-hero .eyebrow {
+  color: var(--hero-ink-muted);
+  font-size: 0.7rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+.shop-hero h1 {
+  margin: 1rem 0 0;
+  font-size: clamp(2.1rem, 3.4vw, 3.4rem);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  color: var(--hero-ink);
+  text-wrap: balance;
+}
+/* "Every side of you." is its own line by design, not by wrapping - at some
+   widths the two sentences would otherwise share a line and the rhythm of the
+   pair is the point. */
+.shop-hero h1 span {
+  display: block;
+}
+.shop-hero-lede {
+  margin-top: 1rem;
+  max-width: 34ch;
+  color: var(--hero-ink-muted);
+  font-size: clamp(0.95rem, 1.1vw, 1.05rem);
+  line-height: 1.65;
+}
+.shop-hero-actions {
+  margin-top: clamp(1.5rem, 3vw, 2rem);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.5rem;
+}
+/* Charcoal fill, ivory label: 13.9:1. The house .lux-button is not reused
+   because it resolves to pure black on this warm ground. */
+.shop-hero-cta,
+.shop-hero-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* 44px minimum target height, including on a phone. */
+  min-height: 44px;
+  font-size: 0.82rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    border-color 180ms ease;
+}
+.shop-hero-cta {
+  padding: 0.85rem 2rem;
+  background: var(--hero-ink);
+  color: var(--hero-ivory);
+  border: 1px solid var(--hero-ink);
+}
+.shop-hero-cta:hover,
+.shop-hero-cta:focus-visible {
+  /* Lightens the fill only. Inverting to an ivory fill would drop the ivory
+     label to 1:1 against it - the failure mode already corrected elsewhere on
+     the site, so the hover here never changes which colour carries the text. */
+  background: #3c372f;
+  border-color: #3c372f;
+}
+/* The rule is drawn by the text itself, not the box. A border-bottom on the
+   link sits on the inline-flex box, which the padding stretches wider than the
+   label, so the underline ran on past the words. text-decoration tracks the
+   glyphs exactly. */
+.shop-hero-secondary {
+  align-self: center;
+  padding: 0.85rem 0;
+  color: var(--hero-ink-muted);
+  text-decoration: underline;
+  text-decoration-color: rgb(35 32 28 / 0.28);
+  text-underline-offset: 0.45em;
+  text-decoration-thickness: 1px;
+}
+.shop-hero-secondary:hover,
+.shop-hero-secondary:focus-visible {
+  color: var(--hero-ink);
+  text-decoration-color: var(--hero-ink);
+}
+.shop-hero-media {
+  position: relative;
+}
+/* Even with the panel matched to the edge column, the photograph's own
+   gradient means the join is exact only at one height. A short fade across
+   the seam carries the panel colour a little way into the image and removes
+   the residual line. Desktop only - on a phone the image sits below the copy
+   and there is no vertical join to hide. */
+@media (min-width: 900px) {
+  .shop-hero-media::before {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    width: 4rem;
+    background: linear-gradient(
+      to right,
+      var(--hero-ivory) 0%,
+      rgb(245 237 227 / 0.72) 38%,
+      transparent 100%
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+}
+.shop-hero-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+@media (min-width: 900px) {
+  /* The photograph sets its own height from its own aspect ratio, and the
+     copy column centres against it. Nothing is cropped and there is no
+     letterbox, because the box is never a different shape from the image.
+
+     Both alternatives were tried and both failed the brief's "no bottle
+     cropped" rule at some width. `contain` inside a copy-driven box left
+     ivory bands up to 95px. `cover` filled the box but sliced a bottle: the
+     column ratio swings from about 0.9 to 1.8 across the desktop range, so no
+     single object-position is safe - biasing right cut Old Love off the left,
+     centring cut Cold War off the right.
+
+     Two art-directed crops keep the ratio close to the slot: a 1.31:1 crop
+     from 900px and the full 16:9 composition from 1240px, both declared in
+     the <picture> element. */
+  .shop-hero-inner {
+    align-items: center;
+    /* Holds the brief's 440px floor at widths where the photograph alone is
+       shorter than that - the image is never stretched to meet it, the panel
+       simply has more room and the copy centres in it. */
+    min-height: 440px;
+  }
+  .shop-hero-img {
+    max-height: 540px;
+    /* width:auto lets max-height actually bind; with width:100% the image
+       would stay full-width and the cap would never apply. */
+    width: auto;
+    margin-inline-start: auto;
+  }
+  .shop-hero-media {
+    display: flex;
+    justify-content: flex-end;
+  }
+}
+
+/* Phone: copy above, photograph below. The desktop composition is not
+   squeezed into a tall background - the mobile art is a tighter crop of the
+   same original that still holds all four bottles, and no text is placed over
+   a label. */
+@media (max-width: 899px) {
+  .shop-hero-inner {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+  .shop-hero-copy {
+    padding-block: clamp(2rem, 7vw, 2.75rem) clamp(1.25rem, 4vw, 1.75rem);
+  }
+  .shop-hero-lede {
+    max-width: none;
+  }
+  .shop-hero-actions {
+    gap: 0.5rem 1.25rem;
+  }
+  .shop-hero-cta {
+    /* Full-bleed tap target on a phone; the row still fits the secondary
+       link beside it from about 480px up. */
+    flex: 1 1 14rem;
+  }
+  .shop-hero-img {
+    height: clamp(240px, 58vw, 300px);
+    object-fit: cover;
+    object-position: center 42%;
+  }
+}
+
+/* One-time entrance: opacity plus an 8px rise, small stagger. Every element
+   is fully visible at rest and the animation runs from a transformed state to
+   the resting one, so if it never runs - reduced motion, or a browser that
+   skips it - the hero is simply already in place. */
+@media (prefers-reduced-motion: no-preference) {
+  .shop-hero-copy > * {
+    animation: shop-hero-enter 450ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .shop-hero-copy > h1 {
+    animation-delay: 70ms;
+  }
+  .shop-hero-copy > .shop-hero-lede {
+    animation-delay: 140ms;
+  }
+  .shop-hero-copy > .shop-hero-actions {
+    animation-delay: 210ms;
+  }
+}
+@keyframes shop-hero-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* === Shop-by-size jump links ===
+   Sits directly under the hero, above the filters, so the reader reaches the
+   grid in one tap. Plain anchors - keyboard and no-JS safe by construction. */
+.shop-jump {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: clamp(1.5rem, 4vw, 2.25rem) 0 0.5rem;
+}
+.shop-jump a {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-height: 44px;
+  justify-content: center;
+  padding: 0.6rem 1.25rem;
+  border: 1px solid var(--line);
+  color: var(--fg);
+  transition:
+    background-color 180ms ease,
+    color 180ms ease;
+}
+.shop-jump a span {
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.shop-jump a small {
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  color: var(--fg-muted);
+}
+/* Both the label and the count are re-coloured together. Flipping the
+   background without also lifting the muted count would leave it at roughly
+   2:1 against the new fill. */
+.shop-jump a:hover,
+.shop-jump a:focus-visible {
+  background: var(--fg);
+  color: var(--bg);
+}
+.shop-jump a:hover small,
+.shop-jump a:focus-visible small {
+  color: var(--bg);
 }

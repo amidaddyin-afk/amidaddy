@@ -8,6 +8,7 @@ import AnnouncementBar from "@/components/AnnouncementBar";
 
 import Footer from "@/components/Footer";
 import Analytics from "@/components/Analytics";
+import ConsentBanner from "@/components/ConsentBanner";
 import PageViewTracker from "@/components/PageViewTracker";
 
 // Single family for the whole system (the reference's Aeonik substitute).
@@ -69,6 +70,7 @@ export default function RootLayout({
           {children}
           <div data-surface="chrome">
             <Footer />
+            <ConsentBanner />
           </div>
         </CartProvider>
       </body>

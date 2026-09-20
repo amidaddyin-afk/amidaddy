@@ -56,3 +56,15 @@ tmp/
 
 # Playwright MCP artifacts
 .playwright-mcp/
+
+# Local voice assistant - never deploy. Local-only dev toy, not part of the
+# storefront: it shells out to Claude Code with write permissions.
+jarvis.py
+scripts/speak.ps1
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Screenshots from local review passes
+approach-*.png

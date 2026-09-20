@@ -15,7 +15,8 @@ const contact = `Contact ${d.supportEmail}`;
 const policies: Record<PolicySlug, Policy> = {
   "shipping-delivery": {
     title: "Shipping & Delivery Policy",
-    intro: "How we process, dispatch and deliver Amidaddy orders across India.",
+    intro:
+      "How we process, dispatch and deliver Amidaddy™ orders across India.",
     sections: [
       {
         heading: "Order processing",
@@ -173,7 +174,7 @@ const policies: Record<PolicySlug, Policy> = {
       {
         heading: "Products",
         bullets: [
-          "We sell Amidaddy fragrance products, including Old Love, Billionaire, Cold War and Heavenly, in available formats and sets.",
+          "We sell Amidaddy™ fragrance products, including Old Love, Billionaire, Cold War and Heavenly, in available formats and sets.",
           "Images are representative. Packaging or liquid shade may vary slightly because of screens, lighting or batches without affecting authenticity or quality.",
           "Country of origin: India. Products, formulations, packaging and prices may be updated or discontinued.",
         ],
@@ -257,9 +258,12 @@ const policies: Record<PolicySlug, Policy> = {
         ],
       },
       {
-        heading: "Cookies",
-        paragraphs: [
-          "We use cookies required for cart, authentication, security and preferences. If optional analytics are introduced, this policy and any consent controls will be updated before those cookies are used. Blocking essential cookies may prevent parts of the site from working.",
+        heading: "Cookies and analytics",
+        bullets: [
+          "Essential cookies for cart, authentication, security and preferences are always active and are necessary for the store to work.",
+          "Optional analytics cookies (Google Analytics 4) are loaded only after you accept them in the consent banner. Decline, and no analytics cookie is written and no measurement is sent.",
+          "You can change or withdraw this choice at any time from the Privacy centre, and withdrawal takes effect immediately.",
+          "Blocking essential cookies may prevent parts of the site from working.",
         ],
       },
       {
@@ -279,21 +283,54 @@ const policies: Record<PolicySlug, Policy> = {
         ],
       },
       {
-        heading: "Your choices and rights",
+        heading: "Your rights under the DPDP Act, 2023",
         paragraphs: [
-          `You may request access to or correction of your personal information, ask to delete your account or data subject to legal retention duties, and opt out of marketing. Email ${d.supportEmail} to make a request. We may verify your identity before acting.`,
+          "We handle your personal data as a Data Fiduciary under the Digital Personal Data Protection Act, 2023. You are the Data Principal and the following rights are yours.",
+        ],
+        bullets: [
+          "Right to access (s.11): obtain a summary of the personal data we hold and how it is processed. Signed-in customers can download this instantly from the Privacy centre.",
+          "Right to correction and erasure (s.12): correct inaccurate or incomplete data, and request erasure. We retain order and invoice records where tax, accounting and other law requires it, and erase the rest.",
+          "Right to withdraw consent (s.6): withdraw marketing or analytics consent at any time, as easily as it was given. Withdrawal does not affect processing already carried out.",
+          "Right to grievance redressal (s.13): raise a complaint with our Grievance Officer, and escalate to the Data Protection Board of India if unsatisfied.",
+          "Right to nominate (s.14): nominate another individual to exercise these rights on your behalf in the event of death or incapacity. Email us to register a nominee.",
         ],
       },
       {
-        heading: "Children",
+        heading: "Consent, notice and purpose",
+        bullets: [
+          "We ask for consent before processing personal data for any purpose that is not necessary to fulfil an order you placed, and we tell you the purpose at the point of asking.",
+          "Marketing email is opt-in only. We never pre-tick the box, and signing up or buying does not by itself subscribe you.",
+          "We collect only what a purpose needs, and we do not reuse data for a new purpose without asking again.",
+        ],
+      },
+      {
+        heading: "How to exercise a right",
         paragraphs: [
-          "The store is not directed to children under 18, and we do not knowingly collect their information without appropriate guardian involvement.",
+          `Use the Privacy centre at /account/privacy when signed in, or email ${d.supportEmail}. We may verify your identity before acting. We respond within 30 days.`,
+        ],
+      },
+      {
+        heading: "Personal data breach",
+        paragraphs: [
+          "If a personal data breach affects your data, we will notify you and the Data Protection Board of India without delay, in the form and manner required by the DPDP Rules, describing the nature of the breach, its likely consequences and the steps we are taking.",
+        ],
+      },
+      {
+        heading: "Children's data",
+        paragraphs: [
+          "We do not knowingly process the personal data of anyone under 18 without verifiable parental or guardian consent, and we do not undertake tracking, behavioural monitoring or targeted advertising directed at children.",
+        ],
+      },
+      {
+        heading: "Grievance Officer",
+        paragraphs: [
+          `As required by section 13 of the DPDP Act, 2023, our Grievance Officer can be reached at ${d.grievanceEmail}. We acknowledge a grievance within 48 hours and aim to resolve it within 30 days. If you remain unsatisfied you may complain to the Data Protection Board of India. The Grievance Officer's name and the registered-business address are pending business confirmation and must be added before production publication.`,
         ],
       },
       {
         heading: "Changes and contact",
         paragraphs: [
-          `We may update this policy and will revise the date shown here. For privacy questions or requests, email ${d.supportEmail}. Registered-business address details are pending business confirmation and must be added before production publication.`,
+          `We may update this policy and will revise the date shown here. For privacy questions or requests, email ${d.supportEmail}.`,
         ],
       },
     ],

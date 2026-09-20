@@ -62,7 +62,14 @@ async function hit(path) {
   const started = performance.now();
   try {
     const response = await fetch(`${base}${path}`, {
-      headers: { "user-agent": "amidaddy-loadtest" },
+      headers: {
+        "user-agent": "amidaddy-loadtest",
+        // The proxy 308-redirects plain HTTP in production mode. Against a
+        // local `next start` that would measure redirects rather than pages,
+        // so present as an already-terminated TLS request the way Vercel's
+        // edge does. Harmless against a real deployment, which is https.
+        "x-forwarded-proto": "https",
+      },
       redirect: "manual",
     });
     // Drain the body — otherwise we measure time-to-headers, not time-to-page.

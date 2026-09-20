@@ -1,17 +1,27 @@
+"use client";
+
 import Script from "next/script";
+import { useEffect, useState } from "react";
+import { CONSENT_EVENT, readConsent } from "@/lib/consent";
 
 /**
- * GA4 loader. Renders nothing unless NEXT_PUBLIC_GA_MEASUREMENT_ID is set, so
- * local and preview environments stay out of production reporting simply by not
- * having the key. `send_page_view` stays on (GA4 default) for SPA navigations.
- *
- * No consent gate is wired yet: add one before enabling this for EU/UK traffic.
- * For India-only traffic it is acceptable to ship without it; revisit if the
- * store expands. (ponytail: no CMP, add when the store serves GDPR regions.)
+ * GA4 loader, gated on DPDP analytics consent. Renders nothing unless
+ * NEXT_PUBLIC_GA_MEASUREMENT_ID is set AND the visitor has accepted analytics,
+ * so no measurement cookie is written before consent. Withdrawing consent
+ * unmounts the scripts; gtag calls then no-op until the next page load.
  */
 export default function Analytics() {
   const id = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
-  if (!id) return null;
+  const [allowed, setAllowed] = useState(false);
+
+  useEffect(() => {
+    const sync = () => setAllowed(readConsent()?.analytics === true);
+    sync();
+    window.addEventListener(CONSENT_EVENT, sync);
+    return () => window.removeEventListener(CONSENT_EVENT, sync);
+  }, []);
+
+  if (!id || !allowed) return null;
   return (
     <>
       <Script
@@ -24,7 +34,7 @@ export default function Analytics() {
           function gtag(){dataLayer.push(arguments);}
           window.gtag = gtag;
           gtag('js', new Date());
-          gtag('config', '${id}', { currency: 'INR' });
+          gtag('config', '${id}', { currency: 'INR', anonymize_ip: true });
         `}
       </Script>
     </>

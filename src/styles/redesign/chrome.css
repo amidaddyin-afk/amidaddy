@@ -11,119 +11,549 @@
   overflow: hidden;
 }
 
-/* ---- /our-approach (§14.1) ---- */
+/* ---- /our-approach (§14.1) ----
+   A brand manifesto, not an information page. Charcoal and warm ivory
+   alternate down the page so each section reads as a deliberate change of
+   voice; the bottles carry the only saturated colour.
+
+   These tones are local to this page. The house palette is pure #000/#fff,
+   which is right for the product grid but too hard for long-form reading -
+   a full-black panel behind ivory body copy is the contrast problem this
+   redesign exists to fix. Scoping them here keeps the shop and footer
+   untouched. */
 .approach-page {
-  padding-top: 104px;
+  --ap-ivory: #f4efe7;
+  --ap-ivory-deep: #ece5da;
+  --ap-ink: #23201c;
+  --ap-ink-muted: #5c554c;
+  --ap-char: #1b1e1f;
+  --ap-char-fg: #f2efe9;
+  --ap-char-muted: #a9a49c;
+  --ap-gutter: clamp(1.25rem, 4vw, 2.5rem);
+  --ap-max: 1400px;
+  background: var(--ap-ivory);
+  color: var(--ap-ink);
 }
-.approach-hero {
+.approach-page section {
+  padding-inline: var(--ap-gutter);
+}
+.approach-page h1,
+.approach-page h2,
+.approach-page h3 {
+  color: inherit;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+/* Every headline sets a second line as its own block. The pairs are written
+   as two sentences and the rhythm is the point, so they never share a line. */
+.approach-page h1 span,
+.approach-page h2 span,
+.ap-manifesto-close span {
+  display: block;
+}
+.ap-eyebrow {
+  font-size: 0.7rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--ap-ink-muted);
+}
+
+/* --- shared controls --- */
+.ap-cta,
+.ap-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  min-height: 44px;
+  font-size: 0.8rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    border-color 180ms ease,
+    text-decoration-color 180ms ease;
+}
+.ap-cta {
+  padding: 0.9rem 2rem;
+  background: var(--ap-ink);
+  color: var(--ap-ivory);
+  border: 1px solid var(--ap-ink);
+}
+/* Hover lightens the fill and keeps the ivory label. Inverting to an ivory
+   fill would drop an ivory label to 1:1 - the failure this codebase has hit
+   before, so no hover on this page ever swaps which colour carries the text. */
+.ap-cta:hover,
+.ap-cta:focus-visible {
+  background: #3d3830;
+  border-color: #3d3830;
+}
+.ap-cta span {
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+}
+.ap-cta--quiet {
+  background: transparent;
+  color: var(--ap-ink);
+}
+.ap-cta--quiet:hover,
+.ap-cta--quiet:focus-visible {
+  background: var(--ap-ink);
+  color: var(--ap-ivory);
+}
+.ap-cta--invert {
+  background: var(--ap-char-fg);
+  color: var(--ap-char);
+  border-color: var(--ap-char-fg);
+}
+.ap-cta--invert:hover,
+.ap-cta--invert:focus-visible {
+  background: #ffffff;
+  border-color: #ffffff;
+  color: var(--ap-char);
+}
+/* The rule is drawn by the text, not the box: a border-bottom on an
+   inline-flex link sits on the padded box and runs past the words. */
+.ap-link {
+  color: var(--ap-ink-muted);
+  text-decoration: underline;
+  text-decoration-color: rgb(35 32 28 / 0.3);
+  text-underline-offset: 0.45em;
+  text-decoration-thickness: 1px;
+}
+.ap-link:hover,
+.ap-link:focus-visible {
+  color: var(--ap-ink);
+  text-decoration-color: var(--ap-ink);
+}
+.ap-link--lead {
+  margin-top: 1.75rem;
+}
+
+/* --- 1. hero --- */
+.ap-hero {
+  background: var(--ap-ivory);
+  padding-block: clamp(2.5rem, 6vw, 4rem);
+}
+.ap-hero-inner {
+  max-width: var(--ap-max);
+  margin-inline: auto;
   display: grid;
-  gap: clamp(2.5rem, 6vw, 4.5rem);
-  padding: clamp(3rem, 6vw, 4.5rem) max(6vw, 1.4rem) clamp(3rem, 7vw, 5rem);
-  max-width: 78rem;
-  margin: 0 auto;
+  gap: clamp(1.75rem, 4vw, 3.5rem);
+  align-items: center;
 }
-.approach-hero-copy {
-  max-width: 40rem;
+.ap-hero h1 {
+  margin: 1rem 0 0;
+  /* Capped at 2.9rem. The vw term kept growing the type past the fixed 34rem
+     copy column, so at 1440px+ "We don't follow the mood." needed a third
+     line while the column itself stopped widening. */
+  font-size: clamp(2.1rem, 3.2vw, 2.9rem);
+  line-height: 1.1;
 }
-.approach-hero .display-title {
-  margin: 0 0 1.25rem;
+.ap-hero-lede {
+  margin-top: 1.25rem;
+  max-width: 42ch;
+  color: var(--ap-ink-muted);
+  font-size: clamp(0.98rem, 1.15vw, 1.1rem);
+  line-height: 1.7;
 }
-.approach-lead {
-  color: var(--fg-muted);
-  font-size: 1.05rem;
-  line-height: 1.8;
-  max-width: 36rem;
+.ap-hero-actions {
+  margin-top: clamp(1.5rem, 3vw, 2rem);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.5rem;
 }
-.approach-hero-media {
-  position: relative;
-  aspect-ratio: 16 / 9;
-  overflow: hidden;
-  border: 1px solid var(--line);
-}
-
-.approach-blocks {
-  display: grid;
-  gap: clamp(4rem, 10vw, 8rem);
-  max-width: 78rem;
-  margin: 0 auto;
-  padding: clamp(2rem, 5vw, 3.5rem) max(6vw, 1.4rem);
-}
-.approach-block {
-  display: grid;
-  gap: 1.75rem;
-}
-.approach-block-media {
-  position: relative;
-  aspect-ratio: 4 / 5;
-  overflow: hidden;
-  border: 1px solid var(--line);
-}
-.approach-block-copy h2 {
-  font-family: var(--font-display), serif;
-  font-weight: 400;
-  font-size: clamp(1.6rem, 4vw, 2.3rem);
-  letter-spacing: -0.02em;
-}
-.approach-block-copy p {
-  margin-top: 0.9rem;
-  color: var(--fg-muted);
-  line-height: 1.8;
-  max-width: 34rem;
+/* The hero and discovery photographs were shot on a cool lilac sweep, which
+   sits badly against the warm ivory page. Recolouring the photograph would
+   shift the bottle glass with it, so instead each sits on its own neutral
+   panel: the mismatch then reads as a deliberate frame rather than a
+   background that failed to match. */
+.ap-hero-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: #eceaf0;
 }
 
-.approach-quote {
-  max-width: 60rem;
-  margin: 0 auto;
-  padding: clamp(3.5rem, 9vw, 7rem) max(6vw, 1.4rem);
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-}
-.approach-quote p {
-  font-family: var(--font-display), serif;
-  font-weight: 400;
-  font-size: clamp(1.5rem, 3.6vw, 2.4rem);
-  line-height: 1.35;
-  letter-spacing: -0.02em;
-  color: var(--fg);
-  max-width: 30ch;
-}
-
-.approach-final {
-  text-align: center;
-  padding: clamp(3.5rem, 9vw, 6rem) max(6vw, 1.4rem);
-}
-.approach-founder {
-  font-family: var(--font-display), serif;
-  font-size: clamp(1.5rem, 4vw, 2rem);
-  letter-spacing: -0.02em;
-  margin-bottom: 2rem;
-}
-
-@media (min-width: 860px) {
-  .approach-hero {
-    grid-template-columns: 1fr;
-    justify-items: start;
-  }
-  .approach-hero-media {
-    width: 100%;
-    aspect-ratio: 21 / 9;
-  }
-  .approach-block {
-    grid-template-columns: 1fr 1fr;
-    gap: clamp(2.5rem, 6vw, 5rem);
+@media (min-width: 1100px) {
+  .ap-hero-inner {
+    /* Copy left, photograph right. 30rem, not 26rem: at 26rem "We don't
+       follow the mood." broke onto three lines and the headline read as four
+       short stubs. */
+    grid-template-columns: minmax(26rem, 34rem) minmax(0, 1fr);
     align-items: center;
   }
-  /* Alternate the media side so the three rows have rhythm. */
-  .approach-block:nth-child(even) .approach-block-media {
-    order: 2;
+  /* The photograph keeps its own aspect ratio and the copy column centres
+     against it. Both alternatives were tried and both failed the brief's
+     "never crop away a bottle" rule:
+
+     - A min-height on the row with a contained image left the hero mostly
+       empty at 900-1200px, where the copy is tall and the photograph short.
+     - `cover` filled the box but sliced the group: at 900px only two bottles
+       survived. The column swings from roughly 1:1 to 2:1 across the desktop
+       range while the photograph is fixed at 1.73:1, so no object-position is
+       safe, and a tighter crop only moves the ratio from 1.73 to 1.63.
+
+     Letting the ratio decide costs some height at narrow widths, which the
+     min-height on the copy column below absorbs. */
+  .ap-hero-copy {
+    min-height: 420px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
-  .approach-block--lead {
-    grid-template-columns: 1.25fr 1fr;
+  .ap-hero-media {
+    display: flex;
+    justify-content: flex-end;
   }
-  .approach-block--lead .approach-block-media {
-    aspect-ratio: 3 / 2;
+  .ap-hero-img {
+    max-height: 560px;
+    width: auto;
+    margin-inline-start: auto;
   }
-  .approach-block--lead .approach-block-copy h2 {
-    font-size: clamp(2rem, 4.5vw, 2.8rem);
+}
+/* Below 1100px the hero stacks: copy above, photograph below. The side-by-side
+   split needs about 30rem for the headline, which on a 900-1080px viewport
+   leaves the photograph a column so narrow that a 1.73:1 image renders barely
+   180px tall and the section looks broken. Stacking gives the photograph the
+   full width instead.
+
+   Nothing is overlaid on the bottles at any width, so no label is ever
+   obscured. */
+@media (max-width: 1099px) {
+  .ap-hero-img {
+    max-height: clamp(240px, 30vw, 320px);
+    object-fit: contain;
+    object-position: center;
+  }
+}
+
+/* --- 2. manifesto: ivory, typography only, no photograph --- */
+.ap-manifesto {
+  background: var(--ap-ivory-deep);
+  padding-block: clamp(3.5rem, 9vw, 7rem);
+  scroll-margin-top: 6rem;
+}
+.ap-manifesto-inner {
+  max-width: var(--ap-max);
+  margin-inline: auto;
+  display: grid;
+  gap: clamp(1.75rem, 4vw, 3rem);
+}
+.ap-manifesto h2 {
+  font-size: clamp(2rem, 4.4vw, 3.4rem);
+  line-height: 1.08;
+  margin-top: 0.85rem;
+}
+.ap-manifesto-body p {
+  max-width: 58ch;
+  margin-bottom: 1.35rem;
+  color: var(--ap-ink-muted);
+  font-size: clamp(1rem, 1.15vw, 1.1rem);
+  line-height: 1.8;
+}
+.ap-manifesto-close {
+  margin-top: 2.25rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid rgb(35 32 28 / 0.15);
+  color: var(--ap-ink);
+  font-size: clamp(1.15rem, 1.9vw, 1.5rem);
+  line-height: 1.35;
+}
+@media (min-width: 900px) {
+  /* Asymmetric: a wide heading column against a narrower reading column, so
+     the prose keeps a comfortable measure instead of running the full width. */
+  .ap-manifesto-inner {
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    gap: clamp(3rem, 7vw, 6rem);
+  }
+  .ap-manifesto-head {
+    position: sticky;
+    top: 7rem;
+    align-self: start;
+  }
+}
+
+/* --- 3. the product --- */
+.ap-product {
+  background: var(--ap-ivory);
+  padding-block: clamp(3.5rem, 9vw, 7rem);
+}
+.ap-product-inner {
+  max-width: var(--ap-max);
+  margin-inline: auto;
+  display: grid;
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: center;
+}
+.ap-product h2 {
+  font-size: clamp(1.9rem, 3.6vw, 2.8rem);
+  margin-top: 0.85rem;
+}
+.ap-lede {
+  margin-top: 1.1rem;
+  max-width: 48ch;
+  color: var(--ap-ink-muted);
+  line-height: 1.75;
+}
+.ap-product-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+/* Fine rules, not boxed cards. */
+.ap-points {
+  margin-top: 2.5rem;
+  border-top: 1px solid rgb(35 32 28 / 0.15);
+}
+.ap-points > div {
+  display: grid;
+  gap: 0.35rem;
+  padding: 1.15rem 0;
+  border-bottom: 1px solid rgb(35 32 28 / 0.15);
+}
+.ap-points dt {
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ap-ink);
+}
+.ap-points dd {
+  margin: 0;
+  color: var(--ap-ink-muted);
+  line-height: 1.6;
+}
+@media (min-width: 900px) {
+  .ap-product-inner {
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr);
+  }
+  .ap-points > div {
+    grid-template-columns: minmax(0, 12rem) minmax(0, 1fr);
+    gap: 1.5rem;
+    align-items: baseline;
+  }
+}
+
+/* --- 4. the collection --- */
+.ap-collection {
+  background: var(--ap-char);
+  color: var(--ap-char-fg);
+  padding-block: clamp(3.5rem, 9vw, 7rem);
+}
+.ap-collection .ap-eyebrow {
+  color: var(--ap-char-muted);
+}
+.ap-collection-head {
+  max-width: var(--ap-max);
+  margin: 0 auto clamp(2.5rem, 6vw, 4rem);
+}
+.ap-collection h2 {
+  margin-top: 0.85rem;
+  font-size: clamp(1.9rem, 4vw, 3rem);
+}
+.ap-grid {
+  max-width: var(--ap-max);
+  margin-inline: auto;
+  display: grid;
+  /* 2x2 on a phone, four columns from 1024px. minmax(0, 1fr) lets a column
+     shrink below its content rather than widening the row past the page. */
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(1rem, 2.5vw, 2rem);
+  list-style: none;
+  padding: 0;
+}
+.ap-card a {
+  display: grid;
+  gap: 0.9rem;
+  height: 100%;
+  color: inherit;
+}
+.ap-card-media {
+  display: block;
+  overflow: hidden;
+  background: #222627;
+}
+.ap-card-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  transition: transform 220ms ease;
+}
+/* Hover only where hovering exists, and only a very slight scale. */
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .ap-card a:hover .ap-card-img,
+  .ap-card a:focus-visible .ap-card-img {
+    transform: scale(1.03);
+  }
+}
+.ap-card-body {
+  display: block;
+  /* The bottle's own glass colour, as a hairline only. */
+  border-top: 2px solid var(--card-accent, var(--ap-char-muted));
+  padding-top: 0.85rem;
+}
+.ap-card h3 {
+  font-size: clamp(1.05rem, 1.6vw, 1.3rem);
+}
+.ap-card-line {
+  margin-top: 0.3rem;
+  color: var(--ap-char-fg);
+  font-size: 0.95rem;
+}
+.ap-card-notes {
+  margin-top: 0.55rem;
+  color: var(--ap-char-muted);
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+.ap-card-family {
+  display: block;
+  color: var(--card-accent, var(--ap-char-fg));
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-bottom: 0.3rem;
+}
+.ap-card-cta {
+  display: inline-block;
+  margin-top: 0.9rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-decoration: underline;
+  text-decoration-color: rgb(242 239 233 / 0.35);
+  text-underline-offset: 0.4em;
+}
+.ap-card a:hover .ap-card-cta,
+.ap-card a:focus-visible .ap-card-cta {
+  text-decoration-color: var(--ap-char-fg);
+}
+@media (min-width: 1024px) {
+  .ap-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* --- 5. the wearer --- */
+.ap-wearer {
+  background: var(--ap-ivory);
+  padding-block: clamp(3.5rem, 9vw, 7rem);
+}
+.ap-wearer-inner {
+  max-width: var(--ap-max);
+  margin-inline: auto;
+  display: grid;
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: center;
+}
+.ap-wearer h2 {
+  font-size: clamp(1.9rem, 4vw, 3rem);
+  line-height: 1.1;
+}
+.ap-wearer p {
+  margin-top: 1.1rem;
+  max-width: 44ch;
+  color: var(--ap-ink-muted);
+  line-height: 1.75;
+}
+.ap-wearer-img,
+.ap-discovery-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.ap-discovery-img {
+  background: #eceaf0;
+}
+@media (min-width: 900px) {
+  .ap-wearer-inner {
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr);
+  }
+}
+
+/* --- 6. discovery --- */
+.ap-discovery {
+  background: var(--ap-ivory-deep);
+  padding-block: clamp(3.5rem, 9vw, 7rem);
+}
+.ap-discovery-inner {
+  max-width: var(--ap-max);
+  margin-inline: auto;
+  display: grid;
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: center;
+}
+.ap-discovery h2 {
+  font-size: clamp(1.9rem, 4vw, 3rem);
+  line-height: 1.1;
+}
+.ap-discovery p {
+  margin-top: 1.1rem;
+  max-width: 44ch;
+  color: var(--ap-ink-muted);
+  line-height: 1.75;
+}
+.ap-discovery .ap-cta {
+  margin-top: 1.75rem;
+}
+@media (min-width: 900px) {
+  .ap-discovery-inner {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+  }
+}
+
+/* --- 7. closing --- */
+.ap-close {
+  background: var(--ap-char);
+  color: var(--ap-char-fg);
+  padding-block: clamp(3rem, 7vw, 5rem);
+}
+.ap-close-inner {
+  max-width: var(--ap-max);
+  margin-inline: auto;
+  display: grid;
+  gap: 0.85rem;
+  justify-items: start;
+}
+.ap-close h2 {
+  font-size: clamp(1.8rem, 3.6vw, 2.8rem);
+}
+.ap-close p {
+  color: var(--ap-char-muted);
+}
+.ap-close .ap-cta {
+  margin-top: 1rem;
+}
+
+/* One-time hero entrance: opacity plus a short rise, small stagger. It runs
+   from a transformed state to the resting one, so if it never runs the hero
+   is simply already in place - content never depends on the animation. */
+@media (prefers-reduced-motion: no-preference) {
+  .ap-hero-copy > * {
+    animation: ap-enter 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .ap-hero-copy > h1 {
+    animation-delay: 80ms;
+  }
+  .ap-hero-copy > .ap-hero-lede {
+    animation-delay: 160ms;
+  }
+  .ap-hero-copy > .ap-hero-actions {
+    animation-delay: 240ms;
+  }
+}
+@keyframes ap-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
   }
 }

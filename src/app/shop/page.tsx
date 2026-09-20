@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { ViewTransition } from "react";
 import ProductCard from "@/components/ProductCard";
 import { listCatalogProducts } from "@/lib/catalog";
-import Photo from "@/components/Photo";
+import ShopHero from "@/components/shop/ShopHero";
+import ShopSection from "@/components/shop/ShopSection";
+import ComboBuilder from "@/components/shop/ComboBuilder";
 
 /** shop <-> product slide. Forward carries the user deeper (into a product),
  *  back returns them here; anything untyped (a browser back button, a link
@@ -67,18 +69,30 @@ export default async function ShopPage({
   const singleFragrances = products.filter(
     (product) => product.collection === "unisex",
   );
+  // Only 100ml singles are combo-eligible, matching COMBO_SIZE in commerce.ts.
+  const comboProducts = singleFragrances.filter((product) =>
+    hasSize(product, "100ml"),
+  );
   const sections: Array<{
     id: string;
     size?: "20ml" | "100ml";
     eyebrow: string;
     titleLead?: string;
     title: string;
+    /** Short label for the jump links above the grid. */
+    jumpLabel: string;
+    /** Decorative backdrop, parallaxed behind the grid. */
+    backdrop: string;
+    align: "left" | "right";
     products: typeof products;
   }> = [
     {
       id: "100ml",
       size: "100ml",
+      backdrop: "/ref/billionaire-100ml-desktop.webp",
+      align: "left",
       eyebrow: "The full ritual",
+      jumpLabel: "100ml fragrances",
       titleLead: "100ml",
       title: "fragrances",
       products: singleFragrances.filter((product) => hasSize(product, "100ml")),
@@ -86,14 +100,20 @@ export default async function ShopPage({
     {
       id: "20ml",
       size: "20ml",
+      backdrop: "/ref/heavenly-both-sizes-desktop.webp",
+      align: "right",
       eyebrow: "The discovery edit",
+      jumpLabel: "20ml fragrances",
       titleLead: "20ml",
       title: "fragrances",
       products: singleFragrances.filter((product) => hasSize(product, "20ml")),
     },
     {
       id: "pack-of-4",
+      backdrop: "/ref/collection-4x100ml-mobile.webp",
+      align: "left",
       eyebrow: "The complete discovery wardrobe",
+      jumpLabel: "Discovery sets",
       title: "Combo pack of 4",
       products: products.filter(
         (product) => product.slug === "signature-combo-20ml",
@@ -107,36 +127,27 @@ export default async function ShopPage({
       default="none"
     >
       <main data-surface="commerce" className="shop-page cinematic">
-        {/* Full-bleed campaign banner. The page previously opened on plain text
-          with no imagery at all, which read as a catalogue rather than a
-          house. The frame is one of the campaign shots that was sitting
-          unreferenced in public/curated. */}
-        <section className="shop-hero" data-surface="story">
-          <div className="shop-hero-media">
-            <Photo
-              src="/ref/collection-4x100ml-desktop.webp"
-              alt="All four Amidaddy fragrances — Billionaire, Cold War, Heavenly and Old Love — in 100ml bottles"
-              fill
-              priority
-              sizes="100vw"
-              className="object-cover object-[center_22%]"
-            />
-            <div className="shop-hero-scrim" />
-          </div>
-          <div className="shop-hero-copy">
-            <p className="eyebrow">The olfactory wardrobe</p>
-            <h1 className="display-title">
-              Find the scent
-              <br />
-              that feels like you.
-            </h1>
-            <p>
-              Four unisex compositions, two considered sizes, and complete
-              four-bottle combos. Filter by instinct, family, or mood.
-            </p>
-          </div>
-        </section>
+        <ShopHero />
         <section className="mx-auto max-w-[1500px] px-5 pb-28 sm:px-8">
+          {/* Jump links into the size sections below. These are plain anchors,
+              so they work without JavaScript and are keyboard-operable for
+              free; each target carries scroll-margin-top for the header. The
+              counts are read from the same filtered data as the sections, so a
+              shortcut never advertises a section that is not rendered. */}
+          <nav className="shop-jump" aria-label="Shop by size">
+            {sections.map(
+              (section) =>
+                section.products.length > 0 && (
+                  <a key={section.id} href={`#${section.id}`}>
+                    <span>{section.jumpLabel}</span>
+                    <small>
+                      {section.products.length}{" "}
+                      {section.products.length === 1 ? "option" : "options"}
+                    </small>
+                  </a>
+                ),
+            )}
+          </nav>
           <form className="shop-filters" action="/shop">
             <label>
               <span>Search</span>
@@ -187,23 +198,16 @@ export default async function ShopPage({
               {sections.map(
                 (section) =>
                   section.products.length > 0 && (
-                    <section
+                    <ShopSection
                       key={section.id}
                       id={section.id}
-                      className="shop-size-section"
+                      eyebrow={section.eyebrow}
+                      titleLead={section.titleLead}
+                      title={section.title}
+                      count={section.products.length}
+                      backdrop={section.backdrop}
+                      align={section.align}
                     >
-                      <div className="shop-size-heading">
-                        <p className="eyebrow">{section.eyebrow}</p>
-                        <h2 className="display-title">
-                          {section.titleLead && (
-                            <span className="shop-size-heading-lead">
-                              {section.titleLead}
-                            </span>
-                          )}
-                          {section.title}
-                        </h2>
-                        <span>{section.products.length} options</span>
-                      </div>
                       <div className="product-grid">
                         {section.products.map((product, index) => (
                           <ProductCard
@@ -216,8 +220,11 @@ export default async function ShopPage({
                           />
                         ))}
                       </div>
-                    </section>
+                    </ShopSection>
                   ),
+              )}
+              {comboProducts.length > 0 && (
+                <ComboBuilder products={comboProducts} />
               )}
             </div>
           ) : (

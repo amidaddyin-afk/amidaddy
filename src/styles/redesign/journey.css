@@ -1,0 +1,879 @@
+/* Scent School - "From a note to a feeling."
+   A dark, cinematic editorial journey. Sharp edges preserve the house
+   geometry; amber is the single accent and is used sparingly, as light in the
+   photography rather than as decoration. */
+
+.school-journey {
+  --ink: #101211;
+  --ivory: #f1eee7;
+  --olive: #646c54;
+  --amber: #b58046;
+  /* Body copy over the scenes. Measured against the darkest veil stop for
+     contrast; do not lighten the veil without re-checking this. */
+  --dim: #b9b5ac;
+  --line: rgba(241, 238, 231, 0.16);
+  --gutter: clamp(1.25rem, 5vw, 5rem);
+  position: relative;
+  overflow: clip;
+  background: var(--ink);
+  color: var(--ivory);
+  font-family: var(--font-sans);
+}
+
+.school-journey h1,
+.school-journey h2,
+.school-journey .chapter-heading {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.04;
+}
+
+/* ---------- 00 Opening ---------- */
+
+.journey-hero {
+  position: relative;
+  min-height: 100svh;
+  display: grid;
+  align-items: center;
+  justify-items: center;
+  isolation: isolate;
+  overflow: hidden;
+  text-align: center;
+  padding: 6rem var(--gutter) 5rem;
+}
+.journey-hero-media,
+.journey-hero-veil {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+}
+.journey-hero-media img {
+  object-fit: cover;
+  object-position: center 38%;
+}
+/* Shown when the commissioned opening art is unavailable. Composed rather
+   than flat, so the headline still sits on a lit surface. */
+.journey-hero-fallback,
+.journey-hero-media > div {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      60% 45% at 50% 30%,
+      rgba(181, 128, 70, 0.34) 0%,
+      transparent 70%
+    ),
+    radial-gradient(
+      90% 70% at 50% 0%,
+      rgba(100, 108, 84, 0.22) 0%,
+      transparent 65%
+    ),
+    var(--ink);
+}
+.journey-hero-veil {
+  background: linear-gradient(
+    180deg,
+    rgba(16, 18, 17, 0.72) 0%,
+    rgba(16, 18, 17, 0.18) 34%,
+    rgba(16, 18, 17, 0.82) 78%,
+    var(--ink) 100%
+  );
+}
+.journey-hero-copy {
+  max-width: 44rem;
+  display: grid;
+  gap: 1.1rem;
+  justify-items: center;
+}
+.journey-hero-eyebrow {
+  font-size: 0.7rem;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--ivory);
+  /* The opening art is uncontrolled behind this line - a bright highlight can
+     land directly under it, so it carries its own shadow rather than relying
+     on the veil. */
+  text-shadow: 0 1px 12px rgba(16, 18, 17, 0.9);
+}
+.journey-hero h1,
+.journey-hero-lede {
+  text-shadow: 0 2px 24px rgba(16, 18, 17, 0.75);
+}
+.journey-hero h1 {
+  font-size: clamp(2.4rem, 7.2vw, 6rem);
+  margin: 0;
+}
+.journey-hero-lede {
+  font-size: clamp(0.95rem, 1.6vw, 1.15rem);
+  color: var(--dim);
+}
+.journey-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.75rem;
+}
+
+.journey-cta,
+.journey-cta-quiet {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 44px;
+  padding: 0.75rem 1.6rem;
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease;
+}
+.journey-cta {
+  border: 1px solid rgba(241, 238, 231, 0.55);
+  color: var(--ivory);
+}
+.journey-cta:hover {
+  background: var(--ivory);
+  color: var(--ink);
+}
+.journey-cta-quiet {
+  padding-inline: 0;
+  color: var(--dim);
+  border-bottom: 1px solid transparent;
+}
+.journey-cta-quiet:hover {
+  color: var(--ivory);
+  border-bottom-color: var(--amber);
+}
+
+/* Printed-page marginalia. Decorative: hidden from assistive tech and from
+   narrow screens, where it would crowd the headline. */
+.journey-hero-margin {
+  position: absolute;
+  top: 50%;
+  translate: 0 -50%;
+  display: none;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.6rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(241, 238, 231, 0.42);
+}
+.journey-hero-margin[data-side="left"] {
+  left: var(--gutter);
+  text-align: left;
+}
+.journey-hero-margin[data-side="right"] {
+  right: var(--gutter);
+  text-align: right;
+}
+.journey-hero-margin span {
+  display: block;
+  height: 0.35rem;
+}
+.journey-hero-scroll {
+  position: absolute;
+  bottom: 2.25rem;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  font-size: 0.62rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(241, 238, 231, 0.6);
+}
+.journey-hero-scroll:hover {
+  color: var(--ivory);
+}
+
+/* ---------- Scroll-scrubbed film ---------- */
+
+.chapter-film {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--ink);
+}
+.chapter-film-poster,
+.chapter-film-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* The poster sits under the video and is removed only once a real frame has
+   been painted, so there is never a black gap between the two. */
+.chapter-film-poster {
+  z-index: 0;
+  transition: opacity 0.5s ease;
+}
+.chapter-film-poster[data-hidden="true"] {
+  opacity: 0;
+}
+.chapter-film-video {
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.chapter-film-video[data-ready="true"] {
+  opacity: 1;
+}
+
+/* ---------- Chapter index ---------- */
+
+/* Pinned to the left edge and vertically centred rather than along the top,
+   which is occupied by the site header (fixed, 73px, z-70). */
+.chapter-index {
+  position: fixed;
+  left: 0;
+  top: 50%;
+  translate: 0 -50%;
+  z-index: 40;
+  display: none;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding-left: max(0.5rem, calc(var(--gutter) - 2.25rem));
+}
+.chapter-index ol {
+  display: grid;
+  gap: 0.1rem;
+}
+.chapter-index a {
+  display: grid;
+  place-items: center;
+  min-width: 44px;
+  min-height: 44px;
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  color: rgba(241, 238, 231, 0.45);
+  border-left: 1px solid transparent;
+  transition:
+    color 0.3s ease,
+    border-color 0.3s ease;
+}
+.chapter-index a:hover,
+.chapter-index a:focus-visible {
+  color: var(--ivory);
+}
+.chapter-index a[data-state="current"] {
+  color: var(--ivory);
+  border-left-color: var(--amber);
+}
+.chapter-index-skip {
+  /* Rotated into the margin so the rail stays a narrow column. */
+  writing-mode: vertical-rl;
+  rotate: 180deg;
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(241, 238, 231, 0.45);
+  border-bottom: 1px solid transparent;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  margin-left: 0.6rem;
+}
+.chapter-index-toggle {
+  writing-mode: vertical-rl;
+  rotate: 180deg;
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(241, 238, 231, 0.45);
+  border-bottom: 1px solid transparent;
+  min-height: 44px;
+  min-width: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.chapter-index-toggle:hover,
+.chapter-index-toggle:focus-visible,
+.chapter-index-toggle[aria-pressed="true"] {
+  color: var(--ivory);
+  border-bottom-color: var(--amber);
+}
+.chapter-index-skip:hover,
+.chapter-index-skip:focus-visible {
+  color: var(--ivory);
+  border-bottom-color: var(--amber);
+}
+
+/* ---------- Chapters ---------- */
+
+.chapter,
+.journey-lessons {
+  /* Anchor jumps must clear the fixed chapter index, or a chapter heading
+     lands underneath it. */
+  scroll-margin-top: 4.5rem;
+}
+/* A chapter carrying a scrubbed film gets more travel: the clip's full
+   duration maps across the section, and too little travel scrubs it past in a
+   blur. Phones keep the shorter travel - see the narrow-screen block. */
+.chapter:has(.chapter-film) {
+  min-height: 150svh;
+}
+.chapter {
+  position: relative;
+  min-height: 90svh;
+  display: grid;
+  align-items: center;
+  isolation: isolate;
+  padding: clamp(4rem, 12vh, 9rem) var(--gutter);
+  border-top: 1px solid rgba(241, 238, 231, 0.07);
+}
+.chapter-media,
+.chapter-media-veil {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+}
+/* Above the film's poster (z0) and video (z1), below the copy. Without this
+   the veil renders under the footage and a bright frame makes the text
+   unreadable. */
+.chapter-media-veil {
+  z-index: 2;
+}
+.chapter-media {
+  overflow: hidden;
+}
+.chapter-media-inner {
+  position: absolute;
+  /* Overscan, so the parallax travel never exposes an edge. */
+  inset: -8% 0;
+}
+.chapter-media-inner img {
+  object-fit: cover;
+}
+/* Scene placeholder until the commissioned art lands. Each chapter gets its
+   own light direction so the sequence still reads as a journey. */
+.chapter-media-fallback {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      70% 60% at 70% 40%,
+      rgba(181, 128, 70, 0.26) 0%,
+      transparent 68%
+    ),
+    var(--ink);
+}
+.chapter-media-fallback[data-scene="notes"] {
+  background:
+    radial-gradient(
+      65% 55% at 72% 45%,
+      rgba(100, 108, 84, 0.32) 0%,
+      transparent 70%
+    ),
+    var(--ink);
+}
+.chapter-media-fallback[data-scene="essence"],
+.chapter-media-fallback[data-scene="time"] {
+  background:
+    radial-gradient(
+      60% 60% at 68% 50%,
+      rgba(181, 128, 70, 0.34) 0%,
+      transparent 70%
+    ),
+    var(--ink);
+}
+.chapter-media-fallback[data-scene="skin"] {
+  background:
+    radial-gradient(
+      70% 60% at 65% 45%,
+      rgba(181, 128, 70, 0.2) 0%,
+      transparent 72%
+    ),
+    var(--ink);
+}
+/* Keeps the copy column legible over any photograph, in both directions. */
+.chapter-media-veil {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(16, 18, 17, 0.97) 0%,
+      rgba(16, 18, 17, 0.92) 38%,
+      rgba(16, 18, 17, 0.62) 62%,
+      rgba(16, 18, 17, 0.32) 85%
+    ),
+    linear-gradient(180deg, rgba(16, 18, 17, 0.6) 0%, transparent 28%),
+    /* A flat floor under everything: a scrubbed clip can land on a frame that
+       is bright edge to edge, which a directional gradient alone cannot
+       tame. */
+    linear-gradient(0deg, rgba(16, 18, 17, 0.28), rgba(16, 18, 17, 0.28));
+}
+.chapter[data-align="right"] .chapter-media-veil {
+  background:
+    linear-gradient(
+      270deg,
+      rgba(16, 18, 17, 0.97) 0%,
+      rgba(16, 18, 17, 0.92) 38%,
+      rgba(16, 18, 17, 0.62) 62%,
+      rgba(16, 18, 17, 0.32) 85%
+    ),
+    linear-gradient(180deg, rgba(16, 18, 17, 0.6) 0%, transparent 28%),
+    linear-gradient(0deg, rgba(16, 18, 17, 0.28), rgba(16, 18, 17, 0.28));
+}
+
+.chapter-copy {
+  max-width: 34rem;
+  display: grid;
+  gap: 0.85rem;
+  justify-self: start;
+}
+.chapter[data-align="right"] .chapter-copy {
+  justify-self: end;
+}
+.chapter-number {
+  font-size: 0.72rem;
+  letter-spacing: 0.24em;
+  color: rgba(241, 238, 231, 0.5);
+}
+.chapter-number span {
+  color: var(--ivory);
+}
+.chapter-heading {
+  font-size: clamp(2.1rem, 5.4vw, 4.2rem);
+  margin: 0;
+}
+.chapter-standfirst {
+  font-size: clamp(0.95rem, 1.5vw, 1.1rem);
+  color: var(--ivory);
+}
+.chapter-body {
+  font-size: 0.92rem;
+  line-height: 1.75;
+  color: var(--dim);
+  max-width: 44ch;
+}
+.chapter-notice {
+  margin-top: 0.4rem;
+  padding-left: 0.85rem;
+  border-left: 1px solid var(--amber);
+  font-size: 0.72rem;
+  line-height: 1.6;
+  color: rgba(241, 238, 231, 0.62);
+  max-width: 42ch;
+}
+.chapter-margin-note {
+  font-size: 0.72rem;
+  line-height: 1.7;
+  color: rgba(241, 238, 231, 0.55);
+  max-width: 40ch;
+}
+.chapter-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  align-items: center;
+  margin-top: 0.75rem;
+}
+.chapter-links a:not(.journey-cta) {
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  color: var(--ivory);
+  border-bottom: 1px solid var(--line);
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+.chapter-links a:not(.journey-cta):hover {
+  border-bottom-color: var(--amber);
+}
+
+/* ---------- 01 Notes ---------- */
+
+.notes-explorer {
+  display: grid;
+  gap: 1.5rem;
+  margin-top: 0.75rem;
+}
+.note-families {
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+}
+.note-families button {
+  width: 100%;
+  min-height: 44px;
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.75rem 0 0.75rem 0.85rem;
+  text-align: left;
+  border-left: 1px solid var(--line);
+  transition: border-color 0.3s ease;
+}
+.note-families button:hover,
+.note-families button[data-state="selected"] {
+  border-left-color: var(--amber);
+}
+.note-families strong {
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--ivory);
+}
+.note-families span {
+  font-size: 0.72rem;
+  line-height: 1.55;
+  color: var(--dim);
+}
+
+.notes-caveat button {
+  min-height: 44px;
+  font-size: 0.74rem;
+  letter-spacing: 0.06em;
+  color: var(--ivory);
+  border-bottom: 1px solid var(--line);
+}
+.notes-caveat button:hover {
+  border-bottom-color: var(--amber);
+}
+.notes-caveat p {
+  margin-top: 0.75rem;
+  font-size: 0.76rem;
+  line-height: 1.7;
+  color: var(--dim);
+  max-width: 46ch;
+}
+
+.note-signatures {
+  display: grid;
+  gap: 0.55rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid rgba(241, 238, 231, 0.1);
+}
+.note-signatures li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.9rem;
+  align-items: baseline;
+}
+.note-signatures strong {
+  min-width: 6.5rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--ivory);
+}
+.note-signatures span {
+  font-size: 0.74rem;
+  color: var(--dim);
+}
+.notes-footnote {
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  color: rgba(241, 238, 231, 0.45);
+}
+
+/* ---------- 03 Pyramid / 05 Timeline ---------- */
+
+.pyramid-list,
+.wear-timeline {
+  display: grid;
+  gap: 0.9rem;
+  margin-top: 0.75rem;
+}
+.pyramid-list li,
+.wear-timeline li {
+  display: grid;
+  gap: 0.25rem;
+  padding-left: 0.85rem;
+  border-left: 1px solid var(--line);
+}
+.pyramid-list strong,
+.wear-timeline strong {
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: var(--ivory);
+}
+.pyramid-list span,
+.wear-timeline span {
+  font-size: 0.76rem;
+  line-height: 1.6;
+  color: var(--dim);
+}
+
+/* ---------- 06 Curiosity ---------- */
+
+.curiosity-links {
+  display: grid;
+  margin-top: 0.5rem;
+  border-top: 1px solid rgba(241, 238, 231, 0.12);
+}
+.curiosity-links a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 44px;
+  padding: 0.95rem 0;
+  font-size: 0.86rem;
+  color: var(--ivory);
+  border-bottom: 1px solid rgba(241, 238, 231, 0.12);
+  transition:
+    padding-left 0.3s ease,
+    color 0.3s ease;
+}
+.curiosity-links a:hover {
+  padding-left: 0.5rem;
+  color: var(--amber);
+}
+
+/* ---------- 07 Signature ---------- */
+
+/* Chapter 07 is a product grid, not prose, so it is not held to the 34rem
+   measure the reading chapters use. Without this the four bottles were
+   squeezed into a 480px column with the rest of the 1440px frame left empty. */
+#signature .chapter-copy {
+  max-width: min(72rem, 100%);
+  width: 100%;
+}
+.signature-grid {
+  display: grid;
+  /* Four across when there is room, two on a phone. The floor is half the
+     container so a narrow frame always gets two rather than collapsing to a
+     single very tall column. */
+  grid-template-columns: repeat(auto-fit, minmax(min(11rem, 45%), 1fr));
+  gap: 1.75rem 1.25rem;
+  margin-top: 1.75rem;
+}
+.signature-grid a {
+  display: grid;
+  gap: 0.4rem;
+  min-height: 44px;
+}
+/* Fixed-ratio frame with `contain`: the whole bottle stays visible and no
+   crop can clip a cap, label or shoulder. The frame is squarer than the old
+   4/5 because the grid is four-up now - a tall frame left the bottle floating
+   in dead space above and below. */
+.signature-shot {
+  position: relative;
+  display: block;
+  aspect-ratio: 1;
+  background: rgba(241, 238, 231, 0.04);
+  border: 1px solid rgba(241, 238, 231, 0.1);
+  overflow: hidden;
+}
+.signature-shot img {
+  object-fit: contain;
+  /* Small inset so the frame reads as a frame, not a crop. */
+  padding: 0.35rem;
+  transition: scale 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.signature-grid a:hover .signature-shot img {
+  scale: 1.04;
+}
+.signature-grid strong {
+  font-family: var(--font-display);
+  font-size: 0.98rem;
+  font-weight: 400;
+  color: var(--ivory);
+}
+.signature-notes {
+  font-size: 0.72rem;
+  line-height: 1.5;
+  color: var(--dim);
+}
+
+.signature-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1.5rem;
+  margin-top: 0.5rem;
+}
+.signature-row li + li::before {
+  content: "|";
+  margin-right: 1.5rem;
+  color: rgba(241, 238, 231, 0.28);
+}
+.signature-row li {
+  display: flex;
+  align-items: center;
+}
+.signature-row a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-display);
+  font-size: 1.02rem;
+  color: var(--ivory);
+  border-bottom: 1px solid transparent;
+}
+.signature-row a:hover {
+  border-bottom-color: var(--amber);
+}
+
+/* ---------- 08 The written course ---------- */
+
+.journey-lessons {
+  /* Positioned so framer-motion's useScroll can measure it as an offset
+     parent; a static target logs a warning and can mis-measure on first
+     paint. */
+  position: relative;
+  padding: clamp(4rem, 10vh, 7rem) var(--gutter) clamp(5rem, 12vh, 8rem);
+  border-top: 1px solid rgba(241, 238, 231, 0.12);
+}
+.journey-lessons-head {
+  display: grid;
+  gap: 0.7rem;
+  max-width: 34rem;
+  margin-bottom: 2.5rem;
+}
+.lesson-rows {
+  display: grid;
+  border-top: 1px solid rgba(241, 238, 231, 0.12);
+}
+.lesson-rows a {
+  display: grid;
+  grid-template-columns: 2.75rem 1fr auto auto;
+  align-items: center;
+  gap: 1rem;
+  min-height: 44px;
+  padding: 1.15rem 0;
+  border-bottom: 1px solid rgba(241, 238, 231, 0.12);
+  transition: padding-left 0.3s ease;
+}
+.lesson-rows a:hover {
+  padding-left: 0.5rem;
+}
+.lesson-number {
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  color: rgba(241, 238, 231, 0.45);
+}
+.lesson-text {
+  display: grid;
+  gap: 0.2rem;
+}
+.lesson-text strong {
+  font-family: var(--font-display);
+  font-size: 1.02rem;
+  font-weight: 400;
+  color: var(--ivory);
+}
+.lesson-text > span {
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: var(--dim);
+}
+.lesson-time {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  color: rgba(241, 238, 231, 0.5);
+  white-space: nowrap;
+}
+.lesson-arrow {
+  color: rgba(241, 238, 231, 0.5);
+}
+.lesson-rows a:hover .lesson-arrow {
+  color: var(--amber);
+}
+
+/* ---------- Responsive ---------- */
+
+@media (min-width: 48rem) {
+  .pyramid-list,
+  .wear-timeline {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+@media (min-width: 64rem) {
+  .chapter-index {
+    display: flex;
+  }
+  /* Only once the rail exists does the copy need to clear it. */
+  .chapter-copy,
+  .journey-lessons-head,
+  .lesson-rows {
+    margin-left: 3rem;
+  }
+  .chapter[data-align="right"] .chapter-copy {
+    margin-left: 0;
+  }
+  .chapter {
+    min-height: 100svh;
+  }
+  .chapter-copy {
+    max-width: 30rem;
+  }
+  /* Chapter 06 lists sit beside the copy rather than under it, matching the
+     two-column reading of the reference. */
+  .curiosity-links {
+    max-width: 24rem;
+  }
+}
+
+/* Narrow screens: travel is cut back hard. A 150svh chapter on a phone is a
+   long scroll through one clip with the copy pinned off-screen, which makes
+   the page feel like work rather than a story. */
+@media (max-width: 47.999rem) {
+  .chapter:has(.chapter-film) {
+    min-height: auto;
+  }
+  /* Copy sits over the full width here, so the veil runs top-to-bottom
+     instead of side-to-side. */
+  .chapter-media-veil,
+  .chapter[data-align="right"] .chapter-media-veil {
+    background:
+      linear-gradient(
+        180deg,
+        rgba(16, 18, 17, 0.72) 0%,
+        rgba(16, 18, 17, 0.88) 45%,
+        rgba(16, 18, 17, 0.95) 100%
+      ),
+      linear-gradient(0deg, rgba(16, 18, 17, 0.3), rgba(16, 18, 17, 0.3));
+  }
+  .chapter {
+    min-height: auto;
+    padding-block: clamp(3.5rem, 9vh, 5rem);
+  }
+  /* Clear of the home indicator and any browser chrome at the bottom edge. */
+  .journey-hero {
+    padding-bottom: max(5rem, env(safe-area-inset-bottom) + 4rem);
+  }
+  .journey-hero-scroll {
+    bottom: max(1.5rem, env(safe-area-inset-bottom));
+  }
+  .signature-grid {
+    gap: 1rem 0.75rem;
+  }
+}
+
+/* The marginalia only appears once there is real margin to put it in. Below
+   this it would sit on top of the headline. */
+@media (min-width: 80rem) {
+  .journey-hero-margin {
+    display: flex;
+  }
+}
+
+/* Motion is decoration here: the same content and order without it. */
+@media (prefers-reduced-motion: reduce) {
+  .school-journey *,
+  .school-journey *::before,
+  .school-journey *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .chapter,
+  .journey-hero {
+    min-height: auto;
+  }
+}

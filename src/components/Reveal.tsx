@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
+import { createElement } from "react";
 import type { ElementType, ReactNode } from "react";
 import {
   EASE,
@@ -54,12 +55,7 @@ export default function Reveal({
   const MotionTag = motion[as as keyof typeof motion] as typeof motion.div;
 
   if (reduceMotion) {
-    const Tag = as;
-    return (
-      <Tag className={className} id={id}>
-        {children}
-      </Tag>
-    );
+    return createElement(as, { className, id }, children);
   }
 
   const variants =

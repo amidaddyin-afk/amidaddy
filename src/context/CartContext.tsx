@@ -10,8 +10,10 @@ import React, {
 } from "react";
 import type { Product } from "@/lib/data";
 import {
+  comboDiscountPaise,
   DEFAULT_FREE_SHIPPING_PAISE,
   DEFAULT_SHIPPING_FEE_PAISE,
+  nextComboTier,
 } from "@/lib/commerce";
 import { analytics, toItem } from "@/lib/analytics";
 
@@ -35,6 +37,11 @@ interface CartContextType {
   estimatedShippingPaise: number;
   estimatedTotalPaise: number;
   totalQty: number;
+  /** Combo discount on 100ml bottles. The server recomputes this at checkout. */
+  comboPercent: number;
+  comboDiscountPaise: number;
+  comboQty: number;
+  comboNextTier: { minQty: number; percent: number; addQty: number } | null;
   clearCart: () => void;
 }
 
@@ -143,14 +150,22 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       (sum, item) => sum + item.unitPricePaise * item.qty,
       0,
     );
+    const combo = comboDiscountPaise(items);
+    const afterCombo = subtotalPaise - combo.discountPaise;
+    // Free-shipping eligibility is checked before the combo discount, matching
+    // the server: earning a combo must never cost the customer free delivery.
     const estimatedShippingPaise =
       subtotalPaise > 0 && subtotalPaise < DEFAULT_FREE_SHIPPING_PAISE
         ? DEFAULT_SHIPPING_FEE_PAISE
         : 0;
     return {
       subtotalPaise,
+      comboPercent: combo.percent,
+      comboDiscountPaise: combo.discountPaise,
+      comboQty: combo.qty,
+      comboNextTier: nextComboTier(combo.qty),
       estimatedShippingPaise,
-      estimatedTotalPaise: subtotalPaise + estimatedShippingPaise,
+      estimatedTotalPaise: afterCombo + estimatedShippingPaise,
       totalQty: items.reduce((sum, item) => sum + item.qty, 0),
     };
   }, [items]);

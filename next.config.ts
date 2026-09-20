@@ -69,6 +69,57 @@ const nextConfig: NextConfig = {
         ],
       },
       {
+        // The hero films are immutable content at a stable filename: Next
+        // serves everything in public/ with `max-age=0`, so every repeat visit
+        // paid a revalidation round-trip before playback could start - the
+        // "it loads slowly again even though I already watched it" stutter.
+        // A year of immutable caching means a returning visitor plays from
+        // disk with no network at all. Re-encoding a clip needs a new
+        // filename (the encode script writes <slug>.webm/.mp4, so bump the
+        // slug) or this header will keep serving the old bytes.
+        source: "/videos/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      {
+        // Scent School scroll films and their posters. Same reasoning as
+        // /videos: stable generated filenames written by
+        // scripts/encode-scent-school.mjs. Byte-range requests matter more
+        // here than anywhere else on the site - the scrubber seeks constantly,
+        // and Next's static file handler serves 206 Partial Content for these
+        // (verified with a Range request), which is what makes seeking cheap.
+        // Re-encoding needs a new filename or this header keeps serving the
+        // old bytes.
+        source: "/scent-school/film/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      {
+        // Same reasoning as /videos, for the badge PNGs and brand marks that
+        // are served straight from public/ rather than through next/image.
+        // These are generated artwork with stable names that change only when
+        // the source art does - regenerate under a new name if you replace one.
+        // Photography under /ref, /gallery and friends is deliberately NOT
+        // here: it is requested through next/image, which applies its own
+        // 30-day cache keyed on path+width+quality and can be revalidated by
+        // replacing the file.
+        source: "/certifications/web/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      {
         source: "/account/:path*",
         headers: [{ key: "Cache-Control", value: "private, no-store" }],
       },

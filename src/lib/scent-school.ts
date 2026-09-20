@@ -35,7 +35,21 @@ export interface Lesson {
   summary: string;
   /** Opening paragraph on the chapter page. */
   lede: string;
+  /**
+   * Reading time in minutes, derived from the lesson's own words by
+   * `readingMinutes` below. Never hand-written: the authored numbers had
+   * drifted to between five and fourteen times the real length (one 182-word
+   * chapter claimed ten minutes), which is a strange thing to get wrong on a
+   * course whose promise is "verified, not claimed".
+   */
   minutes: number;
+  /**
+   * Minutes the chapter's exercise takes, where that is the point of it.
+   * Separate from `minutes`, which is reading time: "Learn your nose" is a
+   * one-minute read describing a ten-minute exercise, and collapsing the two
+   * into one number is what made the old figure look inflated.
+   */
+  activityMinutes?: number;
   image: string;
   imageAlt: string;
   blocks: LessonBlock[];
@@ -44,7 +58,7 @@ export interface Lesson {
   sources?: string[];
 }
 
-const LESSONS: Omit<Lesson, "number">[] = [
+const LESSONS: Omit<Lesson, "number" | "minutes">[] = [
   {
     slug: "history",
     title: "The history of perfume",
@@ -52,7 +66,6 @@ const LESSONS: Omit<Lesson, "number">[] = [
     summary:
       "How several regions, over many centuries, arrived at the bottle on your shelf.",
     lede: "Fragrance did not begin in one place. Traditions developed across regions and centuries, shaped by ritual, craft, trade and new ways of drawing scent out of raw material.",
-    minutes: 6,
     image: "/curated/hero-models-2.webp",
     imageAlt:
       "Amidaddy Perfumes models photographed together for a fragrance campaign",
@@ -114,7 +127,6 @@ const LESSONS: Omit<Lesson, "number">[] = [
     summary:
       "Copper, steam, sandalwood and patience — the craft behind Indian attar.",
     lede: "India's fragrance heritage is not a museum piece. In Kannauj, attar is still made by a method that predates every machine in a modern perfumery.",
-    minutes: 7,
     image: "/gallery/old-love/06.webp",
     imageAlt:
       "Amidaddy Perfumes Old Love Eau de Parfum photographed in warm light",
@@ -175,7 +187,6 @@ const LESSONS: Omit<Lesson, "number">[] = [
     summary:
       "EDP, EDT, notes, accords and families — the six words that unlock every label.",
     lede: "Most fragrance vocabulary exists to describe one of two things: how much scent is in the bottle, and what the scent is made of. Six terms cover almost all of it.",
-    minutes: 5,
     image: "/curated/product-detail-1.webp",
     imageAlt: "Amidaddy Perfumes bottles arranged in warm studio light",
     blocks: [
@@ -224,7 +235,6 @@ const LESSONS: Omit<Lesson, "number">[] = [
     summary:
       "Top, heart and base — why the scent you buy is not the scent you wear at hour four.",
     lede: "The opening is an introduction, not the fragrance. What you smell in the first ninety seconds has largely gone by the time anyone else has an opinion about it.",
-    minutes: 5,
     image: "/gallery/heavenly/06.webp",
     imageAlt: "Amidaddy Perfumes Heavenly Eau de Parfum held in soft daylight",
     blocks: [
@@ -252,7 +262,6 @@ const LESSONS: Omit<Lesson, "number">[] = [
     summary:
       "Placement, quantity and the one habit that quietly ruins an opening.",
     lede: "Fragrance rises and it needs warmth. Almost every rule about application follows from those two facts.",
-    minutes: 4,
     image: "/gallery/coldwar/03.webp",
     imageAlt:
       "Amidaddy Perfumes Cold War Eau de Parfum held against a white shirt",
@@ -303,7 +312,6 @@ const LESSONS: Omit<Lesson, "number">[] = [
     heading: "Longevity is not a competition.",
     summary: "Six habits that get more hours out of the bottle you own.",
     lede: "Most longevity problems are not the fragrance. They are dry skin, a rushed application or a bottle kept somewhere warm.",
-    minutes: 4,
     image: "/curated/product-detail-2.webp",
     imageAlt: "Amidaddy Perfumes bottles photographed in studio light",
     blocks: [
@@ -347,12 +355,12 @@ const LESSONS: Omit<Lesson, "number">[] = [
   },
   {
     slug: "learn-your-nose",
+    activityMinutes: 10,
     title: "Learn your nose",
     heading: "A ten-minute exercise.",
     summary:
       "Train the one instrument that decides which fragrance is actually yours.",
     lede: "You do not need vocabulary to smell well. You need attention, and a habit of writing down what you noticed before you talk yourself out of it.",
-    minutes: 10,
     image: "/gallery/heavenly/09.webp",
     imageAlt:
       "Amidaddy Perfumes Heavenly Eau de Parfum held close for a first impression",
@@ -395,7 +403,6 @@ const LESSONS: Omit<Lesson, "number">[] = [
     summary:
       "Put the whole course to work on Cold War, Heavenly, Old Love and Billionaire.",
     lede: "Begin with the feeling, then notice how the materials build that personality. This is the same reading you would give any fragrance — practised on ours.",
-    minutes: 5,
     image: "/curated/hero-models-3.webp",
     imageAlt:
       "The four Amidaddy Perfumes signatures photographed together for a campaign",
@@ -412,9 +419,43 @@ const LESSONS: Omit<Lesson, "number">[] = [
   },
 ];
 
+/** Words in a block, counting only text a reader actually reads. */
+function blockWords(block: LessonBlock): number {
+  const count = (text: string) =>
+    text.trim().split(/\s+/).filter(Boolean).length;
+  switch (block.kind) {
+    case "prose":
+      return block.body.reduce((n, p) => n + count(p), 0);
+    case "timeline":
+    case "terms":
+    case "steps":
+      return block.items.reduce((n, [a, b]) => n + count(a) + count(b), 0);
+    case "note":
+      return count(block.title) + count(block.body);
+    // pyramid, deg and signatures render copy that lives in the component
+    // rather than here. They are short and visual; a flat estimate keeps the
+    // total honest without pretending to measure what this file cannot see.
+    default:
+      return 40;
+  }
+}
+
+/**
+ * Reading time for one lesson, at 200 words per minute over the lede, the
+ * blocks and the takeaway. Rounded up to a whole minute, never below one.
+ */
+function readingMinutes(lesson: Omit<Lesson, "number" | "minutes">): number {
+  const words =
+    lesson.lede.trim().split(/\s+/).filter(Boolean).length +
+    lesson.blocks.reduce((n, b) => n + blockWords(b), 0) +
+    lesson.takeaway.trim().split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 200));
+}
+
 export const LESSONS_WITH_NUMBERS: Lesson[] = LESSONS.map((lesson, index) => ({
   ...lesson,
   number: String(index + 1).padStart(2, "0"),
+  minutes: readingMinutes(lesson),
 }));
 
 export function getLesson(slug: string): Lesson | undefined {

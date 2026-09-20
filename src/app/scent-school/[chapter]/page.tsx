@@ -10,6 +10,7 @@ import {
 } from "@/lib/scent-school";
 import LessonBlocks from "@/components/LessonBlocks";
 import ReadingProgress from "@/components/ReadingProgress";
+import ChapterProgress from "@/components/journey/ChapterProgress";
 import Reveal from "@/components/Reveal";
 
 export function generateStaticParams() {
@@ -48,6 +49,15 @@ export default async function ChapterPage({
       {/* Reading progress for this chapter, kept visible the whole way down. */}
       <ReadingProgress />
 
+      <ChapterProgress
+        chapters={LESSONS_WITH_NUMBERS.map(({ slug, number, title }) => ({
+          slug,
+          number,
+          title,
+        }))}
+        current={lesson.slug}
+      />
+
       <header className="lesson-hero">
         <div className="lesson-hero-media">
           <Image
@@ -73,6 +83,12 @@ export default async function ChapterPage({
           <p className="lesson-meta">
             <Clock3 size={14} aria-hidden="true" />
             {lesson.minutes} min read
+            {lesson.activityMinutes ? (
+              <>
+                <span aria-hidden="true">·</span>
+                {lesson.activityMinutes} min exercise
+              </>
+            ) : null}
             <span aria-hidden="true">·</span>
             Lesson {position} of {LESSONS_WITH_NUMBERS.length}
           </p>

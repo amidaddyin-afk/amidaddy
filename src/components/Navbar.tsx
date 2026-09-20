@@ -63,6 +63,7 @@ export default function Navbar() {
           >
             <span className="wordmark-title" aria-hidden="true">
               am<span className="brand-i">i</span>daddy
+              <span className="brand-tm">™</span>
             </span>
           </Link>
           <div className="nav-actions">

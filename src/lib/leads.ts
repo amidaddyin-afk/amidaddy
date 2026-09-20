@@ -31,6 +31,7 @@ export interface LeadRecord {
   source: string;
   stage: LeadStage;
   marketingOptIn: boolean;
+  marketingOptInAt: string | null;
   signedUpAt: string | null;
   firstSeenAt: string;
   lastSeenAt: string;
@@ -55,6 +56,9 @@ function mapLead(row: Record<string, unknown>): LeadRecord {
     source: String(row.source),
     stage: row.stage as LeadStage,
     marketingOptIn: Boolean(row.marketing_opt_in),
+    marketingOptInAt: row.marketing_opt_in_at
+      ? new Date(row.marketing_opt_in_at as string).toISOString()
+      : null,
     signedUpAt: row.signed_up_at
       ? new Date(row.signed_up_at as string).toISOString()
       : null,
@@ -317,9 +321,44 @@ export async function listLeadsForExport() {
   return rows.map(mapLead);
 }
 
+/**
+ * Records affirmative marketing consent (DPDP Act 2023 s.6). Only ever called
+ * when the visitor ticked the box themselves; consent is never implied from a
+ * signup or a purchase, and the timestamp is what proves it was given.
+ */
+export async function setLeadMarketingOptIn(email: string) {
+  await db().query(
+    `update public.leads set marketing_opt_in=true, marketing_opt_in_at=now(),
+       unsubscribed_at=null, updated_at=now() where email=$1`,
+    [normalizeEmail(email)],
+  );
+  await recordEvent(email, "marketing_opt_in", {});
+}
+
+/**
+ * Erasure request under DPDP s.12(3). Order rows are kept because tax and
+ * accounting law requires them, so we erase what identifies the person in the
+ * marketing record and leave the lifecycle counts behind, unlinked.
+ */
+export async function eraseLeadPersonalData(email: string) {
+  const normalized = normalizeEmail(email);
+  await db().query(
+    `update public.leads set
+       full_name = null, phone = null, notes = null,
+       marketing_opt_in = false, unsubscribed_at = now(),
+       marketing_opt_in_at = null, updated_at = now()
+     where email = $1`,
+    [normalized],
+  );
+  await db().query("delete from public.lead_events where email = $1", [
+    normalized,
+  ]);
+}
+
 export async function setLeadMarketingOptOut(email: string) {
   await db().query(
-    "update public.leads set marketing_opt_in=false, unsubscribed_at=now(), updated_at=now() where email=$1",
+    `update public.leads set marketing_opt_in=false, marketing_opt_in_at=null,
+       unsubscribed_at=now(), updated_at=now() where email=$1`,
     [normalizeEmail(email)],
   );
 }

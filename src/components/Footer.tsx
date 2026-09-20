@@ -11,6 +11,7 @@ export default function Footer() {
             {/* Same wordmark as the header: serif, lowercase, red "i". */}
             <Link href="/" className="footer-mark wordmark-title">
               am<span className="brand-i">i</span>daddy
+              <span className="brand-tm">™</span>
             </Link>
             <p>Original compositions. Personal signatures.</p>
           </div>
@@ -23,7 +24,7 @@ export default function Footer() {
             <Link href="/products/signature-combo-100ml">Full collection</Link>
           </div>
           <div>
-            <h3>Amidaddy</h3>
+            <h3>Amidaddy™</h3>
             <Link href="/our-approach">Our approach</Link>
             <Link href="/scent-school">Scent School</Link>
           </div>
@@ -31,6 +32,7 @@ export default function Footer() {
             <h3>Client care</h3>
             <a href="mailto:support@amidaddy.in">support@amidaddy.in</a>
             <Link href="/account/orders">Track an order</Link>
+            <Link href="/account/privacy">Privacy centre</Link>
             {policyLinks.map((policy) => (
               <Link key={policy.slug} href={`/policies/${policy.slug}`}>
                 {policy.label}
@@ -43,7 +45,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="footer-bottom">
-          <span>© {new Date().getFullYear()} Amidaddy Perfumes</span>
+          <span>© {new Date().getFullYear()} Amidaddy™ Perfumes</span>
           <span>India · INR · GST-inclusive pricing</span>
         </div>
       </div>

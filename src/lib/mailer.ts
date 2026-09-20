@@ -77,5 +77,5 @@ export async function sendMail(options: {
 }
 
 export function brandedEmailHtml(bodyHtml: string) {
-  return `<div style="background:#090909;color:#f7f1e7;padding:36px;font-family:Arial,sans-serif"><p style="color:#d8b77a;letter-spacing:.2em">AMIDADDY</p>${bodyHtml}</div>`;
+  return `<div style="background:#090909;color:#f7f1e7;padding:36px;font-family:Arial,sans-serif"><p style="color:#d8b77a;letter-spacing:.2em">AMIDADDY&#8482;</p>${bodyHtml}</div>`;
 }

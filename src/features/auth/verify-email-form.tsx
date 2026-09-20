@@ -37,7 +37,7 @@ export function VerifyEmailForm({ email }: { email: string }) {
         <form action={formAction}>
           <input type="hidden" name="email" value={email} />
           <p className="text-accent mb-3 text-xs tracking-[0.2em] uppercase">
-            Amidaddy account
+            Amidaddy™ account
           </p>
           <h1 className="font-cinzel text-fg mb-3 text-2xl">
             Verify your email

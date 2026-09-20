@@ -176,7 +176,10 @@
 .school-hero,
 .mobile-hero-copy,
 .signature-panel-copy,
-.shop-hero-copy,
+/* .shop-hero-copy is deliberately absent. The /shop hero used to be light text
+   over a dark full-bleed photograph; it is now charcoal copy on an ivory panel
+   beside the photograph, so forcing --fg to --on-image here would paint the
+   headline near-white on near-white. It inherits the normal page tokens. */
 .auth-aside-copy,
 .hero-carousel-controls,
 .hero-carousel-count,
@@ -198,13 +201,16 @@
    gallery rhythm (background: var(--bg-band), which resolves to black).
    Everything inside needs the same light-on-dark treatment as an image
    surface, or text painted from the default --fg goes invisible. */
+/* .lesson-hero and .lesson-index are deliberately NOT in this list. Both used
+   to sit on dark panels, but the redesign resolves their backgrounds to pale
+   surfaces (--bg-band is #e9ebe5 in the light house), so the forced white text
+   left every chapter heading, lede and index link at about 1.15:1 against it.
+   They inherit the normal page tokens instead. */
 .home-combo,
 .home-collection-20,
 .home-services,
 .school-final,
-.school-promise,
-.lesson-hero,
-.lesson-index {
+.school-promise {
   --fg: var(--on-image);
   --fg-muted: var(--on-image-muted);
   --fg-subtle: var(--on-image-subtle);

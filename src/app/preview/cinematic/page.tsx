@@ -91,7 +91,9 @@ export default async function CinematicPreviewPage() {
             />
           </div>
           <div className="cine-hero-veil" />
-          <p className="cine-wordmark">Amidaddy</p>
+          <p className="cine-wordmark">
+            Amidaddy<span className="brand-tm">™</span>
+          </p>
           <div className="cine-hero-copy">
             <h1 className="cine-hero-title">
               Presence,

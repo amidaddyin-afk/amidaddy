@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
 
 type AuthState = "unknown" | "signed-out" | "signed-in";
 
@@ -16,6 +15,12 @@ type AuthState = "unknown" | "signed-out" | "signed-in";
  *
  * Until the session resolves - and for visitors without JavaScript - the
  * signed-out links are shown, which is the correct default for most traffic.
+ *
+ * The Supabase client is imported inside the effect rather than at module
+ * scope. The footer is in the root layout, so a static import pulled the whole
+ * auth client (~200KB, measured 82% unused on the homepage) into the first-load
+ * bundle of every route to decide between two pairs of links. Deferring it
+ * moves that cost off the critical path; the resolved markup is unchanged.
  */
 export default function FooterAccountLinks() {
   const [state, setState] = useState<AuthState>("unknown");
@@ -28,21 +33,26 @@ export default function FooterAccountLinks() {
       if (active) setState(next);
     };
 
-    try {
-      const supabase = createClient();
-      supabase.auth
-        .getUser()
-        .then(({ data }) => resolve(data.user ? "signed-in" : "signed-out"))
-        .catch(() => resolve("signed-out"));
-      const { data } = supabase.auth.onAuthStateChange((_event, session) =>
-        resolve(session?.user ? "signed-in" : "signed-out"),
-      );
-      unsubscribe = () => data.subscription.unsubscribe();
-    } catch {
-      // Supabase env vars missing - settle on the signed-out links, but do it
-      // asynchronously so this is not a synchronous setState inside the effect.
-      queueMicrotask(() => resolve("signed-out"));
-    }
+    import("@/lib/supabase/client")
+      .then(({ createClient }) => {
+        // The import resolves a tick later, so the component may already be
+        // unmounted; bail before opening a subscription nothing will clean up.
+        if (!active) return;
+        const supabase = createClient();
+        supabase.auth
+          .getUser()
+          .then(({ data }) => resolve(data.user ? "signed-in" : "signed-out"))
+          .catch(() => resolve("signed-out"));
+        const { data } = supabase.auth.onAuthStateChange((_event, session) =>
+          resolve(session?.user ? "signed-in" : "signed-out"),
+        );
+        unsubscribe = () => data.subscription.unsubscribe();
+      })
+      .catch(() => {
+        // Supabase env vars missing or the chunk failed to load - settle on the
+        // signed-out links, which is the correct default.
+        resolve("signed-out");
+      });
 
     return () => {
       active = false;

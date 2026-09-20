@@ -16,7 +16,7 @@ export default async function AccountPage() {
   return (
     <main data-surface="commerce" className="account-shell">
       <div className="mx-auto max-w-6xl px-5 pt-16 pb-24 sm:px-8">
-        <p className="eyebrow">Your Amidaddy</p>
+        <p className="eyebrow">Your Amidaddy™</p>
         <div className="mt-4 flex flex-wrap items-end justify-between gap-5">
           <div>
             <h1 className="display-title text-5xl">

@@ -53,7 +53,10 @@ if (!Number.isFinite(start) || !Number.isFinite(duration) || duration <= 0) {
 const outBase = `public/videos/${slug}`;
 mkdirSync(dirname(outBase), { recursive: true });
 
-// 25fps: the masters are 50fps, which doubles the bitrate for motion no one
+// 720x1280, not the master's 1080x1920: the hero panel is 51% of the viewport
+// on desktop and sits behind a scrim on mobile, so the extra rows were pure
+// bytes - halving the height cut each clip ~58% at SSIM 0.98 against the 1080p
+// encode. 25fps: the masters are 50fps, which doubles the bitrate for motion no one
 // perceives in a background loop. -an strips audio: a hero must be muted to
 // autoplay, so the audio track is pure waste.
 const common = [
@@ -86,13 +89,13 @@ run(
     "-c:v",
     "libvpx-vp9",
     "-crf",
-    "34",
+    "36",
     "-b:v",
     "0",
     "-r",
     "25",
     "-vf",
-    "scale=1080:1920",
+    "scale=720:1280",
     "-row-mt",
     "1",
     "-deadline",
@@ -112,7 +115,7 @@ run(
     "-c:v",
     "libx264",
     "-crf",
-    "26",
+    "28",
     "-preset",
     "slow",
     "-profile:v",
@@ -122,7 +125,7 @@ run(
     "-r",
     "25",
     "-vf",
-    "scale=1080:1920",
+    "scale=720:1280",
     "-movflags",
     "+faststart",
     `${outBase}.mp4`,

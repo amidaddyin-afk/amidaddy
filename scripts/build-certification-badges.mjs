@@ -12,7 +12,9 @@ import { readdirSync, existsSync, mkdirSync } from "node:fs";
 import path from "node:path";
 import sharp from "sharp";
 
-const SRC = "public/certifications";
+// Source artwork lives outside public/ - it is a build input, not something a
+// visitor should ever be able to download.
+const SRC = "assets-source/certifications";
 const OUT = "public/certifications/web";
 
 /** Source filename fragment -> output slug. */

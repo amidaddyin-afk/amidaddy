@@ -12,7 +12,7 @@ export default async function UnsubscribePage({
     <main data-surface="commerce" className="auth-shell">
       <div className="auth-panel border-line bg-raised mx-auto border p-9">
         <p className="text-accent mb-3 text-xs tracking-[0.2em] uppercase">
-          Amidaddy
+          Amidaddy™
         </p>
         <h1 className="font-cinzel text-fg mb-3 text-2xl">
           You&apos;re unsubscribed
@@ -23,7 +23,7 @@ export default async function UnsubscribePage({
             : "No email address was provided."}
         </p>
         <Link href="/" className="btn-gold mt-6 inline-block">
-          Back to Amidaddy
+          Back to Amidaddy™
         </Link>
       </div>
     </main>
