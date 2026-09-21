@@ -7,7 +7,12 @@ const isDevelopment = process.env.NODE_ENV === "development";
 // src/components/Analytics.tsx), but the CSP must allow it either way.
 const contentSecurityPolicy = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isDevelopment ? " 'unsafe-eval'" : ""} https://checkout.razorpay.com https://challenges.cloudflare.com https://www.googletagmanager.com`,
+  // Cloudflare Web Analytics injects beacon.min.js from static.cloudflareinsights.com
+  // and posts the collected metrics back to cloudflareinsights.com. Vercel's
+  // Cloudflare layer injects the tag, so the script appears on production even
+  // though nothing in this repo references it - without these two entries the
+  // CSP rejects it and the analytics silently collect nothing.
+  `script-src 'self' 'unsafe-inline'${isDevelopment ? " 'unsafe-eval'" : ""} https://checkout.razorpay.com https://challenges.cloudflare.com https://www.googletagmanager.com https://static.cloudflareinsights.com`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' blob: data: https:",
   // Product hero loops are served from /public. Stated explicitly rather than
@@ -15,7 +20,7 @@ const contentSecurityPolicy = [
   // stop video from playing.
   "media-src 'self'",
   "font-src 'self' data:",
-  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.razorpay.com https://challenges.cloudflare.com https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com",
+  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.razorpay.com https://challenges.cloudflare.com https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://cloudflareinsights.com",
   "frame-src https://api.razorpay.com https://checkout.razorpay.com https://challenges.cloudflare.com",
   "object-src 'none'",
   "base-uri 'self'",
