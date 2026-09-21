@@ -91,13 +91,11 @@ function mapProduct(product: Record<string, unknown>): Product {
       // this size wins, in its saved `position` order, so the first photo of
       // each gallery is the one the admin put on top. The hardcoded catalog
       // images are only a fallback for sizes the database has no photos for.
-      const selected = explicit.length
-        ? explicit
-        : fallbackImages.length
-          ? fallbackImages
-          : name === "100ml"
-            ? productImages
-            : [];
+      // 100ml used to absorb every product photo as a last resort, which is
+      // why the whole shoot leaked into the size galleries. A size shows its
+      // own photos, or the vetted hardcoded set for that size, or nothing -
+      // the page then falls back to the shared gallery explicitly.
+      const selected = explicit.length ? explicit : fallbackImages;
       return [name, Array.from(new Set(selected))];
     }),
   ) as Product["variantImages"];

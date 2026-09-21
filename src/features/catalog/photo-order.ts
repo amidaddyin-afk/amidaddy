@@ -1,26 +1,37 @@
 import type { Product, ProductMedia, ProductVariant } from "@/lib/data";
 
-/** The image a shopper sees on a catalogue card for the selected size. */
+/** The image a shopper sees on a catalogue card for the selected size.
+ * A photo saved into this size's own gallery is the most specific answer, so it
+ * wins. The replaced catalogue cover only stands in for sizes with no photos of
+ * their own - otherwise a 100 ml cover would front the 20 ml card. */
 export const catalogCardImage = (
   product: Product,
   size: ProductVariant["name"],
 ) =>
-  product.catalogImage ?? product.variantImages?.[size]?.[0] ?? product.image;
+  product.variantImages?.[size]?.[0] ?? product.catalogImage ?? product.image;
 
-/** A replaced catalogue image also leads the product page for either size. */
+/**
+ * The photos a product page shows for the selected size - and only those.
+ *
+ * A size with its own gallery gets exactly that gallery. Falling back to
+ * `product.images` is what put 100 ml bottles under the 20ml tab: that list is
+ * the whole shoot and is dominated by 100 ml frames. The shared gallery is only
+ * reached when the size has no photos of its own, and even then the replaced
+ * cover leads, because a shopper choosing a size must never be shown another
+ * size's bottle.
+ */
 export const productGalleryImages = (
   product: Product,
   size: ProductVariant["name"],
 ) => {
-  const sizeImages = product.variantImages?.[size]?.length
-    ? product.variantImages[size]!
-    : product.images;
+  if (product.variantImages?.[size]?.length)
+    return product.variantImages[size]!;
   return product.catalogImage
     ? [
         product.catalogImage,
-        ...sizeImages.filter((url) => url !== product.catalogImage),
+        ...product.images.filter((url) => url !== product.catalogImage),
       ]
-    : sizeImages;
+    : product.images;
 };
 
 /**
