@@ -1,26 +1,30 @@
 import type { Product, ProductMedia, ProductVariant } from "@/lib/data";
 
-/** The image a shopper sees on a catalogue card for the selected size. */
+/** The image a shopper sees on a catalogue card for the selected size.
+ * A photo saved into this size's own gallery is the most specific answer, so it
+ * wins. The replaced catalogue cover only stands in for sizes with no photos of
+ * their own - otherwise a 100 ml cover would front the 20 ml card. */
 export const catalogCardImage = (
   product: Product,
   size: ProductVariant["name"],
 ) =>
-  product.catalogImage ?? product.variantImages?.[size]?.[0] ?? product.image;
+  product.variantImages?.[size]?.[0] ?? product.catalogImage ?? product.image;
 
 /** A replaced catalogue image also leads the product page for either size. */
 export const productGalleryImages = (
   product: Product,
   size: ProductVariant["name"],
 ) => {
-  const sizeImages = product.variantImages?.[size]?.length
-    ? product.variantImages[size]!
-    : product.images;
+  // A size with its own gallery leads with its own first photo; the replaced
+  // cover only leads for sizes falling back to the shared gallery.
+  if (product.variantImages?.[size]?.length)
+    return product.variantImages[size]!;
   return product.catalogImage
     ? [
         product.catalogImage,
-        ...sizeImages.filter((url) => url !== product.catalogImage),
+        ...product.images.filter((url) => url !== product.catalogImage),
       ]
-    : sizeImages;
+    : product.images;
 };
 
 /**

@@ -38,9 +38,10 @@ const urls = (
   gallery: "20ml" | "100ml" | null,
 ) => galleryIndices(photos, gallery).map((index) => photos[index].url);
 
-test("catalogue image replaces the card photo for either bottle size", () => {
+test("a size's own gallery outranks the replaced catalogue cover", () => {
   const product = {
     image: "/default.webp",
+    images: ["/shared.webp"],
     variantImages: {
       "20ml": ["/small.webp"],
       "100ml": ["/large.webp"],
@@ -48,16 +49,25 @@ test("catalogue image replaces the card photo for either bottle size", () => {
   } as Product;
   assert.equal(catalogCardImage(product, "20ml"), "/small.webp");
   assert.equal(catalogCardImage(product, "100ml"), "/large.webp");
+  // Replacing the cover must not drag the 100 ml photo onto the 20 ml card.
   product.catalogImage = "/uploaded.webp";
+  assert.equal(catalogCardImage(product, "20ml"), "/small.webp");
+  assert.equal(catalogCardImage(product, "100ml"), "/large.webp");
+  assert.deepEqual(productGalleryImages(product, "20ml"), ["/small.webp"]);
+  assert.deepEqual(productGalleryImages(product, "100ml"), ["/large.webp"]);
+});
+
+test("a size with no photos of its own falls back to the cover", () => {
+  const product = {
+    image: "/default.webp",
+    images: ["/shared.webp", "/uploaded.webp"],
+    catalogImage: "/uploaded.webp",
+    variantImages: { "20ml": [], "100ml": [] },
+  } as unknown as Product;
   assert.equal(catalogCardImage(product, "20ml"), "/uploaded.webp");
-  assert.equal(catalogCardImage(product, "100ml"), "/uploaded.webp");
   assert.deepEqual(productGalleryImages(product, "20ml"), [
     "/uploaded.webp",
-    "/small.webp",
-  ]);
-  assert.deepEqual(productGalleryImages(product, "100ml"), [
-    "/uploaded.webp",
-    "/large.webp",
+    "/shared.webp",
   ]);
 });
 
