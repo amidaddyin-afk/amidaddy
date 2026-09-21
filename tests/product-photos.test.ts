@@ -123,16 +123,21 @@ test("catalogue queries read the columns the photo editor writes", () => {
 
 test("saved photos win over the hardcoded catalogue fallback", () => {
   const catalog = read("src/lib/catalog.ts");
-  const start = catalog.indexOf("const fallbackImages =");
+  const start = catalog.indexOf("const selected =");
   const end = catalog.indexOf("return [name,", start);
   assert.ok(start > -1 && end > start);
   const selection = catalog.slice(start, end);
   // `explicit` holds the database rows for this size. It must be tested before
   // the fallback, or admin uploads for that size never reach the storefront.
   assert.ok(
-    selection.indexOf("explicit.length") <
-      selection.indexOf("fallbackImages.length"),
+    selection.indexOf("explicit") < selection.indexOf("fallbackImages"),
     "the database rows must be preferred over the hardcoded images",
+  );
+  // No size may fall back to the full product shoot: that list is dominated by
+  // 100 ml frames and leaked the wrong bottle into the 20ml gallery.
+  assert.ok(
+    !selection.includes("productImages"),
+    "a size gallery must never fall back to every product photo",
   );
 });
 

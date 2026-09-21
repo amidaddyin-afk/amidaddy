@@ -10,13 +10,20 @@ export const catalogCardImage = (
 ) =>
   product.variantImages?.[size]?.[0] ?? product.catalogImage ?? product.image;
 
-/** A replaced catalogue image also leads the product page for either size. */
+/**
+ * The photos a product page shows for the selected size - and only those.
+ *
+ * A size with its own gallery gets exactly that gallery. Falling back to
+ * `product.images` is what put 100 ml bottles under the 20ml tab: that list is
+ * the whole shoot and is dominated by 100 ml frames. The shared gallery is only
+ * reached when the size has no photos of its own, and even then the replaced
+ * cover leads, because a shopper choosing a size must never be shown another
+ * size's bottle.
+ */
 export const productGalleryImages = (
   product: Product,
   size: ProductVariant["name"],
 ) => {
-  // A size with its own gallery leads with its own first photo; the replaced
-  // cover only leads for sizes falling back to the shared gallery.
   if (product.variantImages?.[size]?.length)
     return product.variantImages[size]!;
   return product.catalogImage
