@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import ScentSchoolExperience from "@/components/journey/ScentSchoolExperience";
-import { PRODUCTS } from "@/lib/data";
+import { catalogCardImage } from "@/features/catalog/photo-order";
+import { listCatalogProducts } from "@/lib/catalog";
 
 export const metadata: Metadata = {
   title: "Scent School",
@@ -19,20 +20,26 @@ export const revalidate = 300;
  * signature, and the written chapters sit underneath for the long version.
  * Every /scent-school/<slug> route is unchanged.
  *
- * Signature notes are read from the catalog rather than restated here, so the
- * page cannot drift from the approved note lists in src/lib/data.ts.
+ * Signatures are read from the live catalogue, so names, notes and photos
+ * match the homepage grid.
  */
-export default function ScentSchoolPage() {
-  const signatures = PRODUCTS.filter(
-    (product) => product.collection === "unisex",
-  ).map((product) => ({
-    slug: product.slug,
-    name: product.name,
-    notes: product.notes,
-    // The original, unretouched product photograph. Never regenerated,
-    // recoloured or reframed - it is passed through to next/image as-is.
-    image: product.image,
-  }));
+export default async function ScentSchoolPage() {
+  // Same query and card photo as the homepage catalogue, so each bottle here
+  // is exactly the one shown on the home grid (and follows admin changes).
+  const { products } = await listCatalogProducts({
+    page: 1,
+    pageSize: 24,
+    sort: "newest",
+    inStock: "true",
+  });
+  const signatures = products
+    .filter((product) => product.collection === "unisex")
+    .map((product) => ({
+      slug: product.slug,
+      name: product.name,
+      notes: product.notes,
+      image: catalogCardImage(product, "100ml"),
+    }));
 
   return (
     <div data-surface="story">

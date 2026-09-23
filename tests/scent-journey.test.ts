@@ -85,8 +85,9 @@ test("the note-versus-ingredient caveat is stated, not implied", () => {
 
 test("signature notes come from the catalog rather than restated prose", () => {
   // Hardcoding note lists here is how a marketing page drifts from the
-  // approved ones in data.ts. The page must read them instead.
-  assert.match(read("src/app/scent-school/page.tsx"), /from "@\/lib\/data"/);
+  // approved ones in data.ts. The page must read them instead - via the live
+  // catalogue, which serves the approved notes and the homepage card photos.
+  assert.match(read("src/app/scent-school/page.tsx"), /from "@\/lib\/catalog"/);
   assert.doesNotMatch(
     read("src/lib/scent-journey.ts"),
     /oakmoss|tonka|ambergris/i,

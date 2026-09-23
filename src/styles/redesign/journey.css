@@ -665,13 +665,19 @@
   overflow: hidden;
 }
 .signature-shot img {
-  object-fit: contain;
-  /* Small inset so the frame reads as a frame, not a crop. */
-  padding: 0.35rem;
-  transition: scale 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  /* The four shots have different aspect ratios (1:1, 5:4, 3:2); cover fills
+     every frame edge to edge. Each bottle is centred, so only backdrop crops. */
+  object-fit: cover;
+  /* Muted at rest so four differently lit shoots sit together; full on hover. */
+  filter: brightness(0.9) saturate(0.85);
+  transition:
+    scale 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.signature-grid a:hover .signature-shot img {
+.signature-grid a:hover .signature-shot img,
+.signature-grid a:focus-visible .signature-shot img {
   scale: 1.04;
+  filter: none;
 }
 .signature-grid strong {
   font-family: var(--font-display);
@@ -827,17 +833,19 @@
     min-height: auto;
   }
   /* Copy sits over the full width here, so the veil runs top-to-bottom
-     instead of side-to-side. */
+     instead of side-to-side. Kept light so the film still reads behind the
+     copy; the text shadow below carries legibility on bright frames. */
   .chapter-media-veil,
   .chapter[data-align="right"] .chapter-media-veil {
-    background:
-      linear-gradient(
-        180deg,
-        rgba(16, 18, 17, 0.72) 0%,
-        rgba(16, 18, 17, 0.88) 45%,
-        rgba(16, 18, 17, 0.95) 100%
-      ),
-      linear-gradient(0deg, rgba(16, 18, 17, 0.3), rgba(16, 18, 17, 0.3));
+    background: linear-gradient(
+      180deg,
+      rgba(16, 18, 17, 0.4) 0%,
+      rgba(16, 18, 17, 0.56) 45%,
+      rgba(16, 18, 17, 0.66) 100%
+    );
+  }
+  .chapter-copy {
+    text-shadow: 0 1px 12px rgba(16, 18, 17, 0.85);
   }
   .chapter {
     min-height: auto;
@@ -876,4 +884,89 @@
   .journey-hero {
     min-height: auto;
   }
+}
+
+/* ---------- Lesson chapter progress ---------- */
+
+/* One strip above each lesson: numbered steps, then the finished count and
+   the mark-as-read toggle. */
+.chapter-progress {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1.5rem;
+  padding: 0.85rem max(5vw, 1.25rem);
+  border-bottom: 1px solid var(--line);
+}
+.chapter-progress-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.chapter-progress-steps a {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  color: var(--fg-muted);
+  font-size: 0.68rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  transition:
+    color 0.25s ease,
+    border-color 0.25s ease,
+    background-color 0.25s ease;
+}
+.chapter-progress-steps a:hover {
+  border-color: var(--fg);
+  color: var(--fg);
+}
+.chapter-progress-steps a[data-state="done"] {
+  border-color: var(--fg-muted);
+  color: var(--fg);
+}
+.chapter-progress-steps a[data-state="current"] {
+  border-color: var(--fg);
+  background: var(--fg);
+  color: var(--bg);
+}
+.chapter-progress-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: var(--fg-subtle);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.chapter-progress-meta button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2rem;
+  padding: 0 0.85rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  color: var(--fg);
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  transition:
+    border-color 0.25s ease,
+    background-color 0.25s ease,
+    color 0.25s ease;
+}
+.chapter-progress-meta button:hover {
+  border-color: var(--fg);
+}
+.chapter-progress-meta button[data-done="true"] {
+  border-color: var(--fg);
+  background: var(--fg);
+  color: var(--bg);
 }

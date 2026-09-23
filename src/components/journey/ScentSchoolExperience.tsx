@@ -227,8 +227,8 @@ export default function ScentSchoolExperience({
 
       {/* ---- 07 Find your signature ---- */}
       <ChapterScene chapter={signature}>
-        {/* Original product photography, unchanged. Consistent frames, full
-            bottle visible, no crop that clips a cap or label. */}
+        {/* Original product photography, filling identical square frames.
+            Bottles are centred, so the cover crop only trims backdrop. */}
         <ul className="signature-grid">
           {signatures.map((item) => (
             <li key={item.slug}>

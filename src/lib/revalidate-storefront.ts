@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 /**
  * Clear the cached storefront renders after a catalogue change.
  *
- * The storefront pages (`/`, `/shop`, `/products/[slug]`) are cached with a
+ * The storefront pages (`/`, `/shop`, `/scent-school`, `/products/[slug]`) are cached with a
  * `revalidate` window so a burst of visitors does not become a burst of
  * identical Supabase queries. That window would otherwise mean an admin edit
  * takes minutes to appear publicly — calling this from every mutation path
@@ -24,5 +24,6 @@ import { revalidatePath } from "next/cache";
 export function revalidateStorefront() {
   revalidatePath("/");
   revalidatePath("/shop");
+  revalidatePath("/scent-school");
   revalidatePath("/products/[slug]", "page");
 }
