@@ -13,7 +13,15 @@ export default function Navbar() {
   const reduceMotion = useReducedMotion();
   const { openCart, totalQty } = useCart();
   useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 36);
+    // Only flip on the boundary crossing. Calling the setter on every scroll
+    // event re-renders the whole navbar each frame - React bails on the
+    // identical value, but only after invoking the component, which is work
+    // the compositor does not get back.
+    const handler = () =>
+      setScrolled((current) => {
+        const next = window.scrollY > 36;
+        return next === current ? current : next;
+      });
     handler();
     window.addEventListener("scroll", handler, { passive: true });
     return () => window.removeEventListener("scroll", handler);

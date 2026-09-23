@@ -13,7 +13,6 @@
 /* 2026 commerce storefront redesign */
 body .site-header {
   background: var(--chrome-bg);
-  backdrop-filter: blur(18px);
 }
 body .nav-inner {
   max-width: 1500px;
@@ -715,6 +714,7 @@ body .admin-traffic-legend-note {
 html {
   scroll-behavior: smooth;
   background: var(--ink);
+  overflow-x: hidden;
 }
 body {
   margin: 0;
@@ -2311,11 +2311,16 @@ main.house-home {
   box-shadow: none;
   transition: border-color 0.3s ease;
 }
-.product-visual img {
-  transition: transform 0.8s var(--ease-premium);
-}
-.product-card:hover .product-visual img {
-  transform: scale(1.035);
+/* Touch has no real hover: the state sticks from the moment a finger lands on
+   a card, so on a phone this fired an 800ms transform on a full-width photo in
+   the middle of a scroll. Hover-capable pointers only. */
+@media (hover: hover) and (pointer: fine) {
+  .product-visual img {
+    transition: transform 0.8s var(--ease-premium);
+  }
+  .product-card:hover .product-visual img {
+    transform: scale(1.035);
+  }
 }
 .product-badge,
 .status-pill {
@@ -4353,11 +4358,14 @@ so these styles cover a course index and a repeatable lesson
     rgba(8, 9, 10, 0.72)
   );
 }
-.school-chapter-card a:hover .school-chapter-image img {
-  transform: scale(1.04);
-}
-.school-chapter-image img {
-  transition: transform 0.7s var(--ease-premium);
+/* Hover-capable pointers only, so a tap does not leave a stuck scale. */
+@media (hover: hover) and (pointer: fine) {
+  .school-chapter-image img {
+    transition: transform 0.7s var(--ease-premium);
+  }
+  .school-chapter-card a:hover .school-chapter-image img {
+    transform: scale(1.04);
+  }
 }
 .school-chapter-number {
   position: absolute;
