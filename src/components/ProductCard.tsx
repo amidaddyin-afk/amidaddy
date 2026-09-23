@@ -68,6 +68,11 @@ export default function ProductCard({
     return () => query.removeEventListener("change", sync);
   }, []);
   const tiltEnabled = finePointer && !reduceMotion;
+  // The entrance animation travels on y, which on touch means the card slides
+  // 24px against a drag that is still in progress - the page scrolls but the
+  // card moves under the finger, which reads as the scroll springing back.
+  // Coarse pointers get the fade with no travel.
+  const entranceTravel = finePointer ? 24 : 0;
 
   // Raw pointer offset from card centre, -0.5..0.5 on each axis.
   const offsetX = useMotionValue(0);
@@ -105,7 +110,7 @@ export default function ProductCard({
   return (
     <motion.article
       ref={cardRef}
-      initial={reduceMotion ? false : { opacity: 0, y: 24 }}
+      initial={reduceMotion ? false : { opacity: 0, y: entranceTravel }}
       whileInView={{ opacity: 1, y: 0 }}
       whileHover={
         tiltEnabled ? { ...hoverLift, transition: SPRING.snappy } : undefined

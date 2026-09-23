@@ -45,6 +45,13 @@ export const revealVariants: Variants = {
   visible: { opacity: 1, y: 0 },
 };
 
+/** Travel-free reveal, for touch: translating against an in-progress drag
+ *  makes the page feel like it is springing back. */
+export const revealFadeVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1 },
+};
+
 export const revealLeftVariants: Variants = {
   hidden: { opacity: 0, x: -28 },
   visible: { opacity: 1, x: 0 },

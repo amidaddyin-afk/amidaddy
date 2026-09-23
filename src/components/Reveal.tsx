@@ -8,10 +8,12 @@ import {
   DURATION,
   revealClipVariants,
   revealLeftVariants,
+  revealFadeVariants,
   revealVariants,
   revealViewport,
   staggerDelay,
 } from "@/lib/motion";
+import { useCoarsePointer } from "@/lib/use-coarse-pointer";
 
 /**
  * Scroll reveal that works in every browser.
@@ -52,18 +54,24 @@ export default function Reveal({
   id?: string;
 }) {
   const reduceMotion = useReducedMotion();
+  const coarsePointer = useCoarsePointer();
   const MotionTag = motion[as as keyof typeof motion] as typeof motion.div;
 
   if (reduceMotion) {
     return createElement(as, { className, id }, children);
   }
 
+  // On touch the travel runs against a drag that is still in progress: the
+  // element slides under the finger while the page scrolls, which reads as the
+  // scroll springing back. The clip variant does not translate, so it is safe.
   const variants =
     variant === "clip"
       ? revealClipVariants
-      : from === "left"
-        ? revealLeftVariants
-        : revealVariants;
+      : coarsePointer
+        ? revealFadeVariants
+        : from === "left"
+          ? revealLeftVariants
+          : revealVariants;
 
   return (
     <MotionTag
