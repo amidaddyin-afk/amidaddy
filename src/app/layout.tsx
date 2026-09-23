@@ -10,6 +10,7 @@ import Footer from "@/components/Footer";
 import Analytics from "@/components/Analytics";
 import ConsentBanner from "@/components/ConsentBanner";
 import PageViewTracker from "@/components/PageViewTracker";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 // Single family for the whole system (the reference's Aeonik substitute).
 // Both CSS vars point at the same font so every existing
@@ -73,6 +74,7 @@ export default function RootLayout({
             <ConsentBanner />
           </div>
         </CartProvider>
+        <SpeedInsights />
       </body>
     </html>
   );
