@@ -81,10 +81,13 @@ export default function OfferLauncher() {
         </h2>
         <ul className="offer-pop-rows">
           {rows.map((row) => (
-            <li key={row.minQty} data-best={row.minQty === 3 || undefined}>
+            <li
+              key={row.minQty}
+              data-best={row.minQty === COMBO_TIERS[0].minQty || undefined}
+            >
               <span className="offer-pop-qty">
                 Buy {row.minQty}
-                {row.minQty === 3 && <em>Best value</em>}
+                {row.minQty === COMBO_TIERS[0].minQty && <em>Best value</em>}
               </span>
               <span className="offer-pop-price">
                 <strong>{formatInr(row.totalPaise)}</strong>
@@ -99,8 +102,8 @@ export default function OfferLauncher() {
           ))}
         </ul>
         <p className="offer-pop-note">
-          Mix any of the four scents. The discount applies automatically in your
-          bag.
+          Mix any of the four scents. Applied automatically in your bag; coupons
+          do not apply to combo offers.
         </p>
         <Link
           href="/shop#combo"

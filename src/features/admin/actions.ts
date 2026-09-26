@@ -33,6 +33,7 @@ export async function createCouponAction(
           .union([z.literal(""), z.coerce.number().int().positive()])
           .optional(),
         perCustomerLimit: z.coerce.number().int().positive().default(1),
+        appliesToCombos: z.literal("on").optional(),
         startsAt: z.string().optional(),
         endsAt: z.string().optional(),
       })
@@ -44,7 +45,7 @@ export async function createCouponAction(
       return { error: "Percentage discounts cannot exceed 100%." };
     await transaction(async (client) => {
       await client.query(
-        'insert into public.coupons(code,type,value,min_subtotal_paise,max_discount_paise,usage_limit,per_customer_limit,starts_at,ends_at) values($1,$2::public."CouponType",$3,$4,$5,$6,$7,$8,$9)',
+        'insert into public.coupons(code,type,value,min_subtotal_paise,max_discount_paise,usage_limit,per_customer_limit,starts_at,ends_at,applies_to_combos) values($1,$2::public."CouponType",$3,$4,$5,$6,$7,$8,$9,$10)',
         [
           item.code,
           item.type,
@@ -59,6 +60,7 @@ export async function createCouponAction(
           item.perCustomerLimit,
           item.startsAt || null,
           item.endsAt || null,
+          item.appliesToCombos === "on",
         ],
       );
       await appendAuditEvent(client, user.id, "coupon.created", {

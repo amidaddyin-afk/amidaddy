@@ -2188,6 +2188,15 @@ main.house-home {
 .admin-coupon {
   grid-template-columns: repeat(4, 1fr);
 }
+.admin-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+}
+.admin-check input {
+  width: auto;
+}
 .settings-form {
   grid-template-columns: repeat(2, 1fr);
 }
@@ -5860,7 +5869,7 @@ body:has(.cine-root) {
    shopper is already reading, so "one more bottle" is the cheaper-feeling choice. */
 .pdp-bundles {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.5rem;
   margin-top: 1rem;
 }
@@ -7486,9 +7495,16 @@ body[data-overlay] .offer-launcher {
   font-weight: 600;
   text-decoration: none;
 }
+.announcement-offer-short {
+  display: none;
+}
 @media (max-width: 639px) {
-  .announcement-delivery {
+  .announcement-delivery,
+  .announcement-offer-full {
     display: none;
+  }
+  .announcement-offer-short {
+    display: inline;
   }
 }
 

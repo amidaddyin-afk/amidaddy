@@ -40,6 +40,7 @@ export type AdminOverview = {
     type: string;
     value: number;
     active: boolean;
+    appliesToCombos: boolean;
     uses: number;
     endsAt: string | null;
   }>;
@@ -181,6 +182,7 @@ export async function getAdminOverview(): Promise<AdminOverview> {
       type: String(row.type),
       value: Number(row.value),
       active: Boolean(row.active),
+      appliesToCombos: row.applies_to_combos === true,
       uses: Number(row.uses),
       endsAt: row.ends_at ? new Date(row.ends_at).toISOString() : null,
     })),

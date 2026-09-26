@@ -147,7 +147,7 @@ export default function ComboBuilder({ products }: { products: Product[] }) {
                     alt={`${product.name} ${COMBO_SIZE}`}
                     fill
                     sizes="(max-width: 640px) 40vw, 150px"
-                    className="object-contain"
+                    className="object-cover"
                   />
                 </span>
                 <span className="combo-bottle-name">{product.name}</span>
@@ -223,7 +223,7 @@ export default function ComboBuilder({ products }: { products: Product[] }) {
                         alt=""
                         fill
                         sizes="44px"
-                        className="object-contain"
+                        className="object-cover"
                       />
                     </span>
                     <span className="combo-basket-name">

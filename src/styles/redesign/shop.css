@@ -96,6 +96,9 @@
   position: relative;
   display: block;
   aspect-ratio: 1;
+  /* Photos are shot at mixed ratios (wide Cold War, tall Billionaire); cover
+     crops each to the same full-bleed square instead of letterboxing. */
+  overflow: hidden;
   background: rgb(23 27 25 / 0.03);
 }
 .combo-bottle-name {
@@ -176,6 +179,9 @@
   position: relative;
   display: block;
   aspect-ratio: 1;
+  /* Photos are shot at mixed ratios (wide Cold War, tall Billionaire); cover
+     crops each to the same full-bleed square instead of letterboxing. */
+  overflow: hidden;
   background: rgb(23 27 25 / 0.03);
 }
 .combo-basket-name {

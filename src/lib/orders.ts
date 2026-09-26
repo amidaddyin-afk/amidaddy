@@ -5,6 +5,7 @@ import type { PoolClient } from "pg";
 import { appendAuditEvent } from "@/lib/audit";
 import {
   comboDiscountPaise,
+  couponBasePaise,
   couponDiscountPaise,
   DEFAULT_FREE_SHIPPING_PAISE,
   isCustomerCancellationAllowed,
@@ -304,7 +305,17 @@ async function calculateCheckoutPricing(
       [code],
     );
     const coupon = rows[0];
-    if (!coupon || subtotalPaise < Number(coupon.min_subtotal_paise))
+    if (!coupon) throw new Error("This coupon is not valid for the order.");
+    // Ordinary coupons never touch combo lines; only a coupon flagged
+    // applies_to_combos may. Missing column (migration not yet applied) reads
+    // as undefined -> ordinary, the safe default.
+    const couponBase = couponBasePaise(
+      lines,
+      coupon.applies_to_combos === true,
+    );
+    if (couponBase <= 0)
+      throw new Error("Coupons cannot be used on combo offers.");
+    if (couponBase < Number(coupon.min_subtotal_paise))
       throw new Error("This coupon is not valid for the order.");
     const totalUses = Number(
       (
@@ -327,11 +338,10 @@ async function calculateCheckoutPricing(
       customerUses >= Number(coupon.per_customer_limit)
     )
       throw new Error("This coupon has reached its usage limit.");
-    // Stacks on top of the combo discount. The coupon is still calculated
-    // against the full subtotal, and the pair is capped at the subtotal below
-    // so the two together can never exceed what the order is worth.
+    // Calculated on couponBase only, and the pair is capped at the subtotal
+    // below so the two together can never exceed what the order is worth.
     discountPaise += couponDiscountPaise(
-      subtotalPaise,
+      couponBase,
       coupon.type,
       Number(coupon.value),
       coupon.max_discount_paise ? Number(coupon.max_discount_paise) : null,

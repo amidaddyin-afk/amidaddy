@@ -265,6 +265,7 @@ model Coupon {
   usageLimit       Int?               @map("usage_limit")
   perCustomerLimit Int                @default(1) @map("per_customer_limit")
   active           Boolean            @default(true)
+  appliesToCombos  Boolean            @default(false) @map("applies_to_combos")
   startsAt         DateTime?          @map("starts_at") @db.Timestamptz(6)
   endsAt           DateTime?          @map("ends_at") @db.Timestamptz(6)
   createdAt        DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)

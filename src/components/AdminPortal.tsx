@@ -609,6 +609,10 @@ export default function AdminPortal({ overview }: { overview: AdminOverview }) {
                 min="1"
                 defaultValue="1"
               />
+              <label className="admin-check">
+                <input type="checkbox" name="appliesToCombos" />
+                Special: also works on 100ml combo offers
+              </label>
               <button disabled={couponPending} className="lux-button">
                 Create coupon
               </button>
@@ -622,6 +626,7 @@ export default function AdminPortal({ overview }: { overview: AdminOverview }) {
                     <span>
                       {item.type} · {item.uses} uses ·{" "}
                       {item.active ? "Active" : "Paused"}
+                      {item.appliesToCombos && " · Works on combos"}
                     </span>
                   </div>
                   <form action={toggleCouponAction}>

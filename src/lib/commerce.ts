@@ -49,13 +49,15 @@ export function isFulfillmentTransitionAllowed(from: string, to: string) {
 /**
  * Build-your-own combo pricing.
  *
- * 100ml bottles sell in fixed-price bundles: 1 for Rs 1,199, 2 for Rs 1,599,
- * 3 for Rs 2,199. Bigger baskets are packed into the cheapest mix of those
- * bundles (4 = 2+2, 5 = 3+2, 6 = 3+3, ...), so adding a bottle never costs
- * more per bottle than the tier below. Only SINGLE 100ml bottles count: 20ml
+ * 100ml bottles sell in fixed-price bundles: 1 for Rs 1,199, 2 for Rs 1,699,
+ * 3 for Rs 2,299, 4 for Rs 2,899. Bigger baskets are packed into the cheapest
+ * mix of those bundles (5 = 3+2, 6 = 4+2, 8 = 4+4, ...), so adding a bottle
+ * never costs more per bottle than the tier below. Only SINGLE 100ml bottles count: 20ml
  * decants and the pre-made combo pack neither earn nor dilute a bundle. The
  * 4 x 100ml pack is stored with size "100ml", so the size alone is not enough;
- * without the packSize check two packs (Rs 8,598) would price as "2 for 1,599".
+ * without the packSize check two packs would price as "2 for Rs 1,699".
+ *
+ * Combo lines are closed to ordinary coupons; see couponBasePaise.
  *
  * Kept here rather than in the cart context because the server reprices every
  * order from the database and must reach the same number; a discount computed
@@ -65,13 +67,15 @@ export const COMBO_SIZE = "100ml";
 /** The single-bottle price the bundle prices (and their "% off") are set against. */
 export const COMBO_LIST_PAISE = 119_900;
 
-/** Rounded DOWN so the banner never promises more than the cart gives. */
+/** Nearest whole percent: the 4-bottle tier is 39.55%, advertised as 40%. */
 const percentOff = (fullPaise: number, paidPaise: number) =>
-  fullPaise > 0 ? Math.floor(((fullPaise - paidPaise) * 100) / fullPaise) : 0;
+  fullPaise > 0 ? Math.round(((fullPaise - paidPaise) * 100) / fullPaise) : 0;
 
+/** Highest tier first. */
 export const COMBO_TIERS = [
-  { minQty: 3, totalPaise: 219_900 },
-  { minQty: 2, totalPaise: 159_900 },
+  { minQty: 4, totalPaise: 289_900 },
+  { minQty: 3, totalPaise: 229_900 },
+  { minQty: 2, totalPaise: 169_900 },
 ].map((tier) => ({
   ...tier,
   percent: percentOff(COMBO_LIST_PAISE * tier.minQty, tier.totalPaise),
@@ -89,7 +93,7 @@ export function comboBundlePaise(qty: number, singlePaise = COMBO_LIST_PAISE) {
   return best[qty] ?? 0;
 }
 
-/** The next bundle up, for prompting ("add 1 more: 3 for Rs 2,199"). Null at the top. */
+/** The next bundle up, for prompting ("add 1 more: 3 for Rs 2,299"). Null at the top. */
 export function nextComboTier(qty: number) {
   const better = [...COMBO_TIERS].reverse().find((tier) => tier.minQty > qty);
   return better ? { ...better, addQty: better.minQty - qty } : null;
@@ -99,19 +103,22 @@ export function nextComboTier(qty: number) {
  * Discount in paise for a set of cart lines. Counts total 100ml QUANTITY, so
  * two of the same bottle earn the bundle just as two different ones do.
  */
+type ComboLine = {
+  size: string;
+  packSize: number;
+  qty: number;
+  unitPricePaise: number;
+};
+
+const isBundleBottle = (line: ComboLine) =>
+  line.size === COMBO_SIZE && line.packSize === 1;
+
 export function comboDiscountPaise(
   // packSize is required on purpose: every caller must say whether a line is a
   // single bottle, so a new call site cannot silently let a multi-pack in.
-  lines: {
-    size: string;
-    packSize: number;
-    qty: number;
-    unitPricePaise: number;
-  }[],
+  lines: ComboLine[],
 ) {
-  const eligible = lines.filter(
-    (line) => line.size === COMBO_SIZE && line.packSize === 1,
-  );
+  const eligible = lines.filter(isBundleBottle);
   const qty = eligible.reduce((sum, line) => sum + line.qty, 0);
   const eligibleSubtotal = eligible.reduce(
     (sum, line) => sum + line.unitPricePaise * line.qty,
@@ -127,4 +134,28 @@ export function comboDiscountPaise(
     discountPaise,
     qty,
   };
+}
+
+/**
+ * What a coupon may discount. Combo pricing is the offer, so ordinary coupons
+ * skip every combo line: 100ml singles once they form a bundle (2+) and the
+ * pre-made 100ml multi-packs. A "special" coupon (coupons.applies_to_combos)
+ * covers the whole order, but against the bundle price, not the list price.
+ * A 0 result means the coupon has nothing it may apply to.
+ */
+export function couponBasePaise(lines: ComboLine[], specialCoupon: boolean) {
+  const subtotal = lines.reduce(
+    (sum, line) => sum + line.unitPricePaise * line.qty,
+    0,
+  );
+  const combo = comboDiscountPaise(lines);
+  if (specialCoupon) return subtotal - combo.discountPaise;
+  const locked = lines
+    .filter(
+      (line) =>
+        (isBundleBottle(line) && combo.qty >= 2) ||
+        (line.size === COMBO_SIZE && line.packSize > 1),
+    )
+    .reduce((sum, line) => sum + line.unitPricePaise * line.qty, 0);
+  return subtotal - locked;
 }

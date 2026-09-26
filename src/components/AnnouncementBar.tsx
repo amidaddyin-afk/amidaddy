@@ -18,11 +18,17 @@ export default function AnnouncementBar() {
         className="announcement-offer"
       >
         <Gift size={14} aria-hidden="true" />
-        Buy{" "}
-        {[...COMBO_TIERS]
-          .reverse()
-          .map((tier) => `${tier.minQty} for ${formatInr(tier.totalPaise)}`)
-          .join(" · ")}
+        {/* Every tier on wide screens; phones get the headline tier only. */}
+        <span className="announcement-offer-full">
+          Buy{" "}
+          {[...COMBO_TIERS]
+            .reverse()
+            .map((tier) => `${tier.minQty} for ${formatInr(tier.totalPaise)}`)
+            .join(" · ")}
+        </span>
+        <span className="announcement-offer-short">
+          Any {COMBO_TIERS[0].minQty} for {formatInr(COMBO_TIERS[0].totalPaise)}
+        </span>
         <b>-{COMBO_TIERS[0].percent}%</b>
       </button>
     </div>
