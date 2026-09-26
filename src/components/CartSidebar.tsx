@@ -326,10 +326,12 @@ export default function CartSidebar() {
                     </span>
                   </div>
                 )}
-                {comboPercent === 0 && comboNextTier && (
+                {comboNextTier && (
                   <p className="text-subtle text-xs">
-                    Add {comboNextTier.addQty} more 100ml to save{" "}
-                    {comboNextTier.percent}%.
+                    Add {comboNextTier.addQty} more 100ml: get{" "}
+                    {comboNextTier.minQty} for{" "}
+                    {formatInr(comboNextTier.totalPaise)} (
+                    {comboNextTier.percent}% off).
                   </p>
                 )}
                 <div className="flex justify-between text-sm">

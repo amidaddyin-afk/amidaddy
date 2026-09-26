@@ -5856,6 +5856,38 @@ body:has(.cine-root) {
   text-transform: uppercase;
   color: var(--cine-paper-faint);
 }
+/* Bundle ladder under the 100ml price: the saving sits beside the price the
+   shopper is already reading, so "one more bottle" is the cheaper-feeling choice. */
+.pdp-bundles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+.pdp-bundles li {
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--cine-paper-faint);
+}
+.pdp-bundles strong {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--cine-paper);
+}
+.pdp-bundles span {
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.pdp-bundles .pdp-bundles-note {
+  grid-column: 1 / -1;
+  padding: 0;
+  border: 0;
+  font-size: 0.75rem;
+  color: var(--cine-paper-faint);
+}
 .pdp-add {
   width: 100%;
   min-height: 3.5rem;
@@ -7331,4 +7363,320 @@ body[data-overlay] .fragrance-switcher {
   margin-top: 0.75rem;
   font-size: 0.78rem;
   color: var(--fg-muted);
+}
+
+/* ==========================================================================
+   Offer launcher: floating bottom-right button + bundle-price popover.
+   House obsidian/paper, sharp edges, ember-red only on the saving itself.
+   ========================================================================== */
+/* Brand red rather than the house charcoal: the one element on the page
+   meant to be spotted at a glance. Literal, like the wordmark "i", because the
+   house palette neutralises --color-ember-red. */
+.offer-launcher {
+  --offer-red: #c52639;
+  position: fixed;
+  left: clamp(16px, 3vw, 28px);
+  /* Same height as the fragrance switcher on the right: clears the sticky buy
+     bar and the hero CTAs, and the two floating buttons mirror each other. */
+  bottom: clamp(88px, 12vh, 116px);
+  z-index: 90;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 3.25rem;
+  padding: 0 0.55rem 0 0.9rem;
+  border: 1px solid var(--offer-red);
+  background: var(--offer-red);
+  color: #fff;
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 10px 28px rgba(197, 38, 57, 0.4);
+  /* Hidden until the announcement bar has scrolled away. */
+  opacity: 0;
+  visibility: hidden;
+  transform: translate3d(-120%, 0, 0);
+  transition:
+    transform 0.5s var(--ease-entrance),
+    opacity 0.3s ease,
+    visibility 0.3s;
+}
+.offer-launcher[data-shown] {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  animation: offer-bounce 4s var(--ease-entrance) 0.6s infinite;
+}
+/* A ring that swells out and fades, like a soft ping. */
+.offer-launcher::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border: 2px solid var(--offer-red);
+  pointer-events: none;
+  animation: offer-ping 2s ease-out infinite;
+}
+@keyframes offer-ping {
+  from {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.35, 1.6);
+  }
+}
+/* A quick zoom-and-settle once every four seconds, still the rest of the time. */
+@keyframes offer-bounce {
+  0%,
+  16%,
+  100% {
+    transform: none;
+  }
+  5% {
+    transform: scale(1.12);
+  }
+  10% {
+    transform: scale(0.96);
+  }
+}
+.offer-launcher:hover {
+  animation-play-state: paused;
+}
+.offer-launcher b {
+  padding: 0.3rem 0.4rem;
+  background: #fff;
+  color: var(--offer-red);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+/* Phones: icon + saving only, so it stays thumb-sized. */
+@media (max-width: 639px) {
+  .offer-launcher > span {
+    display: none;
+  }
+}
+/* The consent banner owns the bottom of the screen until answered; overlays
+   (cart, menu, search) own all of it. */
+body:has(.consent-banner) .offer-launcher,
+body[data-overlay] .offer-launcher {
+  display: none;
+}
+
+/* Offer inside the announcement bar: the whole line is the button. */
+.announcement-bar {
+  gap: 1.5rem;
+}
+.announcement-offer {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: inherit;
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.announcement-offer b {
+  padding: 0.05rem 0.35rem;
+  background: #c52639;
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+}
+@media (max-width: 639px) {
+  .announcement-delivery {
+    display: none;
+  }
+}
+
+.offer-pop {
+  position: fixed;
+  inset: 0;
+  width: min(22rem, calc(100vw - 32px));
+  height: fit-content;
+  margin: auto;
+  padding: 1.5rem 1.4rem 1.4rem;
+  border: 1px solid var(--color-obsidian);
+  background: var(--color-paper);
+  color: var(--color-obsidian);
+  box-shadow: 0 18px 48px rgba(10, 12, 11, 0.28);
+  /* Mounted in the dark chrome surface, but the panel is light: re-point the
+     surface tokens so house components inside (lux-button) read correctly. */
+  --fg: var(--color-obsidian);
+  --bg: var(--color-paper);
+}
+.offer-pop:popover-open {
+  display: grid;
+  gap: 0.9rem;
+  animation: offer-pop-in 0.32s var(--ease-entrance);
+}
+.offer-pop::backdrop {
+  background: rgba(10, 12, 11, 0.45);
+}
+@keyframes offer-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+.offer-pop .eyebrow {
+  font-size: 0.8rem;
+}
+.offer-pop-title {
+  margin-top: -0.5rem;
+  font-size: var(--text-heading-sm);
+  line-height: var(--leading-heading-sm);
+  letter-spacing: var(--tracking-heading-sm);
+  font-weight: 500;
+}
+.offer-pop-close {
+  position: absolute;
+  top: 0.8rem;
+  right: 0.8rem;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  color: var(--color-graphite);
+  cursor: pointer;
+}
+.offer-pop-close:hover {
+  color: var(--color-obsidian);
+}
+.offer-pop-rows {
+  display: grid;
+  border-top: 1px solid var(--color-graphite-line);
+}
+.offer-pop-rows li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 0.1rem;
+  border-bottom: 1px solid var(--color-graphite-line);
+}
+.offer-pop-rows li[data-best] {
+  margin: 0 -0.6rem;
+  padding-inline: 0.7rem;
+  border: 1px solid var(--color-obsidian);
+  background: rgb(0 0 0 / 0.03);
+}
+.offer-pop-qty {
+  display: grid;
+  gap: 0.15rem;
+  font-size: 0.95rem;
+}
+.offer-pop-qty em {
+  font-style: normal;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-ember-red);
+}
+.offer-pop-price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 0.2rem 0.5rem;
+  text-align: right;
+}
+.offer-pop-price strong {
+  font-size: 1.05rem;
+  font-weight: 500;
+}
+.offer-pop-price s {
+  font-size: 0.8rem;
+  color: var(--color-graphite);
+}
+.offer-pop-price b {
+  width: 100%;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-ember-red);
+}
+.offer-pop-note {
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--color-graphite);
+}
+.offer-pop-cta {
+  width: 100%;
+}
+#combo {
+  scroll-margin-top: 6rem;
+}
+/* Phones: a tighter card. Rows drop to one line (price, struck price and
+   saving side by side) and the heading and button shrink. */
+@media (max-width: 639px) {
+  .offer-pop {
+    width: min(19.5rem, calc(100vw - 32px));
+    padding: 1.1rem 1rem 1rem;
+  }
+  .offer-pop:popover-open {
+    gap: 0.65rem;
+  }
+  .offer-pop .eyebrow {
+    font-size: 0.72rem;
+  }
+  .offer-pop-title {
+    margin-top: -0.35rem;
+    font-size: 1.25rem;
+  }
+  .offer-pop-close {
+    top: 0.5rem;
+    right: 0.5rem;
+  }
+  .offer-pop-rows li {
+    padding-block: 0.55rem;
+  }
+  .offer-pop-rows li[data-best] {
+    margin-inline: -0.45rem;
+    padding-inline: 0.5rem;
+  }
+  .offer-pop-qty {
+    font-size: 0.85rem;
+  }
+  .offer-pop-price {
+    flex-wrap: nowrap;
+    gap: 0.4rem;
+  }
+  .offer-pop-price strong {
+    font-size: 0.95rem;
+  }
+  .offer-pop-price s {
+    font-size: 0.72rem;
+  }
+  .offer-pop-price b {
+    width: auto;
+    padding: 0.1rem 0.3rem;
+    background: #c52639;
+    color: #fff;
+    font-size: 0.62rem;
+    letter-spacing: 0.04em;
+  }
+  .offer-pop-note {
+    font-size: 0.72rem;
+    line-height: 1.4;
+  }
+  .offer-pop .offer-pop-cta {
+    min-height: 2.75rem;
+    padding-block: 0.6rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .offer-launcher,
+  .offer-launcher[data-shown],
+  .offer-launcher::after {
+    transition: none;
+    animation: none;
+  }
+  .offer-pop:popover-open {
+    animation: none;
+  }
 }

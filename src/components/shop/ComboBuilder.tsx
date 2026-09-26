@@ -9,8 +9,9 @@ import { useCart } from "@/context/CartContext";
 import { formatInr } from "@/lib/money";
 import {
   COMBO_SIZE,
+  COMBO_LIST_PAISE,
   COMBO_TIERS,
-  comboPercentFor,
+  comboDiscountPaise,
   nextComboTier,
 } from "@/lib/commerce";
 import { EASE, DURATION, SPRING } from "@/lib/motion";
@@ -46,8 +47,14 @@ export default function ComboBuilder({ products }: { products: Product[] }) {
     (sum, row) => sum + priceOf(row.product) * row.qty,
     0,
   );
-  const percent = comboPercentFor(qty);
-  const discountPaise = Math.round((grossPaise * percent) / 100);
+  const { percent, discountPaise } = comboDiscountPaise(
+    picked.map((row) => ({
+      size: COMBO_SIZE,
+      packSize: row.product.packSize ?? 1,
+      qty: row.qty,
+      unitPricePaise: priceOf(row.product),
+    })),
+  );
   const netPaise = grossPaise - discountPaise;
   const next = nextComboTier(qty);
 
@@ -82,24 +89,37 @@ export default function ComboBuilder({ products }: { products: Product[] }) {
   };
 
   return (
-    <section className="combo-builder" aria-labelledby="combo-heading">
+    <section
+      id="combo"
+      className="combo-builder"
+      aria-labelledby="combo-heading"
+    >
       <div className="combo-intro">
         <p className="eyebrow">Build a gift set</p>
         <h2 id="combo-heading" className="display-title">
           Pick your combination.
         </h2>
         <p className="combo-lede">
-          Add two or more {COMBO_SIZE} bottles and the set prices itself down.
-          Mix the four signatures however you like.
+          The more {COMBO_SIZE} bottles you pick, the less each one costs. Mix
+          the four signatures however you like.
         </p>
         <ol className="combo-tiers">
+          <li data-reached={qty >= 1 ? "true" : "false"}>
+            <strong>1 bottle</strong>
+            <span>{formatInr(COMBO_LIST_PAISE)}</span>
+          </li>
           {[...COMBO_TIERS].reverse().map((tier) => (
             <li
               key={tier.minQty}
               data-reached={qty >= tier.minQty ? "true" : "false"}
             >
-              <strong>{tier.minQty}+ bottles</strong>
-              <span>{tier.percent}% off</span>
+              <strong>
+                {tier.minQty} bottles for {formatInr(tier.totalPaise)}
+              </strong>
+              <span>
+                <s>{formatInr(COMBO_LIST_PAISE * tier.minQty)}</s>{" "}
+                {tier.percent}% off
+              </span>
             </li>
           ))}
         </ol>
@@ -241,7 +261,7 @@ export default function ComboBuilder({ products }: { products: Product[] }) {
               {percent > 0
                 ? `${percent}% off applied. You save ${formatInr(discountPaise)}.`
                 : next && qty > 0
-                  ? `Add ${next.addQty} more for ${next.percent}% off.`
+                  ? `Add ${next.addQty} more: ${next.minQty} for ${formatInr(next.totalPaise)}, ${next.percent}% off.`
                   : ""}
             </p>
             <dl>

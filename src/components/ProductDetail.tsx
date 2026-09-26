@@ -15,6 +15,7 @@ import {
 import type { Product } from "@/lib/data";
 import { useCart } from "@/context/CartContext";
 import { formatInr } from "@/lib/money";
+import { COMBO_SIZE, COMBO_TIERS } from "@/lib/commerce";
 import { analytics, toItem } from "@/lib/analytics";
 import Photo from "@/components/Photo";
 import ProductStory, { type StoryTile } from "@/components/ProductStory";
@@ -385,6 +386,22 @@ export default function ProductDetail({ product }: { product: Product }) {
             {onSale && variant && <s>{formatInr(variant.mrpPaise)}</s>}
             <span>{sizeLabel} · Inclusive of GST</span>
           </div>
+
+          {!isCombo && size === COMBO_SIZE && (
+            <ul className="pdp-bundles" aria-label="Bundle prices">
+              {[...COMBO_TIERS].reverse().map((tier) => (
+                <li key={tier.minQty}>
+                  <strong>
+                    Any {tier.minQty} for {formatInr(tier.totalPaise)}
+                  </strong>
+                  <span>{tier.percent}% off</span>
+                </li>
+              ))}
+              <li className="pdp-bundles-note">
+                Mix any scents. Applied automatically in your bag.
+              </li>
+            </ul>
+          )}
 
           <button
             ref={addButtonRef}

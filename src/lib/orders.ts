@@ -105,7 +105,7 @@ type CheckoutPricingInput = {
   couponCode?: string;
 };
 
-type CheckoutLine = OrderLine & { productDbId: string };
+type CheckoutLine = OrderLine & { productDbId: string; packSize: number };
 
 export type CheckoutQuote = {
   subtotalPaise: number;
@@ -252,7 +252,7 @@ async function calculateCheckoutPricing(
   if (!variantIds.every((id) => /^[0-9a-f-]{36}$/i.test(id)))
     throw new Error("The catalog is not synchronized with inventory yet.");
   const { rows: variants } = await client.query(
-    `select pv.*,p.id product_id,p.slug,p.name product_name,p.gst_rate,p.active product_active,p.deleted_at from public.product_variants pv join public.products p on p.id=pv.product_id where pv.id=any($1::uuid[])${lockRows ? " for update" : ""}`,
+    `select pv.*,p.id product_id,p.slug,p.name product_name,p.gst_rate,p.pack_size,p.active product_active,p.deleted_at from public.product_variants pv join public.products p on p.id=pv.product_id where pv.id=any($1::uuid[])${lockRows ? " for update" : ""}`,
     [variantIds],
   );
   if (variants.length !== variantIds.length)
@@ -276,6 +276,7 @@ async function calculateCheckoutPricing(
     return {
       productId: String(variant.slug),
       productDbId: String(variant.product_id),
+      packSize: Number(variant.pack_size),
       variantId: String(variant.id),
       name: String(variant.product_name),
       size: String(variant.name),

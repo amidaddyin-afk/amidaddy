@@ -2,7 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   comboDiscountPaise,
-  comboPercentFor,
+  comboBundlePaise,
+  COMBO_TIERS,
   couponDiscountPaise,
   nextComboTier,
   isCustomerCancellationAllowed,
@@ -90,17 +91,32 @@ test("payment confirmation requires the exact order, amount, currency and captur
 
 const bottle = (qty: number, size = "100ml", unitPricePaise = 119_900) => ({
   size,
+  packSize: 1,
   qty,
   unitPricePaise,
 });
 
-test("combo tiers start at two bottles and cap at twenty percent", () => {
-  assert.equal(comboPercentFor(1), 0);
-  assert.equal(comboPercentFor(2), 10);
-  assert.equal(comboPercentFor(3), 15);
-  assert.equal(comboPercentFor(4), 20);
-  // Beyond the top tier the rate holds rather than climbing.
-  assert.equal(comboPercentFor(9), 20);
+test("a pre-made 4 x 100ml pack never counts as a bundle bottle", () => {
+  // Stored with size "100ml"; without the packSize check two packs
+  // (Rs 8,598) would price as "2 for Rs 1,599".
+  const pack = { size: "100ml", packSize: 4, qty: 2, unitPricePaise: 429_900 };
+  assert.equal(comboDiscountPaise([pack]).discountPaise, 0);
+  // Nor does a pack plus one single unlock the 2-bottle price.
+  assert.equal(comboDiscountPaise([pack, bottle(1)]).discountPaise, 0);
+});
+
+test("bundles are 1 for 1199, 2 for 1599, 3 for 2199, packed beyond that", () => {
+  assert.equal(comboBundlePaise(1), 119_900);
+  assert.equal(comboBundlePaise(2), 159_900);
+  assert.equal(comboBundlePaise(3), 219_900);
+  assert.equal(comboBundlePaise(4), 2 * 159_900);
+  assert.equal(comboBundlePaise(5), 219_900 + 159_900);
+  assert.equal(comboBundlePaise(6), 2 * 219_900);
+  // "% off" is rounded down so it never overpromises: 33.3 -> 33, 38.9 -> 38.
+  assert.deepEqual(
+    COMBO_TIERS.map((tier) => tier.percent),
+    [38, 33],
+  );
 });
 
 test("only 100ml bottles count toward the combo tier", () => {
@@ -112,29 +128,29 @@ test("only 100ml bottles count toward the combo tier", () => {
   // A 20ml alongside two 100ml neither blocks the tier nor is discounted:
   // the saving is 10% of the 100ml lines only.
   const mixed = comboDiscountPaise([bottle(2), bottle(1, "20ml", 19_900)]);
-  assert.equal(mixed.percent, 10);
-  assert.equal(mixed.discountPaise, Math.round((2 * 119_900 * 10) / 100));
+  assert.equal(mixed.discountPaise, 2 * 119_900 - 159_900);
 });
 
 test("the same bottle twice earns the tier, like two different ones", () => {
   const twoOfOne = comboDiscountPaise([bottle(2)]);
   const oneEach = comboDiscountPaise([bottle(1), bottle(1)]);
-  assert.equal(twoOfOne.percent, 10);
+  assert.equal(twoOfOne.percent, 33);
   assert.deepEqual(twoOfOne, oneEach);
 });
 
-test("a four-bottle set is priced off the selling price, not MRP", () => {
-  // Four at Rs 1,199 is Rs 4,796; 20% off leaves Rs 3,836.80 -> 383_680 paise.
-  const set = comboDiscountPaise([bottle(4)]);
-  assert.equal(set.percent, 20);
-  assert.equal(set.discountPaise, 95_920);
-  assert.equal(4 * 119_900 - set.discountPaise, 383_680);
+test("three bottles cost exactly Rs 2,199", () => {
+  const set = comboDiscountPaise([bottle(3)]);
+  assert.equal(3 * 119_900 - set.discountPaise, 219_900);
+  assert.equal(set.percent, 38);
+  // One bottle is full price.
+  assert.equal(comboDiscountPaise([bottle(1)]).discountPaise, 0);
 });
 
 test("the next-tier prompt names how many more bottles are needed", () => {
-  assert.deepEqual(nextComboTier(0), { minQty: 2, percent: 10, addQty: 2 });
-  assert.deepEqual(nextComboTier(2), { minQty: 3, percent: 15, addQty: 1 });
-  assert.deepEqual(nextComboTier(3), { minQty: 4, percent: 20, addQty: 1 });
+  assert.equal(nextComboTier(0)?.addQty, 2);
+  assert.equal(nextComboTier(1)?.totalPaise, 159_900);
+  assert.equal(nextComboTier(2)?.addQty, 1);
+  assert.equal(nextComboTier(2)?.totalPaise, 219_900);
   // Nothing left to unlock at the top tier.
-  assert.equal(nextComboTier(4), null);
+  assert.equal(nextComboTier(3), null);
 });

@@ -41,7 +41,7 @@ interface CartContextType {
   comboPercent: number;
   comboDiscountPaise: number;
   comboQty: number;
-  comboNextTier: { minQty: number; percent: number; addQty: number } | null;
+  comboNextTier: ReturnType<typeof nextComboTier>;
   clearCart: () => void;
 }
 
@@ -150,7 +150,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       (sum, item) => sum + item.unitPricePaise * item.qty,
       0,
     );
-    const combo = comboDiscountPaise(items);
+    const combo = comboDiscountPaise(
+      items.map((item) => ({
+        ...item,
+        packSize: item.product.packSize ?? 1,
+      })),
+    );
     const afterCombo = subtotalPaise - combo.discountPaise;
     // Free-shipping eligibility is checked before the combo discount, matching
     // the server: earning a combo must never cost the customer free delivery.
