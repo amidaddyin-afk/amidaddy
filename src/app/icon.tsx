@@ -10,7 +10,7 @@ export const contentType = "image/png";
 
 export default async function Icon() {
   const icon = await readFile(
-    path.join(process.cwd(), "public", "brand", "amidaddy-icon-64.png"),
+    path.join(process.cwd(), "public", "site", "brand", "amidaddy-icon-64.png"),
   );
 
   return new Response(new Uint8Array(icon), {

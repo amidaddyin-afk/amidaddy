@@ -51,21 +51,21 @@ Product galleries can also be changed **without touching files**. In Admin, open
 
 The homepage has its **own copies** of its editorial photos, so replacing one changes only the homepage, not the product pages.
 
-| Folder / file                                                            | Where it shows                                                                   |
-| ------------------------------------------------------------------------ | -------------------------------------------------------------------------------- |
-| `home/hero-poster.webp`                                                  | Homepage hero, behind the film (and instead of it on slow connections)           |
-| `home/story-<fragrance>.webp` + `-mobile.webp`                           | Homepage "A closer look at each one" bands (desktop / phone)                     |
-| `home/composition.webp` + `-mobile.webp`                                 | Homepage "Every detail, considered."                                             |
-| `home/closing.webp` + `-mobile.webp`                                     | Homepage final "Your next signature starts here."                                |
-| `shop/hero-desktop`, `hero-mobile`, `hero-narrow` (`.webp` + `.avif`)    | Shop page hero                                                                   |
-| `our-approach/*` (`.webp` + `.avif`)                                     | Our Approach page: `hero`, `macro`, `sizes`, `discovery-set`, `20ml-<fragrance>` |
-| `scent-school/*.webp`                                                    | Scent School lesson photos                                                       |
-| `scent-school/film/<chapter>-desktop / -mobile` (`.mp4` + `.jpg` poster) | Scent School scroll films. Re-encode with `node scripts/encode-scent-school.mjs` |
-| `account/sign-in.webp`                                                   | Sign-in, sign-up and verify-email pages                                          |
-| `not-found/photo.webp`                                                   | The 404 page                                                                     |
-| `brand/*`                                                                | Monogram and signature mark used in the header                                   |
-| `certifications/*.png`                                                   | Certification badges. Rebuilt by `node scripts/build-certification-badges.mjs`   |
-| `preview-cinematic/*`                                                    | Internal `/preview/cinematic` design page only                                   |
+| Folder / file                                                            | Where it shows                                                                            |
+| ------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------- |
+| `home/hero-poster.webp`                                                  | Homepage hero, behind the film (and instead of it on slow connections)                    |
+| `home/story-<fragrance>.webp` + `-mobile.webp`                           | Homepage "A closer look at each one" bands (desktop / phone)                              |
+| `home/composition.webp` + `-mobile.webp`                                 | Homepage "Every detail, considered."                                                      |
+| `home/closing.webp` + `-mobile.webp`                                     | Homepage final "Your next signature starts here."                                         |
+| `shop/hero-desktop`, `hero-mobile`, `hero-narrow` (`.webp` + `.avif`)    | Shop page hero                                                                            |
+| `our-approach/*` (`.webp` + `.avif`)                                     | Our Approach page: `hero`, `macro`, `sizes`, `discovery-set`, `20ml-<fragrance>`          |
+| `scent-school/*.webp`                                                    | Scent School lesson photos                                                                |
+| `scent-school/film/<chapter>-desktop / -mobile` (`.mp4` + `.jpg` poster) | Scent School scroll films. Re-encode with `node scripts/encode-scent-school.mjs`          |
+| `account/sign-in.webp`                                                   | Sign-in, sign-up and verify-email pages                                                   |
+| `not-found/photo.webp`                                                   | The 404 page                                                                              |
+| `brand/*`                                                                | Monogram and signature mark in the header; `amidaddy-icon-64.png` is the browser-tab icon |
+| `certifications/*.png`                                                   | Certification badges. Rebuilt by `node scripts/build-certification-badges.mjs`            |
+| `preview-cinematic/*`                                                    | Internal `/preview/cinematic` design page only                                            |
 
 `public/og.png` (the link-preview image for social media) and `public/llms.txt` stay at the top level, where crawlers expect them.
 
