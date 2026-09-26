@@ -6604,7 +6604,10 @@ body .display-title {
    no pasted-in rectangle. */
 .house-entry {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  /* As many columns as there are cards: a card whose product is missing from
+     the catalogue is not rendered, and must not leave an empty cell. */
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
   gap: 1px;
   background: var(--line);
   border-bottom: 1px solid var(--line);
@@ -6626,9 +6629,14 @@ body .display-title {
 .house-entry-card:hover {
   background: rgb(23 27 25 / 0.03);
 }
+/* Sized to the photo's own 16:9 shape and pinned right, so widening the card
+   never crops the bottle; only very narrow cards trim the sides. */
 .house-entry-shot {
   position: absolute;
-  inset: 0 0 0 34%;
+  inset: 0 0 0 auto;
+  height: 100%;
+  aspect-ratio: 16 / 9;
+  max-width: 66%;
   z-index: -1;
   mix-blend-mode: multiply;
   -webkit-mask-image: linear-gradient(to right, transparent, #000 45%);
@@ -6640,7 +6648,8 @@ body .display-title {
 /* The discovery set is a portrait shot: a narrower, squarer area keeps all
    four bottles whole instead of cropping them up under the price. */
 .house-entry-card[data-featured] .house-entry-shot {
-  inset: 0 0 0 52%;
+  aspect-ratio: 3 / 2;
+  max-width: 48%;
   -webkit-mask-image: linear-gradient(to right, transparent, #000 35%);
   mask-image: linear-gradient(to right, transparent, #000 35%);
 }
@@ -6720,7 +6729,7 @@ body .display-title {
    comfortable size, and a carousel would hide two of the three choices. */
 @media (max-width: 767px) {
   .house-entry {
-    grid-template-columns: minmax(0, 1fr);
+    grid-auto-flow: row;
   }
   .house-entry-card {
     min-height: 148px;
@@ -6728,6 +6737,11 @@ body .display-title {
   }
   .house-entry-shot {
     inset: 0 0 0 40%;
+    aspect-ratio: auto;
+    max-width: none;
+  }
+  .house-entry-card[data-featured] .house-entry-shot {
+    inset: 0 0 0 auto;
   }
   .house-entry-price {
     font-size: 1.4rem;

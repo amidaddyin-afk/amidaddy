@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { safeRedirectPath } from "@/lib/safe-redirect";
 import { createClient } from "@/lib/supabase/server";
 import { assertLoginAllowed, recordLoginAttempt } from "@/lib/rate-limit";
 import {
@@ -134,13 +135,7 @@ export async function signInAction(
   await recordLoginAttempt(parsed.data.email, !error);
   if (error) return { error: "Invalid email or password." };
   const requestedNext = formData.get("next");
-  redirect(
-    typeof requestedNext === "string" &&
-      requestedNext.startsWith("/") &&
-      !requestedNext.startsWith("//")
-      ? requestedNext
-      : "/account",
-  );
+  redirect(safeRedirectPath(requestedNext));
 }
 
 export async function requestPasswordResetAction(

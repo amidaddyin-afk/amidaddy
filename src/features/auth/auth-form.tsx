@@ -5,6 +5,7 @@ import Photo from "@/components/Photo";
 import { useActionState } from "react";
 import { useSearchParams } from "next/navigation";
 import Script from "next/script";
+import { safeRedirectPath } from "@/lib/safe-redirect";
 import {
   requestPasswordResetAction,
   signInAction,
@@ -39,8 +40,7 @@ export function AuthForm({
   const next = searchParams.get("next");
   const adminSessionExpired =
     searchParams.get("reason") === "admin-session-expired";
-  const safeNext =
-    next?.startsWith("/") && !next.startsWith("//") ? next : "/account";
+  const safeNext = safeRedirectPath(next);
   return (
     <main data-surface="commerce" className="auth-shell">
       {/* Editorial split. These pages were a bare form on an empty field;

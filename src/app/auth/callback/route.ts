@@ -1,15 +1,12 @@
 import { NextResponse } from "next/server";
+import { safeRedirectPath } from "@/lib/safe-redirect";
 import { createServerClient } from "@supabase/ssr";
 import { secureCookieOptions } from "@/lib/security";
-
-function safeNext(value: string | null) {
-  return value?.startsWith("/") && !value.startsWith("//") ? value : "/account";
-}
 
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
-  const next = safeNext(requestUrl.searchParams.get("next"));
+  const next = safeRedirectPath(requestUrl.searchParams.get("next"));
   const response = NextResponse.redirect(new URL(next, requestUrl.origin));
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;

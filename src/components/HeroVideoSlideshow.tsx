@@ -118,6 +118,9 @@ export default function HeroVideoSlideshow() {
       const url = `/fragrances/${slug}/film.${ext}`;
       if (video && !video.src.endsWith(url)) {
         video.src = url;
+        // Tagged here rather than parsed back out of the src, which stopped
+        // matching when every film was renamed film.mp4.
+        video.dataset.slug = slug;
         video.load();
       }
     };
@@ -241,9 +244,9 @@ export default function HeroVideoSlideshow() {
             aria-hidden="true"
             tabIndex={-1}
             // Both slots report, so the idle one is known ready before its
-            // turn. The slug is read from the src the element actually holds.
+            // turn. The slug is the one bind() tagged the element with.
             onCanPlay={(e) => {
-              const slug = e.currentTarget.src.split("/").pop()?.split(".")[0];
+              const slug = e.currentTarget.dataset.slug;
               setReady((r) =>
                 r[n] === slug
                   ? r
