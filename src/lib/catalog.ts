@@ -2,6 +2,7 @@ import "server-only";
 
 import type { Product } from "@/lib/data";
 import { deriveNotes, PRODUCTS } from "@/lib/data";
+import { LEGACY_MEDIA } from "@/lib/legacy-media";
 import { createClient } from "@/lib/supabase/server";
 import { createPublicClient } from "@/lib/supabase/public-client";
 import type {
@@ -23,10 +24,14 @@ const configured = () =>
  * The photography under public/ is now WebP; the camera originals live outside
  * public/ in assets-source/. A deployed database that has not yet run the
  * webp_image_urls migration still holds .JPG paths, which would 404, so legacy
- * extensions are normalised on read as well as fixed by the migration.
+ * extensions are normalised on read as well as fixed by the migration. Paths
+ * from before the media reorganisation are translated the same way.
  */
-const toWebpPath = (url: string) =>
-  url.startsWith("/") ? url.replace(/\.(jpe?g)$/i, ".webp") : url;
+const toWebpPath = (url: string) => {
+  if (!url.startsWith("/")) return url;
+  const webp = url.replace(/\.(jpe?g)$/i, ".webp");
+  return LEGACY_MEDIA[webp] ?? webp;
+};
 
 function mapProduct(product: Record<string, unknown>): Product {
   const images = (
@@ -110,7 +115,7 @@ function mapProduct(product: Record<string, unknown>): Product {
       generalImages[0] ??
       defaultImages[0] ??
       fallback?.image ??
-      "/ref/billionaire-100ml-mobile.webp",
+      "/fragrances/billionaire/100ml/bottle.webp",
     images: productImages,
     variantImages,
     mediaLibrary: images.map((item) => ({

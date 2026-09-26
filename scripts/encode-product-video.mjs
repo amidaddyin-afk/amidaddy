@@ -17,7 +17,7 @@
  * Example:
  *   node scripts/encode-product-video.mjs "productPics/Videos/Old Love.mp4" old-love 10 8
  *
- * Writes public/videos/<slug>.webm and .mp4. No poster is generated: the hero
+ * Writes public/fragrances/<slug>/film.webm and .mp4. No poster is generated: the hero
  * already renders the product photograph underneath, and HeroVideo fades the
  * loop in over it, so a poster would just be a second decode of the same frame.
  */
@@ -50,7 +50,7 @@ if (!Number.isFinite(start) || !Number.isFinite(duration) || duration <= 0) {
   process.exit(1);
 }
 
-const outBase = `public/videos/${slug}`;
+const outBase = `public/fragrances/${slug}/film`;
 mkdirSync(dirname(outBase), { recursive: true });
 
 // 720x1280, not the master's 1080x1920: the hero panel is 51% of the viewport

@@ -62,12 +62,12 @@ export default function ShopHero() {
             <source
               media="(min-width: 1240px)"
               type="image/avif"
-              srcSet="/ref/shop-hero-collection-desktop.avif"
+              srcSet="/site/shop/hero-desktop.avif"
             />
             <source
               media="(min-width: 1240px)"
               type="image/webp"
-              srcSet="/ref/shop-hero-collection-desktop.webp"
+              srcSet="/site/shop/hero-desktop.webp"
             />
             {/* 900-1239px: the copy column leaves a short, wide slot, and the
                 16:9 original cropped to fill it cut the outer bottle in half.
@@ -76,23 +76,17 @@ export default function ShopHero() {
             <source
               media="(min-width: 900px)"
               type="image/avif"
-              srcSet="/ref/shop-hero-collection-narrow.avif"
+              srcSet="/site/shop/hero-narrow.avif"
             />
             <source
               media="(min-width: 900px)"
               type="image/webp"
-              srcSet="/ref/shop-hero-collection-narrow.webp"
+              srcSet="/site/shop/hero-narrow.webp"
             />
-            <source
-              type="image/avif"
-              srcSet="/ref/shop-hero-collection-mobile.avif"
-            />
-            <source
-              type="image/webp"
-              srcSet="/ref/shop-hero-collection-mobile.webp"
-            />
+            <source type="image/avif" srcSet="/site/shop/hero-mobile.avif" />
+            <source type="image/webp" srcSet="/site/shop/hero-mobile.webp" />
             <img
-              src="/ref/shop-hero-collection-desktop.webp"
+              src="/site/shop/hero-desktop.webp"
               alt="The four Amidaddy fragrances - Old Love, Heavenly, Billionaire and Cold War - in 100ml bottles on a travertine plinth"
               width={2400}
               height={1351}

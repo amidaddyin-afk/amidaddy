@@ -199,7 +199,7 @@ test("every mapped film has both encodes and both posters on disk", () => {
       `${chapter.film}-mobile.jpg`,
     ]) {
       assert.ok(
-        existsSync(`public/scent-school/film/${file}`),
+        existsSync(`public/site/scent-school/film/${file}`),
         `missing ${file} - re-run scripts/encode-scent-school.mjs`,
       );
     }

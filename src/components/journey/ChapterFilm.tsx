@@ -29,7 +29,7 @@ export default function ChapterFilm({
   alt,
   hasMobile = true,
 }: {
-  /** Basename under /scent-school/film, e.g. "opening". */
+  /** Basename under /site/scent-school/film, e.g. "opening". */
   id: string;
   /** 0..1 scroll progress for this chapter. */
   progress: MotionValue<number>;
@@ -71,7 +71,7 @@ export default function ChapterFilm({
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries.some((entry) => entry.isIntersecting)) {
-          setSrc(`/scent-school/film/${id}-${variant}.mp4`);
+          setSrc(`/site/scent-school/film/${id}-${variant}.mp4`);
           observer.disconnect();
         }
       },
@@ -95,7 +95,7 @@ export default function ChapterFilm({
     enabled: !reduce && !!activeSrc && !failed,
   });
 
-  const poster = `/scent-school/film/${id}-${variant ?? "desktop"}.jpg`;
+  const poster = `/site/scent-school/film/${id}-${variant ?? "desktop"}.jpg`;
 
   return (
     <div ref={hostRef} className="chapter-film" aria-hidden="true">

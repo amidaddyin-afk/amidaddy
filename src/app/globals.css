@@ -1008,7 +1008,7 @@ main.house-home {
   gap: 0.5rem;
   color: #fff;
 }
-/* AD monogram (vector trace of public/brand/amidaddy-ad-signature-mark.png).
+/* AD monogram (vector trace of public/site/brand/amidaddy-ad-signature-mark.png).
    Painted through a mask so it takes the wordmark's colour on every surface
    and the SVG downloads once and is cached, instead of inlining ~23 KB of
    path data into every page. */
@@ -1020,7 +1020,7 @@ main.house-home {
   width: 3.4rem;
   aspect-ratio: 450 / 232;
   background: currentColor;
-  mask: url("/brand/amidaddy-monogram.svg") center / contain no-repeat;
+  mask: url("/site/brand/amidaddy-monogram.svg") center / contain no-repeat;
 }
 /* Phones: the mark plus the wordmark must still clear the search icon. */
 @media (max-width: 639px) {
@@ -2813,6 +2813,14 @@ body .site-header {
 }
 .admin-photo-list button:disabled {
   opacity: 0.35;
+}
+/* Where the photo's file lives, so it can be found and replaced. */
+.admin-photo-file {
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 0.7rem;
+  opacity: 0.6;
+  word-break: break-all;
 }
 @media (max-width: 560px) {
   .admin-photo-list li {
@@ -6460,28 +6468,30 @@ body .display-title {
   height: 100%;
   object-fit: cover;
   object-position: 50% 35%;
-  transition: opacity 0.6s ease;
+  /* Crossfade length; keep in step with FADE_MS in HeroVideoSlideshow. */
+  transition: opacity 1s ease-in-out;
 }
-/* A clean, continuous edge between the copy panel and the film. The previous
-   treatment faded the panel colour ~20% into the video, which read as a smudge
-   rather than a join: no definite line, and the footage was dimmed well past
-   the seam. This is a single hairline the full height of the hero, with only a
-   very short tonal step behind it to stop a bright frame glaring against the
-   charcoal. */
+/* No visible join between the copy panel and the film: the panel reaches a
+   little under the copy column and a gradient of the hero's own charcoal
+   covers its left edge, so the footage dissolves into the background. A
+   gradient rather than a CSS mask: masking a playing <video> re-composites
+   every frame, which stuttered on Safari. */
+.house-hero-image {
+  margin-left: -8vw;
+}
 .house-hero-image::before {
   content: "";
   position: absolute;
   inset: 0;
-  z-index: 1;
+  /* Above the <video> slots (z-index 1), below the playback toggle. */
+  z-index: 2;
   pointer-events: none;
-  /* Strong enough to stay visible against a dark frame - several of the
-     films are near-black at the left edge, where a 0.16 hairline vanished. */
-  border-left: 1px solid rgba(255, 255, 255, 0.32);
   background: linear-gradient(
     to right,
-    rgba(23, 23, 23, 0.55) 0%,
-    rgba(23, 23, 23, 0.22) 2.5%,
-    rgba(23, 23, 23, 0) 6%
+    #171717 0%,
+    rgba(23, 23, 23, 0.85) 10%,
+    rgba(23, 23, 23, 0.4) 20%,
+    rgba(23, 23, 23, 0) 32%
   );
 }
 
@@ -6494,14 +6504,34 @@ body .display-title {
   inset: 0;
   z-index: 1;
   pointer-events: none;
+  /* Shading only: a vignette that darkens the edges and corners, a light
+     overall wash, and the foot/top gradients. The centre of the frame stays
+     at full clarity; nothing here blurs. */
   background:
+    radial-gradient(
+      ellipse 75% 80% at 55% 45%,
+      rgba(8, 8, 10, 0) 45%,
+      rgba(8, 8, 10, 0.45) 100%
+    ),
     linear-gradient(
       to top,
       rgba(8, 8, 10, 0.62) 0%,
       rgba(8, 8, 10, 0.22) 34%,
       rgba(8, 8, 10, 0) 62%
     ),
-    linear-gradient(to bottom, rgba(8, 8, 10, 0.3) 0%, rgba(8, 8, 10, 0) 28%);
+    linear-gradient(to bottom, rgba(8, 8, 10, 0.3) 0%, rgba(8, 8, 10, 0) 28%),
+    /* Clear-plastic gloss: a faint diagonal sheen across the film. */
+    linear-gradient(
+        115deg,
+        rgba(255, 255, 255, 0.09) 0%,
+        rgba(255, 255, 255, 0.02) 30%,
+        rgba(255, 255, 255, 0) 45%,
+        rgba(255, 255, 255, 0) 65%,
+        rgba(255, 255, 255, 0.04) 78%,
+        rgba(255, 255, 255, 0) 90%
+      ),
+    rgba(8, 8, 10, 0.34);
+  box-shadow: inset 0 0 140px rgba(0, 0, 0, 0.5);
 }
 /* Desktop keeps the copy in its own panel, so the overlay is mobile-only. */
 .house-hero-overlay {
@@ -6568,8 +6598,10 @@ body .display-title {
   }
 }
 
-/* Three ways in, directly under the hero. Flat panels on the page ground:
-   no floating cards, no rounding, no shadows. */
+/* Three ways in, directly under the hero. Each photo sits in the right of
+   its card and dissolves into the page: a mask fades its left edge out and
+   multiply lets the photo's pale studio ground take the page tone, so there is
+   no pasted-in rectangle. */
 .house-entry {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -6578,71 +6610,127 @@ body .display-title {
   border-bottom: 1px solid var(--line);
 }
 .house-entry-card {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
+  position: relative;
+  display: flex;
   align-items: center;
-  gap: 1rem;
-  /* Comfortably past the 44px touch minimum. */
-  min-height: 96px;
-  padding: 1rem 1.25rem;
+  min-height: 176px;
+  padding: 1.4rem 1.5rem;
+  overflow: hidden;
+  isolation: isolate;
   background: var(--bg);
   transition: background 0.18s ease;
 }
 /* A tint of the page ink, never a named surface token: --bg-band resolves to
-   pure black in this theme, so hovering painted a black panel behind dark text
-   and the card became unreadable. A low-alpha ink wash cannot invert the
-   foreground whatever the ambient palette is. */
+   pure black in this theme, so hovering painted a black panel behind dark
+   text. A low-alpha ink wash cannot invert the foreground. */
 .house-entry-card:hover {
-  background: rgb(23 27 25 / 0.05);
+  background: rgb(23 27 25 / 0.03);
 }
-/* Portrait, matching the product photography's own shape, and `contain` so
-   no crop clips a cap or label the way a square cover crop did. */
 .house-entry-shot {
-  position: relative;
-  display: block;
-  width: 58px;
-  aspect-ratio: 4 / 5;
-  overflow: hidden;
-  background: rgba(0, 0, 0, 0.04);
+  position: absolute;
+  inset: 0 0 0 34%;
+  z-index: -1;
+  mix-blend-mode: multiply;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 45%);
+  mask-image: linear-gradient(to right, transparent, #000 45%);
 }
 .house-entry-shot img {
-  object-fit: contain;
-  padding: 3px;
+  object-position: 60% 50%;
 }
-/* Hover-capable pointers only, so a tap does not leave a stuck scale. */
+/* The discovery set is a portrait shot: a narrower, squarer area keeps all
+   four bottles whole instead of cropping them up under the price. */
+.house-entry-card[data-featured] .house-entry-shot {
+  inset: 0 0 0 52%;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 35%);
+  mask-image: linear-gradient(to right, transparent, #000 35%);
+}
+.house-entry-card[data-featured] .house-entry-shot img {
+  object-position: 50% 55%;
+}
 @media (hover: hover) {
   .house-entry-shot img {
-    transition: scale 0.2s ease;
+    transition: scale 0.6s var(--ease-entrance, ease);
   }
   .house-entry-card:hover .house-entry-shot img {
-    scale: 1.03;
+    scale: 1.05;
   }
 }
 .house-entry-body {
   display: grid;
-  gap: 0.15rem;
-  min-width: 0;
+  justify-items: start;
+  gap: 0.2rem;
+  max-width: 62%;
+}
+.house-entry-badge {
+  margin-bottom: 0.35rem;
+  padding: 0.2rem 0.45rem;
+  background: #c52639;
+  color: #fff;
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 .house-entry-name {
-  font-size: 0.95rem;
+  font-family: var(--font-display), "Inter", sans-serif;
+  font-size: 1.2rem;
   font-weight: 500;
+  letter-spacing: -0.02em;
 }
 .house-entry-meta {
   color: var(--fg-muted);
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
+/* The price is the loudest line in the card: display face, larger, with the
+   struck MRP and the saving beside it. */
 .house-entry-price {
-  margin-top: 0.15rem;
-  font-size: 0.9rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.2rem 0.5rem;
+  margin-top: 0.55rem;
+  font-family: var(--font-display), "Inter", sans-serif;
+  font-size: 1.6rem;
+  font-weight: 500;
+  letter-spacing: -0.03em;
   font-variant-numeric: tabular-nums;
+}
+.house-entry-price s {
+  color: var(--fg-muted);
+  font-size: 0.85rem;
+  letter-spacing: 0;
+}
+.house-entry-price b {
+  color: #c52639;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+/* The middle card is the one to pick: a hairline of ink along its top edge. */
+.house-entry-card[data-featured]::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2px;
+  background: var(--fg);
 }
 /* One column on a phone: three across would shrink the text below a
    comfortable size, and a carousel would hide two of the three choices. */
 @media (max-width: 767px) {
   .house-entry {
     grid-template-columns: minmax(0, 1fr);
+  }
+  .house-entry-card {
+    min-height: 148px;
+    padding: 1.1rem 1.25rem;
+  }
+  .house-entry-shot {
+    inset: 0 0 0 40%;
+  }
+  .house-entry-price {
+    font-size: 1.4rem;
   }
 }
 
@@ -6926,6 +7014,9 @@ body .pdp-hero-copy {
     min-height: 420px;
   }
   /* Stacked on a phone, so there is no vertical seam to soften. */
+  .house-hero-image {
+    margin-left: 0;
+  }
   .house-hero-image::before {
     display: none;
   }
@@ -7550,18 +7641,103 @@ body[data-overlay] .offer-launcher {
   --fg: var(--color-obsidian);
   --bg: var(--color-paper);
 }
+/* The card grows out of whichever button opened it. OfferLauncher sets
+   --from-x/--from-y to that button's offset from the screen centre, so the
+   closed state is a small red chip sitting on the button: opening springs it
+   out to full size while it turns from brand red to paper, and closing
+   shrinks it back into the button. @starting-style gives the open transition
+   a from-state; allow-discrete keeps it on screen while it closes. */
+.offer-pop {
+  --from-x: 0px;
+  --from-y: 0px;
+  opacity: 0;
+  transform: translate(var(--from-x), var(--from-y)) scale(0.12, 0.08);
+  background-color: #c52639;
+  transition:
+    transform 0.3s cubic-bezier(0.55, 0, 1, 0.45),
+    background-color 0.2s ease,
+    opacity 0.15s ease-in 0.15s,
+    overlay 0.3s allow-discrete,
+    display 0.3s allow-discrete;
+}
 .offer-pop:popover-open {
   display: grid;
   gap: 0.9rem;
-  animation: offer-pop-in 0.32s var(--ease-entrance);
+  opacity: 1;
+  transform: none;
+  background-color: var(--color-paper);
+  transition:
+    transform 0.6s cubic-bezier(0.3, 1.35, 0.5, 1),
+    background-color 0.35s ease 0.12s,
+    opacity 0.12s ease-out,
+    overlay 0.6s allow-discrete,
+    display 0.6s allow-discrete;
+}
+@starting-style {
+  .offer-pop:popover-open {
+    opacity: 0;
+    transform: translate(var(--from-x), var(--from-y)) scale(0.12, 0.08);
+    background-color: #c52639;
+  }
+}
+/* Contents arrive once the card has mostly grown, one after another, and
+   vanish first on the way out so only the red chip shrinks back. */
+.offer-pop > *,
+.offer-pop-rows li {
+  transition: opacity 0.1s ease;
+}
+.offer-pop:not(:popover-open) > * {
+  opacity: 0;
+}
+.offer-pop:popover-open > *,
+.offer-pop:popover-open .offer-pop-rows li {
+  animation: offer-item-in 0.45s var(--ease-entrance) backwards;
+  animation-delay: 0.22s;
+}
+.offer-pop:popover-open > .eyebrow {
+  animation-delay: 0.26s;
+}
+.offer-pop:popover-open > .offer-pop-title {
+  animation-delay: 0.3s;
+}
+.offer-pop:popover-open .offer-pop-rows li:nth-child(1) {
+  animation-delay: 0.34s;
+}
+.offer-pop:popover-open .offer-pop-rows li:nth-child(2) {
+  animation-delay: 0.39s;
+}
+.offer-pop:popover-open .offer-pop-rows li:nth-child(3) {
+  animation-delay: 0.44s;
+}
+.offer-pop:popover-open .offer-pop-rows li:nth-child(4) {
+  animation-delay: 0.49s;
+}
+.offer-pop:popover-open > .offer-pop-note {
+  animation-delay: 0.52s;
+}
+.offer-pop:popover-open > .offer-pop-cta {
+  animation-delay: 0.56s;
+}
+@keyframes offer-item-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
 }
 .offer-pop::backdrop {
   background: rgba(10, 12, 11, 0.45);
+  opacity: 0;
+  transition:
+    opacity 0.3s ease,
+    overlay 0.3s allow-discrete,
+    display 0.3s allow-discrete;
 }
-@keyframes offer-pop-in {
-  from {
+.offer-pop:popover-open::backdrop {
+  opacity: 1;
+}
+@starting-style {
+  .offer-pop:popover-open::backdrop {
     opacity: 0;
-    transform: translateY(10px);
   }
 }
 .offer-pop .eyebrow {
@@ -7718,7 +7894,15 @@ body[data-overlay] .offer-launcher {
     transition: none;
     animation: none;
   }
-  .offer-pop:popover-open {
+  .offer-pop,
+  .offer-pop:popover-open,
+  .offer-pop::backdrop,
+  .offer-pop:popover-open::backdrop {
+    transition: none;
+    transform: none;
+  }
+  .offer-pop:popover-open > *,
+  .offer-pop:popover-open .offer-pop-rows li {
     animation: none;
   }
 }

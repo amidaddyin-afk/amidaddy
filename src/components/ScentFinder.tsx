@@ -3,9 +3,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, RotateCcw } from "lucide-react";
+import { ArrowLeft, ArrowRight, RotateCcw, Sparkles } from "lucide-react";
 import type { FragranceFamily, Product } from "@/lib/data";
-import Reveal from "@/components/Reveal";
 import { analytics } from "@/lib/analytics";
 
 const questions: Array<{
@@ -40,11 +39,19 @@ const questions: Array<{
   },
 ];
 
+/**
+ * Three-question scent finder. Beside the questions, a live match meter shows
+ * the four fragrances filling up as each answer lands, so the visitor watches
+ * their result form rather than waiting for a reveal at the end.
+ */
 export default function ScentFinder({ products }: { products: Product[] }) {
   const [answers, setAnswers] = useState<FragranceFamily[]>([]);
   const step = answers.length;
+  const done = step >= questions.length;
+  const share = (product: Product) =>
+    step ? answers.filter((a) => a === product.profile).length / step : 0;
   const result = useMemo(() => {
-    if (step < questions.length) return null;
+    if (!done) return null;
     const scores = answers.reduce<Record<string, number>>(
       (all, item) => ({ ...all, [item]: (all[item] ?? 0) + 1 }),
       {},
@@ -53,7 +60,10 @@ export default function ScentFinder({ products }: { products: Product[] }) {
     return (
       products.find((product) => product.profile === family) ?? products[0]
     );
-  }, [answers, products, step]);
+  }, [answers, products, done]);
+  const leader = step
+    ? [...products].sort((a, b) => share(b) - share(a))[0]
+    : undefined;
 
   const started = useRef(false);
   useEffect(() => {
@@ -65,82 +75,128 @@ export default function ScentFinder({ products }: { products: Product[] }) {
   useEffect(() => {
     if (result) analytics.scentFinderComplete(result.slug);
   }, [result]);
+
   return (
-    <section className="finder-section" id="scent-finder">
-      <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[.75fr_1.25fr]">
-        <Reveal from="left">
-          <p className="eyebrow">Scent finder</p>
-          <h2 className="display-title mt-5 text-5xl">
-            What do you want to feel?
-          </h2>
-          <p className="text-subtle mt-6 max-w-sm leading-7">
-            Three questions. A place to start.
+    <section className="finder-section sf" id="scent-finder">
+      <div className="sf-panel">
+        <div className="sf-intro">
+          <p className="sf-eyebrow">
+            <Sparkles size={14} aria-hidden="true" /> Scent finder
           </p>
-        </Reveal>
-        <Reveal className="finder-card" delay={0.08}>
+          <h2 className="sf-title">What do you want to feel?</h2>
+          <p className="sf-sub">
+            Three quick questions. Watch your match take shape.
+          </p>
+          <ul className="sf-meter" aria-label="Your match so far">
+            {products.map((product) => {
+              const pct = Math.round(share(product) * 100);
+              return (
+                <li
+                  key={product.id}
+                  data-lead={
+                    (result ?? leader)?.id === product.id && step
+                      ? true
+                      : undefined
+                  }
+                >
+                  <span className="sf-meter-shot">
+                    <Image
+                      src={
+                        product.variantImages?.["20ml"]?.[0] ?? product.image
+                      }
+                      alt=""
+                      fill
+                      sizes="56px"
+                      className="object-cover"
+                    />
+                  </span>
+                  <span className="sf-meter-name">{product.name}</span>
+                  <span className="sf-meter-bar" aria-hidden="true">
+                    <i style={{ width: `${pct}%` }} />
+                  </span>
+                  <span className="sf-meter-pct">{step ? `${pct}%` : "–"}</span>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+
+        <div className="sf-card">
           {!result ? (
-            <>
-              <div className="finder-progress">
+            <div key={step} className="sf-step">
+              <div className="sf-progress" aria-hidden="true">
                 {questions.map((_, index) => (
-                  <span key={index} className={index <= step ? "active" : ""} />
+                  <span key={index} data-on={index <= step || undefined} />
                 ))}
               </div>
-              <p className="text-subtle mt-8 text-xs tracking-[.18em] uppercase">
+              <p className="sf-count">
                 Question {step + 1} of {questions.length}
               </p>
-              <h3 className="display-title mt-4 text-3xl">
-                {questions[step].title}
-              </h3>
-              <div className="mt-8 grid gap-3 sm:grid-cols-2">
-                {questions[step].options.map((option) => (
+              <h3 className="sf-question">{questions[step].title}</h3>
+              <div className="sf-options">
+                {questions[step].options.map((option, index) => (
                   <button
                     key={option.label}
+                    type="button"
                     onClick={() =>
                       setAnswers((current) => [...current, option.family])
                     }
-                    className="finder-option"
+                    className="sf-option"
+                    style={{ animationDelay: `${0.08 + index * 0.05}s` }}
                   >
+                    <span className="sf-option-key">
+                      {String.fromCharCode(65 + index)}
+                    </span>
                     {option.label}
-                    <ArrowRight size={15} />
+                    <ArrowRight size={16} aria-hidden="true" />
                   </button>
                 ))}
               </div>
-            </>
+              {step > 0 && (
+                <button
+                  type="button"
+                  className="sf-back"
+                  onClick={() => setAnswers((current) => current.slice(0, -1))}
+                >
+                  <ArrowLeft size={14} aria-hidden="true" /> Back
+                </button>
+              )}
+            </div>
           ) : (
-            <div className="grid items-center gap-8 sm:grid-cols-2">
-              <div className="relative aspect-[4/5] overflow-hidden">
+            <div className="sf-result">
+              <div className="sf-result-shot">
                 <Image
                   src={result.image}
                   alt={`${result.name} — ${result.profile} ${result.concentration} by Amidaddy Perfumes`}
                   fill
+                  sizes="(max-width: 900px) 90vw, 300px"
                   className="object-cover"
                 />
               </div>
-              <div>
-                <p className="eyebrow">Your instinct says</p>
-                <h3 className="display-title mt-3 text-4xl">{result.name}</h3>
-                <p className="text-muted mt-4 leading-7">
-                  {result.description}
-                </p>
+              <div className="sf-result-copy">
+                <p className="sf-count">Your match</p>
+                <h3 className="sf-result-name">{result.name}</h3>
+                <p className="sf-result-desc">{result.description}</p>
                 <Link
                   href={`/products/${result.slug}`}
                   onClick={() =>
                     analytics.scentRecommendationClick(result.slug)
                   }
-                  className="lux-button mt-7"
+                  className="sf-cta"
                 >
-                  Meet your scent <ArrowRight size={15} />
+                  Meet your scent <ArrowRight size={16} aria-hidden="true" />
                 </Link>
                 <button
+                  type="button"
                   onClick={() => setAnswers([])}
-                  className="text-subtle hover:text-fg mt-5 flex items-center gap-2 text-xs tracking-[.15em] uppercase"
+                  className="sf-back"
                 >
-                  <RotateCcw size={13} /> Start again
+                  <RotateCcw size={13} aria-hidden="true" /> Start again
                 </button>
               </div>
             </div>
           )}
-        </Reveal>
+        </div>
       </div>
     </section>
   );

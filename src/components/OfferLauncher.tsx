@@ -36,6 +36,39 @@ export default function OfferLauncher() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Remember which button opened the popover and point the card's grow/shrink
+  // animation at it (see .offer-pop in globals.css). Measured at each toggle,
+  // not once, since the bar's button scrolls with the page.
+  useEffect(() => {
+    const pop = popRef.current;
+    if (!pop) return;
+    let opener: Element | null = null;
+    const onClick = (event: MouseEvent) => {
+      const button = (event.target as Element).closest?.(
+        '[popovertarget="offer-pop"]',
+      );
+      if (button && !pop.contains(button)) opener = button;
+    };
+    const onToggle = () => {
+      if (!opener?.isConnected) return;
+      const rect = opener.getBoundingClientRect();
+      pop.style.setProperty(
+        "--from-x",
+        `${rect.left + rect.width / 2 - window.innerWidth / 2}px`,
+      );
+      pop.style.setProperty(
+        "--from-y",
+        `${rect.top + rect.height / 2 - window.innerHeight / 2}px`,
+      );
+    };
+    document.addEventListener("click", onClick, true);
+    pop.addEventListener("beforetoggle", onToggle);
+    return () => {
+      document.removeEventListener("click", onClick, true);
+      pop.removeEventListener("beforetoggle", onToggle);
+    };
+  }, []);
+
   const rows = [
     { minQty: 1, totalPaise: COMBO_LIST_PAISE, percent: 0 },
     ...[...COMBO_TIERS].reverse(),

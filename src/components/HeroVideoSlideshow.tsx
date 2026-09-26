@@ -7,8 +7,12 @@ import { Pause, Play } from "lucide-react";
 const FILMS = [
   { slug: "old-love", name: "Old Love" },
   { slug: "billionaire", name: "Billionaire" },
+  { slug: "heavenly", name: "Heavenly" },
   { slug: "coldwar", name: "Cold War" },
 ] as const;
+
+/** Crossfade length. Must match the opacity transition on .house-hero-video. */
+const FADE_MS = 1000;
 
 const subscribe = () => () => {};
 
@@ -49,8 +53,10 @@ const hasLoaded = () => document.readyState === "complete";
  * Hero slideshow: the fragrance films play back to back, looping to the
  * first once Cold War finishes.
  *
- * Each film advances on `ended` rather than a timer, so a clip is never cut
- * short or left hanging on its last frame if the encodes differ in length.
+ * Each film hands over FADE_MS before its own end (read from the clip, not a
+ * timer, so encodes of different lengths all work): the next film starts on
+ * top and fades in while the outgoing one plays out its last second beneath
+ * it. There is never a gap where the still photograph shows through.
  *
  * Two <video> elements alternate rather than one being torn down and rebuilt
  * per slide. The idle element preloads the next film while the visible one
@@ -72,9 +78,13 @@ export default function HeroVideoSlideshow() {
   // Which of the two <video> slots is currently on screen. The other holds the
   // next film, buffering while this one plays.
   const [slot, setSlot] = useState(0);
-  // The slug whose element has reported it can play. Compared against the
-  // current film so a slide that has not buffered yet stays transparent.
-  const [playableSlug, setPlayableSlug] = useState<string | null>(null);
+  // The slug each slot has decoded data for. The incoming slot stays
+  // transparent until its own film is ready, and the outgoing slot keeps its
+  // film until then, so the handover never exposes the still underneath.
+  const [ready, setReady] = useState<(string | null)[]>([null, null]);
+  // Set once the current film has begun handing over, so the several
+  // timeupdate events in its last second trigger one advance, not several.
+  const advancing = useRef(false);
   const refs = [
     useRef<HTMLVideoElement>(null),
     useRef<HTMLVideoElement>(null),
@@ -88,7 +98,7 @@ export default function HeroVideoSlideshow() {
 
   const film = FILMS[index];
   const nextFilm = FILMS[(index + 1) % FILMS.length];
-  const visible = playableSlug === film.slug;
+  const visible = ready[slot] === film.slug;
 
   // Point each element at its film and play the visible one.
   //
@@ -100,40 +110,45 @@ export default function HeroVideoSlideshow() {
   useEffect(() => {
     if (!allowed || !afterLoad) return;
 
-    // WebM where supported, MP4 for Safari. Chosen once per element rather
-    // than by <source> order, since we are assigning src directly now.
-    const probe = document.createElement("video");
-    const ext = probe.canPlayType("video/webm; codecs=vp9") ? "webm" : "mp4";
-    const wanted = [film, nextFilm];
-
-    refs.forEach((ref, n) => {
-      const video = ref.current;
-      if (!video) return;
-      // refs[slot] shows `film`; the other buffers `nextFilm`.
-      const target = n === slot ? wanted[0] : wanted[1];
-      const url = `/videos/${target.slug}.${ext}`;
-      if (!video.src.endsWith(url)) {
+    // H.264 MP4 everywhere, never the VP9 WebM: Safari on macOS reports VP9
+    // support but decodes it in software on many Macs, which is what made the
+    // film stutter there. H.264 is hardware-decoded on every platform.
+    const ext = "mp4";
+    const bind = (video: HTMLVideoElement | null, slug: string) => {
+      const url = `/fragrances/${slug}/film.${ext}`;
+      if (video && !video.src.endsWith(url)) {
         video.src = url;
         video.load();
       }
-    });
+    };
 
+    advancing.current = false;
     const active = refs[slot].current;
     if (!active) return;
+    // Normally already buffered by the idle slot; bound here on first load.
+    bind(active, film.slug);
     // Reused across slides, so rewind: without this a returning element
     // resumes at the end of its last showing.
-    active.currentTime = 0;
-    if (paused) return;
-    active.play().then(
-      () => setBlocked(false),
-      // A rejected play() is usually the browser's autoplay policy, not a
-      // broken file. Surface a Play control rather than skipping the film;
-      // the poster underneath stays visible either way.
-      () => setBlocked(true),
-    );
+    if (active.currentTime > 0) active.currentTime = 0;
+    if (!paused)
+      active.play().then(
+        () => setBlocked(false),
+        // A rejected play() is usually the browser's autoplay policy, not a
+        // broken file. Surface a Play control rather than skipping the film;
+        // the poster underneath stays visible either way.
+        () => setBlocked(true),
+      );
+
+    // Rebind the idle slot to the next film only once the current one is on
+    // screen and fully faded in. Doing it at the cut blanked the outgoing
+    // film mid-fade, which is the "pause on a photo" the handover showed.
+    if (!visible) return;
+    const idle = refs[slot === 0 ? 1 : 0].current;
+    const timer = window.setTimeout(() => bind(idle, nextFilm.slug), FADE_MS);
+    return () => window.clearTimeout(timer);
     // refs is a stable pair of ref objects; slot and index drive the change.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [allowed, afterLoad, index, slot, paused]);
+  }, [allowed, afterLoad, index, slot, paused, visible]);
 
   // Stop decoding while nobody is looking: offscreen, or the tab is hidden.
   // An explicit pause is never overridden - `paused` is checked before any
@@ -170,6 +185,8 @@ export default function HeroVideoSlideshow() {
   if (!allowed || !afterLoad) return null;
 
   const advance = () => {
+    if (advancing.current) return;
+    advancing.current = true;
     setIndex((current) => (current + 1) % FILMS.length);
     setSlot((current) => (current === 0 ? 1 : 0));
   };
@@ -223,14 +240,40 @@ export default function HeroVideoSlideshow() {
             preload="auto"
             aria-hidden="true"
             tabIndex={-1}
-            onCanPlay={showing ? () => setPlayableSlug(film.slug) : undefined}
+            // Both slots report, so the idle one is known ready before its
+            // turn. The slug is read from the src the element actually holds.
+            onCanPlay={(e) => {
+              const slug = e.currentTarget.src.split("/").pop()?.split(".")[0];
+              setReady((r) =>
+                r[n] === slug
+                  ? r
+                  : r.map((s, i) => (i === n ? (slug ?? null) : s)),
+              );
+            }}
+            // Hand over just before the end so the two films overlap.
+            onTimeUpdate={
+              showing
+                ? (e) => {
+                    const v = e.currentTarget;
+                    if (v.duration - v.currentTime <= FADE_MS / 1000) advance();
+                  }
+                : undefined
+            }
+            // Fallback for a clip shorter than the fade, or a missed tick.
             onEnded={showing ? advance : undefined}
             // A film that errors should not end the slideshow.
             onError={showing ? advance : undefined}
             style={{
-              opacity: showing && visible ? 1 : 0,
-              // The idle element is buffering the next clip and must not
-              // intercept anything or paint over the live one.
+              // The incoming film fades in on top; the outgoing one stays
+              // fully opaque beneath until it is covered. Once the idle slot
+              // is rebound to the next film it drops to 0, ready to fade in.
+              opacity: showing
+                ? visible
+                  ? 1
+                  : 0
+                : ready[n] === nextFilm.slug
+                  ? 0
+                  : 1,
               zIndex: showing ? 1 : 0,
             }}
           />

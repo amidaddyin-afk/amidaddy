@@ -75,8 +75,8 @@ export default function HeroVideo({
       onCanPlay={() => setVisible(true)}
       style={{ opacity: visible ? 1 : 0 }}
     >
-      <source src={`/videos/${slug}.webm`} type="video/webm" />
-      <source src={`/videos/${slug}.mp4`} type="video/mp4" />
+      <source src={`/fragrances/${slug}/film.webm`} type="video/webm" />
+      <source src={`/fragrances/${slug}/film.mp4`} type="video/mp4" />
     </video>
   );
 }

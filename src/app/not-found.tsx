@@ -8,7 +8,7 @@ export default function NotFound() {
       <div>
         <div className="not-found-media">
           <Photo
-            src="/gallery/coldwar/06.webp"
+            src="/site/not-found/photo.webp"
             alt="Amidaddy Cold War fragrance photographed for a campaign"
             fill
             sizes="(max-width: 640px) 100vw, 620px"

@@ -25,10 +25,13 @@ test("every product with a hero video has both encodings committed", () => {
       `${slug} should be listed in VIDEO_SLUGS`,
     );
     for (const ext of ["webm", "mp4"]) {
-      const path = new URL(`../public/videos/${slug}.${ext}`, import.meta.url);
+      const path = new URL(
+        `../public/fragrances/${slug}/film.${ext}`,
+        import.meta.url,
+      );
       assert.ok(
         statSync(path).size > 0,
-        `public/videos/${slug}.${ext} is missing or empty`,
+        `public/fragrances/${slug}/film.${ext} is missing or empty`,
       );
     }
   }
@@ -39,11 +42,14 @@ test("hero loops stay small enough to ship in the repo", () => {
   // master in rather than running scripts/encode-product-video.mjs.
   for (const slug of SLUGS) {
     for (const ext of ["webm", "mp4"]) {
-      const path = new URL(`../public/videos/${slug}.${ext}`, import.meta.url);
+      const path = new URL(
+        `../public/fragrances/${slug}/film.${ext}`,
+        import.meta.url,
+      );
       const mb = statSync(path).size / 1048576;
       assert.ok(
         mb < 6,
-        `public/videos/${slug}.${ext} is ${mb.toFixed(1)} MB — re-encode it, masters must not be committed`,
+        `public/fragrances/${slug}/film.${ext} is ${mb.toFixed(1)} MB — re-encode it, masters must not be committed`,
       );
     }
   }

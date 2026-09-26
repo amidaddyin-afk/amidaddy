@@ -34,7 +34,7 @@ export interface Chapter {
   /** One or two sentences of body copy. */
   body: string;
   /**
-   * Basename of the scroll-scrubbed film under /public/scent-school/film/,
+   * Basename of the scroll-scrubbed film under /public/site/scent-school/film/,
    * e.g. "notes" resolves to notes-desktop.mp4 / notes-mobile.mp4 plus their
    * .jpg posters. Written by scripts/encode-scent-school.mjs. Chapters
    * without footage omit this and use `image` instead.

@@ -15,7 +15,7 @@ import sharp from "sharp";
 // Source artwork lives outside public/ - it is a build input, not something a
 // visitor should ever be able to download.
 const SRC = "assets-source/certifications";
-const OUT = "public/certifications/web";
+const OUT = "public/site/certifications";
 
 /** Source filename fragment -> output slug. */
 const NAMES = [

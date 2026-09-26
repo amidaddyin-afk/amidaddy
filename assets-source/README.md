@@ -19,3 +19,10 @@ These originals are kept in the repository so the derivatives can always be
 rebuilt at a different size or quality. If you would rather keep them in your own
 photo storage, move this directory out and delete it — nothing in the build reads
 from it.
+
+## archive-public/
+
+Files that used to be served from `public/` but that nothing on the site
+referenced, moved here during the September 2026 media reorganisation (see
+`MEDIA.md` at the repository root). They keep their old paths, are not
+deployed, and can be deleted.

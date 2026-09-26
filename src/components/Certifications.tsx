@@ -62,7 +62,7 @@ export default function Certifications({
       {marks.map((item) => (
         <li key={item.slug}>
           <Image
-            src={`/certifications/web/${item.slug}.png`}
+            src={`/site/certifications/${item.slug}.png`}
             alt={item.label}
             width={size}
             height={size}

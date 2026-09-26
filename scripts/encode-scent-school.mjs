@@ -40,7 +40,7 @@ try {
 }
 
 const SRC = "productPics/ScentSchool";
-const OUT = "public/scent-school/film";
+const OUT = "public/site/scent-school/film";
 
 /**
  * Chapter -> master clip. Identified by extracting a frame from each master

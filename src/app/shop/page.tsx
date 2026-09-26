@@ -89,7 +89,7 @@ export default async function ShopPage({
     {
       id: "100ml",
       size: "100ml",
-      backdrop: "/ref/billionaire-100ml-desktop.webp",
+      backdrop: "/fragrances/billionaire/100ml/bottle-wide.webp",
       align: "left",
       eyebrow: "The full ritual",
       jumpLabel: "100ml fragrances",
@@ -100,7 +100,7 @@ export default async function ShopPage({
     {
       id: "20ml",
       size: "20ml",
-      backdrop: "/ref/heavenly-both-sizes-desktop.webp",
+      backdrop: "/fragrances/heavenly/both-sizes-wide.webp",
       align: "right",
       eyebrow: "The discovery edit",
       jumpLabel: "20ml fragrances",
@@ -110,7 +110,7 @@ export default async function ShopPage({
     },
     {
       id: "pack-of-4",
-      backdrop: "/ref/collection-4x100ml-mobile.webp",
+      backdrop: "/combos/collection-4x100ml/pack.webp",
       align: "left",
       eyebrow: "The complete discovery wardrobe",
       jumpLabel: "Discovery sets",

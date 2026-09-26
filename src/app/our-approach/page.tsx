@@ -31,25 +31,25 @@ const VOICE: Record<
   coldwar: {
     line: "Keep your cool.",
     accent: "#4ec3e0",
-    shot: "/ref/approach-20ml-cold-war.webp",
+    shot: "/site/our-approach/20ml-coldwar.webp",
     alt: "The Cold War 20ml bottle, pale blue glass with a black cap",
   },
   heavenly: {
     line: "Make softness a statement.",
     accent: "#e8c98a",
-    shot: "/ref/approach-20ml-heavenly.webp",
+    shot: "/site/our-approach/20ml-heavenly.webp",
     alt: "The Heavenly 20ml bottle, warm cream glass with a black cap",
   },
   "old-love": {
     line: "Leave a little mystery.",
     accent: "#c8102e",
-    shot: "/ref/approach-20ml-old-love.webp",
+    shot: "/site/our-approach/20ml-old-love.webp",
     alt: "The Old Love 20ml bottle, deep red glass with a black cap",
   },
   billionaire: {
     line: "Carry your confidence.",
     accent: "#8a8f98",
-    shot: "/ref/approach-20ml-billionaire.webp",
+    shot: "/site/our-approach/20ml-billionaire.webp",
     alt: "The Billionaire 20ml bottle, black glass with a black cap",
   },
 };
@@ -112,27 +112,27 @@ export default async function OurApproachPage() {
               <source
                 media="(min-width: 900px)"
                 type="image/avif"
-                srcSet="/ref/approach-hero-collection.avif"
+                srcSet="/site/our-approach/hero.avif"
               />
               <source
                 media="(min-width: 900px)"
                 type="image/webp"
-                srcSet="/ref/approach-hero-collection.webp"
+                srcSet="/site/our-approach/hero.webp"
               />
               <source
                 type="image/avif"
-                srcSet="/ref/approach-hero-collection-mobile.avif"
+                srcSet="/site/our-approach/hero-mobile.avif"
               />
               <source
                 type="image/webp"
-                srcSet="/ref/approach-hero-collection-mobile.webp"
+                srcSet="/site/our-approach/hero-mobile.webp"
               />
               {/* Plain <img>, not next/image: the two art directions both carry
                   priority, so two next/image elements would preload both and
                   download the unused one. <source media> fetches exactly one.
                   width/height reserve the box so the hero contributes no CLS. */}
               <img
-                src="/ref/approach-hero-collection.webp"
+                src="/site/our-approach/hero.webp"
                 alt="The four Amidaddy 100ml fragrances - Old Love, Heavenly, Billionaire and Cold War - photographed together"
                 width={2200}
                 height={1274}
@@ -180,7 +180,7 @@ export default async function OurApproachPage() {
         <div className="ap-product-inner">
           <Reveal className="ap-product-media" variant="clip">
             <Photo
-              src="/ref/approach-macro.webp"
+              src="/site/our-approach/macro.webp"
               alt="Close detail of the Billionaire bottle: the black cap, the glass shoulder and the printed AD monogram"
               width={1200}
               height={1418}
@@ -294,7 +294,7 @@ export default async function OurApproachPage() {
           </div>
           <Reveal className="ap-wearer-media" variant="clip">
             <Photo
-              src="/ref/approach-sizes.webp"
+              src="/site/our-approach/sizes.webp"
               alt="The Heavenly 20ml bottle standing beside the 100ml bottle, showing the difference in size"
               width={1800}
               height={1013}
@@ -311,7 +311,7 @@ export default async function OurApproachPage() {
         <div className="ap-discovery-inner">
           <Reveal className="ap-discovery-media" variant="clip">
             <Photo
-              src="/ref/approach-discovery-set.webp"
+              src="/site/our-approach/discovery-set.webp"
               alt="The four 20ml bottles of the discovery set: Old Love, Heavenly, Billionaire and Cold War"
               width={1600}
               height={1434}

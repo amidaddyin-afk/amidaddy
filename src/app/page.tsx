@@ -6,12 +6,14 @@ import ProductCard from "@/components/ProductCard";
 import HeroVideoSlideshow from "@/components/HeroVideoSlideshow";
 import Certifications from "@/components/Certifications";
 import ScentFinder from "@/components/ScentFinder";
+import SizeShowcase from "@/components/SizeShowcase";
 import Reveal from "@/components/Reveal";
 import TrackedLink from "@/components/TrackedLink";
 import ViewItemList from "@/components/ViewItemList";
-import { listCatalogProducts } from "@/lib/catalog";
+import { getCatalogProductBySlug, listCatalogProducts } from "@/lib/catalog";
 import { formatInr } from "@/lib/money";
 import {
+  COMBO_LIST_PAISE,
   DEFAULT_FREE_SHIPPING_PAISE,
   DEFAULT_SHIPPING_FEE_PAISE,
 } from "@/lib/commerce";
@@ -42,23 +44,23 @@ const STORY: Record<string, { mood: string; desktop: string; mobile: string }> =
   {
     billionaire: {
       mood: "Quiet confidence.",
-      desktop: "/ref/billionaire-4038.webp",
-      mobile: "/ref/billionaire-4023.webp",
+      desktop: "/site/home/story-billionaire.webp",
+      mobile: "/site/home/story-billionaire-mobile.webp",
     },
     coldwar: {
       mood: "Keep your cool.",
-      desktop: "/ref/cold-war-3545.webp",
-      mobile: "/ref/cold-war-3527.webp",
+      desktop: "/site/home/story-coldwar.webp",
+      mobile: "/site/home/story-coldwar-mobile.webp",
     },
     "old-love": {
       mood: "Stay a little closer.",
-      desktop: "/ref/old-love-3956.webp",
-      mobile: "/ref/old-love-3926.webp",
+      desktop: "/site/home/story-old-love.webp",
+      mobile: "/site/home/story-old-love-mobile.webp",
     },
     heavenly: {
       mood: "Leave a softer impression.",
-      desktop: "/ref/heavenly-3763.webp",
-      mobile: "/ref/heavenly-3705.webp",
+      desktop: "/site/home/story-heavenly.webp",
+      mobile: "/site/home/story-heavenly-mobile.webp",
     },
   };
 
@@ -74,23 +76,18 @@ export default async function Home() {
   const comboVariant = combo?.variants.find((v) => v.name === "20ml");
   // Headline prices for the value strip, read off the live catalogue rather
   // than hardcoded, so an admin price change moves them too.
-  const variantPrice = (size: "100ml" | "20ml") =>
+  // Fetched by slug like its own product page, so the card shows exactly when
+  // that page exists (the list query can miss it on an older catalogue).
+  const collection = await getCatalogProductBySlug("signature-combo-100ml");
+  const collectionVariant = collection?.variants[0];
+  const pocket20Paise =
     signatures
       .flatMap((product) => product.variants)
-      .find((variant) => variant.name === size)?.pricePaise;
-  const full100Paise = variantPrice("100ml") ?? 119_900;
-  const pocket20Paise = variantPrice("20ml") ?? 19_900;
+      .find((variant) => variant.name === "20ml")?.pricePaise ?? 19_900;
   const siteUrl =
     process.env.NEXT_PUBLIC_APP_URL ??
     process.env.NEXT_PUBLIC_SITE_URL ??
     "https://amidaddy.in";
-  /* Bottle photography for the three shopping cards, taken from the variant
-     images rather than a product's lead `image` - several leads are lifestyle
-     frames where a model, not the bottle, is the subject, which reads wrong at
-     thumbnail size. Falls back to a known bottle shot if the field is absent. */
-  const entryShot = (size: "100ml" | "20ml", fallback: string) =>
-    signatures.find((product) => product.variantImages?.[size]?.[0])
-      ?.variantImages?.[size]?.[0] ?? fallback;
   const shippingFee = Math.round(DEFAULT_SHIPPING_FEE_PAISE / 100);
   const freeShippingThreshold = Math.round(DEFAULT_FREE_SHIPPING_PAISE / 100);
 
@@ -183,7 +180,7 @@ export default async function Home() {
         </div>
         <div className="house-hero-image">
           <Photo
-            src="/ref/old-love-3926.webp"
+            src="/site/home/hero-poster.webp"
             alt="The Amidaddy collection, photographed for the launch"
             fill
             priority
@@ -203,68 +200,87 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Three ways in, directly under the hero, so the first thing after the
-          film is something to buy rather than another banner. Prices,
-          availability and destinations all come from the live catalogue - see
-          full100Paise / pocket20Paise / comboVariant above - so an admin price
-          change moves these too and nothing here is hardcoded. */}
+      {/* Three ways in, directly under the hero, ordered as a price ladder:
+          one travel bottle, the discovery set in the middle as the obvious
+          pick, then the full collection. Prices and struck MRPs come from the
+          live catalogue, so an admin price change moves these too. */}
       <section className="house-entry" aria-label="Shop by format">
-        <Link className="house-entry-card" href="/shop#100ml">
-          <span className="house-entry-shot">
-            <Photo
-              src={entryShot("100ml", "/ref/billionaire-100ml-mobile.webp")}
-              alt="A 100ml Amidaddy Eau de Parfum"
-              fill
-              sizes="(max-width: 767px) 33vw, 30vw"
-              className="object-cover"
-            />
-          </span>
-          <span className="house-entry-body">
-            <span className="house-entry-name">Full size</span>
-            <span className="house-entry-meta">100ml</span>
-            <span className="house-entry-price">{formatInr(full100Paise)}</span>
-          </span>
-        </Link>
-        <Link className="house-entry-card" href="/shop#20ml">
-          <span className="house-entry-shot">
-            <Photo
-              src={entryShot("20ml", "/ref/heavenly-20ml.webp")}
-              alt="A 20ml Amidaddy Eau de Parfum"
-              fill
-              sizes="(max-width: 767px) 33vw, 30vw"
-              className="object-cover"
-            />
-          </span>
-          <span className="house-entry-body">
-            <span className="house-entry-name">Travel size</span>
-            <span className="house-entry-meta">20ml</span>
-            <span className="house-entry-price">
-              {formatInr(pocket20Paise)}
-            </span>
-          </span>
-        </Link>
-        {comboVariant && (
-          <Link
-            className="house-entry-card"
-            href="/products/signature-combo-20ml"
-          >
-            <span className="house-entry-shot">
-              <Photo
-                src={combo?.image ?? "/products/combos/20ml-combo-of-4.webp"}
-                alt="The four-fragrance Amidaddy discovery set"
-                fill
-                sizes="(max-width: 767px) 33vw, 30vw"
-                className="object-cover"
-              />
-            </span>
-            <span className="house-entry-body">
-              <span className="house-entry-name">Discovery set</span>
-              <span className="house-entry-meta">Four x 20ml</span>
-              <span className="house-entry-price">
-                {formatInr(comboVariant.pricePaise)}
-              </span>
-            </span>
-          </Link>
+        {[
+          {
+            key: "travel",
+            href: "/shop#20ml",
+            name: "Pocket signature",
+            meta: "Any scent · 20ml",
+            photo: "/fragrances/heavenly/20ml/bottle-wide.webp",
+            alt: "A 20ml Amidaddy Eau de Parfum",
+            pricePaise: pocket20Paise,
+            mrpPaise: 0,
+          },
+          comboVariant && {
+            key: "discovery",
+            href: "/products/signature-combo-20ml",
+            name: "Meet all four",
+            meta: "Discovery set · 4 × 20ml",
+            photo: "/combos/discovery-4x20ml/pack.webp",
+            alt: "The four-fragrance Amidaddy discovery set",
+            pricePaise: comboVariant.pricePaise,
+            mrpPaise: comboVariant.mrpPaise,
+            badge: "Most loved",
+          },
+          collectionVariant && {
+            key: "collection",
+            href: "/products/signature-combo-100ml",
+            name: "Own the collection",
+            meta: "All four · 4 × 100ml",
+            photo: "/combos/collection-4x100ml/pack-wide.webp",
+            alt: "All four Amidaddy fragrances in 100ml",
+            pricePaise: collectionVariant.pricePaise,
+            // Struck against four single bottles, the same basis as the offer
+            // popup, so both say the same "% off" for the same four bottles.
+            mrpPaise: COMBO_LIST_PAISE * 4,
+          },
+        ].map(
+          (card) =>
+            card && (
+              <Link
+                key={card.key}
+                className="house-entry-card"
+                href={card.href}
+                data-featured={card.badge ? true : undefined}
+              >
+                <span className="house-entry-shot">
+                  <Photo
+                    src={card.photo}
+                    alt={card.alt}
+                    fill
+                    sizes="(max-width: 767px) 60vw, 22vw"
+                    className="object-cover"
+                  />
+                </span>
+                <span className="house-entry-body">
+                  {card.badge && (
+                    <span className="house-entry-badge">{card.badge}</span>
+                  )}
+                  <span className="house-entry-name">{card.name}</span>
+                  <span className="house-entry-meta">{card.meta}</span>
+                  <span className="house-entry-price">
+                    {formatInr(card.pricePaise)}
+                    {card.mrpPaise > card.pricePaise && (
+                      <>
+                        <s>{formatInr(card.mrpPaise)}</s>
+                        <b>
+                          Save{" "}
+                          {Math.round(
+                            (1 - card.pricePaise / card.mrpPaise) * 100,
+                          )}
+                          %
+                        </b>
+                      </>
+                    )}
+                  </span>
+                </span>
+              </Link>
+            ),
         )}
       </section>
 
@@ -357,25 +373,34 @@ export default async function Home() {
                 key={product.id}
                 as="article"
                 index={index}
-                className="house-story"
+                className="house-story house-band"
               >
-                <div className="house-story-media">
+                <div className="house-band-backdrop" aria-hidden="true">
+                  <Photo
+                    src={story.desktop}
+                    alt=""
+                    fill
+                    sizes="(max-width: 900px) 100vw, 60vw"
+                    className="object-cover"
+                  />
+                </div>
+                <div className="house-story-media house-band-media">
                   <Photo
                     src={story.desktop}
                     alt={`${product.name} ${product.concentration}`}
                     fill
-                    sizes="(max-width: 900px) 92vw, 46vw"
+                    sizes="(max-width: 900px) 100vw, 60vw"
                     className="house-story-photo house-story-photo--desktop object-cover"
                   />
                   <Photo
                     src={story.mobile}
                     alt={`${product.name} ${product.concentration}`}
                     fill
-                    sizes="(max-width: 900px) 92vw, 46vw"
+                    sizes="(max-width: 900px) 100vw, 60vw"
                     className="house-story-photo house-story-photo--mobile object-cover"
                   />
                 </div>
-                <div className="house-story-copy">
+                <div className="house-story-copy house-band-copy">
                   <p className="house-story-mood">{story.mood}</p>
                   <h3>{product.name}</h3>
                   <p className="house-story-notes">{product.notes}</p>
@@ -396,24 +421,33 @@ export default async function Home() {
       </section>
 
       {/* 6. Brand/process evidence. */}
-      <section className="house-composition" id="story">
-        <div className="house-composition-media">
+      <section className="house-composition house-band" id="story">
+        <div className="house-band-backdrop" aria-hidden="true">
           <Photo
-            src="/ref/heavenly-3682.webp"
+            src="/site/home/composition.webp"
             alt=""
             fill
-            sizes="(max-width: 900px) 100vw, 50vw"
+            sizes="(max-width: 900px) 100vw, 60vw"
+            className="object-cover"
+          />
+        </div>
+        <div className="house-composition-media house-band-media">
+          <Photo
+            src="/site/home/composition.webp"
+            alt=""
+            fill
+            sizes="(max-width: 900px) 100vw, 60vw"
             className="house-composition-photo house-composition-photo--desktop object-cover"
           />
           <Photo
-            src="/ref/heavenly-3620.webp"
+            src="/site/home/composition-mobile.webp"
             alt=""
             fill
             sizes="100vw"
             className="house-composition-photo house-composition-photo--mobile object-cover"
           />
         </div>
-        <div className="house-composition-copy">
+        <div className="house-composition-copy house-band-copy">
           <h2>Every detail, considered.</h2>
           <p>
             Our attention goes to what is in the bottle and how it develops on
@@ -430,28 +464,16 @@ export default async function Home() {
       </section>
 
       {/* 5. Individual fragrance shopping — sizes. */}
-      <section className="house-format" id="shop-20ml">
-        <div className="house-format-media">
-          <Photo
-            src="/ref/heavenly-both-sizes-desktop.webp"
-            alt="A 100ml bottle and its 20ml counterpart side by side"
-            fill
-            sizes="(max-width: 760px) 100vw, 52vw"
-            className="house-format-photo house-format-photo--desktop object-cover"
-          />
-          <Photo
-            src="/ref/billionaire-20ml-desktop.webp"
-            alt="A 100ml bottle and its 20ml counterpart side by side"
-            fill
-            sizes="100vw"
-            className="house-format-photo house-format-photo--mobile object-cover"
-          />
-        </div>
-        <div className="house-format-copy">
+      <section
+        className="house-format house-band house-band--right"
+        id="shop-20ml"
+      >
+        <SizeShowcase />
+        <div className="house-format-copy house-band-copy">
           <h2>At home. On the move.</h2>
           <p>
-            The same composition in two sizes. Keep 20ml close when you travel;
-            make 100ml part of the everyday.
+            Every signature comes in two sizes, the same composition in each.
+            Keep 20ml close when you travel; make 100ml part of the everyday.
           </p>
           <Link href="/shop#20ml" className="lux-button">
             Shop travel sizes <ArrowUpRight size={16} />
@@ -481,14 +503,14 @@ export default async function Home() {
       <section className="house-close">
         <div className="house-close-media">
           <Photo
-            src="/ref/old-love-3958.webp"
+            src="/site/home/closing.webp"
             alt=""
             fill
             sizes="(max-width: 900px) 100vw, 50vw"
             className="house-close-photo house-close-photo--desktop object-cover"
           />
           <Photo
-            src="/ref/old-love-3903.webp"
+            src="/site/home/closing-mobile.webp"
             alt=""
             fill
             sizes="100vw"

@@ -31,14 +31,15 @@ import HeroVideo from "@/components/HeroVideo";
  * shot per tier — top.jpeg, heart.jpeg, base.jpeg — for these four singles;
  * the combos have no note pyramid of their own and so get no section.
  */
-const NOTE_IMAGE_DIRS: Partial<Record<string, string>> = {
-  "old-love": "OldLove",
-  coldwar: "ColdWar",
-  heavenly: "Heavenly",
-  billionaire: "Billionaire",
-};
+/** Fragrances with top/heart/base photographs in public/fragrances/<slug>/notes/. */
+const NOTE_IMAGE_SLUGS = new Set([
+  "old-love",
+  "coldwar",
+  "heavenly",
+  "billionaire",
+]);
 
-/** Campaign hero loops encoded into public/videos/ (see
+/** Campaign hero loops encoded into public/fragrances/<slug>/film.* (see
  *  scripts/encode-product-video.mjs). The combos have no film, so they keep the
  *  still hero. */
 const VIDEO_SLUGS = ["coldwar", "old-love", "heavenly", "billionaire"];
@@ -122,10 +123,10 @@ function buildStoryTiles(
   images: string[],
   size: "20ml" | "100ml",
 ): StoryTile[] {
-  const noteDir = NOTE_IMAGE_DIRS[product.slug];
+  const hasNoteImages = NOTE_IMAGE_SLUGS.has(product.slug);
   const unfold = unfoldCaptions[product.slug];
 
-  if (noteDir) {
+  if (hasNoteImages) {
     const tiers = [
       { key: "top", label: "Top notes", notes: product.topNotes },
       { key: "heart", label: "Heart notes", notes: product.heartNotes },
@@ -133,7 +134,7 @@ function buildStoryTiles(
     ] as const;
     return tiers.map((tier, index) => ({
       // .webp, not the .jpeg beside it: same photograph, ~45% fewer bytes.
-      image: `/perfumeNotes/${noteDir}/${tier.key}.webp`,
+      image: `/fragrances/${product.slug}/notes/${tier.key}.webp`,
       heading: tier.label,
       // The hand-written line where there is one, the note list otherwise.
       copy: unfold?.[index] ?? tier.notes.join(", "),
@@ -185,7 +186,7 @@ export default function ProductDetail({ product }: { product: Product }) {
   const isCombo = product.collection === "combos";
   // Set when this fragrance has note photography; buildStoryTiles uses it, and
   // the "how to wear" steps below are shown for the same four singles.
-  const noteDir = NOTE_IMAGE_DIRS[product.slug];
+  const hasNoteImages = NOTE_IMAGE_SLUGS.has(product.slug);
   const character = [
     ...(isCombo ? [] : [product.profile]),
     ...product.mood.split(/,| and /),
@@ -468,14 +469,14 @@ export default function ProductDetail({ product }: { product: Product }) {
       {/* ---- the note journey, told over the note photography ---- */}
       <section
         className="pdp-unfolds"
-        data-story={noteDir ? "notes" : "photos"}
+        data-story={hasNoteImages ? "notes" : "photos"}
       >
         <div className="pdp-section-head">
           <h2 className="display-title">
-            {noteDir ? "The notes." : "How it unfolds."}
+            {hasNoteImages ? "The notes." : "How it unfolds."}
           </h2>
           <p>
-            {noteDir
+            {hasNoteImages
               ? `What ${product.name} is built from, tier by tier — the opening, the heart it settles into, and the base it leaves behind.`
               : "Three moments, from the first spray to the trail it leaves."}
           </p>
@@ -484,7 +485,7 @@ export default function ProductDetail({ product }: { product: Product }) {
       </section>
 
       {/* ---- how to wear ---- */}
-      {noteDir && (
+      {hasNoteImages && (
         <section className="pdp-detail">
           <div className="pdp-wear">
             <h2 className="display-title">Make the trail last.</h2>

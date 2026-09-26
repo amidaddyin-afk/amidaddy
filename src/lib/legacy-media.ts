@@ -1,0 +1,108 @@
+/**
+ * Old public/ paths -> their new home after the September 2026 media reorganisation
+ * (public/fragrances, public/combos, public/site). Product photos saved in the
+ * database still hold the old paths until the SQL in
+ * prisma/migrations/20260926130000_reorganise_media_paths runs, so catalogue
+ * reads translate them here. Safe to delete once that migration has run.
+ */
+export const LEGACY_MEDIA: Record<string, string> = {
+  "/curated/products/billionaire/detail.webp":
+    "/fragrances/billionaire/campaign/detail.webp",
+  "/products/20ml/billionaire.webp":
+    "/fragrances/billionaire/20ml/catalog.webp",
+  "/products/20ml/cold-war.webp": "/fragrances/coldwar/20ml/catalog.webp",
+  "/products/20ml/heavenly.webp": "/fragrances/heavenly/20ml/catalog.webp",
+  "/products/20ml/old-love.webp": "/fragrances/old-love/20ml/catalog.webp",
+  "/products/combos/100ml/01.webp":
+    "/combos/collection-4x100ml/gallery-01.webp",
+  "/products/combos/100ml/02.webp":
+    "/combos/collection-4x100ml/gallery-02.webp",
+  "/products/combos/100ml/03.webp":
+    "/combos/collection-4x100ml/gallery-03.webp",
+  "/products/combos/100ml/04.webp":
+    "/combos/collection-4x100ml/gallery-04.webp",
+  "/products/combos/20ml-combo-of-4.webp": "/combos/discovery-4x20ml/pack.webp",
+  "/products/combos/20ml/01.webp": "/combos/discovery-4x20ml/gallery-01.webp",
+  "/products/combos/20ml/02.webp": "/combos/discovery-4x20ml/gallery-02.webp",
+  "/ref/approach-20ml-billionaire.avif":
+    "/site/our-approach/20ml-billionaire.avif",
+  "/ref/approach-20ml-billionaire.webp":
+    "/site/our-approach/20ml-billionaire.webp",
+  "/ref/approach-20ml-cold-war.avif": "/site/our-approach/20ml-coldwar.avif",
+  "/ref/approach-20ml-cold-war.webp": "/site/our-approach/20ml-coldwar.webp",
+  "/ref/approach-20ml-heavenly.avif": "/site/our-approach/20ml-heavenly.avif",
+  "/ref/approach-20ml-heavenly.webp": "/site/our-approach/20ml-heavenly.webp",
+  "/ref/approach-20ml-old-love.avif": "/site/our-approach/20ml-old-love.avif",
+  "/ref/approach-20ml-old-love.webp": "/site/our-approach/20ml-old-love.webp",
+  "/ref/approach-discovery-set.avif": "/site/our-approach/discovery-set.avif",
+  "/ref/approach-discovery-set.webp": "/site/our-approach/discovery-set.webp",
+  "/ref/approach-hero-collection-mobile.avif":
+    "/site/our-approach/hero-mobile.avif",
+  "/ref/approach-hero-collection-mobile.webp":
+    "/site/our-approach/hero-mobile.webp",
+  "/ref/approach-hero-collection.avif": "/site/our-approach/hero.avif",
+  "/ref/approach-hero-collection.webp": "/site/our-approach/hero.webp",
+  "/ref/approach-macro.avif": "/site/our-approach/macro.avif",
+  "/ref/approach-macro.webp": "/site/our-approach/macro.webp",
+  "/ref/approach-sizes.avif": "/site/our-approach/sizes.avif",
+  "/ref/approach-sizes.webp": "/site/our-approach/sizes.webp",
+  "/ref/billionaire-100ml-desktop.webp":
+    "/fragrances/billionaire/100ml/bottle-wide.webp",
+  "/ref/billionaire-100ml-mobile.webp":
+    "/fragrances/billionaire/100ml/bottle.webp",
+  "/ref/billionaire-20ml-desktop.webp":
+    "/fragrances/billionaire/20ml/bottle-wide.webp",
+  "/ref/billionaire-20ml-studio.webp":
+    "/fragrances/billionaire/20ml/studio.webp",
+  "/ref/billionaire-20ml.webp": "/fragrances/billionaire/20ml/bottle.webp",
+  "/ref/billionaire-3987.webp": "/fragrances/billionaire/campaign/3987.webp",
+  "/ref/billionaire-3994.webp": "/fragrances/billionaire/campaign/3994.webp",
+  "/ref/billionaire-4004.webp": "/fragrances/billionaire/campaign/4004.webp",
+  "/ref/billionaire-4014.webp": "/fragrances/billionaire/campaign/4014.webp",
+  "/ref/billionaire-4023.webp": "/fragrances/billionaire/campaign/4023.webp",
+  "/ref/billionaire-4038.webp": "/fragrances/billionaire/campaign/4038.webp",
+  "/ref/billionaire-4055.webp": "/fragrances/billionaire/campaign/4055.webp",
+  "/ref/cold-war-100ml-mobile.webp": "/fragrances/coldwar/100ml/bottle.webp",
+  "/ref/cold-war-20ml-studio.webp": "/fragrances/coldwar/20ml/studio.webp",
+  "/ref/cold-war-20ml.webp": "/fragrances/coldwar/20ml/bottle.webp",
+  "/ref/cold-war-3487.webp": "/fragrances/coldwar/campaign/3487.webp",
+  "/ref/cold-war-3527.webp": "/fragrances/coldwar/campaign/3527.webp",
+  "/ref/cold-war-3536.webp": "/fragrances/coldwar/campaign/3536.webp",
+  "/ref/cold-war-3545.webp": "/fragrances/coldwar/campaign/3545.webp",
+  "/ref/cold-war-3577.webp": "/fragrances/coldwar/campaign/3577.webp",
+  "/ref/collection-4x100ml-desktop.webp":
+    "/combos/collection-4x100ml/pack-wide.webp",
+  "/ref/collection-4x100ml-mobile.webp": "/combos/collection-4x100ml/pack.webp",
+  "/ref/heavenly-100ml-desktop.webp":
+    "/fragrances/heavenly/100ml/bottle-wide.webp",
+  "/ref/heavenly-100ml-mobile.webp": "/fragrances/heavenly/100ml/bottle.webp",
+  "/ref/heavenly-20ml-desktop.webp":
+    "/fragrances/heavenly/20ml/bottle-wide.webp",
+  "/ref/heavenly-20ml-mobile.webp":
+    "/fragrances/heavenly/20ml/bottle-tall.webp",
+  "/ref/heavenly-20ml-studio.webp": "/fragrances/heavenly/20ml/studio.webp",
+  "/ref/heavenly-20ml.webp": "/fragrances/heavenly/20ml/bottle.webp",
+  "/ref/heavenly-3620.webp": "/fragrances/heavenly/campaign/3620.webp",
+  "/ref/heavenly-3682.webp": "/fragrances/heavenly/campaign/3682.webp",
+  "/ref/heavenly-3695.webp": "/fragrances/heavenly/campaign/3695.webp",
+  "/ref/heavenly-3705.webp": "/fragrances/heavenly/campaign/3705.webp",
+  "/ref/heavenly-3763.webp": "/fragrances/heavenly/campaign/3763.webp",
+  "/ref/heavenly-both-sizes-desktop.webp":
+    "/fragrances/heavenly/both-sizes-wide.webp",
+  "/ref/old-love-100ml.webp": "/fragrances/old-love/100ml/bottle.webp",
+  "/ref/old-love-20ml-studio.webp": "/fragrances/old-love/20ml/studio.webp",
+  "/ref/old-love-20ml.webp": "/fragrances/old-love/20ml/bottle.webp",
+  "/ref/old-love-3804.webp": "/fragrances/old-love/campaign/3804.webp",
+  "/ref/old-love-3810.webp": "/fragrances/old-love/campaign/3810.webp",
+  "/ref/old-love-3903.webp": "/fragrances/old-love/campaign/3903.webp",
+  "/ref/old-love-3926.webp": "/fragrances/old-love/campaign/3926.webp",
+  "/ref/old-love-3956.webp": "/fragrances/old-love/campaign/3956.webp",
+  "/ref/old-love-3958.webp": "/fragrances/old-love/campaign/3958.webp",
+  "/ref/old-love-4096.webp": "/fragrances/old-love/campaign/4096.webp",
+  "/ref/shop-hero-collection-desktop.avif": "/site/shop/hero-desktop.avif",
+  "/ref/shop-hero-collection-desktop.webp": "/site/shop/hero-desktop.webp",
+  "/ref/shop-hero-collection-mobile.avif": "/site/shop/hero-mobile.avif",
+  "/ref/shop-hero-collection-mobile.webp": "/site/shop/hero-mobile.webp",
+  "/ref/shop-hero-collection-narrow.avif": "/site/shop/hero-narrow.avif",
+  "/ref/shop-hero-collection-narrow.webp": "/site/shop/hero-narrow.webp",
+};

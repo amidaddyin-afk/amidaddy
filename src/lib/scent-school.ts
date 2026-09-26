@@ -66,7 +66,7 @@ const LESSONS: Omit<Lesson, "number" | "minutes">[] = [
     summary:
       "How several regions, over many centuries, arrived at the bottle on your shelf.",
     lede: "Fragrance did not begin in one place. Traditions developed across regions and centuries, shaped by ritual, craft, trade and new ways of drawing scent out of raw material.",
-    image: "/curated/hero-models-2.webp",
+    image: "/site/scent-school/models-2.webp",
     imageAlt:
       "Amidaddy Perfumes models photographed together for a fragrance campaign",
     blocks: [
@@ -127,7 +127,7 @@ const LESSONS: Omit<Lesson, "number" | "minutes">[] = [
     summary:
       "Copper, steam, sandalwood and patience — the craft behind Indian attar.",
     lede: "India's fragrance heritage is not a museum piece. In Kannauj, attar is still made by a method that predates every machine in a modern perfumery.",
-    image: "/gallery/old-love/06.webp",
+    image: "/site/scent-school/old-love.webp",
     imageAlt:
       "Amidaddy Perfumes Old Love Eau de Parfum photographed in warm light",
     blocks: [
@@ -187,7 +187,7 @@ const LESSONS: Omit<Lesson, "number" | "minutes">[] = [
     summary:
       "EDP, EDT, notes, accords and families — the six words that unlock every label.",
     lede: "Most fragrance vocabulary exists to describe one of two things: how much scent is in the bottle, and what the scent is made of. Six terms cover almost all of it.",
-    image: "/curated/product-detail-1.webp",
+    image: "/site/scent-school/detail-1.webp",
     imageAlt: "Amidaddy Perfumes bottles arranged in warm studio light",
     blocks: [
       {
@@ -235,7 +235,7 @@ const LESSONS: Omit<Lesson, "number" | "minutes">[] = [
     summary:
       "Top, heart and base — why the scent you buy is not the scent you wear at hour four.",
     lede: "The opening is an introduction, not the fragrance. What you smell in the first ninety seconds has largely gone by the time anyone else has an opinion about it.",
-    image: "/gallery/heavenly/06.webp",
+    image: "/site/scent-school/heavenly-1.webp",
     imageAlt: "Amidaddy Perfumes Heavenly Eau de Parfum held in soft daylight",
     blocks: [
       { kind: "pyramid" },
@@ -262,7 +262,7 @@ const LESSONS: Omit<Lesson, "number" | "minutes">[] = [
     summary:
       "Placement, quantity and the one habit that quietly ruins an opening.",
     lede: "Fragrance rises and it needs warmth. Almost every rule about application follows from those two facts.",
-    image: "/gallery/coldwar/03.webp",
+    image: "/site/scent-school/coldwar.webp",
     imageAlt:
       "Amidaddy Perfumes Cold War Eau de Parfum held against a white shirt",
     blocks: [
@@ -312,7 +312,7 @@ const LESSONS: Omit<Lesson, "number" | "minutes">[] = [
     heading: "Longevity is not a competition.",
     summary: "Six habits that get more hours out of the bottle you own.",
     lede: "Most longevity problems are not the fragrance. They are dry skin, a rushed application or a bottle kept somewhere warm.",
-    image: "/curated/product-detail-2.webp",
+    image: "/site/scent-school/detail-2.webp",
     imageAlt: "Amidaddy Perfumes bottles photographed in studio light",
     blocks: [
       {
@@ -361,7 +361,7 @@ const LESSONS: Omit<Lesson, "number" | "minutes">[] = [
     summary:
       "Train the one instrument that decides which fragrance is actually yours.",
     lede: "You do not need vocabulary to smell well. You need attention, and a habit of writing down what you noticed before you talk yourself out of it.",
-    image: "/gallery/heavenly/09.webp",
+    image: "/site/scent-school/heavenly-2.webp",
     imageAlt:
       "Amidaddy Perfumes Heavenly Eau de Parfum held close for a first impression",
     blocks: [
@@ -403,7 +403,7 @@ const LESSONS: Omit<Lesson, "number" | "minutes">[] = [
     summary:
       "Put the whole course to work on Cold War, Heavenly, Old Love and Billionaire.",
     lede: "Begin with the feeling, then notice how the materials build that personality. This is the same reading you would give any fragrance — practised on ours.",
-    image: "/curated/hero-models-3.webp",
+    image: "/site/scent-school/models-3.webp",
     imageAlt:
       "The four Amidaddy Perfumes signatures photographed together for a campaign",
     blocks: [

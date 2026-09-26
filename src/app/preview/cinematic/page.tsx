@@ -29,22 +29,22 @@ const SCRIPT: Record<string, { line: string; notes: string[]; frame: string }> =
     "old-love": {
       line: "Stay unforgettable.",
       notes: ["Saffron", "Amber", "Resin"],
-      frame: "/gallery/old-love/05.webp",
+      frame: "/site/preview-cinematic/old-love.webp",
     },
     coldwar: {
       line: "Make your move.",
       notes: ["Bright fruit", "Herbs", "Woods"],
-      frame: "/gallery/coldwar/02.webp",
+      frame: "/site/preview-cinematic/coldwar.webp",
     },
     heavenly: {
       line: "Leave a softer trace.",
       notes: ["White floral", "Vanilla", "Musk"],
-      frame: "/gallery/heavenly/05.webp",
+      frame: "/site/preview-cinematic/heavenly.webp",
     },
     billionaire: {
       line: "Own the room.",
       notes: ["Whiskey", "Spice", "Dark woods"],
-      frame: "/gallery/billionaire/04.webp",
+      frame: "/site/preview-cinematic/billionaire.webp",
     },
   };
 const ORDER = ["old-love", "coldwar", "heavenly", "billionaire"];
@@ -82,7 +82,7 @@ export default async function CinematicPreviewPage() {
         <section className="cine-hero">
           <div className="cine-hero-media">
             <Photo
-              src="/curated/hero-models.webp"
+              src="/site/preview-cinematic/models.webp"
               alt="Amidaddy Perfumes campaign portrait"
               fill
               priority

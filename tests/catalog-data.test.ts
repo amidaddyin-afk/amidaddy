@@ -10,7 +10,7 @@ test("signature products keep 20 ml photography separate", () => {
   for (const product of signatures) {
     const twentyMlImages = product.variantImages?.["20ml"] ?? [];
     assert.ok(twentyMlImages.length > 0);
-    assert.ok(twentyMlImages.every((image) => image.includes("-20ml")));
+    assert.ok(twentyMlImages.every((image) => image.includes("/20ml/")));
     assert.ok(twentyMlImages.every((image) => !product.images.includes(image)));
   }
 });

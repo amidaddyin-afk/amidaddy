@@ -18,10 +18,22 @@ import { prepareProductImage } from "@/features/catalog/prepare-image";
  * first photo is the one the storefront leads with for that size.
  */
 const GALLERIES = [
-  [null, "All sizes"],
-  ["20ml", "20 ml"],
-  ["100ml", "100 ml"],
+  [null, "All sizes", "Product page gallery, whichever size is selected."],
+  [
+    "20ml",
+    "20 ml",
+    "Product page and product cards when 20 ml is selected. The first photo leads.",
+  ],
+  [
+    "100ml",
+    "100 ml",
+    "Product page and product cards when 100 ml is selected. The first photo leads.",
+  ],
 ] as const;
+
+/** Where a photo's file lives, so it can be found and replaced. */
+const fileOf = (url: string) =>
+  url.startsWith("/") ? `public${url}` : "Uploaded in the admin portal";
 
 /**
  * The details form still posts the whole product, so a photo edit and a details
@@ -136,8 +148,9 @@ export default function ProductPhotoManager({
         The top photo of each gallery is the one shoppers see first.
       </p>
 
-      {GALLERIES.map(([gallery, label]) => {
+      {GALLERIES.map(([gallery, label, where]) => {
         const indices = indicesOf(gallery);
+        const builtIn = gallery ? (product.variantImages?.[gallery] ?? []) : [];
         return (
           <section key={label} className="mt-6">
             <div className="flex items-center justify-between">
@@ -158,7 +171,25 @@ export default function ProductPhotoManager({
                 />
               </label>
             </div>
-            {indices.length === 0 ? (
+            <p className="mt-1 text-xs opacity-60">{where}</p>
+            {indices.length === 0 && builtIn.length > 0 ? (
+              <>
+                <p className="mt-2 text-sm opacity-70">
+                  Nothing uploaded yet, so the site shows these built-in photos.
+                  Replace a file with one of the same name to change it, or add
+                  a photo here to override them all.
+                </p>
+                <ul className="admin-photo-list mt-3">
+                  {builtIn.map((url) => (
+                    <li key={url}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={url} alt="" />
+                      <code className="admin-photo-file">{fileOf(url)}</code>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            ) : indices.length === 0 ? (
               <p className="mt-2 text-sm opacity-60">
                 No photos yet. This size falls back to the shared gallery.
               </p>
@@ -174,6 +205,9 @@ export default function ProductPhotoManager({
                         placeholder="Alt text"
                         onChange={(event) => setAlt(index, event.target.value)}
                       />
+                      <code className="admin-photo-file">
+                        {fileOf(photos[index].url)}
+                      </code>
                       {position === 0 && (
                         <span className="text-champagne text-xs">
                           Shown first

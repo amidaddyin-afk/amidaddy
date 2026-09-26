@@ -49,7 +49,7 @@ export function AuthForm({
           screen on a phone. */}
       <aside className="auth-aside" aria-hidden="true">
         <Photo
-          src="/curated/product-detail-2.webp"
+          src="/site/account/sign-in.webp"
           alt=""
           fill
           sizes="(max-width: 1024px) 0px, 45vw"
