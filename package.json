@@ -28,7 +28,7 @@
     "framer-motion": "^12.38.0",
     "lucide-react": "^1.8.0",
     "motion": "^13.3.0",
-    "next": "^16.3.0",
+    "next": "^16.3.6",
     "pg": "^8.22.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
@@ -42,7 +42,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "^16.3.0",
+    "eslint-config-next": "^16.3.6",
     "husky": "^9.1.7",
     "lint-staged": "^16.4.0",
     "playwright": "^1.63.0",
@@ -54,7 +54,7 @@
     "typescript": "^5"
   },
   "optionalDependencies": {
-    "@next/swc-win32-x64-msvc": "^16.3.0"
+    "@next/swc-win32-x64-msvc": "^16.3.6"
   },
   "overrides": {
     "deepmerge-ts": "^8.0.0"
