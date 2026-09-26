@@ -69,6 +69,7 @@ export default function Navbar() {
             className="wordmark"
             aria-label="Amidaddy Perfumes home"
           >
+            <span className="wordmark-mark" aria-hidden="true" />
             <span className="wordmark-title" aria-hidden="true">
               am<span className="brand-i">i</span>daddy
               <span className="brand-tm">™</span>

@@ -1008,6 +1008,32 @@ main.house-home {
   gap: 0.5rem;
   color: #fff;
 }
+/* AD monogram (vector trace of public/brand/amidaddy-ad-signature-mark.png).
+   Painted through a mask so it takes the wordmark's colour on every surface
+   and the SVG downloads once and is cached, instead of inlining ~23 KB of
+   path data into every page. */
+.wordmark-mark {
+  flex: none;
+  /* Extra room on top of .wordmark's gap so the mark and name read as two
+     elements, not one run-on word. */
+  margin-right: 0.75rem;
+  width: 3.4rem;
+  aspect-ratio: 450 / 232;
+  background: currentColor;
+  mask: url("/brand/amidaddy-monogram.svg") center / contain no-repeat;
+}
+/* Phones: the mark plus the wordmark must still clear the search icon. */
+@media (max-width: 639px) {
+  .wordmark {
+    gap: 0.6rem;
+  }
+  .wordmark-mark {
+    width: 2.3rem;
+  }
+  body .wordmark-title {
+    font-size: 1.65rem;
+  }
+}
 .wordmark-title {
   font-family: Georgia, "Times New Roman", serif;
   font-size: 2.35rem;
