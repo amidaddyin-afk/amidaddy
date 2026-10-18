@@ -8,7 +8,7 @@ export const emailSchema = z
   .transform((value) => value.toLowerCase());
 export const passwordSchema = z
   .string()
-  .min(12, "Use at least 12 characters.")
+  .min(8, "Use at least 8 characters.")
   .max(128);
 
 /** Unchecked checkboxes are absent from FormData, so a missing value is a

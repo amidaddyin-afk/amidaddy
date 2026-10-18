@@ -17,6 +17,7 @@ import {
   updatePasswordSchema,
   verifyOtpSchema,
 } from "./schemas";
+import { signUpErrorMessage } from "./errors";
 
 export type AuthActionState = { error?: string; message?: string };
 
@@ -68,8 +69,15 @@ export async function signUpAction(
       data: { full_name: parsed.data.fullName },
     },
   });
-  if (error)
-    return { error: "Unable to create the account. Please try again." };
+  if (error) {
+    console.error(
+      "[auth] signUp failed",
+      error.code,
+      error.status,
+      error.message,
+    );
+    return { error: signUpErrorMessage(error) };
+  }
   await recordLeadSignupStarted(parsed.data.email, parsed.data.fullName).catch(
     () => {},
   );
@@ -114,7 +122,15 @@ export async function resendSignupOtpAction(
     type: "signup",
     email: parsed.data.email,
   });
-  if (error) return { error: "Unable to resend the code right now." };
+  if (error) {
+    console.error(
+      "[auth] resend failed",
+      error.code,
+      error.status,
+      error.message,
+    );
+    return { error: signUpErrorMessage(error) };
+  }
   return { message: "A new code is on its way." };
 }
 

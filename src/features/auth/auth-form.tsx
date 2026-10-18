@@ -130,10 +130,10 @@ export function AuthForm({
               name="password"
               type={showPassword ? "text" : "password"}
               required
-              minLength={isLogin ? undefined : 12}
+              minLength={isLogin ? undefined : 8}
               autoComplete={isLogin ? "current-password" : "new-password"}
               placeholder={
-                isLogin ? "Password" : "Password (min. 12 characters)"
+                isLogin ? "Password" : "Password (min. 8 characters)"
               }
               className="checkout-input w-full pr-11"
             />

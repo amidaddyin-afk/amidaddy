@@ -3314,9 +3314,13 @@ body .checkout-shell .coupon-feedback {
   color: #2f6f46;
 }
 body .checkout-shell .coupon-feedback .coupon-error,
-body .checkout-shell .error-banner,
-body .auth-shell [role="alert"] {
+body .checkout-shell .error-banner {
   color: var(--danger);
+}
+/* --danger resolves to ink on the commerce surface, which made a failed
+   signup indistinguishable from body copy. */
+body .auth-shell [role="alert"] {
+  color: #b42318;
 }
 body .checkout-shell .error-banner {
   border-color: var(--danger);
