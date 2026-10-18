@@ -580,15 +580,22 @@ export async function listOrders(filters?: {
   return Promise.all(rows.map((row) => mapOrder(row)));
 }
 
+/** Attach guest orders placed with this (verified) email to the account. */
+export async function claimGuestOrders(
+  customerId: string,
+  verifiedEmail: string,
+) {
+  await db().query(
+    "update public.orders set customer_id=$1,updated_at=now() where customer_id is null and lower(email)=$2",
+    [customerId, normalizeEmail(verifiedEmail)],
+  );
+}
+
 export async function claimAndListCustomerOrders(
   customerId: string,
   verifiedEmail: string,
 ) {
-  const email = normalizeEmail(verifiedEmail);
-  await db().query(
-    "update public.orders set customer_id=$1,updated_at=now() where customer_id is null and lower(email)=$2",
-    [customerId, email],
-  );
+  await claimGuestOrders(customerId, verifiedEmail);
   const { rows } = await db().query(
     "select * from public.orders where customer_id=$1 order by created_at desc",
     [customerId],

@@ -2,7 +2,14 @@
 
 import Link from "next/link";
 import Photo from "@/components/Photo";
-import { useActionState } from "react";
+import { Eye, EyeOff } from "lucide-react";
+import {
+  startTransition,
+  useActionState,
+  useEffect,
+  useState,
+  type FormEvent,
+} from "react";
 import { useSearchParams } from "next/navigation";
 import Script from "next/script";
 import { safeRedirectPath } from "@/lib/safe-redirect";
@@ -41,6 +48,28 @@ export function AuthForm({
   const adminSessionExpired =
     searchParams.get("reason") === "admin-session-expired";
   const safeNext = safeRedirectPath(next);
+  const [showPassword, setShowPassword] = useState(false);
+  const [mismatch, setMismatch] = useState(false);
+
+  // A Turnstile token is single-use: after a failed attempt the widget must
+  // issue a fresh one or every retry fails CAPTCHA verification.
+  useEffect(() => {
+    if (state.error)
+      (window as { turnstile?: { reset: () => void } }).turnstile?.reset();
+  }, [state]);
+
+  // Submitting through onSubmit instead of letting React run the form action
+  // keeps what the customer typed: React resets a form after its action
+  // completes, which wiped every field whenever the server returned an error.
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const isMismatch =
+      isSignup && formData.get("password") !== formData.get("confirmPassword");
+    setMismatch(isMismatch);
+    if (isMismatch) return;
+    startTransition(() => formAction(formData));
+  }
   return (
     <main data-surface="commerce" className="auth-shell">
       {/* Editorial split. These pages were a bare form on an empty field;
@@ -60,6 +89,7 @@ export function AuthForm({
       </aside>
       <form
         action={formAction}
+        onSubmit={handleSubmit}
         className="auth-panel border-line bg-raised border p-7 sm:p-9"
       >
         {isLogin && <input type="hidden" name="next" value={safeNext} />}
@@ -95,12 +125,37 @@ export function AuthForm({
           />
         )}
         {!isResetRequest && (
+          <div className="relative mb-3">
+            <input
+              name="password"
+              type={showPassword ? "text" : "password"}
+              required
+              minLength={isLogin ? undefined : 12}
+              autoComplete={isLogin ? "current-password" : "new-password"}
+              placeholder={
+                isLogin ? "Password" : "Password (min. 12 characters)"
+              }
+              className="checkout-input w-full pr-11"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((shown) => !shown)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              aria-pressed={showPassword}
+              className="text-muted hover:text-fg absolute inset-y-0 right-0 flex w-11 items-center justify-center"
+            >
+              {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+            </button>
+          </div>
+        )}
+        {isSignup && (
           <input
-            name="password"
-            type="password"
+            name="confirmPassword"
+            type={showPassword ? "text" : "password"}
             required
-            autoComplete={isLogin ? "current-password" : "new-password"}
-            placeholder="Password"
+            autoComplete="new-password"
+            placeholder="Confirm password"
+            aria-invalid={mismatch || undefined}
             className="checkout-input mb-3 w-full"
           />
         )}
@@ -134,9 +189,9 @@ export function AuthForm({
             Your admin session expired. Sign in again to continue.
           </p>
         )}
-        {state.error && (
-          <p className="mb-4 text-sm text-red-300" role="alert">
-            {state.error}
+        {(mismatch || state.error) && (
+          <p className="mb-4 text-sm text-red-700" role="alert">
+            {mismatch ? "Passwords do not match." : state.error}
           </p>
         )}
         {state.message && (

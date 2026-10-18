@@ -56,7 +56,7 @@ export function VerifyEmailForm({ email }: { email: string }) {
             className="checkout-input mb-3 w-full text-center tracking-[0.5em]"
           />
           {state.error && (
-            <p className="mb-4 text-sm text-red-300" role="alert">
+            <p className="mb-4 text-sm text-red-700" role="alert">
               {state.error}
             </p>
           )}
@@ -75,7 +75,7 @@ export function VerifyEmailForm({ email }: { email: string }) {
             </p>
           )}
           {resendState.error && (
-            <p className="mb-2 text-sm text-red-300" role="alert">
+            <p className="mb-2 text-sm text-red-700" role="alert">
               {resendState.error}
             </p>
           )}

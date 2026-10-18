@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ExternalLink, RotateCcw, XCircle } from "lucide-react";
 import OrderTimeline from "@/components/OrderTimeline";
 import { requireUser } from "@/lib/auth";
-import { getCustomerOrder } from "@/lib/orders";
+import { claimGuestOrders, getCustomerOrder } from "@/lib/orders";
 import { formatInr } from "@/lib/money";
 
 export const dynamic = "force-dynamic";
@@ -14,6 +14,10 @@ export default async function OrderPage({
 }) {
   const { id } = await params;
   const { user } = await requireUser();
+  // The order email links straight here, so a guest who signs up afterwards
+  // may never have visited /account/orders, where guest orders get claimed.
+  if (user.email_confirmed_at && user.email)
+    await claimGuestOrders(user.id, user.email).catch(() => {});
   const order = await getCustomerOrder(id, user.id).catch(() => undefined);
   if (!order) notFound();
   const canCancel = ["PAYMENT_PENDING", "CONFIRMED"].includes(order.status);

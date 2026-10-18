@@ -18,13 +18,19 @@ export const marketingOptInSchema = z
   .optional()
   .transform((value) => value === "yes");
 
-export const signUpSchema = z.object({
-  fullName: z.string().trim().min(2).max(80),
-  email: emailSchema,
-  password: passwordSchema,
-  marketingOptIn: marketingOptInSchema,
-  "cf-turnstile-response": z.string().max(2048).optional(),
-});
+export const signUpSchema = z
+  .object({
+    fullName: z.string().trim().min(2, "Enter your full name.").max(80),
+    email: emailSchema,
+    password: passwordSchema,
+    confirmPassword: z.string().max(128),
+    marketingOptIn: marketingOptInSchema,
+    "cf-turnstile-response": z.string().max(2048).optional(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match.",
+    path: ["confirmPassword"],
+  });
 
 export const signInSchema = z.object({
   email: emailSchema,
