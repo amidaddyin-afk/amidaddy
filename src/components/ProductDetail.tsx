@@ -2,7 +2,13 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState, ViewTransition } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  ViewTransition,
+  type ReactNode,
+} from "react";
 import {
   ArrowLeft,
   ArrowUpRight,
@@ -43,6 +49,14 @@ const NOTE_IMAGE_SLUGS = new Set([
  *  scripts/encode-product-video.mjs). The combos have no film, so they keep the
  *  still hero. */
 const VIDEO_SLUGS = ["coldwar", "old-love", "heavenly", "billionaire"];
+
+/** Hero-only stills, for where the size's lead photo frames badly in the
+ *  hero. Billionaire's 100 ml lead shot puts a whisky glass on the left and
+ *  the bottle on the right, under the campaign film, so the hero showed a
+ *  glass and no perfume. The gallery and shop card keep the lead photo. */
+const HERO_OVERRIDES: Record<string, Partial<Record<string, string>>> = {
+  billionaire: { "100ml": "/fragrances/billionaire/100ml/hero.webp" },
+};
 
 /** Per-fragrance PDP intro paragraph (plan §8.1–8.4). Falls back to
  *  product.description where a slug is not listed. */
@@ -156,7 +170,15 @@ function buildStoryTiles(
     }));
 }
 
-export default function ProductDetail({ product }: { product: Product }) {
+export default function ProductDetail({
+  product,
+  reviews,
+}: {
+  product: Product;
+  /** Server-rendered review panel, passed in so it stays out of this client
+   *  bundle and inside the page's cached render. */
+  reviews?: ReactNode;
+}) {
   const available = product.variants.filter(
     (variant) => variant.active && variant.stock > variant.reserved,
   );
@@ -197,7 +219,7 @@ export default function ProductDetail({ product }: { product: Product }) {
   const sizeOptions = product.variants.filter((item) => item.active);
   const activeImages = productGalleryImages(product, size);
   const addButtonRef = useRef<HTMLButtonElement>(null);
-  const heroImage = activeImages[0];
+  const heroImage = HERO_OVERRIDES[product.slug]?.[size] ?? activeImages[0];
   // The gallery shows ONLY frames of the size currently selected.
   //
   // Padding the size's own frames with "unclaimed" shared photography was
@@ -506,6 +528,8 @@ export default function ProductDetail({ product }: { product: Product }) {
           </div>
         </section>
       )}
+
+      {reviews}
 
       {/* ---- objection handling ---- */}
       <section className="pdp-faq">

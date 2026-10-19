@@ -1,18 +1,23 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useState, type ReactNode } from "react";
 import {
   Activity,
   BadgePercent,
   Boxes,
   ChartNoAxesCombined,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   Download,
   Mail,
   MapPin,
+  MessageSquareQuote,
   Package,
   Phone,
   Settings,
   ShoppingBag,
+  Star,
   TrendingUp,
   Users,
 } from "lucide-react";
@@ -21,6 +26,7 @@ import { formatInr } from "@/lib/money";
 import {
   adjustVariantStockAction,
   createCouponAction,
+  moderateReviewAction,
   toggleCouponAction,
   updateStoreSettingsAction,
   updateUserRoleAction,
@@ -43,6 +49,7 @@ const sections = [
   ["Customers", Users],
   ["Traffic", MapPin],
   ["Leads", TrendingUp],
+  ["Reviews", MessageSquareQuote],
   ["Coupons", BadgePercent],
   ["Activity", Activity],
   ["Settings", Settings],
@@ -51,14 +58,143 @@ function Status({ state }: { state: AdminActionState }) {
   return (
     <>
       {state.error && (
-        <p className="mt-3 text-sm text-red-300">{state.error}</p>
+        <p className="admin-status-error mt-3 text-sm">{state.error}</p>
       )}
       {state.message && (
-        <p className="mt-3 text-sm text-emerald-300">{state.message}</p>
+        <p className="admin-status-ok mt-3 text-sm">{state.message}</p>
       )}
     </>
   );
 }
+/** A portal section that folds away. Open by default; the native <details>
+ *  keeps it keyboard- and screen-reader-friendly with no extra state. */
+function AdminSection({
+  id,
+  eyebrow,
+  title,
+  children,
+}: {
+  id: string;
+  eyebrow: string;
+  title: string;
+  children: ReactNode;
+}) {
+  return (
+    <section id={id}>
+      <details open className="admin-section">
+        <summary>
+          <span>
+            <span className="eyebrow">{eyebrow}</span>
+            <h2>{title}</h2>
+          </span>
+          <ChevronDown size={20} aria-hidden="true" className="admin-chevron" />
+        </summary>
+        <div className="admin-section-body">{children}</div>
+      </details>
+    </section>
+  );
+}
+
+const PAGE_SIZES = [10, 20, 30] as const;
+
+type Pager = {
+  page: number;
+  pages: number;
+  size: number;
+  total: number;
+  setPage: (page: number) => void;
+  setSize: (size: number) => void;
+};
+
+/** Client-side paging over a list already in memory. The page is clamped
+ *  rather than trusted, so a narrowing search never lands on an empty page. */
+function usePaged<T>(items: T[]): { rows: T[]; pager: Pager } {
+  const [size, setSizeState] = useState<number>(PAGE_SIZES[0]);
+  const [page, setPage] = useState(0);
+  const pages = Math.max(1, Math.ceil(items.length / size));
+  const current = Math.min(page, pages - 1);
+  return {
+    rows: items.slice(current * size, current * size + size),
+    pager: {
+      page: current,
+      pages,
+      size,
+      total: items.length,
+      setPage,
+      setSize: (next) => {
+        setSizeState(next);
+        setPage(0);
+      },
+    },
+  };
+}
+
+function Pagination({ pager, label }: { pager: Pager; label: string }) {
+  if (pager.total <= PAGE_SIZES[0]) return null;
+  const from = pager.page * pager.size + 1;
+  const to = Math.min(pager.total, from + pager.size - 1);
+  return (
+    <nav className="admin-pager" aria-label={`${label} pages`}>
+      <div
+        className="admin-pager-sizes"
+        role="group"
+        aria-label="Rows per page"
+      >
+        <span>Show</span>
+        {PAGE_SIZES.map((size) => (
+          <button
+            key={size}
+            type="button"
+            aria-pressed={pager.size === size}
+            onClick={() => pager.setSize(size)}
+          >
+            {size}
+          </button>
+        ))}
+      </div>
+      <span className="admin-pager-range">
+        {from}–{to} of {pager.total}
+      </span>
+      <div className="admin-pager-steps">
+        <button
+          type="button"
+          onClick={() => pager.setPage(pager.page - 1)}
+          disabled={pager.page === 0}
+          aria-label="Previous page"
+        >
+          <ChevronLeft size={16} aria-hidden="true" />
+        </button>
+        <span>
+          Page {pager.page + 1} of {pager.pages}
+        </span>
+        <button
+          type="button"
+          onClick={() => pager.setPage(pager.page + 1)}
+          disabled={pager.page >= pager.pages - 1}
+          aria-label="Next page"
+        >
+          <ChevronRight size={16} aria-hidden="true" />
+        </button>
+      </div>
+    </nav>
+  );
+}
+
+/** Open or fold every section at once. */
+function setAllSections(open: boolean) {
+  document
+    .querySelectorAll<HTMLDetailsElement>(".admin-section")
+    .forEach((details) => (details.open = open));
+}
+/** The sidebar opens the section it jumps to, so a link never lands on a
+ *  folded heading. */
+function openSection(id: string) {
+  const details = document.querySelector<HTMLDetailsElement>(
+    `#${id} > .admin-section`,
+  );
+  if (details) details.open = true;
+}
+
 function OrderActions({ order }: { order: AdminOverview["orders"][number] }) {
   const [fulfillment, fulfillmentAction, fulfillmentPending] = useActionState(
     updateFulfillmentAction,
@@ -304,6 +440,13 @@ export default function AdminPortal({ overview }: { overview: AdminOverview }) {
     CUSTOMER: "Customer",
     REPEAT_CUSTOMER: "Repeat customer",
   };
+  const orderPages = usePaged(visibleOrders);
+  const inventoryPages = usePaged(overview.inventory);
+  const customerPages = usePaged(overview.customers);
+  const leadPages = usePaged(visibleLeads);
+  const reviewPages = usePaged(overview.reviews);
+  const couponPages = usePaged(overview.coupons);
+  const activityPages = usePaged(overview.activity);
   const funnelCards: Array<[string, number]> = [
     ["Subscribers", overview.leadFunnel.subscribers],
     ["Signed up", overview.leadFunnel.signedUp],
@@ -319,7 +462,11 @@ export default function AdminPortal({ overview }: { overview: AdminOverview }) {
           <p className="eyebrow px-3 pb-5">Store control</p>
           <nav className="grid gap-1">
             {sections.map(([label, Icon]) => (
-              <a key={label} href={`#${label.toLowerCase()}`}>
+              <a
+                key={label}
+                href={`#${label.toLowerCase()}`}
+                onClick={() => openSection(label.toLowerCase())}
+              >
                 <Icon size={15} />
                 {label}
               </a>
@@ -327,11 +474,31 @@ export default function AdminPortal({ overview }: { overview: AdminOverview }) {
           </nav>
         </aside>
         <div className="min-w-0">
-          <section id="overview">
-            <p className="eyebrow">Operations</p>
-            <h1 className="display-title admin-title mt-3">
-              The control room.
-            </h1>
+          <div className="admin-intro">
+            <div>
+              <p className="eyebrow">Operations</p>
+              <h1 className="display-title admin-title mt-3">
+                The control room.
+              </h1>
+            </div>
+            <div className="admin-intro-actions">
+              <button
+                type="button"
+                className="btn-ghost"
+                onClick={() => setAllSections(true)}
+              >
+                Expand all
+              </button>
+              <button
+                type="button"
+                className="btn-ghost"
+                onClick={() => setAllSections(false)}
+              >
+                Collapse all
+              </button>
+            </div>
+          </div>
+          <AdminSection id="overview" eyebrow="At a glance" title="Overview">
             <div className="admin-cards">
               {cards.map(([label, value]) => (
                 <article key={label}>
@@ -340,46 +507,45 @@ export default function AdminPortal({ overview }: { overview: AdminOverview }) {
                 </article>
               ))}
             </div>
-          </section>
-          <section id="orders">
+          </AdminSection>
+          <AdminSection id="orders" eyebrow="Fulfillment" title="Orders">
             <div className="admin-heading">
-              <div>
-                <p className="eyebrow">Fulfillment</p>
-                <h2>Orders</h2>
-              </div>
               <input
                 value={orderSearch}
-                onChange={(event) => setOrderSearch(event.target.value)}
+                onChange={(event) => {
+                  setOrderSearch(event.target.value);
+                  orderPages.pager.setPage(0);
+                }}
                 placeholder="Search order, customer, phone or address"
                 aria-label="Search orders"
               />
             </div>
             <div className="admin-orders-list">
-              {visibleOrders.map((order) => (
+              {orderPages.rows.map((order) => (
                 <OrderCard key={order.id} order={order} />
               ))}
               {visibleOrders.length === 0 && (
                 <p className="admin-empty">No matching orders found.</p>
               )}
             </div>
-          </section>
-          <section id="products">
-            <p className="eyebrow">Catalog</p>
-            <h2>Products</h2>
+            <Pagination pager={orderPages.pager} label="Orders" />
+          </AdminSection>
+          <AdminSection id="products" eyebrow="Catalog" title="Products">
             <CatalogManager products={overview.products} />
-          </section>
-          <section id="inventory">
-            <p className="eyebrow">Stock ledger</p>
-            <h2>Inventory</h2>
+          </AdminSection>
+          <AdminSection id="inventory" eyebrow="Stock ledger" title="Inventory">
             <div className="mt-5 grid gap-3">
-              {overview.inventory.map((item) => (
+              {inventoryPages.rows.map((item) => (
                 <InventoryForm key={item.id} item={item} />
               ))}
             </div>
-          </section>
-          <section id="customers">
-            <p className="eyebrow">Relationships</p>
-            <h2>Customers & access</h2>
+            <Pagination pager={inventoryPages.pager} label="Inventory" />
+          </AdminSection>
+          <AdminSection
+            id="customers"
+            eyebrow="Relationships"
+            title="Customers & access"
+          >
             <div className="admin-table">
               <table>
                 <thead>
@@ -392,7 +558,7 @@ export default function AdminPortal({ overview }: { overview: AdminOverview }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {overview.customers.map((customer) => (
+                  {customerPages.rows.map((customer) => (
                     <tr key={customer.id}>
                       <td data-label="Customer">
                         {customer.fullName ?? "—"}
@@ -428,15 +594,16 @@ export default function AdminPortal({ overview }: { overview: AdminOverview }) {
                 </tbody>
               </table>
             </div>
-          </section>
-          <section id="traffic">
+            <Pagination pager={customerPages.pager} label="Customers" />
+          </AdminSection>
+          <AdminSection
+            id="traffic"
+            eyebrow="Audience"
+            title="Where the traffic is"
+          >
             <div className="admin-heading">
               <div>
-                <p className="eyebrow">Audience</p>
-                <h2 className="display-title admin-title">
-                  Where the traffic is.
-                </h2>
-                <p className="text-subtle mt-2 max-w-prose text-sm">
+                <p className="text-subtle max-w-prose text-sm">
                   First-party page views over the last 30 days, by state, and
                   the share of shoppers who added to cart but did not buy. GA4
                   holds the full report; this is the at-a-glance version.
@@ -479,13 +646,9 @@ export default function AdminPortal({ overview }: { overview: AdminOverview }) {
               </article>
             </div>
             <IndiaTrafficMap data={overview.traffic.byRegion} />
-          </section>
-          <section id="leads">
+          </AdminSection>
+          <AdminSection id="leads" eyebrow="Funnel" title="Potential customers">
             <div className="admin-heading">
-              <div>
-                <p className="eyebrow">Funnel</p>
-                <h2>Potential customers</h2>
-              </div>
               <a
                 href="/api/admin/leads"
                 className="btn-ghost inline-flex items-center gap-2"
@@ -505,13 +668,19 @@ export default function AdminPortal({ overview }: { overview: AdminOverview }) {
             <div className="admin-heading mt-6">
               <input
                 value={leadSearch}
-                onChange={(event) => setLeadSearch(event.target.value)}
+                onChange={(event) => {
+                  setLeadSearch(event.target.value);
+                  leadPages.pager.setPage(0);
+                }}
                 placeholder="Search email or name"
                 aria-label="Search leads"
               />
               <select
                 value={leadStageFilter}
-                onChange={(event) => setLeadStageFilter(event.target.value)}
+                onChange={(event) => {
+                  setLeadStageFilter(event.target.value);
+                  leadPages.pager.setPage(0);
+                }}
                 aria-label="Filter by stage"
               >
                 <option value="">All stages</option>
@@ -535,7 +704,7 @@ export default function AdminPortal({ overview }: { overview: AdminOverview }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {visibleLeads.map((lead) => (
+                  {leadPages.rows.map((lead) => (
                     <tr key={lead.email}>
                       <td data-label="Lead">
                         {lead.fullName ?? "—"}
@@ -568,10 +737,89 @@ export default function AdminPortal({ overview }: { overview: AdminOverview }) {
                 </tbody>
               </table>
             </div>
-          </section>
-          <section id="coupons">
-            <p className="eyebrow">Offers</p>
-            <h2>Coupons</h2>
+            <Pagination pager={leadPages.pager} label="Leads" />
+          </AdminSection>
+          <AdminSection id="reviews" eyebrow="Moderation" title="Reviews">
+            <p className="admin-note">
+              Reviews go live as soon as they are posted. Hide spam to take it
+              off the storefront; highlight a review to pin it to the top of its
+              product&rsquo;s panel. A customer editing a highlighted review
+              removes the highlight until you approve it again.
+            </p>
+            {overview.reviews.length === 0 && (
+              <p className="admin-empty">No reviews yet.</p>
+            )}
+            <div className="admin-review-list mt-5">
+              {reviewPages.rows.map((review) => (
+                <article
+                  key={review.id}
+                  data-hidden={review.status === "HIDDEN" || undefined}
+                >
+                  <header>
+                    <span
+                      className="admin-review-stars"
+                      aria-label={`${review.rating} out of 5`}
+                    >
+                      {[1, 2, 3, 4, 5].map((value) => (
+                        <Star
+                          key={value}
+                          size={13}
+                          aria-hidden="true"
+                          data-filled={value <= review.rating || undefined}
+                        />
+                      ))}
+                    </span>
+                    <a href={`/products/${review.productSlug}#reviews`}>
+                      {review.productName}
+                    </a>
+                    {review.featured && <em>Highlighted</em>}
+                    {review.status === "HIDDEN" && <em>Hidden</em>}
+                    {review.verifiedPurchase && <em>Verified buyer</em>}
+                  </header>
+                  {review.title && <strong>{review.title}</strong>}
+                  <p>{review.body}</p>
+                  <footer>
+                    <span>
+                      {review.authorName}
+                      {review.customerEmail &&
+                        ` · ${review.customerEmail}`} ·{" "}
+                      {new Date(review.createdAt).toLocaleDateString("en-IN")}
+                    </span>
+                    <div>
+                      {review.status === "PUBLISHED" && (
+                        <form action={moderateReviewAction}>
+                          <input type="hidden" name="id" value={review.id} />
+                          <input
+                            type="hidden"
+                            name="op"
+                            value={review.featured ? "unfeature" : "feature"}
+                          />
+                          <button className="btn-ghost">
+                            {review.featured ? "Remove highlight" : "Highlight"}
+                          </button>
+                        </form>
+                      )}
+                      <form action={moderateReviewAction}>
+                        <input type="hidden" name="id" value={review.id} />
+                        <input
+                          type="hidden"
+                          name="op"
+                          value={
+                            review.status === "HIDDEN" ? "publish" : "hide"
+                          }
+                        />
+                        <button className="btn-ghost">
+                          {review.status === "HIDDEN" ? "Restore" : "Take down"}
+                        </button>
+                      </form>
+                    </div>
+                  </footer>
+                </article>
+              ))}
+            </div>
+            <Pagination pager={reviewPages.pager} label="Reviews" />
+          </AdminSection>
+          <AdminSection id="coupons" eyebrow="Offers" title="Coupons">
             <form action={couponAction} className="admin-form admin-coupon">
               <input name="code" placeholder="CODE" required />
               <select name="type">
@@ -619,7 +867,7 @@ export default function AdminPortal({ overview }: { overview: AdminOverview }) {
               <Status state={coupon} />
             </form>
             <div className="admin-product-grid mt-5">
-              {overview.coupons.map((item) => (
+              {couponPages.rows.map((item) => (
                 <article key={item.id}>
                   <div>
                     <strong>{item.code}</strong>
@@ -638,12 +886,11 @@ export default function AdminPortal({ overview }: { overview: AdminOverview }) {
                 </article>
               ))}
             </div>
-          </section>
-          <section id="activity">
-            <p className="eyebrow">Audit trail</p>
-            <h2>Activity</h2>
+            <Pagination pager={couponPages.pager} label="Coupons" />
+          </AdminSection>
+          <AdminSection id="activity" eyebrow="Audit trail" title="Activity">
             <div className="activity-list">
-              {overview.activity.map((item) => (
+              {activityPages.rows.map((item) => (
                 <div key={item.id}>
                   <span>{item.event.replaceAll(".", " · ")}</span>
                   <time>
@@ -652,10 +899,13 @@ export default function AdminPortal({ overview }: { overview: AdminOverview }) {
                 </div>
               ))}
             </div>
-          </section>
-          <section id="settings">
-            <p className="eyebrow">Configuration</p>
-            <h2>Store settings</h2>
+            <Pagination pager={activityPages.pager} label="Activity" />
+          </AdminSection>
+          <AdminSection
+            id="settings"
+            eyebrow="Configuration"
+            title="Store settings"
+          >
             <form action={settingsAction} className="admin-form settings-form">
               <label className="field">
                 <span>Support email</span>
@@ -702,7 +952,7 @@ export default function AdminPortal({ overview }: { overview: AdminOverview }) {
               </button>
               <Status state={settings} />
             </form>
-          </section>
+          </AdminSection>
         </div>
       </div>
     </main>

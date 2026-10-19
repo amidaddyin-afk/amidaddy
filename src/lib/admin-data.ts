@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { listAdminProducts } from "@/lib/catalog";
 import { listOrders, type OrderRecord } from "@/lib/orders";
 import type { Product } from "@/lib/data";
+import { listAdminReviews, type AdminReview } from "@/lib/reviews";
 import {
   getLeadFunnel,
   listLeads,
@@ -62,6 +63,7 @@ export type AdminOverview = {
   }>;
   leadFunnel: LeadFunnel;
   leads: LeadRecord[];
+  reviews: AdminReview[];
   traffic: {
     byRegion: RegionTraffic[];
     abandonment: CartAbandonment;
@@ -88,6 +90,7 @@ export async function getAdminOverview(): Promise<AdminOverview> {
     refunds,
     leadFunnel,
     leads,
+    reviews,
   ] = await Promise.all([
     listOrders().catch(() => []),
     listAdminProducts().catch(() => []),
@@ -132,6 +135,7 @@ export async function getAdminOverview(): Promise<AdminOverview> {
         }) satisfies LeadFunnel,
     ),
     listLeads({ limit: 250 }).catch(() => []),
+    listAdminReviews().catch(() => []),
   ]);
   const [trafficByRegion, cartAbandonment] = await Promise.all([
     getTrafficByRegion(30).catch(() => []),
@@ -203,6 +207,7 @@ export async function getAdminOverview(): Promise<AdminOverview> {
     inventory: inventoryRows,
     leadFunnel,
     leads,
+    reviews,
     traffic: { byRegion: trafficByRegion, abandonment: cartAbandonment },
     metrics: {
       netRevenuePaise: gross - refundsPaise,

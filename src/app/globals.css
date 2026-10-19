@@ -2149,6 +2149,70 @@ main.house-home {
   padding: 0.65rem;
   color: white;
 }
+.admin-note {
+  max-width: 70ch;
+  margin-top: 0.6rem;
+  color: var(--fg-subtle);
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+.admin-review-list {
+  display: grid;
+  gap: 0.8rem;
+}
+.admin-review-list article {
+  display: grid;
+  gap: 0.6rem;
+  border: 1px solid var(--line);
+  padding: 1.2rem;
+}
+.admin-review-list article[data-hidden] {
+  opacity: 0.55;
+}
+.admin-review-list header,
+.admin-review-list footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.9rem;
+}
+.admin-review-list footer {
+  justify-content: space-between;
+  color: var(--fg-subtle);
+  font-size: 0.75rem;
+}
+.admin-review-list footer div {
+  display: flex;
+  gap: 0.5rem;
+}
+.admin-review-list header a {
+  font-size: 0.85rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.admin-review-list em {
+  border: 1px solid var(--line-strong);
+  padding: 0.1rem 0.45rem;
+  font-size: 0.62rem;
+  font-style: normal;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.admin-review-list p {
+  font-size: 0.88rem;
+  line-height: 1.6;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+.admin-review-stars {
+  display: inline-flex;
+  gap: 0.1rem;
+  color: var(--line-strong);
+}
+.admin-review-stars svg[data-filled] {
+  color: var(--fg);
+  fill: currentColor;
+}
 .admin-product-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -5643,14 +5707,53 @@ body:has(.cine-root) {
    it right, clear of the headline and buy controls on the left. The still
    photograph underneath fills the sides, so there are no pillarbox bars. */
 @media (min-width: 901px) {
+  /* The band's size, so the mask below can be sized to the footage. */
+  .pdp-hero-media:has(.pdp-hero-video) {
+    container-type: size;
+  }
+  /* The element spans the whole band and the 9:16 footage is drawn inside it
+     (contain at 72%). The feathering mask is a 9:16 layer placed at the same
+     72%, so it lines up with the picture. Sizing the element to the footage
+     instead left a box edge inside the band, which the Ken Burns zoom
+     rendered as a flickering hairline beside the still. */
   .pdp-hero-video {
     object-fit: contain;
     object-position: 72% center;
+    /* Pull the film down to the still's exposure so it reads as one frame. */
+    filter: brightness(0.85) saturate(0.9);
+    -webkit-mask-image:
+      linear-gradient(to right, transparent, #000 24%, #000 76%, transparent),
+      linear-gradient(to bottom, transparent, #000 14%, #000 82%, transparent);
+    -webkit-mask-composite: source-in;
+    mask-image:
+      linear-gradient(to right, transparent, #000 24%, #000 76%, transparent),
+      linear-gradient(to bottom, transparent, #000 14%, #000 82%, transparent);
+    mask-composite: intersect;
+    mask-size: calc(100cqh * 9 / 16) 100%;
+    mask-position: 72% center;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: calc(100cqh * 9 / 16) 100%;
+    -webkit-mask-position: 72% center;
+    -webkit-mask-repeat: no-repeat;
   }
   /* Darken the still behind the video so the two layers read as one image
      rather than a video pasted onto a photo. */
   .pdp-hero-media:has(.pdp-hero-video) :where(img) {
     filter: brightness(0.45) saturate(0.85);
+  }
+  /* The film covers the right of the band, so a full-width still loses
+     whatever sits on its right — on Billionaire that was the bottle, leaving
+     only a whisky glass on show. Confine the still to the strip left of the
+     film so the whole photograph, bottle included, is what shows there. */
+  .pdp-hero-media:has(.pdp-hero-video) {
+    background: var(--cine-ink);
+  }
+  .pdp-hero-media:has(.pdp-hero-video) :where(img) {
+    width: 55% !important;
+    /* Dissolve the still's right edge into the band where the film's own
+       feathered edge begins, instead of a hard seam behind it. */
+    -webkit-mask-image: linear-gradient(to right, #000 68%, transparent);
+    mask-image: linear-gradient(to right, #000 68%, transparent);
   }
 }
 .pdp-hero-veil {
@@ -6114,6 +6217,204 @@ body:has(.cine-root) {
   padding-top: 1rem;
   color: var(--cine-paper-dim);
   line-height: 1.75;
+}
+
+/* ---- reviews ---- */
+.pdp-reviews {
+  max-width: 1200px;
+  margin-inline: auto;
+  padding: clamp(4rem, 11vh, 8rem) var(--cine-pad) 0;
+}
+.pdp-reviews-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem 3rem;
+  margin-bottom: clamp(1.8rem, 5vh, 3rem);
+}
+.pdp-reviews-head .display-title {
+  font-family: var(--font-display), "Inter", sans-serif;
+  font-size: clamp(2.4rem, 6vw, 4.4rem);
+  letter-spacing: -0.03em;
+}
+.pdp-reviews-head p {
+  margin-top: 0.9rem;
+  max-width: 46ch;
+  color: var(--cine-paper-dim);
+}
+.pdp-reviews-score {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.pdp-reviews-score strong {
+  font-family: var(--font-display), "Inter", sans-serif;
+  font-size: clamp(2.6rem, 5vw, 3.6rem);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+.pdp-reviews-count {
+  display: block;
+  margin-top: 0.35rem;
+  color: var(--cine-paper-dim);
+  font-size: 0.8rem;
+}
+.review-stars {
+  display: inline-flex;
+  gap: 0.15rem;
+  color: var(--cine-line);
+}
+.review-stars svg[data-filled],
+.pdp-review-rate svg[data-filled] {
+  color: var(--cine-gold);
+  fill: currentColor;
+}
+.pdp-review-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+  gap: 1rem;
+  padding: 0;
+  list-style: none;
+}
+.pdp-review {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  border: 1px solid var(--cine-line);
+  padding: clamp(1.3rem, 3vw, 1.8rem);
+}
+.pdp-review[data-featured] {
+  grid-column: 1 / -1;
+  border-color: var(--cine-paper);
+}
+.pdp-review[data-featured] p {
+  font-family: var(--font-display), "Inter", sans-serif;
+  font-size: clamp(1.15rem, 2.2vw, 1.5rem);
+  line-height: 1.5;
+  color: var(--cine-paper);
+}
+.pdp-review-flag {
+  align-self: flex-start;
+  border: 1px solid var(--cine-paper);
+  padding: 0.25rem 0.6rem;
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.pdp-review h3 {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--cine-paper);
+}
+.pdp-review p {
+  color: var(--cine-paper-dim);
+  line-height: 1.7;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+.pdp-review footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 1rem;
+  margin-top: auto;
+  padding-top: 0.6rem;
+  color: var(--cine-paper-faint);
+  font-size: 0.78rem;
+}
+.pdp-review footer > span:first-child {
+  color: var(--cine-paper);
+}
+.pdp-review-verified {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.pdp-review-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 3rem;
+  margin-top: 1.5rem;
+  border-top: 1px solid var(--cine-line);
+  padding-top: 1.5rem;
+  color: var(--cine-paper-dim);
+}
+.pdp-review-form {
+  display: grid;
+  gap: 1rem;
+  max-width: 640px;
+  margin-top: 1.5rem;
+  border-top: 1px solid var(--cine-line);
+  padding-top: 1.5rem;
+}
+.pdp-review-form fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+.pdp-review-form legend {
+  margin-bottom: 0.6rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--cine-paper-dim);
+}
+.pdp-review-rate {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--cine-line);
+}
+.pdp-review-rate label {
+  position: relative;
+  cursor: pointer;
+  padding: 0.2rem;
+}
+.pdp-review-rate input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+.pdp-review-rate label:has(input:focus-visible) {
+  outline: 2px solid var(--cine-paper);
+  outline-offset: 2px;
+}
+.pdp-review-rate-label {
+  margin-left: 0.6rem;
+  color: var(--cine-paper-dim);
+  font-size: 0.85rem;
+}
+.pdp-review-input {
+  width: 100%;
+  border: 1px solid var(--cine-line);
+  background: transparent;
+  padding: 0.85rem 1rem;
+  color: var(--cine-paper);
+  font: inherit;
+  resize: vertical;
+}
+.pdp-review-input:focus {
+  outline: none;
+  border-color: var(--cine-paper);
+}
+.pdp-review-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+.pdp-review-error {
+  color: #b42318;
+  font-size: 0.85rem;
+}
+.pdp-review-note {
+  color: var(--cine-paper-faint);
+  font-size: 0.75rem;
 }
 
 /* ---- close ---- */
@@ -7922,5 +8223,215 @@ body[data-overlay] .offer-launcher {
   .offer-pop:popover-open > *,
   .offer-pop:popover-open .offer-pop-rows li {
     animation: none;
+  }
+}
+
+/* ==========================================================================
+   Admin portal: collapsible sections, pagination, and colours that hold in
+   both schemes. The sidebar and table headers used --bg-band, which is ink in
+   light mode and paper in dark, so their muted text dropped to 1.5–3:1; the
+   ghost buttons and status pills used fixed gold-brown ink that vanished on
+   the dark surface. Everything here is on the --bg / --fg token pair.
+   ========================================================================== */
+body .admin-shell aside.admin-sidebar {
+  border: 1px solid var(--line);
+  background: var(--bg-raised);
+  color: var(--fg);
+}
+body .admin-shell aside.admin-sidebar nav a {
+  color: var(--fg-muted);
+}
+body .admin-shell aside.admin-sidebar nav a:hover,
+body .admin-shell aside.admin-sidebar nav a:focus-visible {
+  background: var(--bg);
+  color: var(--fg);
+}
+body .admin-shell .admin-table th {
+  background: var(--bg);
+  color: var(--fg-muted);
+}
+body .admin-shell .btn-ghost {
+  border-color: var(--line-strong);
+  color: var(--fg);
+}
+body .admin-shell .btn-ghost:hover {
+  border-color: var(--fg);
+  color: var(--fg);
+}
+body .admin-shell .status-pill {
+  border: 1px solid var(--line-strong);
+  background: transparent;
+  color: var(--fg) !important;
+}
+body .admin-shell .admin-status-error {
+  color: #b42318;
+}
+body .admin-shell .admin-status-ok {
+  color: #1f7a45;
+}
+body .admin-shell :is(input, textarea)::placeholder {
+  color: var(--fg-muted);
+  opacity: 1;
+}
+
+.admin-intro {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+.admin-intro-actions {
+  display: flex;
+  gap: 0.6rem;
+}
+body .admin-shell section {
+  margin: 0;
+  border-top: 1px solid var(--line);
+}
+.admin-section > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.4rem 0;
+  cursor: pointer;
+  list-style: none;
+}
+.admin-section > summary::-webkit-details-marker {
+  display: none;
+}
+.admin-section > summary > span {
+  display: grid;
+  gap: 0.2rem;
+}
+body .admin-shell .admin-section > summary h2 {
+  margin-top: 0;
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+}
+.admin-section > summary:hover h2 {
+  text-decoration: underline;
+  text-underline-offset: 6px;
+  text-decoration-thickness: 1px;
+}
+.admin-section > summary:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: 4px;
+}
+.admin-chevron {
+  flex: none;
+  color: var(--fg-muted);
+  transition: transform 0.25s ease;
+}
+.admin-section:not([open]) .admin-chevron {
+  transform: rotate(-90deg);
+}
+.admin-section-body {
+  padding-bottom: 2.5rem;
+}
+
+.admin-pager {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem 1.5rem;
+  margin-top: 1.2rem;
+  border-top: 1px solid var(--line);
+  padding-top: 1rem;
+  color: var(--fg-muted);
+  font-size: 0.8rem;
+}
+.admin-pager-sizes,
+.admin-pager-steps {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.admin-pager-sizes span {
+  margin-right: 0.3rem;
+}
+.admin-pager button {
+  display: grid;
+  place-items: center;
+  min-width: 2.4rem;
+  height: 2.4rem;
+  border: 1px solid var(--line-strong);
+  background: transparent;
+  color: var(--fg);
+  font-size: 0.8rem;
+}
+.admin-pager button[aria-pressed="true"] {
+  border-color: var(--fg);
+  background: var(--fg);
+  color: var(--bg);
+}
+.admin-pager button:disabled {
+  cursor: not-allowed;
+  opacity: 0.35;
+}
+.admin-pager button:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: 2px;
+}
+
+/* ==========================================================================
+   Site-wide contrast fixes found by the same audit.
+   ========================================================================== */
+/* Header icons: the header is ink in both schemes, but the icons used
+   --color-paper, which turns to ink in dark mode — the search, account and
+   bag icons disappeared. */
+.nav-actions button,
+.nav-actions a,
+.mobile-only {
+  color: #f4f4f0;
+}
+/* Coupon "Apply" and the consent banner's "Accept analytics" painted their
+   label in the same family as their fill (1.2–1.5:1). Accent fill with its
+   paired foreground holds in both schemes. */
+body .checkout-shell .coupon-apply-button,
+.coupon-apply-button {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-fg);
+}
+body .consent-banner .btn-gold {
+  border-color: #f4f4f0;
+  background: #f4f4f0;
+  color: #171b19;
+}
+body .consent-banner .btn-gold:hover {
+  background: transparent;
+  color: #f4f4f0;
+}
+/* The Scent Finder question card is a light card by design; its fill used
+   --color-paper, which goes dark in dark mode under hard-coded ink text. */
+.sf-card {
+  background: #f4f4f0;
+}
+body
+  :is(.checkout-shell, .account-shell, .auth-shell)
+  :is(input, textarea)::placeholder {
+  color: var(--fg-muted);
+  opacity: 1;
+}
+
+@media (prefers-color-scheme: dark) {
+  body .admin-shell .admin-status-error,
+  body .auth-shell [role="alert"],
+  .pdp-review-error {
+    color: #ff8a80;
+  }
+  body .admin-shell .admin-status-ok {
+    color: #7ad3a0;
+  }
+  .house-entry-price b {
+    color: #ff7d8b;
+  }
+  /* The PDP's dark override flips --accent to light but kept the light
+     scheme's light --accent-fg, so filled accent buttons lost their label. */
+  body .cinematic {
+    --accent-fg: #171b19;
   }
 }

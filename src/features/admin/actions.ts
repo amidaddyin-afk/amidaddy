@@ -6,6 +6,7 @@ import { requireAdminUser } from "@/lib/auth";
 import { appendAuditEvent } from "@/lib/audit";
 import { db, transaction } from "@/lib/db";
 import { revalidateStorefront } from "@/lib/revalidate-storefront";
+import { moderateReview } from "@/lib/reviews";
 
 export type AdminActionState = { error?: string; message?: string };
 async function admin() {
@@ -225,4 +226,22 @@ export async function updateUserRoleAction(formData: FormData) {
     });
   });
   revalidatePath("/admin");
+}
+
+/** Review moderation. Hide takes spam off the storefront (and un-highlights
+ * it); feature pins a published review to the top of its product's panel. */
+export async function moderateReviewAction(formData: FormData) {
+  const { user } = await admin();
+  const { id, op } = z
+    .object({
+      id: z.string().uuid(),
+      op: z.enum(["hide", "publish", "feature", "unfeature"]),
+    })
+    .parse(Object.fromEntries(formData));
+  await transaction(async (client) => {
+    await moderateReview(client, id, op);
+    await appendAuditEvent(client, user.id, `review.${op}`, { reviewId: id });
+  });
+  revalidatePath("/admin");
+  revalidateStorefront();
 }

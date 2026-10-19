@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import { ViewTransition } from "react";
 import type { Metadata } from "next";
 import ProductDetail from "@/components/ProductDetail";
+import ProductReviews from "@/components/ProductReviews";
+import { getProductReviews } from "@/lib/reviews";
 import { getCatalogProductBySlug, listCatalogProducts } from "@/lib/catalog";
 
 const SITE_URL =
@@ -90,6 +92,7 @@ export default async function ProductPage({
   const { slug } = await params;
   const product = await getCatalogProductBySlug(slug);
   if (!product) notFound();
+  const reviewSummary = await getProductReviews(product.id);
   const siteUrl = SITE_URL;
   const image = toAbsolute(product.image);
   const jsonLd = JSON.stringify([
@@ -101,6 +104,13 @@ export default async function ProductPage({
       image: product.images.map((item) => toAbsolute(item)),
       brand: { "@type": "Brand", name: "Amidaddy Perfumes" },
       category: "Perfume",
+      ...(reviewSummary.count > 0 && {
+        aggregateRating: {
+          "@type": "AggregateRating",
+          ratingValue: reviewSummary.average.toFixed(1),
+          reviewCount: reviewSummary.count,
+        },
+      }),
       offers: product.variants.map((variant) => ({
         "@type": "Offer",
         url: `${siteUrl}/products/${product.slug}`,
@@ -157,7 +167,17 @@ export default async function ProductPage({
         }}
         default="none"
       >
-        <ProductDetail product={product} />
+        <ProductDetail
+          product={product}
+          reviews={
+            <ProductReviews
+              productId={product.id}
+              productName={product.name}
+              slug={product.slug}
+              summary={reviewSummary}
+            />
+          }
+        />
       </ViewTransition>
     </>
   );
