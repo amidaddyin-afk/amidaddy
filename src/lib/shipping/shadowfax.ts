@@ -154,9 +154,16 @@ export function parseShadowfaxTracking(body: unknown): TrackingEvent[] {
 export const shadowfax: ShippingProvider = {
   id: "shadowfax",
   label: "Shadowfax",
-  configured() {
-    const { token, pickup } = env();
-    return Boolean(token && Object.values(pickup).every(Boolean));
+  missingConfig() {
+    return [
+      "SHADOWFAX_API_TOKEN",
+      "SHIPPING_PICKUP_NAME",
+      "SHIPPING_PICKUP_PHONE",
+      "SHIPPING_PICKUP_ADDRESS",
+      "SHIPPING_PICKUP_CITY",
+      "SHIPPING_PICKUP_STATE",
+      "SHIPPING_PICKUP_PINCODE",
+    ].filter((name) => !process.env[name]?.trim());
   },
   async book(order, clientOrderId) {
     const parsed = bookingResponse.safeParse(

@@ -63,7 +63,8 @@ export type BookingOrder = Pick<
 export interface ShippingProvider {
   id: string;
   label: string;
-  configured(): boolean;
+  /** Names of required environment variables that are unset; empty when ready. */
+  missingConfig(): string[];
   /** Creates the shipment with the courier, which schedules the pickup. */
   book(order: BookingOrder, clientOrderId: string): Promise<{ awb: string }>;
   /** The full event history for an AWB, in any order. */

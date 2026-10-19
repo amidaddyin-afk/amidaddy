@@ -18,9 +18,20 @@ import {
 // Existing shipments keep syncing through the provider that booked them.
 const providers: Record<string, ShippingProvider> = { shadowfax };
 
+const providerName = () =>
+  (process.env.SHIPPING_PROVIDER || "shadowfax").trim().toLowerCase();
+
 export function activeProvider() {
-  const provider = providers[process.env.SHIPPING_PROVIDER ?? "shadowfax"];
-  return provider?.configured() ? provider : null;
+  const provider = providers[providerName()];
+  return provider && !provider.missingConfig().length ? provider : null;
+}
+
+/** Why no provider is active, in words an admin can act on. */
+function configProblem() {
+  const provider = providers[providerName()];
+  if (!provider)
+    return `SHIPPING_PROVIDER is "${providerName()}", expected one of: ${Object.keys(providers).join(", ")}.`;
+  return `${provider.label} is missing: ${provider.missingConfig().join(", ")}. Add them in Vercel and redeploy.`;
 }
 
 export function providerById(id: string) {
@@ -51,10 +62,7 @@ async function activeShipment(orderId: string) {
 /** Books the courier pickup for a paid order. Returns the AWB. */
 export async function bookShipment(orderId: string, actorId?: string) {
   const provider = activeProvider();
-  if (!provider)
-    throw new Error(
-      "No shipping provider is configured. Set SHIPPING_PROVIDER and its credentials.",
-    );
+  if (!provider) throw new Error(configProblem());
   const order = await getOrder(orderId);
   if (!order || !["CONFIRMED", "PROCESSING"].includes(order.status))
     throw new Error("Only confirmed orders can be booked for pickup.");
