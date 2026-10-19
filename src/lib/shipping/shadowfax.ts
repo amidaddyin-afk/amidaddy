@@ -71,7 +71,7 @@ const env = () => ({
     .replace(/\/+$/, ""),
   pickup: {
     name: process.env.SHIPPING_PICKUP_NAME,
-    contact: process.env.SHIPPING_PICKUP_PHONE,
+    contact: tenDigitPhone(process.env.SHIPPING_PICKUP_PHONE ?? ""),
     address_line_1: process.env.SHIPPING_PICKUP_ADDRESS,
     city: process.env.SHIPPING_PICKUP_CITY,
     state: process.env.SHIPPING_PICKUP_STATE,
@@ -93,10 +93,24 @@ async function call(path: string, init?: RequestInit): Promise<unknown> {
     },
     signal: AbortSignal.timeout(10_000),
   });
-  const body = await response.json().catch(() => null);
-  if (!response.ok)
-    throw new Error(`Shadowfax returned HTTP ${response.status}.`);
-  return body;
+  const text = await response.text();
+  if (!response.ok) {
+    // Shadowfax explains validation failures in the body; pass it on so
+    // the admin sees which field was refused, not just a status code.
+    let reason = text;
+    try {
+      const json = JSON.parse(text) as { errors?: unknown; message?: unknown };
+      reason = JSON.stringify(json.errors ?? json.message ?? json);
+    } catch {}
+    throw new Error(
+      `Shadowfax returned HTTP ${response.status}: ${reason.slice(0, 300)}`,
+    );
+  }
+  try {
+    return JSON.parse(text);
+  } catch {
+    return null;
+  }
 }
 
 export function shadowfaxOrderBody(order: BookingOrder, clientOrderId: string) {
