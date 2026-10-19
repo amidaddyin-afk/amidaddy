@@ -11,6 +11,7 @@ import Analytics from "@/components/Analytics";
 import ConsentBanner from "@/components/ConsentBanner";
 import OfferLauncher from "@/components/OfferLauncher";
 import PageViewTracker from "@/components/PageViewTracker";
+import ScrollToTopOnNavigate from "@/components/ScrollToTopOnNavigate";
 
 // Single family for the whole system (the reference's Aeonik substitute).
 // Both CSS vars point at the same font so every existing
@@ -62,6 +63,7 @@ export default function RootLayout({
       <body className={`${display.variable} ${sans.variable}`}>
         <Analytics />
         <PageViewTracker />
+        <ScrollToTopOnNavigate />
         <CartProvider>
           <div data-surface="chrome">
             <AnnouncementBar />

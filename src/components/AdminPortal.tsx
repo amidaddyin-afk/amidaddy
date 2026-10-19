@@ -22,6 +22,7 @@ import {
   Users,
 } from "lucide-react";
 import type { AdminOverview } from "@/lib/admin-data";
+import type { OrderStatus } from "@/lib/orders";
 import { formatInr } from "@/lib/money";
 import {
   adjustVariantStockAction,
@@ -94,6 +95,27 @@ function AdminSection({
     </section>
   );
 }
+
+/** Fulfilment order, so the filter row reads left to right like an order's
+ *  life. CONFIRMED is set only once Razorpay confirms payment. */
+const ORDER_STATUSES = [
+  "CONFIRMED",
+  "PROCESSING",
+  "SHIPPED",
+  "DELIVERED",
+  "PAYMENT_PENDING",
+  "CANCELLED",
+  "EXPIRED",
+] as const satisfies readonly OrderStatus[];
+const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
+  CONFIRMED: "Paid · to pack",
+  PROCESSING: "Processing",
+  SHIPPED: "Shipped",
+  DELIVERED: "Delivered",
+  PAYMENT_PENDING: "Awaiting payment",
+  CANCELLED: "Cancelled",
+  EXPIRED: "Expired",
+};
 
 const PAGE_SIZES = [10, 20, 30] as const;
 
@@ -324,7 +346,7 @@ function OrderCard({ order }: { order: AdminOverview["orders"][number] }) {
         </div>
         <div className="admin-order-summary">
           <span className="status-pill">
-            {order.status.replaceAll("_", " ")}
+            {ORDER_STATUS_LABELS[order.status]}
           </span>
           <strong>{formatInr(order.totalPaise)}</strong>
           <span>{order.paymentStatus.replaceAll("_", " ")}</span>
@@ -403,11 +425,19 @@ export default function AdminPortal({ overview }: { overview: AdminOverview }) {
     initial,
   );
   const [orderSearch, setOrderSearch] = useState("");
-  const visibleOrders = overview.orders.filter((order) =>
+  const [orderStatus, setOrderStatus] = useState<OrderStatus | "ALL">("ALL");
+  const searchedOrders = overview.orders.filter((order) =>
     `${order.id} ${order.email} ${order.customerName} ${order.phone} ${order.address} ${order.city ?? ""} ${order.state ?? ""} ${order.postalCode ?? ""}`
       .toLowerCase()
       .includes(orderSearch.toLowerCase()),
   );
+  const visibleOrders =
+    orderStatus === "ALL"
+      ? searchedOrders
+      : searchedOrders.filter((order) => order.status === orderStatus);
+  const statusCounts = new Map<string, number>();
+  for (const order of searchedOrders)
+    statusCounts.set(order.status, (statusCounts.get(order.status) ?? 0) + 1);
   const cards = [
     ["Net revenue", formatInr(overview.metrics.netRevenuePaise)],
     ["Orders", String(overview.metrics.orderCount)],
@@ -519,6 +549,36 @@ export default function AdminPortal({ overview }: { overview: AdminOverview }) {
                 placeholder="Search order, customer, phone or address"
                 aria-label="Search orders"
               />
+            </div>
+            <div
+              className="admin-status-filter"
+              role="group"
+              aria-label="Filter orders by status"
+            >
+              {(["ALL", ...ORDER_STATUSES] as const).map((status) => {
+                const count =
+                  status === "ALL"
+                    ? searchedOrders.length
+                    : (statusCounts.get(status) ?? 0);
+                // Empty statuses stay hidden unless selected, so the row only
+                // lists what there is to look at.
+                if (status !== "ALL" && !count && orderStatus !== status)
+                  return null;
+                return (
+                  <button
+                    key={status}
+                    type="button"
+                    aria-pressed={orderStatus === status}
+                    onClick={() => {
+                      setOrderStatus(status);
+                      orderPages.pager.setPage(0);
+                    }}
+                  >
+                    {status === "ALL" ? "All" : ORDER_STATUS_LABELS[status]}
+                    <span>{count}</span>
+                  </button>
+                );
+              })}
             </div>
             <div className="admin-orders-list">
               {orderPages.rows.map((order) => (

@@ -8435,3 +8435,47 @@ body
     --accent-fg: #171b19;
   }
 }
+
+/* Order status filter chips above the admin order list. */
+.admin-status-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0 1.2rem;
+}
+.admin-status-filter button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.3rem;
+  border: 1px solid var(--line-strong);
+  background: transparent;
+  padding: 0.35rem 0.8rem;
+  color: var(--fg);
+  font-size: 0.78rem;
+}
+.admin-status-filter button span {
+  min-width: 1.4rem;
+  border-radius: 999px;
+  background: var(--line);
+  padding: 0.05rem 0.4rem;
+  color: var(--fg);
+  font-size: 0.7rem;
+  text-align: center;
+}
+.admin-status-filter button:hover {
+  border-color: var(--fg);
+}
+.admin-status-filter button[aria-pressed="true"] {
+  border-color: var(--fg);
+  background: var(--fg);
+  color: var(--bg);
+}
+.admin-status-filter button[aria-pressed="true"] span {
+  background: var(--bg);
+  color: var(--fg);
+}
+.admin-status-filter button:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: 2px;
+}
