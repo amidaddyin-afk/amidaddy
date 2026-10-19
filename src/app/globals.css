@@ -2007,6 +2007,112 @@ main.house-home {
   letter-spacing: 0.14em;
   font-size: 0.7rem;
 }
+/* Shipment tracking: milestones stack bottom to top, line fills upward. */
+.track {
+  display: grid;
+  gap: 2.5rem;
+  margin-top: 2.5rem;
+}
+.track-latest {
+  padding: 1.5rem;
+}
+.track-latest-label {
+  margin: 0.75rem 0 0.25rem;
+  font-size: 1.15rem;
+}
+.track-exception {
+  margin-top: 1rem;
+  border: 1px solid rgba(213, 184, 123, 0.3);
+  padding: 0.75rem;
+  color: var(--champagne);
+  font-size: 0.8rem;
+}
+.track-timeline {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 1.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.track-timeline > li {
+  position: relative;
+  display: flex;
+  gap: 1rem;
+  color: var(--fg-subtle);
+}
+/* Segment from this milestone's dot down to the one below it. */
+.track-timeline > li::before {
+  content: "";
+  position: absolute;
+  top: 0.75rem;
+  bottom: -1.75rem;
+  left: calc(0.75rem - 0.5px);
+  width: 1px;
+  background: var(--line);
+}
+.track-timeline > li:first-child::before {
+  display: none;
+}
+.track-timeline > li.done::before {
+  background: var(--champagne);
+  transform-origin: bottom;
+  animation: track-fill 0.45s ease-out both;
+  animation-delay: calc(var(--i) * 0.12s);
+}
+@keyframes track-fill {
+  from {
+    transform: scaleY(0);
+  }
+}
+.track-dot {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  place-items: center;
+  border: 1px solid var(--line);
+  background: var(--bg-raised);
+}
+.track-timeline > li.done {
+  color: inherit;
+}
+.track-timeline > li.done .track-dot {
+  border-color: var(--champagne);
+  color: var(--champagne);
+}
+.track-timeline > li.current .track-dot {
+  background: var(--champagne);
+  box-shadow: 0 0 0 0.3rem rgba(213, 184, 123, 0.18);
+}
+.track-milestone {
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.track-timeline > li.current .track-milestone {
+  color: var(--champagne);
+}
+.track-events {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0.85rem 0 0;
+  border-left: 1px solid var(--line);
+  padding: 0 0 0 0.85rem;
+  list-style: none;
+  font-size: 0.85rem;
+}
+.track-events code {
+  font-size: 0.7rem;
+  opacity: 0.6;
+}
+@media (prefers-reduced-motion: reduce) {
+  .track-timeline > li.done::before {
+    animation: none;
+  }
+}
 .order-line {
   display: flex;
   align-items: center;

@@ -3,12 +3,13 @@ import { expirePendingOrders } from "@/lib/orders";
 import { pruneRequestLimits } from "@/lib/request-rate-limit";
 import { pruneAnalyticsEvents } from "@/lib/analytics-server";
 import { runLeadNurtureCampaigns } from "@/lib/campaigns";
+import { syncOpenShipments } from "@/lib/shipping";
 
 export async function GET(request: NextRequest) {
   const secret = process.env.CRON_SECRET;
   if (!secret || request.headers.get("authorization") !== `Bearer ${secret}`)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  const [expired, prunedRateLimits, prunedAnalytics, leadNurture] =
+  const [expired, prunedRateLimits, prunedAnalytics, leadNurture, shipments] =
     await Promise.all([
       expirePendingOrders(),
       pruneRequestLimits(),
@@ -20,11 +21,16 @@ export async function GET(request: NextRequest) {
         console.error("[maintenance] lead nurture campaigns failed:", error);
         return { signupNudges: 0, checkoutNudges: 0 };
       }),
+      syncOpenShipments().catch((error) => {
+        console.error("[maintenance] shipment sync failed:", error);
+        return 0;
+      }),
     ]);
   return NextResponse.json({
     expired,
     prunedRateLimits,
     prunedAnalytics,
     leadNurture,
+    shipments,
   });
 }

@@ -9,6 +9,7 @@ import {
   issueRefund,
   updateOrderFulfillment,
 } from "@/lib/orders";
+import { bookShipment, syncOrderShipment } from "@/lib/shipping";
 
 export type OrderActionState = { error?: string; message?: string };
 
@@ -137,4 +138,30 @@ export async function refundOrderAction(
         error instanceof Error ? error.message : "Unable to issue the refund.",
     };
   }
+}
+
+export async function bookShipmentAction(
+  _: OrderActionState,
+  formData: FormData,
+): Promise<OrderActionState> {
+  const { user } = await requireAdminUser();
+  const orderId = z.string().min(8).max(80).safeParse(formData.get("orderId"));
+  if (!orderId.success) return { error: "Invalid order." };
+  try {
+    const awb = await bookShipment(orderId.data, user.id);
+    revalidatePath("/admin");
+    return { message: `Pickup booked. AWB ${awb}.` };
+  } catch (error) {
+    return {
+      error:
+        error instanceof Error ? error.message : "Unable to book the pickup.",
+    };
+  }
+}
+
+export async function refreshTrackingAction(formData: FormData) {
+  await requireAdminUser();
+  const orderId = z.string().min(8).max(80).parse(formData.get("orderId"));
+  await syncOrderShipment(orderId);
+  revalidatePath(`/admin/orders/${orderId}/track`);
 }

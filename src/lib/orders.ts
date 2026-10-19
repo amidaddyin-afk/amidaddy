@@ -18,6 +18,7 @@ import { includedGstPaise } from "@/lib/money";
 import { revalidateStorefront } from "@/lib/revalidate-storefront";
 import { recordLeadCheckoutStarted, recordLeadOrderPaid } from "@/lib/leads";
 import { brandedEmailHtml, sendMail } from "@/lib/mailer";
+import { autoBookShipment, cancelActiveShipment } from "@/lib/shipping";
 
 export type OrderStatus =
   | "PAYMENT_PENDING"
@@ -546,6 +547,7 @@ export async function markOrderPaid(
     // prevents a confusing dead end rather than an oversell.
     revalidateStorefront();
     await sendOrderEmail(orderId, "order-confirmed");
+    await autoBookShipment(orderId);
     const order = await getOrder(orderId);
     if (order)
       await recordLeadOrderPaid(
@@ -647,6 +649,8 @@ export async function cancelOrder(
   if (!order) throw new Error("Order not found.");
   if (!isCustomerCancellationAllowed(order.status))
     throw new Error("This order can no longer be cancelled online.");
+  // Before the refund: if the courier already has the parcel, stop here.
+  await cancelActiveShipment(orderId, reason);
   let refundId: string | null = null;
   if (order.paymentStatus === "PAID") {
     if (!order.paymentId)

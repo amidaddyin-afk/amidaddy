@@ -231,6 +231,7 @@ model Order {
   refunds            Refund[]
   couponRedemptions  CouponRedemption[]
   campaignSends      CampaignSend[]
+  shipments          Shipment[]
 
   @@index([customerId, createdAt])
   @@index([status, createdAt])
@@ -470,4 +471,37 @@ model ProductReview {
   @@unique([productId, customerId])
   @@index([productId, status, featured(sort: Desc), createdAt(sort: Desc)], map: "product_reviews_listing_idx")
   @@map("product_reviews")
+}
+
+// Partial unique index shipments_one_active_per_order (one live booking per
+// order) lives in the migration; Prisma cannot express partial indexes.
+model Shipment {
+  id        String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orderId   String          @map("order_id")
+  provider  String
+  awb       String
+  stage     String          @default("BOOKED")
+  syncedAt  DateTime?       @map("synced_at") @db.Timestamptz(6)
+  createdAt DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime        @default(now()) @map("updated_at") @db.Timestamptz(6)
+  order     Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  events    ShipmentEvent[]
+
+  @@unique([provider, awb])
+  @@map("shipments")
+}
+
+model ShipmentEvent {
+  id         BigInt   @id @default(autoincrement())
+  shipmentId String   @map("shipment_id") @db.Uuid
+  occurredAt DateTime @map("occurred_at") @db.Timestamptz(6)
+  code       String
+  label      String
+  remarks    String?
+  location   String?
+  stage      String?
+  shipment   Shipment @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+
+  @@unique([shipmentId, code, occurredAt])
+  @@map("shipment_events")
 }

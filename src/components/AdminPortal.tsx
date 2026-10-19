@@ -34,6 +34,7 @@ import {
   type AdminActionState,
 } from "@/features/admin/actions";
 import {
+  bookShipmentAction,
   cancelAdminOrderAction,
   refundOrderAction,
   updateFulfillmentAction,
@@ -230,6 +231,13 @@ function OrderActions({ order }: { order: AdminOverview["orders"][number] }) {
     cancelAdminOrderAction,
     initial,
   );
+  const [booking, bookAction, bookPending] = useActionState(
+    bookShipmentAction,
+    initial,
+  );
+  const canBook =
+    !order.trackingNumber &&
+    (order.status === "CONFIRMED" || order.status === "PROCESSING");
   const next =
     order.status === "CONFIRMED"
       ? "PROCESSING"
@@ -241,6 +249,20 @@ function OrderActions({ order }: { order: AdminOverview["orders"][number] }) {
   return (
     <details className="admin-details">
       <summary>Manage</summary>
+      {canBook && (
+        <form action={bookAction} className="admin-form">
+          <input type="hidden" name="orderId" value={order.id} />
+          <button disabled={bookPending} className="btn-ghost">
+            Book courier pickup
+          </button>
+          <Status state={booking} />
+        </form>
+      )}
+      {order.trackingNumber && (
+        <a href={`/admin/orders/${order.id}/track`} className="btn-ghost">
+          Track shipment
+        </a>
+      )}
       {next && (
         <form action={fulfillmentAction} className="admin-form">
           <input type="hidden" name="orderId" value={order.id} />

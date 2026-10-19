@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ExternalLink, RotateCcw, XCircle } from "lucide-react";
+import { RotateCcw, Truck, XCircle } from "lucide-react";
 import OrderTimeline from "@/components/OrderTimeline";
 import { requireUser } from "@/lib/auth";
 import { claimGuestOrders, getCustomerOrder } from "@/lib/orders";
@@ -21,6 +21,9 @@ export default async function OrderPage({
   const order = await getCustomerOrder(id, user.id).catch(() => undefined);
   if (!order) notFound();
   const canCancel = ["PAYMENT_PENDING", "CONFIRMED"].includes(order.status);
+  const canTrack = !["PAYMENT_PENDING", "CANCELLED", "EXPIRED"].includes(
+    order.status,
+  );
   return (
     <main data-surface="commerce" className="account-shell">
       <div className="mx-auto max-w-5xl px-5 pt-16 pb-24 sm:px-8">
@@ -43,9 +46,22 @@ export default async function OrderPage({
               })}
             </p>
           </div>
-          <a href={`/account/orders/${order.id}/receipt`} className="btn-ghost">
-            Download receipt
-          </a>
+          <div className="flex flex-wrap gap-3">
+            {canTrack && (
+              <Link
+                href={`/account/orders/${order.id}/track`}
+                className="btn-gold gap-2"
+              >
+                <Truck size={15} /> Track order
+              </Link>
+            )}
+            <a
+              href={`/account/orders/${order.id}/receipt`}
+              className="btn-ghost"
+            >
+              Download receipt
+            </a>
+          </div>
         </div>
         <OrderTimeline status={order.status} />
         <div className="mt-10 grid gap-8 lg:grid-cols-[1.15fr_.85fr]">
@@ -120,16 +136,12 @@ export default async function OrderPage({
                   <p className="text-subtle text-sm">
                     {order.courierName} · {order.trackingNumber}
                   </p>
-                  {order.trackingUrl && (
-                    <a
-                      href={order.trackingUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-link mt-3"
-                    >
-                      Track shipment <ExternalLink size={13} />
-                    </a>
-                  )}
+                  <Link
+                    href={`/account/orders/${order.id}/track`}
+                    className="text-link mt-3"
+                  >
+                    Track shipment <Truck size={13} />
+                  </Link>
                 </div>
               )}
             </section>
