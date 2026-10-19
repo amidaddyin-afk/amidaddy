@@ -3,6 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { providerById, syncShipmentByAwb } from "@/lib/shipping";
 
 // Courier status callback, e.g. /api/shipping/shadowfax/webhook?token=...
+// The token may instead come as an Authorization header ("Token x" or bare),
+// which is how the SFX 360 portal's "Token Number" field sends it.
 //
 // Shadowfax callbacks carry no signature, so the payload is never trusted:
 // it only names an AWB, and the status itself is re-read from the courier's
@@ -20,7 +22,13 @@ export async function POST(
 ) {
   const { provider } = await params;
   const secret = process.env.SHIPPING_WEBHOOK_TOKEN;
-  const token = request.nextUrl.searchParams.get("token") ?? "";
+  const token =
+    request.nextUrl.searchParams.get("token") ??
+    request.headers
+      .get("authorization")
+      ?.replace(/^(Token|Bearer)\s+/i, "")
+      .trim() ??
+    "";
   if (!secret || !providerById(provider) || !sameSecret(token, secret))
     return new NextResponse("Unauthorized", { status: 401 });
   if (Number(request.headers.get("content-length") ?? 0) > 64 * 1024)

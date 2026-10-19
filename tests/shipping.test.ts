@@ -8,6 +8,7 @@ import {
 } from "../src/lib/shipping/stages.ts";
 import {
   parseShadowfaxTracking,
+  shadowfaxOrderBody,
   shadowfaxStage,
   tenDigitPhone,
 } from "../src/lib/shipping/shadowfax.ts";
@@ -126,4 +127,46 @@ test("returned parcels show an exception and no current step", () => {
 
 test("phone numbers are trimmed to 10 digits", () => {
   assert.equal(tenDigitPhone("+91 98765-43210"), "9876543210");
+});
+
+test("shadowfax booking matches the marketplace spec", () => {
+  process.env.SHIPPING_PICKUP_PINCODE = "400069";
+  const body = shadowfaxOrderBody(
+    {
+      id: "AM-1",
+      customerName: "Asha",
+      phone: "+91 98765 43210",
+      address: "1 Road",
+      city: "Pune",
+      state: "Maharashtra",
+      postalCode: "411001",
+      totalPaise: 118_000,
+      taxPaise: 18_000,
+      lines: [
+        {
+          productId: "p",
+          variantId: "v",
+          name: "Oud",
+          size: "100ml",
+          qty: 2,
+          unitPricePaise: 59_000,
+          lineTotalPaise: 118_000,
+          gstRate: 18,
+          taxPaise: 18_000,
+        },
+      ],
+    },
+    "AM-1",
+  );
+  assert.equal(body.order_details.payment_mode, "Prepaid");
+  assert.equal(body.order_details.product_value, 1000);
+  assert.equal(body.order_details.total_amount, 1180);
+  assert.equal(body.customer_details.pincode, 411001);
+  assert.equal(body.rts_details.pincode, 400069);
+  assert.equal(body.product_details[0].price, 590);
+  assert.equal(body.product_details[0].additional_details.quantity, 2);
+  assert.equal(
+    body.product_details[0].additional_details.type_extra_care,
+    "Dangerous Goods",
+  );
 });

@@ -57,6 +57,7 @@ export type BookingOrder = Pick<
   | "state"
   | "postalCode"
   | "totalPaise"
+  | "taxPaise"
   | "lines"
 >;
 

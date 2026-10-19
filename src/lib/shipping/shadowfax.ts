@@ -1,5 +1,6 @@
 // Shadowfax forward-logistics adapter.
-// API reference: https://developer.shadowfax.in/docs/api/forward-logistics
+// API reference (the one the SFX 360 portal links to):
+// https://sfxunifiedapi.docs.apiary.io/ (marketplace model)
 //
 // Shadowfax answers HTTP 200 even when it rejects an order, so success is
 // read from `message`, never the status code.
@@ -23,6 +24,12 @@ const STAGES: Record<string, ShipmentStage> = {
   pickup_not_attempted: "BOOKED",
   pickup_on_hold: "BOOKED",
   picked: "PICKED_UP",
+  recd_at_rev_hub: "IN_TRANSIT",
+  item_manifested: "IN_TRANSIT",
+  bag_received: "IN_TRANSIT",
+  bag_received_at_via: "IN_TRANSIT",
+  bag_in_transit: "IN_TRANSIT",
+  item_misrouted: "IN_TRANSIT",
   received_from_client_warehouse: "PICKED_UP",
   pending_inscan: "PICKED_UP",
   recd_at_fwd_hub: "IN_TRANSIT",
@@ -43,11 +50,14 @@ const STAGES: Record<string, ShipmentStage> = {
   rts: "RETURNING",
   rts_in_process: "RETURNING",
   rts_nd: "RETURNING",
+  rts_ofd: "RETURNING",
+  in_transit_return: "RETURNING",
   rto: "RETURNING",
   rto_nd: "RETURNING",
   rts_d: "RETURNED",
   rto_d: "RETURNED",
   cancelled_by_customer: "CANCELLED",
+  cancelled_by_seller: "CANCELLED",
   lost: "LOST",
 };
 
@@ -56,7 +66,7 @@ export const shadowfaxStage = (code: string): ShipmentStage | null =>
 
 const env = () => ({
   token: process.env.SHADOWFAX_API_TOKEN,
-  baseUrl: (process.env.SHADOWFAX_BASE_URL ?? "https://dale.shadowfax.in")
+  baseUrl: (process.env.SHADOWFAX_BASE_URL || "https://dale.shadowfax.in")
     .trim()
     .replace(/\/+$/, ""),
   pickup: {
@@ -65,7 +75,7 @@ const env = () => ({
     address_line_1: process.env.SHIPPING_PICKUP_ADDRESS,
     city: process.env.SHIPPING_PICKUP_CITY,
     state: process.env.SHIPPING_PICKUP_STATE,
-    pincode: process.env.SHIPPING_PICKUP_PINCODE,
+    pincode: Number(process.env.SHIPPING_PICKUP_PINCODE),
   },
 });
 
@@ -95,14 +105,16 @@ export function shadowfaxOrderBody(order: BookingOrder, clientOrderId: string) {
     address_line_1: order.address,
     city: order.city ?? "",
     state: order.state ?? "",
-    pincode: order.postalCode ?? "",
+    pincode: Number(order.postalCode),
   };
   return {
     order_type: "marketplace",
     order_details: {
       client_order_id: clientOrderId,
-      product_value: order.totalPaise / 100,
-      payment_mode: "prepaid",
+      // product_value excludes GST; total_amount includes it.
+      product_value: (order.totalPaise - order.taxPaise) / 100,
+      total_amount: order.totalPaise / 100,
+      payment_mode: "Prepaid",
       cod_amount: 0,
     },
     customer_details: {
@@ -110,12 +122,19 @@ export function shadowfaxOrderBody(order: BookingOrder, clientOrderId: string) {
       contact: tenDigitPhone(order.phone),
       ...address,
     },
-    pickup_details: { pickup_type: "seller", ...pickup },
-    return_details: { return_type: "seller", ...pickup },
+    pickup_details: pickup,
+    // Undelivered parcels come back to the pickup address.
+    rts_details: pickup,
     product_details: order.lines.map((line) => ({
       sku_id: line.variantId ?? line.productId,
-      sku_name: `${line.name} ${line.size} x${line.qty}`,
-      price: line.lineTotalPaise / 100,
+      sku_name: `${line.name} ${line.size}`,
+      price: line.unitPricePaise / 100,
+      // Alcohol-based perfume is flammable: declared so it moves by surface.
+      additional_details: {
+        requires_extra_care: "True",
+        type_extra_care: "Dangerous Goods",
+        quantity: line.qty,
+      },
     })),
   };
 }
@@ -196,8 +215,9 @@ export const shadowfax: ShippingProvider = {
       method: "POST",
       body: JSON.stringify({ request_id: awb, cancel_remarks: reason }),
     })) as { responseCode?: number; responseMsg?: string } | null;
-    // ponytail: success semantics of responseCode are undocumented; verify on staging.
-    if (body?.responseCode && body.responseCode >= 300)
+    // 200 cancelled (or already cancelling), 304 queued until the parcel
+    // reaches the next facility; anything else is a refusal.
+    if (body?.responseCode && ![200, 304].includes(body.responseCode))
       throw new Error(
         body.responseMsg ?? "Shadowfax could not cancel this shipment.",
       );
