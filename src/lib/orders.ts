@@ -83,6 +83,8 @@ export interface OrderRecord {
   updatedAt: string;
   lines: OrderLine[];
   refundedPaise: number;
+  /** The live courier shipment, if the order is tracked. */
+  shipment: { provider: string; awb: string; stage: string } | null;
 }
 
 type CheckoutInput = {
@@ -151,6 +153,12 @@ async function mapOrder(
     "select coalesce(sum(amount_paise) filter (where status='PROCESSED'),0) amount from public.refunds where order_id=$1",
     [row.id],
   );
+  const shipment = (
+    await client.query(
+      "select provider,awb,stage from public.shipments where order_id=$1 and stage<>'CANCELLED' order by created_at desc limit 1",
+      [row.id],
+    )
+  ).rows[0];
   const date = (value: unknown) =>
     value ? new Date(String(value)).toISOString() : null;
   return {
@@ -188,6 +196,13 @@ async function mapOrder(
     updatedAt: date(row.updated_at)!,
     lines,
     refundedPaise: Number(refundResult.rows[0]?.amount ?? 0),
+    shipment: shipment
+      ? {
+          provider: String(shipment.provider),
+          awb: String(shipment.awb),
+          stage: String(shipment.stage),
+        }
+      : null,
   };
 }
 

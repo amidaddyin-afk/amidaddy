@@ -9,7 +9,7 @@ import {
   issueRefund,
   updateOrderFulfillment,
 } from "@/lib/orders";
-import { bookShipment, syncOrderShipment } from "@/lib/shipping";
+import { bookShipment, linkShipment, syncOrderShipment } from "@/lib/shipping";
 
 export type OrderActionState = { error?: string; message?: string };
 
@@ -155,6 +155,36 @@ export async function bookShipmentAction(
     return {
       error:
         error instanceof Error ? error.message : "Unable to book the pickup.",
+    };
+  }
+}
+
+export async function linkShipmentAction(
+  _: OrderActionState,
+  formData: FormData,
+): Promise<OrderActionState> {
+  const { user } = await requireAdminUser();
+  const parsed = z
+    .object({
+      orderId: z.string().min(8).max(80),
+      provider: z.string().min(1).max(40),
+      awb: z.string().trim().min(4).max(64),
+    })
+    .safeParse(Object.fromEntries(formData));
+  if (!parsed.success) return { error: "Enter the courier and AWB number." };
+  try {
+    const stage = await linkShipment(
+      parsed.data.orderId,
+      parsed.data.provider,
+      parsed.data.awb,
+      user.id,
+    );
+    revalidatePath("/admin");
+    return { message: `Tracking started: ${stage.replaceAll("_", " ")}.` };
+  } catch (error) {
+    return {
+      error:
+        error instanceof Error ? error.message : "Unable to start tracking.",
     };
   }
 }

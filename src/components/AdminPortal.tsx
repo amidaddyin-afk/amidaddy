@@ -36,6 +36,7 @@ import {
 import {
   bookShipmentAction,
   cancelAdminOrderAction,
+  linkShipmentAction,
   refundOrderAction,
   updateFulfillmentAction,
 } from "@/features/orders/actions";
@@ -218,7 +219,15 @@ function openSection(id: string) {
   if (details) details.open = true;
 }
 
-function OrderActions({ order }: { order: AdminOverview["orders"][number] }) {
+type Couriers = AdminOverview["shippingProviders"];
+
+function OrderActions({
+  order,
+  couriers,
+}: {
+  order: AdminOverview["orders"][number];
+  couriers: Couriers;
+}) {
   const [fulfillment, fulfillmentAction, fulfillmentPending] = useActionState(
     updateFulfillmentAction,
     initial,
@@ -235,9 +244,18 @@ function OrderActions({ order }: { order: AdminOverview["orders"][number] }) {
     bookShipmentAction,
     initial,
   );
+  const [linking, linkAction, linkPending] = useActionState(
+    linkShipmentAction,
+    initial,
+  );
   const canBook =
+    !order.shipment &&
     !order.trackingNumber &&
     (order.status === "CONFIRMED" || order.status === "PROCESSING");
+  // Parcels shipped by hand or before the courier integration.
+  const canLink =
+    !order.shipment &&
+    ["CONFIRMED", "PROCESSING", "SHIPPED", "DELIVERED"].includes(order.status);
   const next =
     order.status === "CONFIRMED"
       ? "PROCESSING"
@@ -258,7 +276,29 @@ function OrderActions({ order }: { order: AdminOverview["orders"][number] }) {
           <Status state={booking} />
         </form>
       )}
-      {order.trackingNumber && (
+      {canLink && (
+        <form action={linkAction} className="admin-form">
+          <input type="hidden" name="orderId" value={order.id} />
+          <select name="provider" aria-label="Courier">
+            {couriers.map((courier) => (
+              <option key={courier.id} value={courier.id}>
+                {courier.label}
+              </option>
+            ))}
+          </select>
+          <input
+            name="awb"
+            placeholder="Existing AWB number"
+            defaultValue={order.trackingNumber ?? ""}
+            required
+          />
+          <button disabled={linkPending} className="btn-ghost">
+            Start tracking
+          </button>
+          <Status state={linking} />
+        </form>
+      )}
+      {order.shipment && (
         <a href={`/admin/orders/${order.id}/track`} className="btn-ghost">
           Track shipment
         </a>
@@ -347,7 +387,13 @@ function InventoryForm({ item }: { item: AdminOverview["inventory"][number] }) {
   );
 }
 
-function OrderCard({ order }: { order: AdminOverview["orders"][number] }) {
+function OrderCard({
+  order,
+  couriers,
+}: {
+  order: AdminOverview["orders"][number];
+  couriers: Couriers;
+}) {
   const locality = [order.city, order.state, order.postalCode]
     .filter(Boolean)
     .join(", ");
@@ -430,8 +476,11 @@ function OrderCard({ order }: { order: AdminOverview["orders"][number] }) {
           {order.trackingNumber && (
             <span>Tracking: {order.trackingNumber}</span>
           )}
+          {order.shipment && (
+            <span>Shipment: {order.shipment.stage.replaceAll("_", " ")}</span>
+          )}
         </div>
-        <OrderActions order={order} />
+        <OrderActions order={order} couriers={couriers} />
       </footer>
     </article>
   );
@@ -604,7 +653,11 @@ export default function AdminPortal({ overview }: { overview: AdminOverview }) {
             </div>
             <div className="admin-orders-list">
               {orderPages.rows.map((order) => (
-                <OrderCard key={order.id} order={order} />
+                <OrderCard
+                  key={order.id}
+                  order={order}
+                  couriers={overview.shippingProviders}
+                />
               ))}
               {visibleOrders.length === 0 && (
                 <p className="admin-empty">No matching orders found.</p>

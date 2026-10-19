@@ -27,6 +27,9 @@ export function providerById(id: string) {
   return providers[id];
 }
 
+export const shippingProviders = () =>
+  Object.values(providers).map(({ id, label }) => ({ id, label }));
+
 type ShipmentRow = {
   id: string;
   order_id: string;
@@ -94,6 +97,74 @@ export async function bookShipment(orderId: string, actorId?: string) {
   return awb;
 }
 
+/**
+ * Starts tracking a parcel that was shipped outside the integration: orders
+ * from before it existed, or a booking made in the courier's own portal.
+ * Nothing is booked; the AWB is checked against the courier and its history
+ * pulled in. Works for any registered provider.
+ */
+export async function linkShipment(
+  orderId: string,
+  providerId: string,
+  awb: string,
+  actorId: string,
+) {
+  const provider = providers[providerId];
+  if (!provider) throw new Error("Unknown courier.");
+  if (!/^[A-Za-z0-9-]{4,64}$/.test(awb))
+    throw new Error("That does not look like an AWB number.");
+  const order = await getOrder(orderId);
+  if (
+    !order ||
+    !["CONFIRMED", "PROCESSING", "SHIPPED", "DELIVERED"].includes(order.status)
+  )
+    throw new Error("Only paid, uncancelled orders can be tracked.");
+  if (await activeShipment(orderId))
+    throw new Error("This order is already tracked.");
+  // Ask the courier first, so a typo never leaves a dead tracking record.
+  const events = await provider.track(awb).catch(() => []);
+  if (!events.length)
+    throw new Error(`${provider.label} has no tracking history for ${awb}.`);
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+  const shipment = await transaction(async (client) => {
+    const { rows } = await client
+      .query<ShipmentRow>(
+        "insert into public.shipments(order_id,provider,awb,stage,created_at) values($1,$2,$3,$4,$5) returning *",
+        [
+          orderId,
+          provider.id,
+          awb,
+          currentStage(events, "BOOKED"),
+          // The parcel was booked long before we linked it.
+          events.map((event) => event.occurredAt).sort()[0],
+        ],
+      )
+      .catch((error) => {
+        if ((error as { code?: string }).code === "23505")
+          throw new Error(`AWB ${awb} is already linked to another order.`);
+        throw error;
+      });
+    await client.query(
+      "update public.orders set courier_name=$2,tracking_number=$3,tracking_url=$4,updated_at=now() where id=$1",
+      [
+        orderId,
+        provider.label,
+        awb,
+        appUrl ? `${appUrl}/account/orders/${orderId}/track` : null,
+      ],
+    );
+    await appendAuditEvent(client, actorId, "shipment.linked", {
+      orderId,
+      provider: provider.id,
+      awb,
+    });
+    return rows[0];
+  });
+  // Old parcels: catch the order status up quietly, no late emails.
+  await syncShipment(shipment, false);
+  return shipment.stage;
+}
+
 /** Called after payment. A courier failure must never undo a payment, so it
  *  is logged to the activity feed and the admin books from the order card. */
 export async function autoBookShipment(orderId: string) {
@@ -112,7 +183,7 @@ export async function autoBookShipment(orderId: string) {
 }
 
 /** Pulls the courier's full history and moves the order along with it. */
-async function syncShipment(shipment: ShipmentRow) {
+async function syncShipment(shipment: ShipmentRow, notify = true) {
   const provider = providers[shipment.provider];
   if (!provider) return;
   const events = await provider.track(shipment.awb);
@@ -162,7 +233,7 @@ async function syncShipment(shipment: ShipmentRow) {
         : ["CONFIRMED", "PROCESSING"],
     ],
   );
-  if (rowCount)
+  if (rowCount && notify)
     await sendOrderEmail(
       shipment.order_id,
       next === "DELIVERED" ? "order-delivered" : "order-shipped",

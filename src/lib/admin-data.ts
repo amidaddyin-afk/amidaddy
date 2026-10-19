@@ -2,6 +2,7 @@ import "server-only";
 import { db } from "@/lib/db";
 import { listAdminProducts } from "@/lib/catalog";
 import { listOrders, type OrderRecord } from "@/lib/orders";
+import { shippingProviders } from "@/lib/shipping";
 import type { Product } from "@/lib/data";
 import { listAdminReviews, type AdminReview } from "@/lib/reviews";
 import {
@@ -19,6 +20,7 @@ import {
 
 export type AdminOverview = {
   orders: OrderRecord[];
+  shippingProviders: Array<{ id: string; label: string }>;
   products: Product[];
   customers: Array<{
     id: string;
@@ -164,6 +166,7 @@ export async function getAdminOverview(): Promise<AdminOverview> {
   }));
   return {
     orders,
+    shippingProviders: shippingProviders(),
     products,
     customers: profiles.rows.map((row) => ({
       id: String(row.id),
