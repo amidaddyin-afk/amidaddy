@@ -6,7 +6,11 @@ import { ImageUp, Images, Pencil, Plus, Trash2, X } from "lucide-react";
 import type { Product } from "@/lib/data";
 import { formatInr } from "@/lib/money";
 import ProductPhotoManager, { mediaOf } from "@/components/ProductPhotoManager";
-import { catalogCardImage } from "@/features/catalog/photo-order";
+import {
+  catalogCardImage,
+  withCoverPhoto,
+} from "@/features/catalog/photo-order";
+import { toast } from "@/components/AdminFeedback";
 import { prepareProductImage } from "@/features/catalog/prepare-image";
 
 const split = (value: FormDataEntryValue | null) =>
@@ -21,13 +25,14 @@ export default function CatalogManager({ products }: { products: Product[] }) {
   const [photoTarget, setPhotoTarget] = useState<Product | null>(null);
   const [message, setMessage] = useState("");
   const [uploading, setUploading] = useState(false);
+  // "<product id>-<size>" while that size's cover uploads.
   const [replacingId, setReplacingId] = useState<string | null>(null);
-  const [replacedImages, setReplacedImages] = useState<Record<string, string>>(
-    {},
-  );
+  const [saving, setSaving] = useState(false);
+  const [archivingId, setArchivingId] = useState<string | null>(null);
   const [uploadedUrl, setUploadedUrl] = useState("");
   async function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setSaving(true);
     setMessage("Saving…");
     const data = new FormData(event.currentTarget);
     const editingComboSize =
@@ -99,28 +104,33 @@ export default function CatalogManager({ products }: { products: Product[] }) {
       body: JSON.stringify(
         editing ? { id: editing.id, action: "update", product } : product,
       ),
-    });
+    }).finally(() => setSaving(false));
     const body = await response.json().catch(() => ({}));
     if (!response.ok) {
       setMessage(body.error ?? "Unable to save product.");
+      toast(body.error ?? "Unable to save product.", "error");
       return;
     }
     setMessage("Product saved.");
+    toast("Product saved. The website shows the change now.");
     setEditing(null);
     setCreating(false);
     router.refresh();
   }
   async function archive(product: Product) {
     if (!window.confirm(`Archive ${product.name}?`)) return;
+    setArchivingId(product.id);
     const response = await fetch(
       `/api/admin/products?id=${encodeURIComponent(product.id)}`,
       { method: "DELETE" },
-    );
+    ).finally(() => setArchivingId(null));
     if (!response.ok) {
       setMessage("Unable to archive product.");
+      toast("Unable to archive product.", "error");
       return;
     }
     setMessage("Product archived.");
+    toast(`${product.name} archived.`);
     router.refresh();
   }
   async function upload(file: File) {
@@ -136,16 +146,26 @@ export default function CatalogManager({ products }: { products: Product[] }) {
       if (!response.ok || !body.url)
         throw new Error(body.error ?? "Upload failed.");
       setUploadedUrl(body.url);
-      setMessage("");
+      setMessage("Photo uploaded. Save the fragrance to publish it.");
+      toast("Photo uploaded. Save the fragrance to publish it.");
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Upload failed.");
+      const text = error instanceof Error ? error.message : "Upload failed.";
+      setMessage(text);
+      toast(text, "error");
     } finally {
       setUploading(false);
     }
   }
-  async function replaceCatalogImage(product: Product, file: File) {
-    setReplacingId(product.id);
-    setMessage(`Uploading ${product.name} image…`);
+  // The shop card for a size leads with that size's first gallery photo, so a
+  // replacement goes there. (It used to set the shared cover, which no card
+  // shows while the size has photos of its own: the change never appeared.)
+  async function replaceCatalogImage(
+    product: Product,
+    size: "20ml" | "100ml",
+    file: File,
+  ) {
+    setReplacingId(`${product.id}-${size}`);
+    setMessage(`Uploading ${product.name} ${size} image…`);
     try {
       const data = new FormData();
       data.set("file", await prepareProductImage(file));
@@ -161,21 +181,27 @@ export default function CatalogManager({ products }: { products: Product[] }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           id: product.id,
-          action: "catalog-image",
-          product: { url: uploaded.url, alt: product.name },
+          action: "images",
+          product: {
+            images: withCoverPhoto(
+              mediaOf(product),
+              product.variantImages?.[size] ?? [],
+              { url: uploaded.url, alt: product.name, variantName: size },
+            ),
+          },
         }),
       });
       const body = await response.json().catch(() => ({}));
       if (!response.ok)
         throw new Error(body.error ?? "Unable to update catalogue image.");
-      setReplacedImages((current) => ({
-        ...current,
-        [product.id]: uploaded.url,
-      }));
-      setMessage(`${product.name} catalogue image updated.`);
+      const text = `${product.name} ${size} image updated. It is live on the website now.`;
+      setMessage(text);
+      toast(text);
       router.refresh();
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Upload failed.");
+      const text = error instanceof Error ? error.message : "Upload failed.";
+      setMessage(text);
+      toast(text, "error");
     } finally {
       setReplacingId(null);
     }
@@ -193,15 +219,12 @@ export default function CatalogManager({ products }: { products: Product[] }) {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               className="admin-product-cover"
-              src={
-                replacedImages[product.id] ??
-                catalogCardImage(
-                  product,
-                  product.variants.find((variant) => variant.name === "100ml")
-                    ? "100ml"
-                    : "20ml",
-                )
-              }
+              src={catalogCardImage(
+                product,
+                product.variants.find((variant) => variant.name === "100ml")
+                  ? "100ml"
+                  : "20ml",
+              )}
               alt={`${product.name} catalogue image`}
             />
             <div>
@@ -216,21 +239,30 @@ export default function CatalogManager({ products }: { products: Product[] }) {
               </p>
             </div>
             <div className="flex gap-2">
-              <label className="btn-ghost admin-cover-upload">
-                <ImageUp size={13} />
-                {replacingId === product.id ? "Uploading…" : "Replace image"}
-                <input
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp"
-                  hidden
-                  disabled={replacingId !== null}
-                  onChange={(event) => {
-                    const file = event.target.files?.[0];
-                    event.target.value = "";
-                    if (file) void replaceCatalogImage(product, file);
-                  }}
-                />
-              </label>
+              {product.variants.map(({ name: size }) => {
+                const busy = replacingId === `${product.id}-${size}`;
+                return (
+                  <label
+                    key={size}
+                    className="btn-ghost admin-cover-upload"
+                    aria-busy={busy || undefined}
+                  >
+                    {!busy && <ImageUp size={13} />}
+                    {busy ? "Uploading…" : `Replace ${size}`}
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      hidden
+                      disabled={replacingId !== null}
+                      onChange={(event) => {
+                        const file = event.target.files?.[0];
+                        event.target.value = "";
+                        if (file) void replaceCatalogImage(product, size, file);
+                      }}
+                    />
+                  </label>
+                );
+              })}
               <button
                 className="btn-ghost"
                 onClick={() => {
@@ -255,6 +287,8 @@ export default function CatalogManager({ products }: { products: Product[] }) {
                 <button
                   className="btn-ghost"
                   onClick={() => archive(product)}
+                  disabled={archivingId === product.id}
+                  aria-busy={archivingId === product.id || undefined}
                   aria-label={`Archive ${product.name}`}
                 >
                   <Trash2 size={13} />
@@ -384,8 +418,11 @@ export default function CatalogManager({ products }: { products: Product[] }) {
                   onChange={(event) => setUploadedUrl(event.target.value)}
                   required
                 />
-                <label className="upload-control">
-                  <ImageUp size={15} />
+                <label
+                  className="upload-control"
+                  aria-busy={uploading || undefined}
+                >
+                  {!uploading && <ImageUp size={15} />}
                   {uploading ? "Uploading…" : "Upload first photo"}
                   <input
                     type="file"
@@ -496,7 +533,13 @@ export default function CatalogManager({ products }: { products: Product[] }) {
               />{" "}
               Bestseller
             </label>
-            <button className="lux-button">Save fragrance</button>
+            <button
+              className="lux-button"
+              disabled={saving}
+              aria-busy={saving || undefined}
+            >
+              Save fragrance
+            </button>
           </form>
         </div>
       )}

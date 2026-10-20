@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState, type ReactNode } from "react";
+import { useActionState, useEffect, useState, type ReactNode } from "react";
 import {
   Activity,
   BadgePercent,
@@ -41,6 +41,7 @@ import {
   updateFulfillmentAction,
 } from "@/features/orders/actions";
 import CatalogManager from "@/components/CatalogManager";
+import { SubmitButton, Toaster, toast } from "@/components/AdminFeedback";
 import IndiaTrafficMap from "@/components/IndiaTrafficMap";
 
 const initial: AdminActionState = {};
@@ -58,6 +59,11 @@ const sections = [
   ["Settings", Settings],
 ] as const;
 function Status({ state }: { state: AdminActionState }) {
+  // A new state object arrives once per completed submission.
+  useEffect(() => {
+    if (state.error) toast(state.error, "error");
+    else if (state.message) toast(state.message);
+  }, [state]);
   return (
     <>
       {state.error && (
@@ -270,9 +276,9 @@ function OrderActions({
       {canBook && (
         <form action={bookAction} className="admin-form">
           <input type="hidden" name="orderId" value={order.id} />
-          <button disabled={bookPending} className="btn-ghost">
+          <SubmitButton disabled={bookPending} className="btn-ghost">
             Book courier pickup
-          </button>
+          </SubmitButton>
           <Status state={booking} />
         </form>
       )}
@@ -292,9 +298,9 @@ function OrderActions({
             defaultValue={order.trackingNumber ?? ""}
             required
           />
-          <button disabled={linkPending} className="btn-ghost">
+          <SubmitButton disabled={linkPending} className="btn-ghost">
             Start tracking
-          </button>
+          </SubmitButton>
           <Status state={linking} />
         </form>
       )}
@@ -322,9 +328,9 @@ function OrderActions({
               />
             </>
           )}
-          <button disabled={fulfillmentPending} className="btn-ghost">
+          <SubmitButton disabled={fulfillmentPending} className="btn-ghost">
             Mark {next.toLowerCase()}
-          </button>
+          </SubmitButton>
           <Status state={fulfillment} />
         </form>
       )}
@@ -341,9 +347,9 @@ function OrderActions({
             required
           />
           <input name="reason" placeholder="Refund reason" required />
-          <button disabled={refundPending} className="btn-ghost">
+          <SubmitButton disabled={refundPending} className="btn-ghost">
             Issue refund
-          </button>
+          </SubmitButton>
           <Status state={refund} />
         </form>
       )}
@@ -351,9 +357,9 @@ function OrderActions({
         <form action={cancelAction} className="admin-form">
           <input type="hidden" name="orderId" value={order.id} />
           <input name="reason" placeholder="Cancellation reason" required />
-          <button disabled={cancelPending} className="btn-ghost">
+          <SubmitButton disabled={cancelPending} className="btn-ghost">
             Cancel order
-          </button>
+          </SubmitButton>
           <Status state={cancellation} />
         </form>
       )}
@@ -379,9 +385,9 @@ function InventoryForm({ item }: { item: AdminOverview["inventory"][number] }) {
       </div>
       <input name="quantity" type="number" placeholder="± qty" required />
       <input name="reason" placeholder="Reason" required />
-      <button disabled={pending} className="btn-ghost">
+      <SubmitButton disabled={pending} className="btn-ghost">
         Adjust
-      </button>
+      </SubmitButton>
       <Status state={state} />
     </form>
   );
@@ -558,6 +564,7 @@ export default function AdminPortal({ overview }: { overview: AdminOverview }) {
   ];
   return (
     <main data-surface="commerce" className="admin-shell">
+      <Toaster />
       <div className="admin-layout">
         <aside className="admin-sidebar">
           <p className="eyebrow px-3 pb-5">Store control</p>
@@ -718,10 +725,10 @@ export default function AdminPortal({ overview }: { overview: AdminOverview }) {
                               customer.role === "ADMIN" ? "CUSTOMER" : "ADMIN"
                             }
                           />
-                          <button className="btn-ghost">
+                          <SubmitButton className="btn-ghost">
                             Make{" "}
                             {customer.role === "ADMIN" ? "customer" : "admin"}
-                          </button>
+                          </SubmitButton>
                         </form>
                       </td>
                     </tr>
@@ -929,9 +936,9 @@ export default function AdminPortal({ overview }: { overview: AdminOverview }) {
                             name="op"
                             value={review.featured ? "unfeature" : "feature"}
                           />
-                          <button className="btn-ghost">
+                          <SubmitButton className="btn-ghost">
                             {review.featured ? "Remove highlight" : "Highlight"}
-                          </button>
+                          </SubmitButton>
                         </form>
                       )}
                       <form action={moderateReviewAction}>
@@ -943,9 +950,9 @@ export default function AdminPortal({ overview }: { overview: AdminOverview }) {
                             review.status === "HIDDEN" ? "publish" : "hide"
                           }
                         />
-                        <button className="btn-ghost">
+                        <SubmitButton className="btn-ghost">
                           {review.status === "HIDDEN" ? "Restore" : "Take down"}
-                        </button>
+                        </SubmitButton>
                       </form>
                     </div>
                   </footer>
@@ -996,9 +1003,9 @@ export default function AdminPortal({ overview }: { overview: AdminOverview }) {
                 <input type="checkbox" name="appliesToCombos" />
                 Special: also works on 100ml combo offers
               </label>
-              <button disabled={couponPending} className="lux-button">
+              <SubmitButton disabled={couponPending} className="lux-button">
                 Create coupon
-              </button>
+              </SubmitButton>
               <Status state={coupon} />
             </form>
             <div className="admin-product-grid mt-5">
@@ -1014,9 +1021,9 @@ export default function AdminPortal({ overview }: { overview: AdminOverview }) {
                   </div>
                   <form action={toggleCouponAction}>
                     <input type="hidden" name="id" value={item.id} />
-                    <button className="btn-ghost">
+                    <SubmitButton className="btn-ghost">
                       {item.active ? "Pause" : "Activate"}
-                    </button>
+                    </SubmitButton>
                   </form>
                 </article>
               ))}
@@ -1082,9 +1089,9 @@ export default function AdminPortal({ overview }: { overview: AdminOverview }) {
                   defaultValue={overview.settings.cancellationMessage}
                 />
               </label>
-              <button disabled={settingsPending} className="lux-button">
+              <SubmitButton disabled={settingsPending} className="lux-button">
                 Save settings
-              </button>
+              </SubmitButton>
               <Status state={settings} />
             </form>
           </AdminSection>

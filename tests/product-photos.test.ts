@@ -7,6 +7,7 @@ import {
   galleryIndices,
   makeFirstPhoto,
   movePhoto,
+  withCoverPhoto,
 } from "../src/features/catalog/photo-order.ts";
 import type { Product } from "../src/lib/data.ts";
 
@@ -154,4 +155,29 @@ test("next/image allows the Supabase Storage host", () => {
   const patterns = config.slice(start, config.indexOf("]", start));
   assert.match(patterns, /supabase\.co/);
   assert.match(patterns, /storage\/v1\/object\/public/);
+});
+
+test("a replaced cover leads its size and keeps the built-in photos", () => {
+  const cover = { url: "/new.webp", alt: "Oud", variantName: "20ml" as const };
+  // No uploads for 20ml yet: the built-ins are saved behind the new cover.
+  assert.deepEqual(
+    withCoverPhoto(
+      [{ url: "/shared.webp", alt: "Oud", variantName: null }],
+      ["/b1.webp", "/b2.webp"],
+      cover,
+    ).map((photo) => photo.url),
+    ["/shared.webp", "/new.webp", "/b1.webp", "/b2.webp"],
+  );
+  // 20ml already has uploads: the cover goes in front of them, others stay.
+  assert.deepEqual(
+    withCoverPhoto(
+      [
+        { url: "/a.webp", alt: "Oud", variantName: "100ml" },
+        { url: "/old20.webp", alt: "Oud", variantName: "20ml" },
+      ],
+      ["/b1.webp"],
+      cover,
+    ).map((photo) => photo.url),
+    ["/a.webp", "/new.webp", "/old20.webp"],
+  );
 });

@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { SubmitButton } from "@/components/AdminFeedback";
 import ShipmentTracker from "@/components/ShipmentTracker";
 import { refreshTrackingAction } from "@/features/orders/actions";
 import { requireAdminPage } from "@/lib/auth";
@@ -34,7 +35,9 @@ export default async function AdminTrackOrderPage({
           {tracking.shipment && (
             <form action={refreshTrackingAction}>
               <input type="hidden" name="orderId" value={order.id} />
-              <button className="btn-ghost">Refresh from courier</button>
+              <SubmitButton className="btn-ghost">
+                Refresh from courier
+              </SubmitButton>
             </form>
           )}
         </div>

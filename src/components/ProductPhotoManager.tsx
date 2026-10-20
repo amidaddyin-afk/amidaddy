@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronDown, ChevronUp, ImageUp, Star, Trash2, X } from "lucide-react";
 import type { Product, ProductMedia } from "@/lib/data";
+import { toast } from "@/components/AdminFeedback";
 import {
   galleryIndices,
   makeFirstPhoto,
@@ -60,6 +61,9 @@ export default function ProductPhotoManager({
   const [photos, setPhotos] = useState<ProductMedia[]>(() => mediaOf(product));
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
+  // Which gallery is receiving an upload, so only its button spins.
+  const [uploadingTo, setUploadingTo] = useState<Gallery | undefined>();
+  const [saving, setSaving] = useState(false);
 
   const indicesOf = (gallery: Gallery) => galleryIndices(photos, gallery);
 
@@ -77,8 +81,11 @@ export default function ProductPhotoManager({
       photos.map((photo, item) => (item === index ? { ...photo, alt } : photo)),
     );
 
+  // An upload used to only stage the photo here; it reached the website only
+  // after "Save photos", which was easy to miss. It now saves straight away.
   async function upload(file: File, gallery: Gallery) {
     setBusy(true);
+    setUploadingTo(gallery);
     setMessage("Preparing photo…");
     try {
       const data = new FormData();
@@ -91,49 +98,58 @@ export default function ProductPhotoManager({
       const body = await response.json().catch(() => ({}));
       if (!response.ok || !body.url)
         throw new Error(body.error ?? "Upload failed.");
-      setMessage("");
-      setPhotos((current) => [
-        ...current,
+      const next = [
+        ...photos,
         { url: body.url, alt: product.name, variantName: gallery },
-      ]);
+      ];
+      setPhotos(next);
+      setMessage("Saving…");
+      await persist(next, "Photo uploaded. It is live on the website now.");
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Upload failed.");
+      const text = error instanceof Error ? error.message : "Upload failed.";
+      setMessage(text);
+      toast(text, "error");
     } finally {
       setBusy(false);
+      setUploadingTo(undefined);
     }
   }
 
+  /** Writes the gallery to the product; the storefront refreshes on save. */
+  async function persist(list: ProductMedia[], success: string) {
+    if (!list.length) throw new Error("Keep at least one photo.");
+    if (list.some((photo) => !photo.alt.trim()))
+      throw new Error("Every photo needs alt text.");
+    const response = await fetch("/api/admin/products", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id: product.id,
+        action: "images",
+        product: { images: list },
+      }),
+    });
+    const body = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(body.error ?? "Unable to save photos.");
+    setMessage(success);
+    toast(success);
+    router.refresh();
+  }
+
   async function save() {
-    if (!photos.length) {
-      setMessage("Keep at least one photo.");
-      return;
-    }
-    if (photos.some((photo) => !photo.alt.trim())) {
-      setMessage("Every photo needs alt text.");
-      return;
-    }
     setBusy(true);
+    setSaving(true);
     setMessage("Saving…");
     try {
-      const response = await fetch("/api/admin/products", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id: product.id,
-          action: "images",
-          product: { images: photos },
-        }),
-      });
-      const body = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(body.error ?? "Unable to save photos.");
-      setMessage("Photos saved.");
-      router.refresh();
+      await persist(photos, "Photos saved. The website shows them now.");
     } catch (error) {
-      setMessage(
-        error instanceof Error ? error.message : "Unable to save photos.",
-      );
+      const text =
+        error instanceof Error ? error.message : "Unable to save photos.";
+      setMessage(text);
+      toast(text, "error");
     } finally {
       setBusy(false);
+      setSaving(false);
     }
   }
 
@@ -155,9 +171,12 @@ export default function ProductPhotoManager({
           <section key={label} className="mt-6">
             <div className="flex items-center justify-between">
               <strong>{label}</strong>
-              <label className="upload-control">
-                <ImageUp size={15} />
-                Add photo
+              <label
+                className="upload-control"
+                aria-busy={uploadingTo === gallery || undefined}
+              >
+                {uploadingTo !== gallery && <ImageUp size={15} />}
+                {uploadingTo === gallery ? "Uploading…" : "Add photo"}
                 <input
                   type="file"
                   accept="image/jpeg,image/png,image/webp"
@@ -256,7 +275,16 @@ export default function ProductPhotoManager({
       })}
 
       {message && <p className="text-champagne mt-3 text-sm">{message}</p>}
-      <button className="lux-button mt-5" disabled={busy} onClick={save}>
+      <p className="mt-4 text-xs opacity-60">
+        New photos save automatically. Use Save after reordering, removing or
+        editing alt text.
+      </p>
+      <button
+        className="lux-button mt-3"
+        disabled={busy}
+        aria-busy={saving || undefined}
+        onClick={save}
+      >
         Save photos
       </button>
     </div>

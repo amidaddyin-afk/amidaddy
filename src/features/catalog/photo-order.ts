@@ -79,3 +79,31 @@ export function makeFirstPhoto(
   next.splice(indices[0], 0, moved);
   return next;
 }
+
+/**
+ * Puts a new photo at the front of one size's gallery, which is the photo the
+ * shop card and product page lead with for that size.
+ *
+ * A size with no uploaded photos is still showing its built-in set, and saving
+ * any photo for a size replaces that set entirely. So the built-ins are saved
+ * behind the new photo, and the gallery grows instead of shrinking to one.
+ */
+export function withCoverPhoto(
+  photos: ProductMedia[],
+  builtIn: string[],
+  photo: ProductMedia & { variantName: "20ml" | "100ml" },
+): ProductMedia[] {
+  const indices = galleryIndices(photos, photo.variantName);
+  if (indices.length) {
+    const next = [...photos];
+    next.splice(indices[0], 0, photo);
+    return next;
+  }
+  return [
+    ...photos,
+    photo,
+    ...builtIn
+      .filter((url) => url !== photo.url)
+      .map((url) => ({ url, alt: photo.alt, variantName: photo.variantName })),
+  ];
+}
