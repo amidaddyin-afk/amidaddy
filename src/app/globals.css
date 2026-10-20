@@ -2934,7 +2934,7 @@ body .site-header {
   padding: clamp(1.5rem, 4vw, 3rem);
   box-shadow: none;
 }
-.catalog-editor > button {
+.catalog-editor > button:first-child {
   position: absolute;
   top: 1.5rem;
   right: 1.5rem;
@@ -3806,7 +3806,7 @@ body .catalog-editor {
   color: var(--fg);
   box-shadow: none;
 }
-body .catalog-editor > button {
+body .catalog-editor > button:first-child {
   color: var(--fg);
 }
 
@@ -3992,7 +3992,7 @@ body .catalog-editor > button {
     border-radius: 0;
     padding: 4.5rem 1rem 2rem;
   }
-  body .catalog-editor > button {
+  body .catalog-editor > button:first-child {
     top: 1rem;
     right: 1rem;
     display: grid;
@@ -8622,7 +8622,7 @@ label[aria-busy="true"]::before {
   right: 1rem;
   bottom: 1rem;
   left: 1rem;
-  z-index: 100;
+  z-index: 140; /* above the catalog editor (120) */
   display: grid;
   justify-items: end;
   gap: 0.5rem;
@@ -8646,4 +8646,37 @@ label[aria-busy="true"]::before {
     opacity: 0;
     transform: translateY(0.5rem);
   }
+}
+
+/* Full-screen "working" layer for uploads and catalogue saves, so nobody
+   clicks on while a photo is still on its way. Sits above the editor (120). */
+.admin-busy {
+  position: fixed;
+  inset: 0;
+  z-index: 130;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  cursor: progress;
+}
+.admin-busy p {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border: 1px solid var(--line);
+  background: var(--bg-raised);
+  padding: 1rem 1.4rem;
+  color: var(--fg);
+  font-size: 0.9rem;
+  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.2);
+}
+.admin-busy-spinner {
+  width: 1.1rem;
+  height: 1.1rem;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: admin-spin 0.7s linear infinite;
 }

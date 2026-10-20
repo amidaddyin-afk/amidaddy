@@ -10,7 +10,7 @@ import {
   catalogCardImage,
   withCoverPhoto,
 } from "@/features/catalog/photo-order";
-import { toast } from "@/components/AdminFeedback";
+import { BusyOverlay, toast } from "@/components/AdminFeedback";
 import { prepareProductImage } from "@/features/catalog/prepare-image";
 
 const split = (value: FormDataEntryValue | null) =>
@@ -120,6 +120,7 @@ export default function CatalogManager({ products }: { products: Product[] }) {
   async function archive(product: Product) {
     if (!window.confirm(`Archive ${product.name}?`)) return;
     setArchivingId(product.id);
+    setMessage(`Archiving ${product.name}…`);
     const response = await fetch(
       `/api/admin/products?id=${encodeURIComponent(product.id)}`,
       { method: "DELETE" },
@@ -135,6 +136,7 @@ export default function CatalogManager({ products }: { products: Product[] }) {
   }
   async function upload(file: File) {
     setUploading(true);
+    setMessage("Uploading photo…");
     try {
       const data = new FormData();
       data.set("file", await prepareProductImage(file));
@@ -308,6 +310,9 @@ export default function CatalogManager({ products }: { products: Product[] }) {
       >
         <Plus size={14} /> New fragrance
       </button>
+      {(saving || uploading || replacingId || archivingId) && (
+        <BusyOverlay message={message || "Working…"} />
+      )}
       {message && <p className="text-champagne mt-3 text-sm">{message}</p>}
       {photoTarget && (
         <ProductPhotoManager

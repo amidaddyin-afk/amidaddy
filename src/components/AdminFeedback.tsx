@@ -56,3 +56,15 @@ export function Toaster() {
     </div>
   );
 }
+
+/** Blurs the page behind a spinner and status line while work is running. */
+export function BusyOverlay({ message }: { message: string }) {
+  return (
+    <div className="admin-busy" role="alert" aria-live="assertive">
+      <p>
+        <span className="admin-busy-spinner" aria-hidden="true" />
+        {message}
+      </p>
+    </div>
+  );
+}

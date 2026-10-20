@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronDown, ChevronUp, ImageUp, Star, Trash2, X } from "lucide-react";
 import type { Product, ProductMedia } from "@/lib/data";
-import { toast } from "@/components/AdminFeedback";
+import { BusyOverlay, toast } from "@/components/AdminFeedback";
 import {
   galleryIndices,
   makeFirstPhoto,
@@ -274,6 +274,7 @@ export default function ProductPhotoManager({
         );
       })}
 
+      {busy && <BusyOverlay message={message || "Working…"} />}
       {message && <p className="text-champagne mt-3 text-sm">{message}</p>}
       <p className="mt-4 text-xs opacity-60">
         New photos save automatically. Use Save after reordering, removing or
