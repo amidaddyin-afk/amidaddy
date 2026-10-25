@@ -6897,12 +6897,14 @@ body .display-title {
   /* Above the <video> slots (z-index 1), below the playback toggle. */
   z-index: 2;
   pointer-events: none;
+  /* Short and tight: the film's pale studio ground turned a long fade
+     into a wide grey fog along the join. */
   background: linear-gradient(
     to right,
     #171717 0%,
-    rgba(23, 23, 23, 0.85) 10%,
-    rgba(23, 23, 23, 0.4) 20%,
-    rgba(23, 23, 23, 0) 32%
+    #171717 8%,
+    rgba(23, 23, 23, 0.55) 13%,
+    rgba(23, 23, 23, 0) 20%
   );
 }
 
@@ -6915,34 +6917,17 @@ body .display-title {
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  /* Shading only: a vignette that darkens the edges and corners, a light
-     overall wash, and the foot/top gradients. The centre of the frame stays
-     at full clarity; nothing here blurs. */
+  /* Only a fade at the foot, for the phone's overlay button, and a hint
+     at the top under the header. The old full-frame wash, inner shadow,
+     corner vignette and white "gloss" sheen left the film grey and hazy. */
   background:
-    radial-gradient(
-      ellipse 75% 80% at 55% 45%,
-      rgba(8, 8, 10, 0) 45%,
-      rgba(8, 8, 10, 0.45) 100%
-    ),
     linear-gradient(
       to top,
-      rgba(8, 8, 10, 0.62) 0%,
-      rgba(8, 8, 10, 0.22) 34%,
-      rgba(8, 8, 10, 0) 62%
+      rgba(8, 8, 10, 0.5) 0%,
+      rgba(8, 8, 10, 0.12) 28%,
+      rgba(8, 8, 10, 0) 45%
     ),
-    linear-gradient(to bottom, rgba(8, 8, 10, 0.3) 0%, rgba(8, 8, 10, 0) 28%),
-    /* Clear-plastic gloss: a faint diagonal sheen across the film. */
-    linear-gradient(
-        115deg,
-        rgba(255, 255, 255, 0.09) 0%,
-        rgba(255, 255, 255, 0.02) 30%,
-        rgba(255, 255, 255, 0) 45%,
-        rgba(255, 255, 255, 0) 65%,
-        rgba(255, 255, 255, 0.04) 78%,
-        rgba(255, 255, 255, 0) 90%
-      ),
-    rgba(8, 8, 10, 0.34);
-  box-shadow: inset 0 0 140px rgba(0, 0, 0, 0.5);
+    linear-gradient(to bottom, rgba(8, 8, 10, 0.18) 0%, rgba(8, 8, 10, 0) 18%);
 }
 /* Desktop keeps the copy in its own panel, so the overlay is mobile-only. */
 .house-hero-overlay {
@@ -8534,6 +8519,20 @@ body
   }
   .house-entry-price b {
     color: #ff7d8b;
+  }
+  /* Multiply blends the shot's pale studio ground into a light page; on a
+     dark page it crushes the whole photo to near black. Shown as-is here,
+     dimmed a touch and faded in over a longer run so it settles into the
+     card rather than glaring. */
+  .house-entry-shot {
+    mix-blend-mode: normal;
+    filter: brightness(0.82);
+    -webkit-mask-image: linear-gradient(to right, transparent 5%, #000 70%);
+    mask-image: linear-gradient(to right, transparent 5%, #000 70%);
+  }
+  .house-entry-card[data-featured] .house-entry-shot {
+    -webkit-mask-image: linear-gradient(to right, transparent 5%, #000 55%);
+    mask-image: linear-gradient(to right, transparent 5%, #000 55%);
   }
   /* The PDP's dark override flips --accent to light but kept the light
      scheme's light --accent-fg, so filled accent buttons lost their label. */

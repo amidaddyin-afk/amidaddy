@@ -30,10 +30,12 @@ function shouldPlay() {
     }
   ).connection;
   if (connection?.saveData) return false;
-  // 3g included: these clips are ~0.5-1MB each and the slideshow keeps a
-  // second one buffered, so anything below 4g spends the visitor's bandwidth
-  // on decoration while the hero photograph is still arriving.
-  return !["slow-2g", "2g", "3g"].includes(connection?.effectiveType ?? "");
+  // Only genuinely slow links keep the still. "3g" used to be excluded too,
+  // but Chrome's estimate reports 3g for many Indian 4G connections (high
+  // latency, fine bandwidth), so the film silently failed to appear on a
+  // large share of Android visits. The clips are ~0.5-1MB each and load only
+  // after the page's own `load` event, so the hero photo always wins first.
+  return !["slow-2g", "2g"].includes(connection?.effectiveType ?? "");
 }
 
 /**
