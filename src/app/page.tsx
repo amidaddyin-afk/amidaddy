@@ -83,7 +83,7 @@ export default async function Home() {
   const pocket20Paise =
     signatures
       .flatMap((product) => product.variants)
-      .find((variant) => variant.name === "20ml")?.pricePaise ?? 19_900;
+      .find((variant) => variant.name === "20ml")?.pricePaise ?? 19_700;
   const siteUrl =
     process.env.NEXT_PUBLIC_APP_URL ??
     process.env.NEXT_PUBLIC_SITE_URL ??

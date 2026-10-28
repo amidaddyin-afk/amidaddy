@@ -49,8 +49,8 @@ export function isFulfillmentTransitionAllowed(from: string, to: string) {
 /**
  * Build-your-own combo pricing.
  *
- * 100ml bottles sell in fixed-price bundles: 1 for Rs 1,199, 2 for Rs 1,699,
- * 3 for Rs 2,299, 4 for Rs 2,899. Bigger baskets are packed into the cheapest
+ * 100ml bottles sell in fixed-price bundles: 1 for Rs 1,196, 2 for Rs 1,699,
+ * 3 for Rs 2,299, 4 for Rs 2,876. Bigger baskets are packed into the cheapest
  * mix of those bundles (5 = 3+2, 6 = 4+2, 8 = 4+4, ...), so adding a bottle
  * never costs more per bottle than the tier below. Only SINGLE 100ml bottles count: 20ml
  * decants and the pre-made combo pack neither earn nor dilute a bundle. The
@@ -65,15 +65,15 @@ export function isFulfillmentTransitionAllowed(from: string, to: string) {
  */
 export const COMBO_SIZE = "100ml";
 /** The single-bottle price the bundle prices (and their "% off") are set against. */
-export const COMBO_LIST_PAISE = 119_900;
+export const COMBO_LIST_PAISE = 119_600;
 
-/** Nearest whole percent: the 4-bottle tier is 39.55%, advertised as 40%. */
+/** Nearest whole percent: the 4-bottle tier is 39.88%, advertised as 40%. */
 const percentOff = (fullPaise: number, paidPaise: number) =>
   fullPaise > 0 ? Math.round(((fullPaise - paidPaise) * 100) / fullPaise) : 0;
 
 /** Highest tier first. */
 export const COMBO_TIERS = [
-  { minQty: 4, totalPaise: 289_900 },
+  { minQty: 4, totalPaise: 287_600 },
   { minQty: 3, totalPaise: 229_900 },
   { minQty: 2, totalPaise: 169_900 },
 ].map((tier) => ({

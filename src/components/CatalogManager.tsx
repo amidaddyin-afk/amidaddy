@@ -453,7 +453,7 @@ export default function CatalogManager({ products }: { products: Product[] }) {
               min="0"
               step=".01"
               placeholder="20 ml price ₹"
-              defaultValue={(variant("20ml")?.pricePaise ?? 19900) / 100}
+              defaultValue={(variant("20ml")?.pricePaise ?? 19700) / 100}
               required={!comboSize || comboSize === "20ml"}
               disabled={comboSize === "100ml"}
             />
@@ -489,7 +489,7 @@ export default function CatalogManager({ products }: { products: Product[] }) {
               min="0"
               step=".01"
               placeholder="100 ml price ₹"
-              defaultValue={(variant("100ml")?.pricePaise ?? 119900) / 100}
+              defaultValue={(variant("100ml")?.pricePaise ?? 119600) / 100}
               required={!comboSize || comboSize === "100ml"}
               disabled={comboSize === "20ml"}
             />

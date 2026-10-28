@@ -90,7 +90,7 @@ test("payment confirmation requires the exact order, amount, currency and captur
   );
 });
 
-const bottle = (qty: number, size = "100ml", unitPricePaise = 119_900) => ({
+const bottle = (qty: number, size = "100ml", unitPricePaise = 119_600) => ({
   size,
   packSize: 1,
   qty,
@@ -106,15 +106,15 @@ test("a pre-made 4 x 100ml pack never counts as a bundle bottle", () => {
   assert.equal(comboDiscountPaise([pack, bottle(1)]).discountPaise, 0);
 });
 
-test("bundles are 1199 / 1699 / 2299 / 2899, packed beyond that", () => {
-  assert.equal(comboBundlePaise(1), 119_900);
+test("bundles are 1196 / 1699 / 2299 / 2876, packed beyond that", () => {
+  assert.equal(comboBundlePaise(1), 119_600);
   assert.equal(comboBundlePaise(2), 169_900);
   assert.equal(comboBundlePaise(3), 229_900);
-  assert.equal(comboBundlePaise(4), 289_900);
+  assert.equal(comboBundlePaise(4), 287_600);
   assert.equal(comboBundlePaise(5), 229_900 + 169_900);
-  assert.equal(comboBundlePaise(6), 289_900 + 169_900);
-  assert.equal(comboBundlePaise(8), 2 * 289_900);
-  // Nearest whole percent: 29.15, 36.08, 39.55 -> 29, 36, 40.
+  assert.equal(comboBundlePaise(6), 287_600 + 169_900);
+  assert.equal(comboBundlePaise(8), 2 * 287_600);
+  // Nearest whole percent: 28.97, 35.93, 39.88 -> 29, 36, 40.
   assert.deepEqual(
     COMBO_TIERS.map((tier) => tier.percent),
     [40, 36, 29],
@@ -123,14 +123,14 @@ test("bundles are 1199 / 1699 / 2299 / 2899, packed beyond that", () => {
 
 test("only 100ml bottles count toward the combo tier", () => {
   // Two 20ml decants are not a combo, and earn nothing.
-  const decants = comboDiscountPaise([bottle(2, "20ml", 19_900)]);
+  const decants = comboDiscountPaise([bottle(2, "20ml", 19_700)]);
   assert.equal(decants.percent, 0);
   assert.equal(decants.discountPaise, 0);
 
   // A 20ml alongside two 100ml neither blocks the tier nor is discounted:
   // the saving is 10% of the 100ml lines only.
-  const mixed = comboDiscountPaise([bottle(2), bottle(1, "20ml", 19_900)]);
-  assert.equal(mixed.discountPaise, 2 * 119_900 - 169_900);
+  const mixed = comboDiscountPaise([bottle(2), bottle(1, "20ml", 19_700)]);
+  assert.equal(mixed.discountPaise, 2 * 119_600 - 169_900);
 });
 
 test("the same bottle twice earns the tier, like two different ones", () => {
@@ -140,27 +140,27 @@ test("the same bottle twice earns the tier, like two different ones", () => {
   assert.deepEqual(twoOfOne, oneEach);
 });
 
-test("four bottles cost exactly Rs 2,899", () => {
+test("four bottles cost exactly Rs 2,876", () => {
   const set = comboDiscountPaise([bottle(4)]);
-  assert.equal(4 * 119_900 - set.discountPaise, 289_900);
+  assert.equal(4 * 119_600 - set.discountPaise, 287_600);
   assert.equal(set.percent, 40);
   // One bottle is full price.
   assert.equal(comboDiscountPaise([bottle(1)]).discountPaise, 0);
 });
 
 test("ordinary coupons skip combo lines; special ones see the bundle price", () => {
-  const decant = bottle(1, "20ml", 19_900);
-  const pack = { size: "100ml", packSize: 4, qty: 1, unitPricePaise: 289_900 };
+  const decant = bottle(1, "20ml", 19_700);
+  const pack = { size: "100ml", packSize: 4, qty: 1, unitPricePaise: 287_600 };
   // A lone 100ml is not a combo: coupons apply as normal.
-  assert.equal(couponBasePaise([bottle(1)], false), 119_900);
+  assert.equal(couponBasePaise([bottle(1)], false), 119_600);
   // Two 100ml form a bundle: an ordinary coupon only sees the decant.
-  assert.equal(couponBasePaise([bottle(2), decant], false), 19_900);
+  assert.equal(couponBasePaise([bottle(2), decant], false), 19_700);
   // An all-combo cart leaves an ordinary coupon nothing to discount.
   assert.equal(couponBasePaise([bottle(3)], false), 0);
   assert.equal(couponBasePaise([pack], false), 0);
   // A special coupon applies to the bundle price, never the list price.
-  assert.equal(couponBasePaise([bottle(4)], true), 289_900);
-  assert.equal(couponBasePaise([bottle(2), decant], true), 169_900 + 19_900);
+  assert.equal(couponBasePaise([bottle(4)], true), 287_600);
+  assert.equal(couponBasePaise([bottle(2), decant], true), 169_900 + 19_700);
 });
 
 test("the next-tier prompt names how many more bottles are needed", () => {
@@ -168,7 +168,7 @@ test("the next-tier prompt names how many more bottles are needed", () => {
   assert.equal(nextComboTier(1)?.totalPaise, 169_900);
   assert.equal(nextComboTier(2)?.totalPaise, 229_900);
   assert.equal(nextComboTier(3)?.addQty, 1);
-  assert.equal(nextComboTier(3)?.totalPaise, 289_900);
+  assert.equal(nextComboTier(3)?.totalPaise, 287_600);
   // Nothing left to unlock at the top tier.
   assert.equal(nextComboTier(4), null);
 });
