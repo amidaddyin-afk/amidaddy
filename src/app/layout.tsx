@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Cormorant_Garamond, Jost } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
 import Navbar from "@/components/Navbar";
@@ -13,15 +13,16 @@ import OfferLauncher from "@/components/OfferLauncher";
 import PageViewTracker from "@/components/PageViewTracker";
 import ScrollToTopOnNavigate from "@/components/ScrollToTopOnNavigate";
 
-// Single family for the whole system (the reference's Aeonik substitute).
-// Both CSS vars point at the same font so every existing
-// var(--font-display)/var(--font-sans) reference keeps working unchanged.
-const display = Inter({
+// Serif display for headings, geometric sans for body and UI. Cormorant sets
+// close to Inter's width, so headings keep their line breaks. No 300 weight:
+// Cormorant is too thin there, and the browser falls back to 400.
+const display = Cormorant_Garamond({
   subsets: ["latin"],
   variable: "--font-display",
-  weight: ["300", "400", "500"],
+  weight: ["400", "500", "600"],
+  style: ["normal", "italic"],
 });
-const sans = Inter({
+const sans = Jost({
   subsets: ["latin"],
   variable: "--font-sans",
   weight: ["300", "400", "500"],

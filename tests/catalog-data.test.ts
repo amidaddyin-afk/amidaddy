@@ -108,7 +108,7 @@ test("signature fragrance notes match the approved note chart", () => {
     "Musk",
     "Patchouli",
   ]);
-  assert.deepEqual(bySlug.billionaire.topNotes, ["Whiskey"]);
+  assert.deepEqual(bySlug.billionaire.topNotes, ["Oak lactone"]);
   assert.deepEqual(bySlug.billionaire.heartNotes, [
     "Spicy notes",
     "Cinnamon",

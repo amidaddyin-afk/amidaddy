@@ -59,10 +59,10 @@
   --tracking-heading-lg: -0.02em;
   --text-display: clamp(2.75rem, 2.1rem + 3vw, 4.7rem);
   --leading-display: 1;
-  --tracking-display: -0.053em;
+  --tracking-display: -0.01em;
   --text-display-xl: clamp(3.2rem, 2.3rem + 4.2vw, 5.6rem);
   --leading-display-xl: 0.9;
-  --tracking-display-xl: -0.053em;
+  --tracking-display-xl: -0.01em;
 
   /* Fluid scale kept for components that still read --step-* directly
      (product/eyebrow/body sizing across the app). */
@@ -96,8 +96,8 @@
   --dur-slow: 0.55s;
   --dur-slower: 0.9s;
 
-  --font-display-stack: var(--font-display), "Inter", system-ui, sans-serif;
-  --font-sans-stack: var(--font-sans), "Inter", system-ui, sans-serif;
+  --font-display-stack: var(--font-display), Georgia, serif;
+  --font-sans-stack: var(--font-sans), system-ui, sans-serif;
 
   /* ---- semantic tokens: one fixed light-gallery look ---- */
   --bg: var(--color-paper);

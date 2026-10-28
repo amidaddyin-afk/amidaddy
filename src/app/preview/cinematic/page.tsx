@@ -43,7 +43,7 @@ const SCRIPT: Record<string, { line: string; notes: string[]; frame: string }> =
     },
     billionaire: {
       line: "Own the room.",
-      notes: ["Whiskey", "Spice", "Dark woods"],
+      notes: ["Oak lactone", "Spice", "Dark woods"],
       frame: "/site/preview-cinematic/billionaire.webp",
     },
   };

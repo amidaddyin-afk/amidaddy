@@ -171,7 +171,7 @@ const CATALOG: Product[] = [
     profile: "Woody",
     concentration: "Eau de Parfum",
     genderPositioning: "Unisex",
-    topNotes: ["Whiskey"],
+    topNotes: ["Oak lactone"],
     heartNotes: ["Spicy notes", "Cinnamon", "Coriander"],
     baseNotes: [
       "Tobacco",
@@ -183,7 +183,7 @@ const CATALOG: Product[] = [
       "Vanilla",
       "Cedar",
     ],
-    notes: "Whiskey · Spicy notes · Tobacco",
+    notes: "Oak lactone · Spicy notes · Tobacco",
     longevity: "8–10 hours",
     mood: "Powerful, sophisticated and magnetic",
     occasion: "Night, dates, events and formal occasions",

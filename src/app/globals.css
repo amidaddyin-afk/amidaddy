@@ -722,6 +722,10 @@ body {
   background: var(--ink);
   color: var(--paper);
   font-family: var(--font-sans), sans-serif;
+  /* Cormorant defaults to old-style figures, which drop prices below the line.
+     font-feature-settings, unlike font-variant-numeric, survives the `font:`
+     shorthand many rules here use. */
+  font-feature-settings: "lnum" 1;
   line-height: 1.5;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -8678,4 +8682,15 @@ label[aria-busy="true"]::before {
   border-right-color: transparent;
   border-radius: 50%;
   animation: admin-spin 0.7s linear infinite;
+}
+
+/* Serif display type. Headings take the display face even where they only
+   inherited the body font, and the tight negative tracking tuned for Inter
+   is loosened: on Cormorant it crushes the letters together. */
+h1,
+h2 {
+  font-family: var(--font-display), Georgia, serif;
+}
+:is(h1, h2, .display-title) {
+  letter-spacing: -0.01em !important;
 }
