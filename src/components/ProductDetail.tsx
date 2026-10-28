@@ -62,7 +62,7 @@ const HERO_OVERRIDES: Record<string, Partial<Record<string, string>>> = {
  *  product.description where a slug is not listed. */
 const pdpIntros: Partial<Record<string, string>> = {
   billionaire:
-    "Billionaire opens on warm oak lactone, then spice: cinnamon and coriander settle in. The dry-down is tobacco, oud and resin, the part people remember after you have left the room.",
+    "Billionaire opens on warm oak lactone, then spice: cinnamon and coriander settle in. The dry-down is a coumarin accord, oud and resin, the part people remember after you have left the room.",
   coldwar:
     "Cold War opens sharp: plum, bergamot, mandarin. Pepper and juniper keep it from turning sweet. It ends dry on oakmoss and cedar, the kind of fresh that reads as composure rather than soap.",
   heavenly:
@@ -76,7 +76,7 @@ const unfoldCaptions: Partial<Record<string, [string, string, string]>> = {
   billionaire: [
     "An opening of warm, toasted oak.",
     "Spice, cinnamon and coriander come forward.",
-    "Tobacco, woods and resin shape the dry-down.",
+    "Coumarin, woods and resin shape the dry-down.",
   ],
   coldwar: [
     "Plum, bergamot and mandarin, cold at first.",

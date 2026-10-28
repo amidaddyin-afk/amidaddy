@@ -64,6 +64,10 @@ naming a drink.
 | `src/app/preview/cinematic/page.tsx` (internal page)         | Whiskey                         | Oak lactone                         |
 | `tests/catalog-data.test.ts`                                 | Whiskey                         | Oak lactone                         |
 
+Billionaire's "Tobacco" base note is now **"Coumarin accord"** in the same places
+(notes list, card line, product page intro and caption, `llms.txt`). Database:
+run `prisma/migrations/20261028140000_rename_tobacco_note/migration.sql`.
+
 Left alone on purpose:
 
 - "Alcohol" in Scent School explains perfume carriers (oil vs alcohol).

@@ -174,7 +174,7 @@ const CATALOG: Product[] = [
     topNotes: ["Oak lactone"],
     heartNotes: ["Spicy notes", "Cinnamon", "Coriander"],
     baseNotes: [
-      "Tobacco",
+      "Coumarin accord",
       "Agarwood (oud)",
       "Incense",
       "Sandalwood",
@@ -183,7 +183,7 @@ const CATALOG: Product[] = [
       "Vanilla",
       "Cedar",
     ],
-    notes: "Oak lactone · Spicy notes · Tobacco",
+    notes: "Oak lactone · Spicy notes · Coumarin accord",
     longevity: "8–10 hours",
     mood: "Powerful, sophisticated and magnetic",
     occasion: "Night, dates, events and formal occasions",

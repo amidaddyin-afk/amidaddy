@@ -115,7 +115,7 @@ test("signature fragrance notes match the approved note chart", () => {
     "Coriander",
   ]);
   assert.deepEqual(bySlug.billionaire.baseNotes, [
-    "Tobacco",
+    "Coumarin accord",
     "Agarwood (oud)",
     "Incense",
     "Sandalwood",
