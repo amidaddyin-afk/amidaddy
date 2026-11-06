@@ -53,7 +53,7 @@ export const IMAGE_BLUR: Record<string, string> = {
   "/fragrances/billionaire/notes/heart.webp":
     "data:image/webp;base64,UklGRoYAAABXRUJQVlA4IHoAAACwBACdASoUABIAPt1iqU+opSOiKAqpEBuJQBWFEAAdnGsGag1//Bh1AMGdzzEAAP71dG4Zp43PqxqsaiR/tGtvlsTFzo6nLBcvlTpxNKGH3pArtos17L3hyy6/1F1CVUsP5YzIVNZATqNaYpEJEMggYse3nOZ1FJoAAA==",
   "/fragrances/billionaire/notes/top.webp":
-    "data:image/webp;base64,UklGRpIAAABXRUJQVlA4IIYAAAAwBACdASoUABEAPt1gpk6opaMiKA1REBuJbACo9BEdvghJ2Zhh0tDf3QAA/vVzM3NUKqxZ7cyZF39esCiE/iQnrMgPk7bvQV0FvrYfJt08oYRMhrEr9IrhIc1ZM8uUTBfpmAMC2YzDuDve7OQFg8PhNXCTc8Lo3PDgYbQx+PmucCi/rwAAAA==",
+    "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAAAQBACdASoUABEAPzmKu1WvKSYjKA1R4CcJagCuHBEc6LX3vOnHdLwWAAD+6MYqIFdr54aglYwxHL108kt5jbWK0nN/NpqBR5h8NmSoO+c2e9LBOfNaAKGprCA7zvs2RU5/uYAA",
   "/fragrances/coldwar/100ml/bottle.webp":
     "data:image/webp;base64,UklGRnoAAABXRUJQVlA4IG4AAACQAwCdASoUAA0APt1apkyopSOiMAgBEBuJQBOgBD8d73PKqjAAAP7tR0ngXGiwPcbpDIVnRqsLCK8ig68jPO1hOJsFwPeoTWNzhsNHDC0tKBODvGZ453+o12xocNulTv52sGyOSTgVGQXLVi7AAA==",
   "/fragrances/coldwar/20ml/bottle.webp":
