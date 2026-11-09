@@ -31,7 +31,7 @@ export const IMAGE_BLUR: Record<string, string> = {
   "/fragrances/billionaire/20ml/catalog.webp":
     "data:image/webp;base64,UklGRoIAAABXRUJQVlA4IHYAAADwAwCdASoUABkAPt1apkyopSOiMAgBEBuJaQAAUbOuWIjFptM9UAWAAO866NzEhTyD6cOBOm+77AsrAF/X/zWkBA5IFjw4C0xVlMuphU4m5eN0QLiuSXi9m0+zk5IsjCkVR/JzQdWvw7y8PNNMPpulfF2ZeAAA",
   "/fragrances/billionaire/20ml/studio.webp":
-    "data:image/webp;base64,UklGRp4AAABXRUJQVlA4IJIAAACQBACdASoUABQAPu1qqFCppaOiqA1RMB2JQBadAkf/PGcODS3vv6GFLxEsgMAA/uT3OHrBGfF6fRmgtKOA/A0OKJALv5onnzNp78skeGYjfI7upDA/8s08K2sE0uZXx/22r1lJTQNh5AzE82HYSEdwxe7P8AAokd3SyKKGhEOzPvHARxC9g8pAorZ+Lh/oMmgUAA==",
+    "data:image/webp;base64,UklGRo4AAABXRUJQVlA4IIIAAADQBACdASoUABQAPtFWpEyoJKOiMAwBABoJQBYj3FldBStCHFIRqwLoPhRYJFjugAD+7IvMQ31YWiaC0/mfUT+ctBGwadZu9dK+4mEGjs9939ApmlzAV5S8PhhoE4UPw6sXbf7kPGXNEPhJ4Bf9Iy/9QcppKe5IESXYUv6CHB1fRAAA",
   "/fragrances/billionaire/campaign/3987.webp":
     "data:image/webp;base64,UklGRqgAAABXRUJQVlA4IJwAAAAQBQCdASoUABkAPt1kqE+opaOiKAqpEBuJYgDDcA8ytci37wCO+DpE7qx5UirBcwwAAP7ZXyovJz3AhRbbodT5YQkiql3sG1e+ODGU2Sehai9wadPjHvINUgZx8d/aw54RwXXacG6sIOGBMcr7nvoQiJPcw9e2ispoOYC830Knzh6Q9pkHm2YiQNzidzTqrIdU7d10eZiwoEMBUAA=",
   "/fragrances/billionaire/campaign/3994.webp":
